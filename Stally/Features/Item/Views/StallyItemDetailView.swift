@@ -1,8 +1,11 @@
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
 
 struct StallyItemDetailView: View {
+    @Environment(\.mhTheme)
+    private var theme
     @Environment(\.modelContext)
     private var context
 
@@ -10,22 +13,26 @@ struct StallyItemDetailView: View {
     let onEdit: (UUID) -> Void
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                heroSection
-                actionSection
+        VStack(alignment: .leading, spacing: theme.spacing.section) {
+            heroSection
+            actionSection
 
-                if let note = item.note {
-                    noteSection(note: note)
-                }
-
-                StallyHistorySection(
-                    months: MarkHistoryCalculator.months(for: item)
-                )
+            if let note = item.note {
+                noteSection(note: note)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 24)
+
+            StallyHistorySection(
+                months: MarkHistoryCalculator.months(for: item)
+            )
+            .mhSection(
+                title: Text("Quiet History"),
+                supporting: Text("One filled day means you chose this item on that date.")
+            )
         }
+        .mhScreen(
+            title: nil as Text?,
+            subtitle: nil as Text?
+        )
         .navigationTitle(item.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -35,7 +42,6 @@ struct StallyItemDetailView: View {
                 }
             }
         }
-        .stallyScreenBackground()
     }
 }
 
@@ -45,8 +51,8 @@ private extension StallyItemDetailView {
     }
 
     var heroSection: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack(alignment: .top, spacing: 18) {
+        VStack(alignment: .leading, spacing: theme.spacing.group) {
+            HStack(alignment: .top, spacing: theme.spacing.group) {
                 StallyItemArtworkView(
                     photoData: item.photoData,
                     category: item.category,
@@ -54,23 +60,20 @@ private extension StallyItemDetailView {
                     height: 164
                 )
 
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: theme.spacing.group) {
                     Text(item.name)
                         .font(.system(size: 28, weight: .semibold, design: .serif))
 
-                    Text(item.category.title)
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(StallyDesign.accent)
-
-                    detailStat(
-                        title: "Total marks",
-                        value: "\(summary.totalMarks)"
-                    )
-                    detailStat(
-                        title: "Last marked",
-                        value: summary.lastMarkedAt?.formatted(date: .abbreviated, time: .omitted)
-                            ?? "Not yet"
-                    )
+                    VStack(alignment: .leading, spacing: theme.spacing.control) {
+                        LabeledContent("Total marks", value: "\(summary.totalMarks)")
+                            .labeledContentStyle(.mhKeyValue)
+                        LabeledContent(
+                            "Last marked",
+                            value: summary.lastMarkedAt?.formatted(date: .abbreviated, time: .omitted)
+                                ?? "Not yet"
+                        )
+                        .labeledContentStyle(.mhKeyValue)
+                    }
                 }
 
                 Spacer(minLength: .zero)
@@ -78,27 +81,31 @@ private extension StallyItemDetailView {
 
             if item.isArchived {
                 Label("Archived items stay out of Home until you move them back.", systemImage: "archivebox.fill")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .mhRowSupporting()
             }
         }
-        .padding(24)
-        .stallyCardStyle(cornerRadius: 32)
+        .mhSection(
+            title: Text("Overview"),
+            supporting: Text("Marks accumulate one day at a time."),
+            accessory: {
+                Text(item.category.title)
+                    .mhBadge(style: .accent)
+            }
+        )
     }
 
     var actionSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             Button(action: toggleTodayMark) {
                 Label(
                     summary.isMarkedToday ? "Undo Today’s Mark" : "Mark Today",
                     systemImage: summary.isMarkedToday ? "checkmark.circle.fill" : "circle.fill"
                 )
-                .font(.headline)
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(StallyDesign.accent)
+            .buttonStyle(
+                .mhAction(summary.isMarkedToday ? .secondary : .primary)
+            )
             .disabled(item.isArchived)
 
             Button(action: toggleArchiveState) {
@@ -106,43 +113,22 @@ private extension StallyItemDetailView {
                     item.isArchived ? "Move Back to Home" : "Archive Item",
                     systemImage: item.isArchived ? "tray.and.arrow.up.fill" : "archivebox.fill"
                 )
-                .font(.subheadline.weight(.semibold))
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 14)
             }
-            .buttonStyle(.bordered)
+            .buttonStyle(.mhSecondary)
         }
-        .padding(24)
-        .stallyCardStyle(cornerRadius: 32)
+        .mhSection(
+            title: Text("Actions"),
+            supporting: Text("Mark the item for today or move it in and out of Archive without affecting past marks.")
+        )
     }
 
     func noteSection(
         note: String
     ) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Note")
-                .font(.headline)
-
-            Text(note)
-                .font(.body)
-                .foregroundStyle(.secondary)
-        }
-        .padding(24)
-        .stallyCardStyle(cornerRadius: 28)
-    }
-
-    func detailStat(
-        title: String,
-        value: String
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            Text(value)
-                .font(.body.weight(.semibold))
-        }
+        Text(note)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .mhSection(title: Text("Note"))
     }
 
     func toggleTodayMark() {

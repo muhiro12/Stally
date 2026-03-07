@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/03/07.
 //
 
+import MHUI
 import MHPlatform
 import StallyLibrary
 import SwiftData
@@ -21,6 +22,8 @@ struct StallyApp: App {
         WindowGroup {
             StallyRootView()
                 .modelContainer(sharedModelContainer)
+                .tint(StallyDesign.tint)
+                .mhTheme(MHTheme.standard())
                 .environment(sharedAppRuntime)
                 .environment(sharedDeepLinkInbox)
         }

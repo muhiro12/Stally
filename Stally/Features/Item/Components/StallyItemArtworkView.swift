@@ -8,26 +8,14 @@ struct StallyItemArtworkView: View {
     let width: CGFloat
     let height: CGFloat
 
-    init(
-        photoData: Data?,
-        category: ItemCategory,
-        width: CGFloat = 88,
-        height: CGFloat = 104
-    ) {
-        self.photoData = photoData
-        self.category = category
-        self.width = width
-        self.height = height
-    }
-
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(
                     LinearGradient(
                         colors: [
-                            StallyDesign.accentMuted.opacity(0.8),
-                            StallyDesign.sand.opacity(0.85)
+                            StallyDesign.artworkCool.opacity(0.8),
+                            StallyDesign.artworkWarm.opacity(0.85)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -43,11 +31,11 @@ struct StallyItemArtworkView: View {
                 VStack(spacing: 10) {
                     Image(systemName: category.symbolName)
                         .font(.system(size: min(width, height) * 0.28, weight: .semibold))
-                        .foregroundStyle(StallyDesign.accent)
+                        .foregroundStyle(StallyDesign.tint)
 
                     Text(category.title)
                         .font(.footnote.weight(.medium))
-                        .foregroundStyle(StallyDesign.accent.opacity(0.85))
+                        .foregroundStyle(StallyDesign.tint.opacity(0.85))
                 }
                 .padding(12)
             }
@@ -56,5 +44,18 @@ struct StallyItemArtworkView: View {
         .clipShape(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
         )
+        .accessibilityHidden(true)
+    }
+
+    init(
+        photoData: Data?,
+        category: ItemCategory,
+        width: CGFloat = 88,
+        height: CGFloat = 104
+    ) {
+        self.photoData = photoData
+        self.category = category
+        self.width = width
+        self.height = height
     }
 }

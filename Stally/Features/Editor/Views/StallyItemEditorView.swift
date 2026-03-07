@@ -1,3 +1,4 @@
+import MHUI
 import PhotosUI
 import StallyLibrary
 import SwiftData
@@ -26,98 +27,20 @@ struct StallyItemEditorView: View {
     private let onComplete: (UUID?) -> Void
     private let onDelete: (UUID) -> Void
 
-    init(
-        mode: Mode,
-        onComplete: @escaping (UUID?) -> Void,
-        onDelete: @escaping (UUID) -> Void
-    ) {
-        self.mode = mode
-        self.onComplete = onComplete
-        self.onDelete = onDelete
-
-        switch mode {
-        case .create:
-            _name = State(initialValue: "")
-            _category = State(initialValue: .other)
-            _note = State(initialValue: "")
-            _photoData = State(initialValue: nil)
-        case .edit(let item):
-            _name = State(initialValue: item.name)
-            _category = State(initialValue: item.category)
-            _note = State(initialValue: item.note ?? "")
-            _photoData = State(initialValue: item.photoData)
-        }
-    }
-
     var body: some View {
-        let photoButtonTitle = photoData == nil ? "Choose Photo" : "Replace Photo"
-
         Form {
-            Section("Item") {
-                TextField("Name", text: $name)
-
-                Picker("Category", selection: $category) {
-                    ForEach(ItemCategory.allCases, id: \.self) { category in
-                        Text(category.title)
-                            .tag(category)
-                    }
-                }
-
-                if trimmedName.isEmpty {
-                    Text("Name is required.")
-                        .font(.footnote)
-                        .foregroundStyle(.red)
-                }
-            }
-
-            Section("Photo") {
-                HStack(spacing: 16) {
-                    StallyItemArtworkView(
-                        photoData: photoData,
-                        category: category,
-                        width: 92,
-                        height: 112
-                    )
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        PhotosPicker(
-                            selection: $selectedPhotoItem,
-                            matching: .images,
-                            preferredItemEncoding: .compatible
-                        ) {
-                            Label(
-                                photoButtonTitle,
-                                systemImage: "photo.on.rectangle"
-                            )
-                        }
-
-                        if photoData != nil {
-                            Button("Remove Photo", role: .destructive) {
-                                photoData = nil
-                                selectedPhotoItem = nil
-                            }
-                        }
-                    }
-                }
-                .padding(.vertical, 8)
-            }
-
-            Section("Note") {
-                TextEditor(text: $note)
-                    .frame(minHeight: 160)
-            }
+            itemSection
+            photoSection
+            noteEditorSection
 
             if existingItem != nil {
-                Section("Danger Zone") {
-                    Button("Delete Item", role: .destructive) {
-                        isDeleteConfirmationPresented = true
-                    }
-                }
+                dangerZoneSection
             }
         }
-        .scrollContentBackground(.hidden)
-        .navigationTitle(navigationTitle)
-        .navigationBarTitleDisplayMode(.inline)
+        .mhFormChrome(
+            title: Text(navigationTitle),
+            subtitle: Text(screenSubtitle)
+        )
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button("Cancel") {
@@ -159,11 +82,102 @@ struct StallyItemEditorView: View {
         } message: {
             Text("This permanently removes the item and all of its marks.")
         }
-        .stallyScreenBackground()
+    }
+
+    init(
+        mode: Mode,
+        onComplete: @escaping (UUID?) -> Void,
+        onDelete: @escaping (UUID) -> Void
+    ) {
+        self.mode = mode
+        self.onComplete = onComplete
+        self.onDelete = onDelete
+
+        switch mode {
+        case .create:
+            _name = State(initialValue: "")
+            _category = State(initialValue: .other)
+            _note = State(initialValue: "")
+            _photoData = State(initialValue: nil)
+        case .edit(let item):
+            _name = State(initialValue: item.name)
+            _category = State(initialValue: item.category)
+            _note = State(initialValue: item.note ?? "")
+            _photoData = State(initialValue: item.photoData)
+        }
     }
 }
 
 private extension StallyItemEditorView {
+    var itemSection: some View {
+        Section("Item") {
+            TextField("Name", text: $name)
+
+            Picker("Category", selection: $category) {
+                ForEach(ItemCategory.allCases, id: \.self) { category in
+                    Text(category.title)
+                        .tag(category)
+                }
+            }
+
+            if trimmedName.isEmpty {
+                Text("Name is required.")
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+            }
+        }
+    }
+
+    var photoSection: some View {
+        Section("Photo") {
+            HStack(spacing: 16) {
+                StallyItemArtworkView(
+                    photoData: photoData,
+                    category: category,
+                    width: 92,
+                    height: 112
+                )
+
+                VStack(alignment: .leading, spacing: 12) {
+                    PhotosPicker(
+                        selection: $selectedPhotoItem,
+                        matching: .images,
+                        preferredItemEncoding: .compatible
+                    ) {
+                        Label(
+                            photoButtonTitle,
+                            systemImage: "photo.on.rectangle"
+                        )
+                    }
+                    .buttonStyle(.mhSecondary)
+
+                    if photoData != nil {
+                        Button("Remove Photo", role: .destructive) {
+                            photoData = nil
+                            selectedPhotoItem = nil
+                        }
+                    }
+                }
+            }
+            .padding(.vertical, 8)
+        }
+    }
+
+    var noteEditorSection: some View {
+        Section("Note") {
+            TextEditor(text: $note)
+                .frame(minHeight: 160)
+        }
+    }
+
+    var dangerZoneSection: some View {
+        Section("Danger Zone") {
+            Button("Delete Item", role: .destructive) {
+                isDeleteConfirmationPresented = true
+            }
+        }
+    }
+
     var existingItem: Item? {
         switch mode {
         case .create:
@@ -193,6 +207,19 @@ private extension StallyItemEditorView {
 
     var trimmedName: String {
         name.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    var photoButtonTitle: String {
+        photoData == nil ? "Choose Photo" : "Replace Photo"
+    }
+
+    var screenSubtitle: String {
+        switch mode {
+        case .create:
+            "Create an item you can mark once when you chose it today."
+        case .edit:
+            "Adjust the basics without changing the marks you already kept."
+        }
     }
 
     var isErrorPresented: Binding<Bool> {

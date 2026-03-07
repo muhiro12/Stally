@@ -1,53 +1,40 @@
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
 
 struct StallyArchiveView: View {
+    @Environment(\.mhTheme)
+    private var theme
+
     let items: [Item]
     let onOpenItem: (UUID) -> Void
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                headerSection
-
-                if items.isEmpty {
-                    ContentUnavailableView(
-                        "No Archived Items",
-                        systemImage: "archivebox",
-                        description: Text("Archived items will wait here until you move them back into Home.")
-                    )
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 48)
-                    .stallyCardStyle(cornerRadius: 32)
-                } else {
-                    ForEach(items, id: \.id) { item in
-                        archiveCard(item: item)
-                    }
+        VStack(alignment: .leading, spacing: theme.spacing.group) {
+            if items.isEmpty {
+                ContentUnavailableView(
+                    "No Archived Items",
+                    systemImage: "archivebox",
+                    description: Text("Archived items will wait here until you move them back into Home.")
+                )
+                .mhEmptyStateLayout()
+                .mhSurfaceInset()
+                .mhSurface()
+            } else {
+                ForEach(items, id: \.id) { item in
+                    archiveCard(item: item)
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 24)
         }
-        .navigationTitle("Archive")
-        .stallyScreenBackground()
+        .mhScreen(
+            title: Text("Archive"),
+            subtitle: Text("Past favorites can stay nearby without crowding the main list.")
+        )
     }
 }
 
 private extension StallyArchiveView {
-    var headerSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("Past favorites can stay nearby without crowding the main list.")
-                .font(.title3.weight(.semibold))
-
-            Text("Archive keeps older items intact, with their accumulated marks preserved.")
-                .font(.body)
-                .foregroundStyle(.secondary)
-        }
-        .padding(24)
-        .stallyCardStyle(cornerRadius: 32)
-    }
-
     func archiveCard(
         item: Item
     ) -> some View {
@@ -56,44 +43,60 @@ private extension StallyArchiveView {
         return Button {
             onOpenItem(item.id)
         } label: {
-            HStack(spacing: 16) {
-                StallyItemArtworkView(
-                    photoData: item.photoData,
-                    category: item.category,
-                    width: 74,
-                    height: 88
-                )
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(item.name)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
-
-                    if let archivedAt = item.archivedAt {
-                        Text("Archived \(archivedAt.formatted(date: .abbreviated, time: .omitted))")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    } else {
-                        Text("Archived")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    Text("\(summary.totalMarks) marks saved")
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(StallyDesign.accent)
-                }
-
-                Spacer(minLength: .zero)
-
-                Image(systemName: "chevron.right")
-                    .foregroundStyle(.secondary)
-            }
-            .padding(20)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .stallyCardStyle(cornerRadius: 28)
+            archiveCardLabel(
+                item: item,
+                summary: summary
+            )
         }
         .buttonStyle(.plain)
+    }
+
+    func archiveCardLabel(
+        item: Item,
+        summary: ItemSummary
+    ) -> some View {
+        HStack(spacing: theme.spacing.group) {
+            StallyItemArtworkView(
+                photoData: item.photoData,
+                category: item.category,
+                width: 74,
+                height: 88
+            )
+
+            VStack(alignment: .leading, spacing: theme.spacing.control) {
+                Text(item.name)
+                    .mhRowTitle()
+
+                Text(item.category.title)
+                    .mhBadge(style: .neutral)
+
+                if let archivedAt = item.archivedAt {
+                    Text("Archived \(archivedAt.formatted(date: .abbreviated, time: .omitted))")
+                        .mhRowSupporting()
+                } else {
+                    Text("Archived")
+                        .mhRowSupporting()
+                }
+
+                HStack(alignment: .firstTextBaseline, spacing: theme.spacing.control) {
+                    Text("Marks saved")
+                        .mhRowSupporting()
+
+                    Spacer(minLength: theme.spacing.control)
+
+                    Text("\(summary.totalMarks)")
+                        .mhRowValue(colorRole: .accent)
+                }
+            }
+
+            Spacer(minLength: .zero)
+
+            Image(systemName: "chevron.right")
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .mhSurfaceInset()
+        .mhSurface()
     }
 }
 

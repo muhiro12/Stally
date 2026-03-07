@@ -1,95 +1,113 @@
+import MHUI
 import StallyLibrary
 import SwiftUI
 
 struct StallyItemCard: View {
+    @Environment(\.mhTheme)
+    private var theme
+
     let item: Item
     let summary: ItemSummary
     let onOpen: () -> Void
     let onToggleTodayMark: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack(alignment: .top, spacing: 16) {
-                StallyItemArtworkView(
-                    photoData: item.photoData,
-                    category: item.category,
-                    width: 82,
-                    height: 98
-                )
-
-                VStack(alignment: .leading, spacing: 12) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(item.name)
-                            .font(.title3.weight(.semibold))
-                            .foregroundStyle(.primary)
-
-                        Text(item.category.title)
-                            .font(.footnote.weight(.medium))
-                            .foregroundStyle(StallyDesign.accent)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(
-                                Capsule(style: .continuous)
-                                    .fill(StallyDesign.accentMuted.opacity(0.35))
-                            )
-                    }
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("\(summary.totalMarks) total marks", systemImage: "circle.hexagongrid.fill")
-                            .font(.subheadline)
-                            .foregroundStyle(.primary)
-
-                        Label(lastMarkedText, systemImage: "calendar")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                Spacer(minLength: .zero)
-            }
-
-            Button(action: onToggleTodayMark) {
-                HStack {
-                    Label(
-                        summary.isMarkedToday ? "Marked Today" : "Mark Today",
-                        systemImage: summary.isMarkedToday ? "checkmark.circle.fill" : "circle"
-                    )
-                    .font(.subheadline.weight(.semibold))
-
-                    Spacer()
-
-                    Text(summary.isMarkedToday ? "Tap to undo" : "One mark for today")
-                        .font(.footnote)
-                }
-                .foregroundStyle(summary.isMarkedToday ? StallyDesign.accent : Color.white)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 14)
-                .background(
-                    RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .fill(
-                            summary.isMarkedToday
-                                ? StallyDesign.accentMuted.opacity(0.42)
-                                : StallyDesign.accent
-                        )
-                )
-            }
-            .buttonStyle(.plain)
+        VStack(alignment: .leading, spacing: theme.spacing.group) {
+            headerSection
+            markSection
         }
-        .padding(22)
-        .stallyCardStyle()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .mhSurfaceInset()
+        .mhSurface()
         .contentShape(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
+            RoundedRectangle(
+                cornerRadius: theme.radius.surface,
+                style: .continuous
+            )
         )
+        .accessibilityAddTraits(.isButton)
         .onTapGesture(perform: onOpen)
     }
 }
 
 private extension StallyItemCard {
-    var lastMarkedText: String {
+    var headerSection: some View {
+        HStack(alignment: .top, spacing: theme.spacing.group) {
+            StallyItemArtworkView(
+                photoData: item.photoData,
+                category: item.category,
+                width: 82,
+                height: 98
+            )
+
+            VStack(alignment: .leading, spacing: theme.spacing.control) {
+                VStack(alignment: .leading, spacing: theme.spacing.inline) {
+                    Text(item.name)
+                        .mhRowTitle()
+
+                    Text(item.category.title)
+                        .mhBadge(style: .accent)
+                }
+
+                statRow(
+                    title: "Total marks",
+                    value: "\(summary.totalMarks)",
+                    colorRole: .accent
+                )
+                statRow(
+                    title: "Last marked",
+                    value: lastMarkedValue
+                )
+            }
+
+            Spacer(minLength: .zero)
+        }
+    }
+
+    var markSection: some View {
+        HStack(alignment: .center, spacing: theme.spacing.control) {
+            Text(markSupportingText)
+                .mhRowSupporting()
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            Button(summary.isMarkedToday ? "Marked Today" : "Mark Today") {
+                onToggleTodayMark()
+            }
+            .buttonStyle(
+                .mhAction(summary.isMarkedToday ? .secondary : .primary)
+            )
+        }
+    }
+
+    var lastMarkedValue: String {
         if let lastMarkedAt = summary.lastMarkedAt {
-            return "Last marked \(lastMarkedAt.formatted(date: .abbreviated, time: .omitted))"
+            return lastMarkedAt.formatted(date: .abbreviated, time: .omitted)
         }
 
-        return "No marks yet"
+        return "Not yet"
+    }
+
+    var markSupportingText: String {
+        if summary.isMarkedToday {
+            return "Tap again to remove today’s mark."
+        }
+
+        return "One mark is enough for today."
+    }
+
+    func statRow(
+        title: String,
+        value: String,
+        colorRole: MHColorRole = .secondaryText
+    ) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: theme.spacing.control) {
+            Text(title)
+                .mhRowSupporting()
+
+            Spacer(minLength: theme.spacing.control)
+
+            Text(value)
+                .mhRowValue(colorRole: colorRole)
+        }
     }
 }

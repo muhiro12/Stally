@@ -1,33 +1,24 @@
+import MHUI
 import StallyLibrary
 import SwiftUI
 
 struct StallyHistorySection: View {
+    @Environment(\.mhTheme)
+    private var theme
+
     let months: [MarkHistoryMonth]
 
-    private let columns = Array(
-        repeating: GridItem(.flexible(), spacing: 8),
-        count: 7
-    )
-
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Quiet History")
-                .font(.title3.weight(.semibold))
-
-            Text("One filled day means you chose this item on that date.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-
+        VStack(alignment: .leading, spacing: theme.spacing.group) {
             ForEach(months) { month in
-                VStack(alignment: .leading, spacing: 14) {
+                VStack(alignment: .leading, spacing: theme.spacing.control) {
                     Text(month.monthStart.formatted(.dateTime.year().month(.wide)))
-                        .font(.headline)
+                        .mhRowTitle()
 
                     LazyVGrid(columns: columns, spacing: 8) {
                         ForEach(weekdaySymbols, id: \.self) { symbol in
                             Text(symbol)
-                                .font(.caption.weight(.medium))
-                                .foregroundStyle(.secondary)
+                                .mhRowOverline()
                                 .frame(maxWidth: .infinity)
                         }
 
@@ -43,14 +34,24 @@ struct StallyHistorySection: View {
                         }
                     }
                 }
-                .padding(18)
-                .stallyCardStyle(cornerRadius: 24)
+                .mhSurfaceInset()
+                .mhSurface(role: .muted)
             }
         }
     }
 }
 
 private extension StallyHistorySection {
+    var columns: [GridItem] {
+        Array(
+            repeating: .init(
+                .flexible(),
+                spacing: theme.spacing.inline * 2
+            ),
+            count: 7
+        )
+    }
+
     var weekdaySymbols: [String] {
         let calendar: Calendar = .current
         let symbols = calendar.shortStandaloneWeekdaySymbols
@@ -63,14 +64,14 @@ private extension StallyHistorySection {
         for cell: MarkHistoryDayCell
     ) -> Color {
         if cell.isMarked {
-            return StallyDesign.accent
+            return StallyDesign.tint
         }
 
         if cell.isInDisplayedMonth {
-            return Color.white.opacity(0.5)
+            return Color.secondary.opacity(0.14)
         }
 
-        return Color.white.opacity(0.18)
+        return Color.secondary.opacity(0.08)
     }
 
     func foregroundStyle(
