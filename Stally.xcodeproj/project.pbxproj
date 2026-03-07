@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B0A1C0012F5D000100000001 /* MHPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C0032F5D000100000001 /* MHPlatform */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		AD91A1052F5C544100BC027C /* StallyLibrary */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = StallyLibrary; sourceTree = "<group>"; };
 		AD91A0F12F5C543E00BC027C /* Stally.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stally.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -37,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B0A1C0012F5D000100000001 /* MHPlatform in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +84,9 @@
 				AD91A0F32F5C543E00BC027C /* Stally */,
 			);
 			name = Stally;
+			packageProductDependencies = (
+				B0A1C0032F5D000100000001 /* MHPlatform */,
+			);
 			productName = Stally;
 			productReference = AD91A0F12F5C543E00BC027C /* Stally.app */;
 			productType = "com.apple.product-type.application";
@@ -109,6 +117,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				AD91A1042F5C544100BC027C /* XCLocalSwiftPackageReference "StallyLibrary" */,
+				B0A1C0022F5D000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AD91A0F22F5C543E00BC027C /* Products */;
@@ -378,6 +387,25 @@
 			relativePath = StallyLibrary;
 		};
 /* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B0A1C0022F5D000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/muhiro12/MHPlatform.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B0A1C0032F5D000100000001 /* MHPlatform */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B0A1C0022F5D000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */;
+			productName = MHPlatform;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 	};
 	rootObject = AD91A0E92F5C543E00BC027C /* Project object */;
