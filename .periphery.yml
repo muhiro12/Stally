@@ -1,0 +1,5 @@
+project: Stally.xcodeproj
+schemes:
+  - Stally
+targets:
+  - Stally

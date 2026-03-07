@@ -1,0 +1,223 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+argument_count=$#
+if [[ $argument_count -ne 0 ]]; then
+  echo "This script does not accept arguments." >&2
+  exit 2
+fi
+
+script_directory=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+repository_root=$(cd "$script_directory/../.." && pwd)
+cd "$repository_root"
+
+source "$repository_root/ci_scripts/lib/ci_runs.sh"
+
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "This script must run inside a git repository." >&2
+  exit 1
+fi
+
+ci_root="$repository_root/.build/ci"
+runs_root="$ci_root/runs"
+shared_directory="$ci_root/shared"
+cache_directory="$shared_directory/cache"
+derived_data_directory="$shared_directory/DerivedData"
+shared_tmp_directory="$shared_directory/tmp"
+shared_home_directory="$shared_directory/home"
+
+run_directory=$(ci_run_create_dir "$runs_root")
+run_identifier=$(basename "$run_directory")
+
+commands_file="$run_directory/commands.txt"
+summary_path="$run_directory/summary.md"
+meta_path="$run_directory/meta.json"
+logs_directory="$run_directory/logs"
+results_directory="$run_directory/results"
+run_work_directory="$run_directory/work"
+
+mkdir -p \
+  "$run_work_directory" \
+  "$cache_directory" \
+  "$derived_data_directory" \
+  "$shared_tmp_directory" \
+  "$shared_home_directory"
+
+start_epoch=$(date +%s)
+start_time_display=$(date +"%Y-%m-%d %H:%M:%S %z")
+start_time_iso=$(date +"%Y-%m-%dT%H:%M:%S%z")
+
+overall_result="success"
+run_note="Evaluating local changes to determine required build steps."
+failed_step=""
+failed_log=""
+executed_steps=()
+
+finalize_run_artifacts() {
+  local exit_code=$1
+  set +e
+
+  local end_epoch
+  local end_time_display
+  local end_time_iso
+  local duration_seconds
+  local executed_steps_markdown
+
+  end_epoch=$(date +%s)
+  end_time_display=$(date +"%Y-%m-%d %H:%M:%S %z")
+  end_time_iso=$(date +"%Y-%m-%dT%H:%M:%S%z")
+  duration_seconds=$((end_epoch - start_epoch))
+
+  if [[ $exit_code -ne 0 ]]; then
+    overall_result="failure"
+    if [[ -z "$run_note" || "$run_note" == "Executed required CI steps based on local changes." ]]; then
+      run_note="A required step failed. Review failure details and logs."
+    fi
+  fi
+
+  if [[ ${#executed_steps[@]} -eq 0 ]]; then
+    executed_steps_markdown="- No build steps were required."
+  else
+    executed_steps_markdown=""
+    local executed_step
+    for executed_step in "${executed_steps[@]}"; do
+      executed_steps_markdown+="- ${executed_step}"$'\n'
+    done
+    executed_steps_markdown=${executed_steps_markdown%$'\n'}
+  fi
+
+  ci_run_write_summary \
+    "$summary_path" \
+    "$run_identifier" \
+    "$start_time_display" \
+    "$end_time_display" \
+    "$overall_result" \
+    "$run_note" \
+    "$executed_steps_markdown" \
+    "$failed_step" \
+    "$failed_log" \
+    "$logs_directory" \
+    "$results_directory" \
+    "$commands_file" || true
+
+  ci_run_write_meta \
+    "$meta_path" \
+    "$run_identifier" \
+    "$start_time_iso" \
+    "$end_time_iso" \
+    "$duration_seconds" \
+    "$overall_result" \
+    "$run_note" \
+    "$failed_step" \
+    "$failed_log" \
+    "$commands_file" \
+    "$logs_directory" \
+    "$results_directory" || true
+
+  ci_run_prune_old_runs "$runs_root" 5 || true
+}
+
+trap 'finalize_run_artifacts "$?"' EXIT
+
+ci_run_capture_command "$commands_file" "$0" "$@"
+echo "CI run artifacts: $run_directory"
+
+run_logged_step() {
+  local step_identifier=$1
+  local step_description=$2
+  shift 2
+
+  local log_path="$logs_directory/${step_identifier}.log"
+  executed_steps+=("$step_description")
+
+  ci_run_capture_command \
+    "$commands_file" \
+    "CI_RUN_DIR=$run_directory" \
+    "CI_RUN_WORK_DIR=$run_work_directory" \
+    "CI_SHARED_DIR=$shared_directory" \
+    "CI_CACHE_DIR=$cache_directory" \
+    "CI_DERIVED_DATA_DIR=$derived_data_directory" \
+    "CI_RUN_RESULTS_DIR=$results_directory" \
+    "AI_RUN_RESULTS_DIR=$results_directory" \
+    "AI_RUN_WORK_DIR=$run_work_directory" \
+    "AI_RUN_CACHE_ROOT=$cache_directory" \
+    "$@"
+
+  echo "Running ${step_description}."
+  set +e
+  CI_RUN_DIR="$run_directory" \
+    CI_RUN_WORK_DIR="$run_work_directory" \
+    CI_SHARED_DIR="$shared_directory" \
+    CI_CACHE_DIR="$cache_directory" \
+    CI_DERIVED_DATA_DIR="$derived_data_directory" \
+    CI_RUN_RESULTS_DIR="$results_directory" \
+    AI_RUN_RESULTS_DIR="$results_directory" \
+    AI_RUN_WORK_DIR="$run_work_directory" \
+    AI_RUN_CACHE_ROOT="$cache_directory" \
+    "$@" 2>&1 | tee "$log_path"
+  local command_status=${PIPESTATUS[0]}
+  set -e
+
+  if [[ $command_status -ne 0 ]]; then
+    failed_step="$step_description"
+    failed_log="$log_path"
+    overall_result="failure"
+    run_note="A required step failed. Review failure details and logs."
+    return "$command_status"
+  fi
+
+  return 0
+}
+
+should_run_pre_commit=false
+if [[ "${CI_RUN_ENABLE_PRE_COMMIT:-0}" == "1" || "${CI_RUN_ENABLE_PRE_COMMIT:-}" == "true" ]]; then
+  should_run_pre_commit=true
+fi
+
+if $should_run_pre_commit; then
+  run_logged_step \
+    "pre_commit" \
+    "Run pre-commit hooks" \
+    bash "$repository_root/ci_scripts/tasks/pre_commit.sh"
+fi
+
+changed_files=$(
+  {
+    git diff --name-only --cached
+    git diff --name-only
+    git ls-files --others --exclude-standard
+  } | sed '/^$/d' | sort -u
+)
+
+if [[ -z "$changed_files" ]]; then
+  echo "No local changes detected."
+  if $should_run_pre_commit; then
+    run_note="pre-commit completed. No local changes detected. Build steps were skipped."
+  else
+    run_note="No local changes detected. Build steps were skipped."
+  fi
+  exit 0
+fi
+
+needs_stally_build=false
+
+if grep -Eq '^Stally/|^Stally\.xcodeproj/' <<<"$changed_files"; then
+  needs_stally_build=true
+fi
+
+if ! $needs_stally_build; then
+  echo "No changes under Stally/ or Stally.xcodeproj/."
+  if $should_run_pre_commit; then
+    run_note="pre-commit completed. No changes under Stally/ or Stally.xcodeproj/. Build steps were skipped."
+  else
+    run_note="No changes under Stally/ or Stally.xcodeproj/. Build steps were skipped."
+  fi
+  exit 0
+fi
+
+run_note="Executed required CI steps based on local changes."
+
+run_logged_step \
+  "build_app" \
+  "Build Stally scheme" \
+  bash "$repository_root/ci_scripts/tasks/build_app.sh"
