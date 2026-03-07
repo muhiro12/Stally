@@ -1,0 +1,79 @@
+import SwiftData
+@testable import StallyLibrary
+import XCTest
+
+@MainActor
+final class MarkServiceTests: XCTestCase {
+    func testMarkIsIdempotentForTheSameItemAndDay() throws {
+        let context = testContext()
+        let item = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Rain Jacket",
+                category: .clothing
+            )
+        )
+
+        _ = try MarkService.mark(
+            context: context,
+            item: item,
+            on: localDate(year: 2026, month: 3, day: 8, hour: 9)
+        )
+        _ = try MarkService.mark(
+            context: context,
+            item: item,
+            on: localDate(year: 2026, month: 3, day: 8, hour: 21)
+        )
+
+        XCTAssertEqual(item.marks.count, 1)
+        XCTAssertEqual(
+            try context.fetchCount(FetchDescriptor<Mark>()),
+            1
+        )
+    }
+
+    func testUnmarkRemovesOnlyTodayMark() throws {
+        let context = testContext()
+        let item = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Runner",
+                category: .shoes
+            )
+        )
+
+        _ = try MarkService.mark(
+            context: context,
+            item: item,
+            on: localDate(year: 2026, month: 3, day: 2)
+        )
+        _ = try MarkService.mark(
+            context: context,
+            item: item,
+            on: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        let didUnmark = try MarkService.unmark(
+            context: context,
+            item: item,
+            on: localDate(year: 2026, month: 3, day: 8, hour: 18)
+        )
+
+        XCTAssertTrue(didUnmark)
+        XCTAssertEqual(item.marks.count, 1)
+
+        let summary = ItemInsightsCalculator.summary(
+            for: item,
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        XCTAssertEqual(summary.totalMarks, 1)
+        XCTAssertFalse(summary.isMarkedToday)
+        XCTAssertTrue(
+            Calendar.current.isDate(
+                summary.lastMarkedAt ?? .distantPast,
+                inSameDayAs: localDate(year: 2026, month: 3, day: 2)
+            )
+        )
+    }
+}

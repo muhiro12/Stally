@@ -6,14 +6,26 @@
 //
 
 import MHPlatform
+import StallyLibrary
+import SwiftData
 
 @MainActor
 struct StallyAppBootstrap {
+    let modelContainer: ModelContainer
     let appRuntime: MHAppRuntime
     let deepLinkInbox: MHObservableDeepLinkInbox
 
     static func make() -> Self {
-        .init(
+        let modelContainer: ModelContainer
+
+        do {
+            modelContainer = try ModelContainerFactory.shared()
+        } catch {
+            preconditionFailure("Failed to initialize the Stally model container: \(error)")
+        }
+
+        return .init(
+            modelContainer: modelContainer,
             appRuntime: MHAppRuntime(
                 configuration: StallyAppConfiguration.runtimeConfiguration
             ),

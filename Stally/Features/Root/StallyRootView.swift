@@ -5,30 +5,82 @@
 //  Created by Hiromu Nakano on 2026/03/08.
 //
 
-import Foundation
 import MHPlatform
+import StallyLibrary
+import SwiftData
 import SwiftUI
 
 struct StallyRootView: View {
+    private enum Route: Hashable {
+        case archive
+        case item(UUID)
+    }
+
+    private enum EditorMode: Hashable {
+        case create
+        case edit(UUID)
+    }
+
+    private struct EditorRoute: Identifiable {
+        let mode: EditorMode
+
+        var id: String {
+            switch mode {
+            case .create:
+                "create"
+            case .edit(let itemID):
+                "edit-\(itemID.uuidString)"
+            }
+        }
+    }
+
     @Environment(\.scenePhase)
     private var scenePhase
+    @Environment(\.modelContext)
+    private var context
     @Environment(MHAppRuntime.self)
     private var appRuntime
     @Environment(MHObservableDeepLinkInbox.self)
     private var deepLinkInbox
 
+    @Query(
+        sort: [
+            SortDescriptor(\Item.createdAt, order: .reverse)
+        ]
+    )
+    private var items: [Item]
+
+    @State private var path: [Route] = []
+    @State private var editorRoute: EditorRoute?
+
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 28) {
-                    headerSection
-                    statusSection
-                    pendingDeepLinkSection
-                    licensesSection
+        NavigationStack(path: $path) {
+            StallyHomeView(
+                items: activeItems,
+                onOpenItem: { itemID in
+                    path.append(.item(itemID))
+                },
+                onCreateItem: {
+                    editorRoute = .init(mode: .create)
+                },
+                onOpenArchive: {
+                    path.append(.archive)
+                },
+                onToggleTodayMark: toggleTodayMark(for:)
+            )
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .archive:
+                    StallyArchiveView(items: archivedItems) { itemID in
+                        path.append(.item(itemID))
+                    }
+                case .item(let itemID):
+                    destinationView(for: itemID)
                 }
-                .padding(20)
             }
-            .navigationTitle(StallyAppConfiguration.displayName)
+        }
+        .sheet(item: $editorRoute) { route in
+            editorDestination(for: route)
         }
         .task {
             appRuntime.startIfNeeded()
@@ -55,104 +107,105 @@ struct StallyRootView: View {
             }
         }
     }
+}
 
-    private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(StallyAppConfiguration.displayName)
-                .font(.largeTitle.weight(.semibold))
-
-            Text(StallyAppConfiguration.conceptLine)
-                .font(.body)
-                .foregroundStyle(.primary)
-
-            Text(StallyAppConfiguration.baselineNote)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-    }
-
-    private var statusSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Runtime")
-                .font(.headline)
-
-            VStack(spacing: 12) {
-                statusRow(
-                    title: "Started",
-                    value: appRuntime.hasStarted ? "true" : "false"
-                )
-                statusRow(
-                    title: "Premium",
-                    value: appRuntime.premiumStatus.rawValue
-                )
-                statusRow(
-                    title: "Ads",
-                    value: appRuntime.adsAvailability.rawValue
-                )
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color(uiColor: .secondarySystemBackground))
+private extension StallyRootView {
+    var activeItems: [Item] {
+        ItemInsightsCalculator.homeSort(
+            items: ItemInsightsCalculator.activeItems(from: items)
         )
     }
 
-    @ViewBuilder
-    private var pendingDeepLinkSection: some View {
-        if let pendingURL = deepLinkInbox.pendingURL {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Pending Deep Link")
-                    .font(.headline)
+    var archivedItems: [Item] {
+        ItemInsightsCalculator.archivedItems(from: items)
+    }
 
-                Text(pendingURL.absoluteString)
-                    .font(.footnote.monospaced())
-                    .foregroundStyle(.secondary)
-                    .textSelection(.enabled)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(20)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color(uiColor: .secondarySystemBackground))
-            )
+    func item(for itemID: UUID) -> Item? {
+        items.first { item in
+            item.id == itemID
         }
     }
 
     @ViewBuilder
-    private var licensesSection: some View {
-        if appRuntime.configuration.showsLicenses {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Support")
-                    .font(.headline)
+    private func destinationView(
+        for itemID: UUID
+    ) -> some View {
+        if let item = item(for: itemID) {
+            StallyItemDetailView(item: item) { editableItemID in
+                editorRoute = .init(mode: .edit(editableItemID))
+            }
+        } else {
+            ContentUnavailableView(
+                "Item Unavailable",
+                systemImage: "questionmark.square.dashed",
+                description: Text("This item no longer exists.")
+            )
+            .task {
+                removeItemRoute(itemID)
+            }
+        }
+    }
 
-                NavigationLink("Open Licenses") {
-                    appRuntime.licensesView()
-                        .navigationTitle("Licenses")
+    @ViewBuilder
+    private func editorDestination(
+        for route: EditorRoute
+    ) -> some View {
+        NavigationStack {
+            switch route.mode {
+            case .create:
+                StallyItemEditorView(mode: .create) { createdItemID in
+                    editorRoute = nil
+
+                    if let createdItemID {
+                        path.append(.item(createdItemID))
+                    }
+                } onDelete: { _ in
+                    // no-op
+                }
+            case .edit(let itemID):
+                if let item = item(for: itemID) {
+                    StallyItemEditorView(mode: .edit(item)) { _ in
+                        editorRoute = nil
+                    } onDelete: { deletedItemID in
+                        editorRoute = nil
+                        removeItemRoute(deletedItemID)
+                    }
+                } else {
+                    Color.clear
+                        .task {
+                            editorRoute = nil
+                        }
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(20)
-            .background(
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .fill(Color(uiColor: .secondarySystemBackground))
-            )
         }
     }
 
-    private func statusRow(
-        title: String,
-        value: String
-    ) -> some View {
-        HStack {
-            Text(title)
-                .foregroundStyle(.secondary)
+    private func removeItemRoute(
+        _ itemID: UUID
+    ) {
+        path.removeAll { route in
+            if case .item(let pathItemID) = route {
+                return pathItemID == itemID
+            }
 
-            Spacer()
+            return false
+        }
+    }
 
-            Text(value)
-                .font(.body.monospaced())
+    private func toggleTodayMark(
+        for item: Item
+    ) {
+        guard !item.isArchived else {
+            return
+        }
+
+        do {
+            _ = try MarkService.toggle(
+                context: context,
+                item: item
+            )
+        } catch {
+            assertionFailure(error.localizedDescription)
         }
     }
 }

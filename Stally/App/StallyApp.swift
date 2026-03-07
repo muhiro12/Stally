@@ -6,10 +6,13 @@
 //
 
 import MHPlatform
+import StallyLibrary
+import SwiftData
 import SwiftUI
 
 @main
 struct StallyApp: App {
+    private let sharedModelContainer: ModelContainer
     private let sharedAppRuntime: MHAppRuntime
     private let sharedDeepLinkInbox: MHObservableDeepLinkInbox
     private let startupLogger = Self.logger(category: "AppStartup")
@@ -17,6 +20,7 @@ struct StallyApp: App {
     var body: some Scene {
         WindowGroup {
             StallyRootView()
+                .modelContainer(sharedModelContainer)
                 .environment(sharedAppRuntime)
                 .environment(sharedDeepLinkInbox)
         }
@@ -28,6 +32,7 @@ struct StallyApp: App {
 
         let bootstrap = StallyAppBootstrap.make()
 
+        sharedModelContainer = bootstrap.modelContainer
         sharedAppRuntime = bootstrap.appRuntime
         sharedDeepLinkInbox = bootstrap.deepLinkInbox
 

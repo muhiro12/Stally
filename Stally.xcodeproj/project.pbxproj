@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AD91A1062F5C544100BC027C /* StallyLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = AD91A1072F5C544100BC027C /* StallyLibrary */; };
 		B0A1C0012F5D000100000001 /* MHPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C0032F5D000100000001 /* MHPlatform */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD91A1062F5C544100BC027C /* StallyLibrary in Frameworks */,
 				B0A1C0012F5D000100000001 /* MHPlatform in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -85,6 +87,7 @@
 			);
 			name = Stally;
 			packageProductDependencies = (
+				AD91A1072F5C544100BC027C /* StallyLibrary */,
 				B0A1C0032F5D000100000001 /* MHPlatform */,
 			);
 			productName = Stally;
@@ -400,6 +403,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		AD91A1072F5C544100BC027C /* StallyLibrary */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AD91A1042F5C544100BC027C /* XCLocalSwiftPackageReference "StallyLibrary" */;
+			productName = StallyLibrary;
+		};
 		B0A1C0032F5D000100000001 /* MHPlatform */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B0A1C0022F5D000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */;
