@@ -7,6 +7,8 @@ struct StallyArchiveView: View {
     @Environment(\.mhTheme)
     private var theme
 
+    @State private var query = ItemListQuery()
+
     let items: [Item]
     let onOpenItem: (UUID) -> Void
 
@@ -22,8 +24,14 @@ struct StallyArchiveView: View {
                 .mhSurfaceInset()
                 .mhSurface()
             } else {
-                ForEach(items, id: \.id) { item in
-                    archiveCard(item: item)
+                queryControls
+
+                if displayedItems.isEmpty {
+                    filteredEmptyState
+                } else {
+                    ForEach(displayedItems, id: \.id) { item in
+                        archiveCard(item: item)
+                    }
                 }
             }
         }
@@ -31,10 +39,83 @@ struct StallyArchiveView: View {
             title: Text("Archive"),
             subtitle: Text("Past favorites can stay nearby without crowding the main list.")
         )
+        .searchable(
+            text: $query.searchText,
+            prompt: "Search archive"
+        )
     }
 }
 
 private extension StallyArchiveView {
+    var displayedItems: [Item] {
+        ItemInsightsCalculator.items(
+            from: items,
+            matching: query,
+            kind: .archived
+        )
+    }
+
+    var queryControls: some View {
+        HStack(alignment: .center, spacing: theme.spacing.control) {
+            Menu {
+                Button("All Categories") {
+                    query.category = nil
+                }
+
+                ForEach(ItemCategory.allCases, id: \.self) { category in
+                    Button {
+                        query.category = category
+                    } label: {
+                        categoryMenuLabel(for: category)
+                    }
+                }
+            } label: {
+                Label(categoryControlTitle, systemImage: "line.3.horizontal.decrease.circle")
+            }
+            .buttonStyle(.mhSecondary)
+
+            Menu {
+                ForEach(ItemListQuery.SortOption.allCases, id: \.self) { sortOption in
+                    Button {
+                        query.sortOption = sortOption
+                    } label: {
+                        sortMenuLabel(for: sortOption)
+                    }
+                }
+            } label: {
+                Label(query.sortOption.title, systemImage: "arrow.up.arrow.down.circle")
+            }
+            .buttonStyle(.mhSecondary)
+
+            Spacer(minLength: theme.spacing.control)
+
+            Text("\(displayedItems.count) shown")
+                .mhRowSupporting()
+
+            if query.hasRefinements {
+                Button("Clear") {
+                    query = .init()
+                }
+                .buttonStyle(.mhSecondary)
+            }
+        }
+    }
+
+    var filteredEmptyState: some View {
+        ContentUnavailableView(
+            "No Matching Archived Items",
+            systemImage: "line.3.horizontal.decrease.circle",
+            description: Text("Try a different search, category, or sort option.")
+        )
+        .mhEmptyStateLayout()
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
+    }
+
+    var categoryControlTitle: String {
+        query.category?.title ?? "All Categories"
+    }
+
     func archiveCard(
         item: Item
     ) -> some View {
@@ -97,6 +178,30 @@ private extension StallyArchiveView {
         .frame(maxWidth: .infinity, alignment: .leading)
         .mhSurfaceInset()
         .mhSurface()
+    }
+
+    func categoryMenuLabel(
+        for category: ItemCategory
+    ) -> some View {
+        Group {
+            if query.category == category {
+                Label(category.title, systemImage: "checkmark")
+            } else {
+                Text(category.title)
+            }
+        }
+    }
+
+    func sortMenuLabel(
+        for sortOption: ItemListQuery.SortOption
+    ) -> some View {
+        Group {
+            if query.sortOption == sortOption {
+                Label(sortOption.title, systemImage: "checkmark")
+            } else {
+                Text(sortOption.title)
+            }
+        }
     }
 }
 

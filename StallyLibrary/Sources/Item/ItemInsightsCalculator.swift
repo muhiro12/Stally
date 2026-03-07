@@ -57,6 +57,75 @@ public enum ItemInsightsCalculator {
             .sorted(by: archivedSort)
     }
 
+    public static func items(
+        from items: [Item],
+        matching query: ItemListQuery,
+        kind: ItemListQuery.ListKind,
+        referenceDate: Date = .now,
+        calendar: Calendar = .current
+    ) -> [Item] {
+        let defaultOrderedItems = defaultOrderedItems(
+            from: items,
+            kind: kind,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+
+        let filteredItems = defaultOrderedItems.filter { item in
+            matchesSearch(
+                item: item,
+                searchText: query.trimmedSearchText
+            ) && matchesCategory(
+                item: item,
+                category: query.category
+            )
+        }
+
+        guard query.sortOption != .defaultOrder else {
+            return filteredItems
+        }
+
+        let summaries = summariesByID(
+            for: filteredItems,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        let defaultIndexes = Dictionary(
+            uniqueKeysWithValues: filteredItems.enumerated().map { index, item in
+                (item.id, index)
+            }
+        )
+
+        return filteredItems.sorted { lhs, rhs in
+            switch query.sortOption {
+            case .defaultOrder:
+                false
+            case .recentlyMarked:
+                let leftDate = summaries[lhs.id]?.lastMarkedAt
+                let rightDate = summaries[rhs.id]?.lastMarkedAt
+
+                if leftDate != rightDate {
+                    return compareDescending(leftDate, rightDate)
+                }
+            case .mostMarked:
+                let leftCount = summaries[lhs.id]?.totalMarks ?? .zero
+                let rightCount = summaries[rhs.id]?.totalMarks ?? .zero
+
+                if leftCount != rightCount {
+                    return leftCount > rightCount
+                }
+            case .name:
+                let nameComparison = lhs.name.localizedCaseInsensitiveCompare(rhs.name)
+
+                if nameComparison != .orderedSame {
+                    return nameComparison == .orderedAscending
+                }
+            }
+
+            return (defaultIndexes[lhs.id] ?? .zero) < (defaultIndexes[rhs.id] ?? .zero)
+        }
+    }
+
     public static func homeSort(
         items: [Item],
         referenceDate: Date = .now,
@@ -104,6 +173,67 @@ public enum ItemInsightsCalculator {
 }
 
 private extension ItemInsightsCalculator {
+    static func defaultOrderedItems(
+        from items: [Item],
+        kind: ItemListQuery.ListKind,
+        referenceDate: Date,
+        calendar: Calendar
+    ) -> [Item] {
+        switch kind {
+        case .active:
+            homeSort(
+                items: activeItems(from: items),
+                referenceDate: referenceDate,
+                calendar: calendar
+            )
+        case .archived:
+            archivedItems(from: items)
+        }
+    }
+
+    static func summariesByID(
+        for items: [Item],
+        referenceDate: Date,
+        calendar: Calendar
+    ) -> [UUID: ItemSummary] {
+        Dictionary(
+            uniqueKeysWithValues: items.map { item in
+                (
+                    item.id,
+                    summary(
+                        for: item,
+                        referenceDate: referenceDate,
+                        calendar: calendar
+                    )
+                )
+            }
+        )
+    }
+
+    static func matchesSearch(
+        item: Item,
+        searchText: String
+    ) -> Bool {
+        guard !searchText.isEmpty else {
+            return true
+        }
+
+        return item.name.localizedCaseInsensitiveContains(searchText)
+            || item.category.title.localizedCaseInsensitiveContains(searchText)
+            || (item.note?.localizedCaseInsensitiveContains(searchText) == true)
+    }
+
+    static func matchesCategory(
+        item: Item,
+        category: ItemCategory?
+    ) -> Bool {
+        guard let category else {
+            return true
+        }
+
+        return item.category == category
+    }
+
     static func compareDescending(
         _ lhs: Date?,
         _ rhs: Date?
