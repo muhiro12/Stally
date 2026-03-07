@@ -193,4 +193,43 @@ final class MarkServiceTests: XCTestCase {
             1
         )
     }
+
+    func testMarkAndUnmarkSupportArbitraryHistoryDates() throws {
+        let context = testContext()
+        let item = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Field Journal",
+                category: .notebooks
+            )
+        )
+        let historyDate = localDate(year: 2026, month: 2, day: 27)
+
+        _ = try MarkService.mark(
+            context: context,
+            item: item,
+            on: historyDate
+        )
+
+        XCTAssertTrue(
+            ItemInsightsCalculator.summary(
+                for: item,
+                referenceDate: historyDate
+            ).isMarkedToday
+        )
+
+        _ = try MarkService.unmark(
+            context: context,
+            item: item,
+            on: historyDate
+        )
+
+        XCTAssertFalse(
+            ItemInsightsCalculator.summary(
+                for: item,
+                referenceDate: historyDate
+            ).isMarkedToday
+        )
+        XCTAssertEqual(item.marks.count, 0)
+    }
 }

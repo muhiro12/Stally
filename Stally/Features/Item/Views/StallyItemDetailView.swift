@@ -7,10 +7,14 @@ struct StallyItemDetailView: View {
     @Environment(\.mhTheme)
     private var theme
 
+    @State private var isHistoryEditorPresented = false
+    @State private var selectedHistoryDate = Date.now
+
     let item: Item
     let onEdit: (UUID) -> Void
     let onToggleTodayMark: (Item) -> Void
     let onToggleArchiveState: (Item) -> Void
+    let onSetMarkState: (Item, Date, Bool) -> Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.section) {
@@ -35,6 +39,9 @@ struct StallyItemDetailView: View {
         )
         .navigationTitle(item.name)
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $isHistoryEditorPresented) {
+            historyEditorSheet
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Edit") {
@@ -48,6 +55,17 @@ struct StallyItemDetailView: View {
 private extension StallyItemDetailView {
     var summary: ItemSummary {
         ItemInsightsCalculator.summary(for: item)
+    }
+
+    var selectedDateSummary: ItemSummary {
+        ItemInsightsCalculator.summary(
+            for: item,
+            referenceDate: selectedHistoryDate
+        )
+    }
+
+    var historyDateRange: ClosedRange<Date> {
+        item.createdAt...Date.now
     }
 
     var heroSection: some View {
@@ -120,6 +138,15 @@ private extension StallyItemDetailView {
                 .frame(maxWidth: .infinity)
             }
             .buttonStyle(.mhSecondary)
+
+            Button(action: openHistoryEditor) {
+                Label(
+                    item.isArchived ? "Review Another Day" : "Adjust Another Day",
+                    systemImage: "calendar.badge.clock"
+                )
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.mhSecondary)
         }
         .mhSection(
             title: Text("Actions"),
@@ -133,6 +160,82 @@ private extension StallyItemDetailView {
         Text(note)
             .frame(maxWidth: .infinity, alignment: .leading)
             .mhSection(title: Text("Note"))
+    }
+
+    var historyEditorSheet: some View {
+        NavigationStack {
+            Form {
+                Section("Day") {
+                    DatePicker(
+                        "Date",
+                        selection: $selectedHistoryDate,
+                        in: historyDateRange,
+                        displayedComponents: .date
+                    )
+                    .datePickerStyle(.graphical)
+                }
+
+                Section("Selected Day") {
+                    LabeledContent(
+                        "Date",
+                        value: selectedHistoryDate.formatted(date: .abbreviated, time: .omitted)
+                    )
+                    LabeledContent(
+                        "Current State",
+                        value: selectedDateSummary.isMarkedToday ? "Marked" : "Not marked"
+                    )
+                    .foregroundStyle(
+                        selectedDateSummary.isMarkedToday ? StallyDesign.tint : .secondary
+                    )
+
+                    if item.isArchived {
+                        Text("Archived items are read-only. Move this item back to Home to change history.")
+                            .mhRowSupporting()
+                    }
+                }
+
+                Section {
+                    Button {
+                        applyHistoryChange()
+                    } label: {
+                        Text(selectedDateSummary.isMarkedToday ? "Remove Mark" : "Add Mark")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .disabled(item.isArchived)
+                }
+            }
+            .navigationTitle("Adjust History")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Close") {
+                        isHistoryEditorPresented = false
+                    }
+                }
+            }
+        }
+    }
+
+    func openHistoryEditor() {
+        let defaultDate = summary.lastMarkedAt ?? Date.now
+        selectedHistoryDate = min(
+            max(defaultDate, item.createdAt),
+            Date.now
+        )
+        isHistoryEditorPresented = true
+    }
+
+    func applyHistoryChange() {
+        let shouldBeMarked = !selectedDateSummary.isMarkedToday
+        let didSucceed = onSetMarkState(
+            item,
+            selectedHistoryDate,
+            shouldBeMarked
+        )
+
+        if didSucceed {
+            isHistoryEditorPresented = false
+        }
     }
 }
 
@@ -152,6 +255,9 @@ private extension StallyItemDetailView {
                 },
                 onToggleArchiveState: { _ in
                     // no-op
+                },
+                onSetMarkState: { _, _, _ in
+                    true
                 }
             )
         } else {

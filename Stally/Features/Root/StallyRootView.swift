@@ -161,7 +161,8 @@ private extension StallyRootView {
                     editorRoute = .init(mode: .edit(editableItemID))
                 },
                 onToggleTodayMark: toggleTodayMark(for:),
-                onToggleArchiveState: toggleArchiveState(for:)
+                onToggleArchiveState: toggleArchiveState(for:),
+                onSetMarkState: setMarkState(for:on:shouldBeMarked:)
             )
         } else {
             ContentUnavailableView(
@@ -251,6 +252,33 @@ private extension StallyRootView {
             }
         } catch {
             presentOperationError(error)
+        }
+    }
+
+    private func setMarkState(
+        for item: Item,
+        on date: Date,
+        shouldBeMarked: Bool
+    ) -> Bool {
+        do {
+            if shouldBeMarked {
+                _ = try MarkService.mark(
+                    context: context,
+                    item: item,
+                    on: date
+                )
+            } else {
+                _ = try MarkService.unmark(
+                    context: context,
+                    item: item,
+                    on: date
+                )
+            }
+
+            return true
+        } catch {
+            presentOperationError(error)
+            return false
         }
     }
 
