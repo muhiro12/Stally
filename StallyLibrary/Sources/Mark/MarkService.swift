@@ -3,6 +3,17 @@ import SwiftData
 
 /// Domain mutations for adding and removing daily marks.
 public enum MarkService {
+    public enum MutationError: LocalizedError, Equatable {
+        case archivedItem
+
+        public var errorDescription: String? {
+            switch self {
+            case .archivedItem:
+                "Archived items are read-only. Move this item back to Home to change its marks."
+            }
+        }
+    }
+
     @discardableResult
     public static func mark(
         context: ModelContext,
@@ -10,6 +21,8 @@ public enum MarkService {
         on date: Date = .now,
         calendar: Calendar = .current
     ) throws -> Mark {
+        try validateMutationTarget(item)
+
         let storageDate = DayStamp.storageDate(
             from: date,
             calendar: calendar
@@ -41,6 +54,8 @@ public enum MarkService {
         on date: Date = .now,
         calendar: Calendar = .current
     ) throws -> Bool {
+        try validateMutationTarget(item)
+
         let storageDate = DayStamp.storageDate(
             from: date,
             calendar: calendar
@@ -67,6 +82,8 @@ public enum MarkService {
         on date: Date = .now,
         calendar: Calendar = .current
     ) throws -> Bool {
+        try validateMutationTarget(item)
+
         let storageDate = DayStamp.storageDate(
             from: date,
             calendar: calendar
@@ -95,6 +112,14 @@ public enum MarkService {
 }
 
 private extension MarkService {
+    static func validateMutationTarget(
+        _ item: Item
+    ) throws {
+        guard !item.isArchived else {
+            throw MutationError.archivedItem
+        }
+    }
+
     static func existingMark(
         for item: Item,
         storageDate: Date
