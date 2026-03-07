@@ -12,6 +12,7 @@ struct StallyHomeView: View {
     let items: [Item]
     let onOpenItem: (UUID) -> Void
     let onCreateItem: () -> Void
+    let onSeedSampleData: () -> Void
     let onOpenArchive: () -> Void
     let onToggleTodayMark: (Item) -> Void
 
@@ -133,6 +134,14 @@ private extension StallyHomeView {
                 onCreateItem()
             }
             .buttonStyle(.mhPrimary)
+
+            Button("Try Sample Items", systemImage: "sparkles.rectangle.stack") {
+                onSeedSampleData()
+            }
+            .buttonStyle(.mhSecondary)
+
+            Text("Sample items only load when Home is empty, so you can safely try them once.")
+                .mhRowSupporting()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .mhSurfaceInset()
@@ -194,6 +203,9 @@ private extension StallyHomeView {
             onCreateItem: {
                 // no-op
             },
+            onSeedSampleData: {
+                // no-op
+            },
             onOpenArchive: {
                 // no-op
             },
@@ -213,6 +225,9 @@ private extension StallyHomeView {
                 // no-op
             },
             onCreateItem: {
+                // no-op
+            },
+            onSeedSampleData: {
                 // no-op
             },
             onOpenArchive: {

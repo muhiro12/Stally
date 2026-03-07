@@ -64,6 +64,7 @@ struct StallyRootView: View {
                 onCreateItem: {
                     editorRoute = .init(mode: .create)
                 },
+                onSeedSampleData: seedSampleData,
                 onOpenArchive: {
                     path.append(.archive)
                 },
@@ -279,6 +280,17 @@ private extension StallyRootView {
         } catch {
             presentOperationError(error)
             return false
+        }
+    }
+
+    private func seedSampleData() {
+        do {
+            try ItemService.seedSampleData(
+                context: context,
+                ifEmptyOnly: true
+            )
+        } catch {
+            presentOperationError(error)
         }
     }
 
