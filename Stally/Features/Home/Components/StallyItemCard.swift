@@ -13,20 +13,29 @@ struct StallyItemCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {
-            headerSection
-            markSection
+            Button(action: onOpen) {
+                VStack(alignment: .leading, spacing: theme.spacing.group) {
+                    headerSection
+
+                    Text(markSupportingText)
+                        .mhRowSupporting()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(
+                    RoundedRectangle(
+                        cornerRadius: theme.radius.surface,
+                        style: .continuous
+                    )
+                )
+            }
+            .buttonStyle(.plain)
+
+            markButton
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .mhSurfaceInset()
         .mhSurface()
-        .contentShape(
-            RoundedRectangle(
-                cornerRadius: theme.radius.surface,
-                style: .continuous
-            )
-        )
-        .accessibilityAddTraits(.isButton)
-        .onTapGesture(perform: onOpen)
     }
 }
 
@@ -64,19 +73,13 @@ private extension StallyItemCard {
         }
     }
 
-    var markSection: some View {
-        HStack(alignment: .center, spacing: theme.spacing.control) {
-            Text(markSupportingText)
-                .mhRowSupporting()
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            Button(summary.isMarkedToday ? "Marked Today" : "Mark Today") {
-                onToggleTodayMark()
-            }
-            .buttonStyle(
-                .mhAction(summary.isMarkedToday ? .secondary : .primary)
-            )
+    var markButton: some View {
+        Button(summary.isMarkedToday ? "Marked Today" : "Mark Today") {
+            onToggleTodayMark()
         }
+        .buttonStyle(
+            .mhAction(summary.isMarkedToday ? .secondary : .primary)
+        )
     }
 
     var lastMarkedValue: String {

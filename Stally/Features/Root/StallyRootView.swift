@@ -52,6 +52,7 @@ struct StallyRootView: View {
 
     @State private var path: [Route] = []
     @State private var editorRoute: EditorRoute?
+    @State private var operationErrorMessage: String?
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -78,6 +79,16 @@ struct StallyRootView: View {
                     destinationView(for: itemID)
                 }
             }
+        }
+        .alert(
+            "Unable to Complete This Action",
+            isPresented: isOperationErrorPresented
+        ) {
+            Button("OK", role: .cancel) {
+                operationErrorMessage = nil
+            }
+        } message: {
+            Text(operationErrorMessage ?? "")
         }
         .sheet(item: $editorRoute) { route in
             editorDestination(for: route)
@@ -120,6 +131,19 @@ private extension StallyRootView {
         ItemInsightsCalculator.archivedItems(from: items)
     }
 
+    var isOperationErrorPresented: Binding<Bool> {
+        .init(
+            get: {
+                operationErrorMessage != nil
+            },
+            set: { isPresented in
+                if !isPresented {
+                    operationErrorMessage = nil
+                }
+            }
+        )
+    }
+
     func item(for itemID: UUID) -> Item? {
         items.first { item in
             item.id == itemID
@@ -131,9 +155,14 @@ private extension StallyRootView {
         for itemID: UUID
     ) -> some View {
         if let item = item(for: itemID) {
-            StallyItemDetailView(item: item) { editableItemID in
-                editorRoute = .init(mode: .edit(editableItemID))
-            }
+            StallyItemDetailView(
+                item: item,
+                onEdit: { editableItemID in
+                    editorRoute = .init(mode: .edit(editableItemID))
+                },
+                onToggleTodayMark: toggleTodayMark(for:),
+                onToggleArchiveState: toggleArchiveState(for:)
+            )
         } else {
             ContentUnavailableView(
                 "Item Unavailable",
@@ -195,17 +224,40 @@ private extension StallyRootView {
     private func toggleTodayMark(
         for item: Item
     ) {
-        guard !item.isArchived else {
-            return
-        }
-
         do {
             _ = try MarkService.toggle(
                 context: context,
                 item: item
             )
         } catch {
-            assertionFailure(error.localizedDescription)
+            presentOperationError(error)
         }
+    }
+
+    private func toggleArchiveState(
+        for item: Item
+    ) {
+        do {
+            if item.isArchived {
+                try ItemService.unarchive(
+                    context: context,
+                    item: item
+                )
+            } else {
+                try ItemService.archive(
+                    context: context,
+                    item: item
+                )
+            }
+        } catch {
+            presentOperationError(error)
+        }
+    }
+
+    private func presentOperationError(
+        _ error: any Error
+    ) {
+        operationErrorMessage = (error as? LocalizedError)?.errorDescription
+            ?? "Please try again."
     }
 }

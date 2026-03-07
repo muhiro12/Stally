@@ -6,11 +6,11 @@ import SwiftUI
 struct StallyItemDetailView: View {
     @Environment(\.mhTheme)
     private var theme
-    @Environment(\.modelContext)
-    private var context
 
     let item: Item
     let onEdit: (UUID) -> Void
+    let onToggleTodayMark: (Item) -> Void
+    let onToggleArchiveState: (Item) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.section) {
@@ -96,7 +96,9 @@ private extension StallyItemDetailView {
 
     var actionSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.control) {
-            Button(action: toggleTodayMark) {
+            Button {
+                onToggleTodayMark(item)
+            } label: {
                 Label(
                     summary.isMarkedToday ? "Undo Today’s Mark" : "Mark Today",
                     systemImage: summary.isMarkedToday ? "checkmark.circle.fill" : "circle.fill"
@@ -108,7 +110,9 @@ private extension StallyItemDetailView {
             )
             .disabled(item.isArchived)
 
-            Button(action: toggleArchiveState) {
+            Button {
+                onToggleArchiveState(item)
+            } label: {
                 Label(
                     item.isArchived ? "Move Back to Home" : "Archive Item",
                     systemImage: item.isArchived ? "tray.and.arrow.up.fill" : "archivebox.fill"
@@ -130,35 +134,6 @@ private extension StallyItemDetailView {
             .frame(maxWidth: .infinity, alignment: .leading)
             .mhSection(title: Text("Note"))
     }
-
-    func toggleTodayMark() {
-        do {
-            _ = try MarkService.toggle(
-                context: context,
-                item: item
-            )
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
-    }
-
-    func toggleArchiveState() {
-        do {
-            if item.isArchived {
-                try ItemService.unarchive(
-                    context: context,
-                    item: item
-                )
-            } else {
-                try ItemService.archive(
-                    context: context,
-                    item: item
-                )
-            }
-        } catch {
-            assertionFailure(error.localizedDescription)
-        }
-    }
 }
 
 @available(iOS 18.0, *)
@@ -170,6 +145,12 @@ private extension StallyItemDetailView {
             StallyItemDetailView(
                 item: item,
                 onEdit: { _ in
+                    // no-op
+                },
+                onToggleTodayMark: { _ in
+                    // no-op
+                },
+                onToggleArchiveState: { _ in
                     // no-op
                 }
             )
