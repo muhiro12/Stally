@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		AD91A1052F5C544100BC027C /* StallyLibrary */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = StallyLibrary; sourceTree = "<group>"; };
 		AD91A0F12F5C543E00BC027C /* Stally.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stally.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -46,6 +47,7 @@
 			isa = PBXGroup;
 			children = (
 				AD91A0F32F5C543E00BC027C /* Stally */,
+				AD91A1052F5C544100BC027C /* StallyLibrary */,
 				AD91A0F22F5C543E00BC027C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -77,8 +79,6 @@
 				AD91A0F32F5C543E00BC027C /* Stally */,
 			);
 			name = Stally;
-			packageProductDependencies = (
-			);
 			productName = Stally;
 			productReference = AD91A0F12F5C543E00BC027C /* Stally.app */;
 			productType = "com.apple.product-type.application";
@@ -107,6 +107,9 @@
 			);
 			mainGroup = AD91A0E82F5C543E00BC027C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				AD91A1042F5C544100BC027C /* XCLocalSwiftPackageReference "StallyLibrary" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AD91A0F22F5C543E00BC027C /* Products */;
 			projectDirPath = "";
@@ -368,6 +371,14 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		AD91A1042F5C544100BC027C /* XCLocalSwiftPackageReference "StallyLibrary" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = StallyLibrary;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 	};
 	rootObject = AD91A0E92F5C543E00BC027C /* Project object */;
 }

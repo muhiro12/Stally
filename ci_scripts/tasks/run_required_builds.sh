@@ -48,7 +48,7 @@ start_time_display=$(date +"%Y-%m-%d %H:%M:%S %z")
 start_time_iso=$(date +"%Y-%m-%dT%H:%M:%S%z")
 
 overall_result="success"
-run_note="Evaluating local changes to determine required build steps."
+run_note="Evaluating local changes to determine required build/test steps."
 failed_step=""
 failed_log=""
 executed_steps=()
@@ -76,7 +76,7 @@ finalize_run_artifacts() {
   fi
 
   if [[ ${#executed_steps[@]} -eq 0 ]]; then
-    executed_steps_markdown="- No build steps were required."
+    executed_steps_markdown="- No build/test steps were required."
   else
     executed_steps_markdown=""
     local executed_step
@@ -192,32 +192,46 @@ changed_files=$(
 if [[ -z "$changed_files" ]]; then
   echo "No local changes detected."
   if $should_run_pre_commit; then
-    run_note="pre-commit completed. No local changes detected. Build steps were skipped."
+    run_note="pre-commit completed. No local changes detected. Build/test steps were skipped."
   else
-    run_note="No local changes detected. Build steps were skipped."
+    run_note="No local changes detected. Build/test steps were skipped."
   fi
   exit 0
 fi
 
 needs_stally_build=false
+needs_stally_library_tests=false
 
 if grep -Eq '^Stally/|^Stally\.xcodeproj/' <<<"$changed_files"; then
   needs_stally_build=true
 fi
 
-if ! $needs_stally_build; then
-  echo "No changes under Stally/ or Stally.xcodeproj/."
+if grep -Eq '^StallyLibrary/' <<<"$changed_files"; then
+  needs_stally_library_tests=true
+fi
+
+if ! $needs_stally_build && ! $needs_stally_library_tests; then
+  echo "No changes under Stally/, Stally.xcodeproj/, or StallyLibrary/."
   if $should_run_pre_commit; then
-    run_note="pre-commit completed. No changes under Stally/ or Stally.xcodeproj/. Build steps were skipped."
+    run_note="pre-commit completed. No changes under Stally/, Stally.xcodeproj/, or StallyLibrary/. Build/test steps were skipped."
   else
-    run_note="No changes under Stally/ or Stally.xcodeproj/. Build steps were skipped."
+    run_note="No changes under Stally/, Stally.xcodeproj/, or StallyLibrary/. Build/test steps were skipped."
   fi
   exit 0
 fi
 
 run_note="Executed required CI steps based on local changes."
 
-run_logged_step \
-  "build_app" \
-  "Build Stally scheme" \
-  bash "$repository_root/ci_scripts/tasks/build_app.sh"
+if $needs_stally_build; then
+  run_logged_step \
+    "build_app" \
+    "Build Stally scheme" \
+    bash "$repository_root/ci_scripts/tasks/build_app.sh"
+fi
+
+if $needs_stally_library_tests; then
+  run_logged_step \
+    "test_shared_library" \
+    "Test StallyLibrary scheme" \
+    bash "$repository_root/ci_scripts/tasks/test_shared_library.sh"
+fi
