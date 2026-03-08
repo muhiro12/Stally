@@ -10,10 +10,12 @@ struct StallyHomeView: View {
     @State private var query = ItemListQuery()
 
     let items: [Item]
+    let reviewSummary: ItemReviewSummary
     let onOpenItem: (UUID) -> Void
     let onCreateItem: () -> Void
     let onSeedSampleData: () -> Void
     let onOpenArchive: () -> Void
+    let onOpenReview: () -> Void
     let onOpenSettings: () -> Void
     let onToggleTodayMark: (Item) -> Void
 
@@ -25,6 +27,7 @@ struct StallyHomeView: View {
                 queryControls
                 homeQuickFilters
                 homeSummaryCard
+                reviewEntryCard
 
                 if displayedItems.isEmpty {
                     filteredEmptyState
@@ -229,6 +232,46 @@ private extension StallyHomeView {
         }
     }
 
+    var reviewEntryCard: some View {
+        Button {
+            onOpenReview()
+        } label: {
+            VStack(alignment: .leading, spacing: theme.spacing.control) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text("Needs Review")
+                        .mhRowTitle()
+
+                    Spacer(minLength: theme.spacing.control)
+
+                    Text("\(reviewSummary.totalReviewCount)")
+                        .mhRowValue(colorRole: .accent)
+                }
+
+                Text("Surface items that need a first mark, feel dormant, or may deserve a return from Archive.")
+                    .mhRowSupporting()
+
+                HStack(spacing: theme.spacing.group) {
+                    summaryMetric(
+                        title: "First Mark",
+                        value: "\(reviewSummary.untouchedCount)"
+                    )
+                    summaryMetric(
+                        title: "Dormant",
+                        value: "\(reviewSummary.dormantCount)"
+                    )
+                    summaryMetric(
+                        title: "Recovery",
+                        value: "\(reviewSummary.recoveryCandidateCount)"
+                    )
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .mhSurfaceInset()
+            .mhSurface(role: .muted)
+        }
+        .buttonStyle(.plain)
+    }
+
     var categoryControlTitle: String {
         query.category?.title ?? "All Categories"
     }
@@ -280,6 +323,7 @@ private extension StallyHomeView {
             items: ItemInsightsCalculator.homeSort(
                 items: ItemInsightsCalculator.activeItems(from: items)
             ),
+            reviewSummary: ItemReviewCalculator.summary(from: items),
             onOpenItem: { _ in
                 // no-op
             },
@@ -290,6 +334,9 @@ private extension StallyHomeView {
                 // no-op
             },
             onOpenArchive: {
+                // no-op
+            },
+            onOpenReview: {
                 // no-op
             },
             onOpenSettings: {
@@ -307,6 +354,7 @@ private extension StallyHomeView {
     NavigationStack {
         StallyHomeView(
             items: [],
+            reviewSummary: ItemReviewCalculator.summary(from: []),
             onOpenItem: { _ in
                 // no-op
             },
@@ -317,6 +365,9 @@ private extension StallyHomeView {
                 // no-op
             },
             onOpenArchive: {
+                // no-op
+            },
+            onOpenReview: {
                 // no-op
             },
             onOpenSettings: {

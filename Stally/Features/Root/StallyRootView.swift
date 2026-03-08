@@ -14,6 +14,7 @@ struct StallyRootView: View {
     private enum Route: Hashable {
         case archive
         case item(UUID)
+        case review
         case settings
     }
 
@@ -59,6 +60,7 @@ struct StallyRootView: View {
         NavigationStack(path: $path) {
             StallyHomeView(
                 items: activeItems,
+                reviewSummary: reviewSummary,
                 onOpenItem: { itemID in
                     path.append(.item(itemID))
                 },
@@ -68,6 +70,9 @@ struct StallyRootView: View {
                 onSeedSampleData: seedSampleData,
                 onOpenArchive: {
                     path.append(.archive)
+                },
+                onOpenReview: {
+                    path.append(.review)
                 },
                 onOpenSettings: {
                     path.append(.settings)
@@ -80,6 +85,8 @@ struct StallyRootView: View {
                     StallyArchiveView(items: archivedItems) { itemID in
                         path.append(.item(itemID))
                     }
+                case .review:
+                    reviewPlaceholderView
                 case .settings:
                     StallySettingsView()
                 case .item(let itemID):
@@ -138,6 +145,10 @@ private extension StallyRootView {
         ItemInsightsCalculator.archivedItems(from: items)
     }
 
+    var reviewSummary: ItemReviewSummary {
+        ItemReviewCalculator.summary(from: items)
+    }
+
     var isOperationErrorPresented: Binding<Bool> {
         .init(
             get: {
@@ -155,6 +166,15 @@ private extension StallyRootView {
         items.first { item in
             item.id == itemID
         }
+    }
+
+    var reviewPlaceholderView: some View {
+        ContentUnavailableView(
+            "Review",
+            systemImage: "tray.full",
+            description: Text("Review workflow content will live here.")
+        )
+        .navigationTitle("Review")
     }
 
     @ViewBuilder
