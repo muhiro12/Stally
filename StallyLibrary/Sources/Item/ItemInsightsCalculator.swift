@@ -117,6 +117,103 @@ public enum ItemInsightsCalculator {
         )
     }
 
+    /// Builds a contiguous day timeline for the selected insight range.
+    public static func activityDays(
+        from items: [Item],
+        range: ItemInsightsRange,
+        includeArchivedItems: Bool = false,
+        referenceDate: Date = .now,
+        calendar: Calendar = .current
+    ) -> [CollectionActivityDay] {
+        let scopedItems = scopedItems(
+            from: items,
+            includeArchivedItems: includeArchivedItems
+        )
+        guard let windowStart = activityWindowStart(
+            from: scopedItems,
+            range: range,
+            referenceDate: referenceDate,
+            calendar: calendar
+        ) else {
+            return []
+        }
+
+        let referenceDay = DayStamp.storageDate(
+            from: referenceDate,
+            calendar: calendar
+        )
+        let groupedMarks = marksByDay(
+            from: scopedItems,
+            startingAt: windowStart,
+            endingAt: referenceDay,
+            calendar: calendar
+        )
+
+        return activityDaySeries(
+            startingAt: windowStart,
+            endingAt: referenceDay,
+            marksByDay: groupedMarks,
+            calendar: calendar
+        )
+    }
+
+    /// Builds aggregate activity values for the selected insight range.
+    public static func activitySummary(
+        from items: [Item],
+        range: ItemInsightsRange,
+        includeArchivedItems: Bool = false,
+        referenceDate: Date = .now,
+        calendar: Calendar = .current
+    ) -> CollectionActivitySummary {
+        let scopedItems = scopedItems(
+            from: items,
+            includeArchivedItems: includeArchivedItems
+        )
+        let activityDays = activityDays(
+            from: scopedItems,
+            range: range,
+            includeArchivedItems: true,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        let activityMarks = activityDays.filter(\.isActive)
+        let totalMarks = activityMarks.reduce(into: .zero) { partialResult, day in
+            partialResult += day.markCount
+        }
+        let uniqueMarkedItems = uniqueMarkedItemCount(
+            from: scopedItems,
+            range: range,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        let uniqueMarkedCategories = uniqueMarkedCategoryCount(
+            from: scopedItems,
+            range: range,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        let busiestDay = activityMarks.max { lhs, rhs in
+            if lhs.markCount != rhs.markCount {
+                return lhs.markCount < rhs.markCount
+            }
+
+            return lhs.date < rhs.date
+        }
+
+        return .init(
+            range: range,
+            totalMarks: totalMarks,
+            activeDays: activityMarks.count,
+            uniqueMarkedItems: uniqueMarkedItems,
+            uniqueMarkedCategories: uniqueMarkedCategories,
+            averageMarksPerActiveDay: averageMarksPerActiveDay(
+                totalMarks: totalMarks,
+                activeDays: activityMarks.count
+            ),
+            busiestDay: busiestDay
+        )
+    }
+
     /// Applies search, filter, and sort options to a list of items.
     public static func items(
         from items: [Item],

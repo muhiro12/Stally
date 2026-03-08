@@ -1,6 +1,12 @@
 import Foundation
 
 extension ItemInsightsCalculator {
+    struct ActivityMarkRecord {
+        let day: Date
+        let itemID: UUID
+        let category: ItemCategory
+    }
+
     static func defaultOrderedItems(
         from items: [Item],
         kind: ItemListQuery.ListKind,
@@ -202,5 +208,201 @@ extension ItemInsightsCalculator {
         }
 
         return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+    }
+
+    static func scopedItems(
+        from items: [Item],
+        includeArchivedItems: Bool
+    ) -> [Item] {
+        includeArchivedItems ? items : activeItems(from: items)
+    }
+
+    static func activityWindowStart(
+        from items: [Item],
+        range: ItemInsightsRange,
+        referenceDate: Date,
+        calendar: Calendar
+    ) -> Date? {
+        let referenceDay = DayStamp.storageDate(
+            from: referenceDate,
+            calendar: calendar
+        )
+
+        if let fixedDayCount = range.fixedDayCount {
+            return calendar.date(
+                byAdding: .day,
+                value: -(fixedDayCount - 1),
+                to: referenceDay
+            )
+        }
+
+        let earliestMarkDay = items
+            .flatMap(\.marks)
+            .map(\.day)
+            .min()
+        let earliestCreatedDay = items
+            .map { item in
+                DayStamp.storageDate(
+                    from: item.createdAt,
+                    calendar: calendar
+                )
+            }
+            .min()
+
+        let candidateDays = [
+            earliestMarkDay,
+            earliestCreatedDay
+        ]
+        .compactMap { $0 }
+
+        return candidateDays.min() ?? referenceDay
+    }
+
+    static func marksByDay(
+        from items: [Item],
+        startingAt windowStart: Date,
+        endingAt windowEnd: Date,
+        calendar: Calendar
+    ) -> [Date: [ActivityMarkRecord]] {
+        items.reduce(into: [:]) { partialResult, item in
+            for mark in item.marks {
+                let normalizedDay = DayStamp.storageDate(
+                    from: mark.day,
+                    calendar: calendar
+                )
+                guard normalizedDay >= windowStart, normalizedDay <= windowEnd else {
+                    continue
+                }
+
+                partialResult[normalizedDay, default: []].append(
+                    .init(
+                        day: normalizedDay,
+                        itemID: item.id,
+                        category: item.category
+                    )
+                )
+            }
+        }
+    }
+
+    static func activityDaySeries(
+        startingAt windowStart: Date,
+        endingAt windowEnd: Date,
+        marksByDay: [Date: [ActivityMarkRecord]],
+        calendar: Calendar
+    ) -> [CollectionActivityDay] {
+        var days: [CollectionActivityDay] = []
+        var cursor = windowStart
+
+        while cursor <= windowEnd {
+            let dayMarks = marksByDay[cursor] ?? []
+            let uniqueItemIDs = Set(dayMarks.map(\.itemID))
+            let uniqueCategories = Set(dayMarks.map(\.category))
+
+            days.append(
+                .init(
+                    date: DayStamp.localDate(
+                        from: cursor,
+                        calendar: calendar
+                    ),
+                    markCount: dayMarks.count,
+                    uniqueItemCount: uniqueItemIDs.count,
+                    uniqueCategoryCount: uniqueCategories.count
+                )
+            )
+
+            guard let nextDay = calendar.date(
+                byAdding: .day,
+                value: 1,
+                to: cursor
+            ) else {
+                break
+            }
+
+            cursor = nextDay
+        }
+
+        return days
+    }
+
+    static func uniqueMarkedItemCount(
+        from items: [Item],
+        range: ItemInsightsRange,
+        referenceDate: Date,
+        calendar: Calendar
+    ) -> Int {
+        guard let windowStart = activityWindowStart(
+            from: items,
+            range: range,
+            referenceDate: referenceDate,
+            calendar: calendar
+        ) else {
+            return .zero
+        }
+
+        let windowEnd = DayStamp.storageDate(
+            from: referenceDate,
+            calendar: calendar
+        )
+
+        return Set(
+            items.compactMap { item in
+                item.marks.contains(where: { mark in
+                    let day = DayStamp.storageDate(
+                        from: mark.day,
+                        calendar: calendar
+                    )
+                    return day >= windowStart && day <= windowEnd
+                })
+                    ? item.id
+                    : nil
+            }
+        ).count
+    }
+
+    static func uniqueMarkedCategoryCount(
+        from items: [Item],
+        range: ItemInsightsRange,
+        referenceDate: Date,
+        calendar: Calendar
+    ) -> Int {
+        guard let windowStart = activityWindowStart(
+            from: items,
+            range: range,
+            referenceDate: referenceDate,
+            calendar: calendar
+        ) else {
+            return .zero
+        }
+
+        let windowEnd = DayStamp.storageDate(
+            from: referenceDate,
+            calendar: calendar
+        )
+
+        return Set(
+            items.compactMap { item in
+                item.marks.contains(where: { mark in
+                    let day = DayStamp.storageDate(
+                        from: mark.day,
+                        calendar: calendar
+                    )
+                    return day >= windowStart && day <= windowEnd
+                })
+                    ? item.category
+                    : nil
+            }
+        ).count
+    }
+
+    static func averageMarksPerActiveDay(
+        totalMarks: Int,
+        activeDays: Int
+    ) -> Double {
+        guard activeDays > .zero else {
+            return .zero
+        }
+
+        return Double(totalMarks) / Double(activeDays)
     }
 }
