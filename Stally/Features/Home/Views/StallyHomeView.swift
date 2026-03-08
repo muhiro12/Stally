@@ -14,6 +14,7 @@ struct StallyHomeView: View {
     let onCreateItem: () -> Void
     let onSeedSampleData: () -> Void
     let onOpenArchive: () -> Void
+    let onOpenSettings: () -> Void
     let onToggleTodayMark: (Item) -> Void
 
     var body: some View {
@@ -53,6 +54,11 @@ struct StallyHomeView: View {
             ToolbarItem(placement: .topBarLeading) {
                 Button("Archive", systemImage: "archivebox") {
                     onOpenArchive()
+                }
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Settings", systemImage: "gearshape") {
+                    onOpenSettings()
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
@@ -209,6 +215,9 @@ private extension StallyHomeView {
             onOpenArchive: {
                 // no-op
             },
+            onOpenSettings: {
+                // no-op
+            },
             onToggleTodayMark: { _ in
                 // no-op
             }
@@ -231,6 +240,9 @@ private extension StallyHomeView {
                 // no-op
             },
             onOpenArchive: {
+                // no-op
+            },
+            onOpenSettings: {
                 // no-op
             },
             onToggleTodayMark: { _ in

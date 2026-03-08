@@ -14,6 +14,7 @@ struct StallyRootView: View {
     private enum Route: Hashable {
         case archive
         case item(UUID)
+        case settings
     }
 
     private enum EditorMode: Hashable {
@@ -68,6 +69,9 @@ struct StallyRootView: View {
                 onOpenArchive: {
                     path.append(.archive)
                 },
+                onOpenSettings: {
+                    path.append(.settings)
+                },
                 onToggleTodayMark: toggleTodayMark(for:)
             )
             .navigationDestination(for: Route.self) { route in
@@ -76,6 +80,8 @@ struct StallyRootView: View {
                     StallyArchiveView(items: archivedItems) { itemID in
                         path.append(.item(itemID))
                     }
+                case .settings:
+                    settingsPlaceholderView
                 case .item(let itemID):
                     destinationView(for: itemID)
                 }
@@ -149,6 +155,15 @@ private extension StallyRootView {
         items.first { item in
             item.id == itemID
         }
+    }
+
+    var settingsPlaceholderView: some View {
+        ContentUnavailableView(
+            "Settings",
+            systemImage: "gearshape",
+            description: Text("Settings content will live here.")
+        )
+        .navigationTitle("Settings")
     }
 
     @ViewBuilder
