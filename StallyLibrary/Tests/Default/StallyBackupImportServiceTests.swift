@@ -51,6 +51,7 @@ final class StallyBackupImportServiceTests: XCTestCase {
         let items = try context.fetch(FetchDescriptor<Item>())
 
         XCTAssertEqual(result.createdItems, 2)
+        XCTAssertEqual(result.deletedItems, 0)
         XCTAssertEqual(result.updatedItems, 0)
         XCTAssertEqual(result.insertedMarks, 1)
         XCTAssertEqual(result.skippedMarks, 0)
@@ -127,6 +128,7 @@ final class StallyBackupImportServiceTests: XCTestCase {
         )
 
         XCTAssertEqual(result.createdItems, 0)
+        XCTAssertEqual(result.deletedItems, 0)
         XCTAssertEqual(result.updatedItems, 1)
         XCTAssertEqual(result.insertedMarks, 1)
         XCTAssertEqual(result.skippedMarks, 1)
@@ -184,6 +186,7 @@ final class StallyBackupImportServiceTests: XCTestCase {
         )
 
         XCTAssertEqual(result.createdItems, 0)
+        XCTAssertEqual(result.deletedItems, 0)
         XCTAssertEqual(result.updatedItems, 0)
         XCTAssertEqual(result.insertedMarks, 1)
         XCTAssertEqual(localItem.name, "Local Favorite")
@@ -191,5 +194,108 @@ final class StallyBackupImportServiceTests: XCTestCase {
         XCTAssertEqual(localItem.note, "Newer local metadata.")
         XCTAssertNil(localItem.archivedAt)
         XCTAssertEqual(localItem.marks.count, 1)
+    }
+
+    func testReplaceDeletesExistingItemsBeforeImportingSnapshot() throws {
+        let context = testContext()
+        let existingItem = Item(
+            name: "Local Item",
+            category: .other,
+            createdAt: localDate(year: 2026, month: 1, day: 1)
+        )
+        context.insert(existingItem)
+        try context.save()
+
+        let snapshot = StallyBackupSnapshot(
+            exportedAt: localDate(year: 2026, month: 3, day: 8),
+            items: [
+                .init(
+                    id: try XCTUnwrap(UUID(uuidString: "90000000-0000-0000-0000-000000000001")),
+                    name: "Imported Replacement",
+                    categoryRawValue: ItemCategory.notebooks.rawValue,
+                    photoData: nil,
+                    note: nil,
+                    createdAt: localDate(year: 2026, month: 2, day: 2),
+                    updatedAt: localDate(year: 2026, month: 2, day: 4),
+                    archivedAt: nil,
+                    marks: [
+                        .init(
+                            id: try XCTUnwrap(UUID(uuidString: "90000000-0000-0000-0000-000000000002")),
+                            day: localDate(year: 2026, month: 2, day: 5),
+                            createdAt: localDate(year: 2026, month: 2, day: 5)
+                        )
+                    ]
+                )
+            ]
+        )
+
+        let result = try StallyBackupImportService.replace(
+            context: context,
+            snapshot: snapshot
+        )
+        let items = try context.fetch(FetchDescriptor<Item>())
+
+        XCTAssertEqual(result.deletedItems, 1)
+        XCTAssertEqual(result.createdItems, 1)
+        XCTAssertEqual(result.updatedItems, 0)
+        XCTAssertEqual(result.insertedMarks, 1)
+        XCTAssertEqual(items.map(\.name), ["Imported Replacement"])
+        XCTAssertEqual(
+            try context.fetchCount(FetchDescriptor<Mark>()),
+            1
+        )
+    }
+
+    func testReplaceRejectsInvalidSnapshotsWithoutDeletingLocalItems() throws {
+        let context = testContext()
+        let existingItem = Item(
+            name: "Keep Me",
+            category: .bags,
+            createdAt: localDate(year: 2026, month: 1, day: 1)
+        )
+        context.insert(existingItem)
+        try context.save()
+
+        let duplicateID = try XCTUnwrap(
+            UUID(uuidString: "A0000000-0000-0000-0000-000000000001")
+        )
+        let snapshot = StallyBackupSnapshot(
+            exportedAt: localDate(year: 2026, month: 3, day: 8),
+            items: [
+                .init(
+                    id: duplicateID,
+                    name: "One",
+                    categoryRawValue: ItemCategory.bags.rawValue,
+                    photoData: nil,
+                    note: nil,
+                    createdAt: localDate(year: 2026, month: 2, day: 1),
+                    updatedAt: localDate(year: 2026, month: 2, day: 1),
+                    archivedAt: nil,
+                    marks: []
+                ),
+                .init(
+                    id: duplicateID,
+                    name: "Two",
+                    categoryRawValue: ItemCategory.shoes.rawValue,
+                    photoData: nil,
+                    note: nil,
+                    createdAt: localDate(year: 2026, month: 2, day: 2),
+                    updatedAt: localDate(year: 2026, month: 2, day: 2),
+                    archivedAt: nil,
+                    marks: []
+                )
+            ]
+        )
+
+        XCTAssertThrowsError(
+            try StallyBackupImportService.replace(
+                context: context,
+                snapshot: snapshot
+            )
+        )
+        XCTAssertEqual(
+            try context.fetch(FetchDescriptor<Item>()).map(\.name),
+            ["Keep Me"]
+        )
     }
 }

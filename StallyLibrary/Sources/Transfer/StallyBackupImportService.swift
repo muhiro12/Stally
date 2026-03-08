@@ -3,6 +3,7 @@ import SwiftData
 
 public struct StallyBackupImportResult: Equatable, Sendable {
     public let analysis: StallyBackupImportAnalysis
+    public let deletedItems: Int
     public let createdItems: Int
     public let updatedItems: Int
     public let insertedMarks: Int
@@ -10,12 +11,14 @@ public struct StallyBackupImportResult: Equatable, Sendable {
 
     public init(
         analysis: StallyBackupImportAnalysis,
+        deletedItems: Int,
         createdItems: Int,
         updatedItems: Int,
         insertedMarks: Int,
         skippedMarks: Int
     ) {
         self.analysis = analysis
+        self.deletedItems = deletedItems
         self.createdItems = createdItems
         self.updatedItems = updatedItems
         self.insertedMarks = insertedMarks
@@ -121,10 +124,67 @@ public enum StallyBackupImportService {
 
         return .init(
             analysis: analysis,
+            deletedItems: 0,
             createdItems: createdItems,
             updatedItems: updatedItems,
             insertedMarks: insertedMarks,
             skippedMarks: skippedMarks
+        )
+    }
+
+    public static func replace(
+        context: ModelContext,
+        snapshot: StallyBackupSnapshot
+    ) throws -> StallyBackupImportResult {
+        let existingItems = try context.fetch(FetchDescriptor<Item>())
+        let analysis = StallyBackupImportAnalyzer.analyze(
+            snapshot: snapshot,
+            existingItemIDs: Set(existingItems.map(\.id))
+        )
+
+        guard analysis.canImport else {
+            throw StallyBackupImportValidationError(
+                issues: analysis.errors
+            )
+        }
+
+        let deletedItems = existingItems.count
+
+        for item in existingItems {
+            context.delete(item)
+        }
+
+        var createdItems = 0
+        var insertedMarks = 0
+
+        for backupItem in snapshot.items {
+            let item = makeItem(from: backupItem)
+            context.insert(item)
+            createdItems += 1
+
+            for backupMark in backupItem.marks {
+                let mark = Mark(
+                    id: backupMark.id,
+                    item: item,
+                    day: DayStamp.storageDate(from: backupMark.day),
+                    createdAt: backupMark.createdAt
+                )
+                context.insert(mark)
+                insertedMarks += 1
+            }
+        }
+
+        if deletedItems > 0 || createdItems > 0 || insertedMarks > 0 {
+            try context.save()
+        }
+
+        return .init(
+            analysis: analysis,
+            deletedItems: deletedItems,
+            createdItems: createdItems,
+            updatedItems: 0,
+            insertedMarks: insertedMarks,
+            skippedMarks: 0
         )
     }
 }

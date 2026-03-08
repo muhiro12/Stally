@@ -101,6 +101,22 @@ public enum ItemService {
         try context.save()
     }
 
+    public static func deleteAll(
+        context: ModelContext
+    ) throws {
+        let items = try context.fetch(FetchDescriptor<Item>())
+
+        guard !items.isEmpty else {
+            return
+        }
+
+        for item in items {
+            context.delete(item)
+        }
+
+        try context.save()
+    }
+
     public static func seedSampleData(
         context: ModelContext,
         ifEmptyOnly: Bool = false,
