@@ -1,6 +1,9 @@
+import MHDeepLinking
 import MHPlatform
 import MHUI
+import StallyLibrary
 import SwiftUI
+import UIKit
 
 struct StallySettingsView: View {
     @Environment(MHAppRuntime.self)
@@ -12,6 +15,7 @@ struct StallySettingsView: View {
         VStack(alignment: .leading, spacing: 24) {
             aboutSection
             reviewPreferencesSection
+            deepLinkUtilitiesSection
             buildSection
             resourcesSection
         }
@@ -47,6 +51,43 @@ private extension StallySettingsView {
                 .labeledContentStyle(.mhKeyValue)
         }
         .mhSection(title: Text("Build"))
+    }
+
+    var deepLinkUtilitiesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            ForEach(deepLinkRows, id: \.title) { row in
+                if let routeURL = routeURL(for: row.route) {
+                    HStack(alignment: .center, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(row.title)
+                                .mhRowTitle()
+
+                            Text(row.supporting)
+                                .mhRowSupporting()
+                        }
+
+                        Spacer(minLength: 12)
+
+                        Button("Copy") {
+                            UIPasteboard.general.url = routeURL
+                        }
+                        .buttonStyle(.mhSecondary)
+
+                        ShareLink(item: routeURL) {
+                            Label("Share", systemImage: "square.and.arrow.up")
+                        }
+                        .buttonStyle(.mhSecondary)
+                    }
+                }
+            }
+
+            Text("Unsupported links now show an alert when Stally cannot parse them.")
+                .mhRowSupporting()
+        }
+        .mhSection(
+            title: Text("Deep Links"),
+            supporting: Text("Share the app’s main routes directly from Settings. Item-specific links remain available from item cards and detail.")
+        )
     }
 
     var reviewPreferencesSection: some View {
@@ -104,6 +145,22 @@ private extension StallySettingsView {
     var buildNumber: String {
         Bundle.main.object(forInfoDictionaryKey: kCFBundleVersionKey as String) as? String
             ?? "Unknown"
+    }
+
+    var deepLinkRows: [(title: String, route: StallyRoute, supporting: String)] {
+        [
+            ("Home", .home, "Open the main collection view."),
+            ("Archive", .archive, "Jump straight to archived items."),
+            ("Review", .review, "Open the review workflow."),
+            ("Create Item", .createItem, "Start a new item from a link."),
+            ("Settings", .settings, "Open Settings directly.")
+        ]
+    }
+
+    func routeURL(
+        for route: StallyRoute
+    ) -> URL? {
+        StallyDeepLinking.codec().preferredURL(for: route)
     }
 }
 

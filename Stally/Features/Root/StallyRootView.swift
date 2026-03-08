@@ -429,8 +429,13 @@ private extension StallyRootView {
 
     @MainActor
     private func applyPendingDeepLinkIfNeeded() async {
-        guard let pendingURL = deepLinkInbox.pendingURL,
-              let route = deepLinkCodec.parse(pendingURL) else {
+        guard let pendingURL = deepLinkInbox.pendingURL else {
+            return
+        }
+
+        guard let route = deepLinkCodec.parse(pendingURL) else {
+            _ = await deepLinkInbox.consumeLatestURL()
+            operationErrorMessage = "This link isn't supported by this version of Stally."
             return
         }
 
