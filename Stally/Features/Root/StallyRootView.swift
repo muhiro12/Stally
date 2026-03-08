@@ -124,6 +124,9 @@ struct StallyRootView: View {
             appRuntime.startIfNeeded()
             loadReviewPreferencesIfNeeded()
         }
+        .task(id: deepLinkInbox.pendingURL) {
+            await applyPendingStaticDeepLinkIfNeeded()
+        }
         .onChange(of: scenePhase) {
             guard scenePhase == .active else {
                 return
@@ -152,6 +155,10 @@ struct StallyRootView: View {
 }
 
 private extension StallyRootView {
+    var deepLinkCodec: MHDeepLinkCodec<StallyRoute> {
+        StallyDeepLinking.codec()
+    }
+
     var activeItems: [Item] {
         ItemInsightsCalculator.homeSort(
             items: ItemInsightsCalculator.activeItems(from: items)
@@ -415,5 +422,34 @@ private extension StallyRootView {
             from: appRuntime.preferenceStore
         )
         hasLoadedReviewPreferences = true
+    }
+
+    @MainActor
+    private func applyPendingStaticDeepLinkIfNeeded() async {
+        guard let pendingURL = deepLinkInbox.pendingURL,
+              let route = deepLinkCodec.parse(pendingURL) else {
+            return
+        }
+
+        switch route {
+        case .home:
+            _ = await deepLinkInbox.consumeLatest(using: deepLinkCodec)
+            editorRoute = nil
+            path.removeAll()
+        case .archive:
+            _ = await deepLinkInbox.consumeLatest(using: deepLinkCodec)
+            editorRoute = nil
+            path = [.archive]
+        case .review:
+            _ = await deepLinkInbox.consumeLatest(using: deepLinkCodec)
+            editorRoute = nil
+            path = [.review]
+        case .settings:
+            _ = await deepLinkInbox.consumeLatest(using: deepLinkCodec)
+            editorRoute = nil
+            path = [.settings]
+        case .createItem, .item:
+            return
+        }
     }
 }
