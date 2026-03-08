@@ -25,6 +25,7 @@ struct StallyArchiveView: View {
                 .mhSurface()
             } else {
                 queryControls
+                archiveSummaryCard
 
                 if displayedItems.isEmpty {
                     filteredEmptyState
@@ -53,6 +54,10 @@ private extension StallyArchiveView {
             matching: query,
             kind: .archived
         )
+    }
+
+    var displayedSummary: ItemInsightsCalculator.ArchiveCollectionSummary {
+        ItemInsightsCalculator.archiveSummary(from: displayedItems)
     }
 
     var queryControls: some View {
@@ -112,8 +117,44 @@ private extension StallyArchiveView {
         .mhSurface(role: .muted)
     }
 
+    var archiveSummaryCard: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Text("Archive Snapshot")
+                .mhRowTitle()
+
+            Text("Archived items keep their history, so this view stays focused on preserved use rather than active rotation.")
+                .mhRowSupporting()
+
+            HStack(spacing: theme.spacing.group) {
+                summaryMetric(
+                    title: "Items",
+                    value: "\(displayedSummary.totalItems)"
+                )
+                summaryMetric(
+                    title: "With History",
+                    value: "\(displayedSummary.itemsWithMarksCount)"
+                )
+                summaryMetric(
+                    title: "Saved Marks",
+                    value: "\(displayedSummary.totalMarks)"
+                )
+                summaryMetric(
+                    title: "Latest Archive",
+                    value: latestArchiveTitle
+                )
+            }
+        }
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
+    }
+
     var categoryControlTitle: String {
         query.category?.title ?? "All Categories"
+    }
+
+    var latestArchiveTitle: String {
+        displayedSummary.lastArchivedAt?.formatted(date: .abbreviated, time: .omitted)
+            ?? "None"
     }
 
     func archiveCard(
@@ -202,6 +243,19 @@ private extension StallyArchiveView {
                 Text(sortOption.title)
             }
         }
+    }
+
+    func summaryMetric(
+        title: String,
+        value: String
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .mhRowSupporting()
+            Text(value)
+                .mhRowValue(colorRole: .accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
