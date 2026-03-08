@@ -214,6 +214,44 @@ public enum ItemInsightsCalculator {
         )
     }
 
+    /// Builds streak values for the selected insight range.
+    public static func streakSummary(
+        from items: [Item],
+        range: ItemInsightsRange,
+        includeArchivedItems: Bool = false,
+        referenceDate: Date = .now,
+        calendar: Calendar = .current
+    ) -> CollectionStreakSummary {
+        let activityDays = activityDays(
+            from: items,
+            range: range,
+            includeArchivedItems: includeArchivedItems,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        let activeDays = activityDays.filter(\.isActive)
+        let lastActiveDate = activeDays.last?.date
+
+        return .init(
+            range: range,
+            currentStreakDays: currentStreakDays(
+                from: activityDays
+            ),
+            bestStreakDays: bestStreakDays(
+                from: activityDays
+            ),
+            longestIdleGapDays: longestIdleGapDays(
+                from: activityDays
+            ),
+            daysSinceLastActive: daysSinceLastActive(
+                lastActiveDate: lastActiveDate,
+                referenceDate: referenceDate,
+                calendar: calendar
+            ),
+            lastActiveDate: lastActiveDate
+        )
+    }
+
     /// Applies search, filter, and sort options to a list of items.
     public static func items(
         from items: [Item],

@@ -405,4 +405,75 @@ extension ItemInsightsCalculator {
 
         return Double(totalMarks) / Double(activeDays)
     }
+
+    static func currentStreakDays(
+        from activityDays: [CollectionActivityDay]
+    ) -> Int {
+        activityDays.reversed().prefix { $0.isActive }.count
+    }
+
+    static func bestStreakDays(
+        from activityDays: [CollectionActivityDay]
+    ) -> Int {
+        var bestStreak = 0
+        var currentStreak = 0
+
+        for activityDay in activityDays {
+            if activityDay.isActive {
+                currentStreak += 1
+                bestStreak = max(bestStreak, currentStreak)
+            } else {
+                currentStreak = 0
+            }
+        }
+
+        return bestStreak
+    }
+
+    static func longestIdleGapDays(
+        from activityDays: [CollectionActivityDay]
+    ) -> Int {
+        var longestGap = 0
+        var currentGap = 0
+        var hasSeenActiveDay = false
+
+        for activityDay in activityDays {
+            if activityDay.isActive {
+                if hasSeenActiveDay {
+                    longestGap = max(longestGap, currentGap)
+                }
+                currentGap = 0
+                hasSeenActiveDay = true
+            } else if hasSeenActiveDay {
+                currentGap += 1
+            }
+        }
+
+        return longestGap
+    }
+
+    static func daysSinceLastActive(
+        lastActiveDate: Date?,
+        referenceDate: Date,
+        calendar: Calendar
+    ) -> Int? {
+        guard let lastActiveDate else {
+            return nil
+        }
+
+        let lastActiveDay = DayStamp.storageDate(
+            from: lastActiveDate,
+            calendar: calendar
+        )
+        let referenceDay = DayStamp.storageDate(
+            from: referenceDate,
+            calendar: calendar
+        )
+
+        return calendar.dateComponents(
+            [.day],
+            from: lastActiveDay,
+            to: referenceDay
+        ).day
+    }
 }
