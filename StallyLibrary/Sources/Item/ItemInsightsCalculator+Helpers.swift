@@ -818,4 +818,67 @@ extension ItemInsightsCalculator {
         formatter.setLocalizedDateFormatFromTemplate("MMM yyyy")
         return formatter
     }
+
+    static func recentlyAddedCount(
+        from items: [Item],
+        range: ItemInsightsRange,
+        referenceDate: Date,
+        calendar: Calendar
+    ) -> Int {
+        guard let windowStart = activityWindowStart(
+            from: items,
+            range: range,
+            referenceDate: referenceDate,
+            calendar: calendar
+        ) else {
+            return .zero
+        }
+
+        let referenceDay = DayStamp.storageDate(
+            from: referenceDate,
+            calendar: calendar
+        )
+
+        return items.filter { item in
+            let createdDay = DayStamp.storageDate(
+                from: item.createdAt,
+                calendar: calendar
+            )
+
+            return createdDay >= windowStart && createdDay <= referenceDay
+        }.count
+    }
+
+    static func averageItemAgeDays(
+        from items: [Item],
+        referenceDate: Date,
+        calendar: Calendar
+    ) -> Double {
+        guard !items.isEmpty else {
+            return .zero
+        }
+
+        let referenceDay = DayStamp.storageDate(
+            from: referenceDate,
+            calendar: calendar
+        )
+
+        let totalAgeDays = items.reduce(into: 0) { partialResult, item in
+            let createdDay = DayStamp.storageDate(
+                from: item.createdAt,
+                calendar: calendar
+            )
+            let ageDays = calendar.dateComponents(
+                [.day],
+                from: createdDay,
+                to: referenceDay
+            ).day ?? .zero
+            partialResult += max(ageDays, .zero)
+        }
+
+        return averagePerUnit(
+            total: totalAgeDays,
+            count: items.count
+        )
+    }
 }

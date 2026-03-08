@@ -530,6 +530,70 @@ public enum ItemInsightsCalculator {
         )
     }
 
+    /// Builds high-level collection health metrics for the selected insight range.
+    public static func healthSummary(
+        from items: [Item],
+        range: ItemInsightsRange,
+        includeArchivedItems: Bool = true,
+        referenceDate: Date = .now,
+        calendar: Calendar = .current
+    ) -> CollectionHealthSummary {
+        let scopedItems = scopedItems(
+            from: items,
+            includeArchivedItems: includeArchivedItems
+        )
+        let activeItems = activeItems(from: scopedItems)
+        let archivedItems = scopedItems.count - activeItems.count
+        let itemsWithHistory = scopedItems.filter { item in
+            !item.marks.isEmpty
+        }.count
+        let itemsWithNotes = scopedItems.filter { item in
+            let note = item.note?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            return !note.isEmpty
+        }.count
+        let itemsWithPhotos = scopedItems.filter { item in
+            item.photoData != nil
+        }.count
+        let recentlyAddedCount = recentlyAddedCount(
+            from: scopedItems,
+            range: range,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+
+        return .init(
+            range: range,
+            totalItems: scopedItems.count,
+            activeItems: activeItems.count,
+            archivedItems: archivedItems,
+            itemsWithHistory: itemsWithHistory,
+            itemsWithNotes: itemsWithNotes,
+            itemsWithPhotos: itemsWithPhotos,
+            historyCoverage: fraction(
+                numerator: itemsWithHistory,
+                denominator: scopedItems.count
+            ),
+            noteCoverage: fraction(
+                numerator: itemsWithNotes,
+                denominator: scopedItems.count
+            ),
+            photoCoverage: fraction(
+                numerator: itemsWithPhotos,
+                denominator: scopedItems.count
+            ),
+            archivedShare: fraction(
+                numerator: archivedItems,
+                denominator: scopedItems.count
+            ),
+            averageItemAgeDays: averageItemAgeDays(
+                from: scopedItems,
+                referenceDate: referenceDate,
+                calendar: calendar
+            ),
+            recentlyAddedCount: recentlyAddedCount
+        )
+    }
+
     /// Applies search, filter, and sort options to a list of items.
     public static func items(
         from items: [Item],
