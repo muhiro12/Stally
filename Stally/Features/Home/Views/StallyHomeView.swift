@@ -10,6 +10,7 @@ struct StallyHomeView: View {
     @State private var query = ItemListQuery()
 
     let items: [Item]
+    let reviewPreferences: StallyReviewPreferences
     let reviewSummary: ItemReviewSummary
     let onOpenItem: (UUID) -> Void
     let onCreateItem: () -> Void
@@ -247,22 +248,18 @@ private extension StallyHomeView {
                         .mhRowValue(colorRole: .accent)
                 }
 
-                Text("Surface items that need a first mark, feel dormant, or may deserve a return from Archive.")
+                Text(reviewCardSupportingText)
                     .mhRowSupporting()
 
-                HStack(spacing: theme.spacing.group) {
-                    summaryMetric(
-                        title: "First Mark",
-                        value: "\(reviewSummary.untouchedCount)"
-                    )
-                    summaryMetric(
-                        title: "Dormant",
-                        value: "\(reviewSummary.dormantCount)"
-                    )
-                    summaryMetric(
-                        title: "Recovery",
-                        value: "\(reviewSummary.recoveryCandidateCount)"
-                    )
+                if !visibleReviewMetrics.isEmpty {
+                    HStack(spacing: theme.spacing.group) {
+                        ForEach(visibleReviewMetrics, id: \.title) { metric in
+                            summaryMetric(
+                                title: metric.title,
+                                value: "\(metric.value)"
+                            )
+                        }
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -274,6 +271,29 @@ private extension StallyHomeView {
 
     var categoryControlTitle: String {
         query.category?.title ?? "All Categories"
+    }
+
+    var visibleReviewMetrics: [(title: String, value: Int)] {
+        let metrics: [(title: String, value: Int)] = [
+            ("First Mark", reviewSummary.untouchedCount),
+            ("Dormant", reviewSummary.dormantCount),
+            ("Recovery", reviewSummary.recoveryCandidateCount)
+        ]
+
+        if reviewPreferences.showCompletedSections {
+            return metrics
+        }
+
+        return metrics.filter { $0.value > 0 }
+    }
+
+    var reviewCardSupportingText: String {
+        if reviewSummary.totalReviewCount == .zero,
+           reviewPreferences.showCompletedSections == false {
+            return "All review lanes are clear right now. Turn on completed sections in Settings to keep zero-count lanes visible."
+        }
+
+        return "Surface items that need a first mark, feel dormant, or may deserve a return from Archive."
     }
 
     func categoryMenuLabel(
@@ -323,6 +343,7 @@ private extension StallyHomeView {
             items: ItemInsightsCalculator.homeSort(
                 items: ItemInsightsCalculator.activeItems(from: items)
             ),
+            reviewPreferences: .init(),
             reviewSummary: ItemReviewCalculator.summary(from: items),
             onOpenItem: { _ in
                 // no-op
@@ -354,6 +375,7 @@ private extension StallyHomeView {
     NavigationStack {
         StallyHomeView(
             items: [],
+            reviewPreferences: .init(),
             reviewSummary: ItemReviewCalculator.summary(from: []),
             onOpenItem: { _ in
                 // no-op

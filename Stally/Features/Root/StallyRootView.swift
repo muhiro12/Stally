@@ -55,11 +55,14 @@ struct StallyRootView: View {
     @State private var path: [Route] = []
     @State private var editorRoute: EditorRoute?
     @State private var operationErrorMessage: String?
+    @State private var reviewPreferences = StallyReviewPreferences()
+    @State private var hasLoadedReviewPreferences = false
 
     var body: some View {
         NavigationStack(path: $path) {
             StallyHomeView(
                 items: activeItems,
+                reviewPreferences: reviewPreferences,
                 reviewSummary: reviewSummary,
                 onOpenItem: { itemID in
                     path.append(.item(itemID))
@@ -88,7 +91,7 @@ struct StallyRootView: View {
                 case .review:
                     StallyReviewView(
                         items: items,
-                        policy: .init(),
+                        preferences: reviewPreferences,
                         onArchiveItem: archiveItem(_:),
                         onArchiveItems: archiveItems(_:),
                         onUnarchiveItem: unarchiveItem(_:),
@@ -98,7 +101,7 @@ struct StallyRootView: View {
                         }
                     )
                 case .settings:
-                    StallySettingsView()
+                    StallySettingsView(reviewPreferences: $reviewPreferences)
                 case .item(let itemID):
                     destinationView(for: itemID)
                 }
@@ -119,6 +122,7 @@ struct StallyRootView: View {
         }
         .task {
             appRuntime.startIfNeeded()
+            loadReviewPreferencesIfNeeded()
         }
         .onChange(of: scenePhase) {
             guard scenePhase == .active else {
@@ -141,6 +145,9 @@ struct StallyRootView: View {
                 await deepLinkInbox.ingest(webpageURL)
             }
         }
+        .onChange(of: reviewPreferences) { _, newValue in
+            newValue.save(in: appRuntime.preferenceStore)
+        }
     }
 }
 
@@ -156,7 +163,10 @@ private extension StallyRootView {
     }
 
     var reviewSummary: ItemReviewSummary {
-        ItemReviewCalculator.summary(from: items)
+        ItemReviewCalculator.summary(
+            from: items,
+            policy: reviewPreferences.policy
+        )
     }
 
     var isOperationErrorPresented: Binding<Bool> {
@@ -394,5 +404,16 @@ private extension StallyRootView {
     ) {
         operationErrorMessage = (error as? LocalizedError)?.errorDescription
             ?? "Please try again."
+    }
+
+    private func loadReviewPreferencesIfNeeded() {
+        guard hasLoadedReviewPreferences == false else {
+            return
+        }
+
+        reviewPreferences = StallyReviewPreferences.load(
+            from: appRuntime.preferenceStore
+        )
+        hasLoadedReviewPreferences = true
     }
 }

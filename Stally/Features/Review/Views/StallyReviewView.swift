@@ -18,7 +18,7 @@ struct StallyReviewView: View {
     @State private var isRecoveryBulkUnarchiveConfirmationPresented = false
 
     let items: [Item]
-    let policy: ItemReviewPolicy
+    let preferences: StallyReviewPreferences
     let onArchiveItem: (Item) -> Void
     let onArchiveItems: ([Item]) -> Void
     let onUnarchiveItem: (Item) -> Void
@@ -29,18 +29,18 @@ struct StallyReviewView: View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {
             summaryCard
 
-            if summary.totalReviewCount == .zero {
+            if summary.totalReviewCount == .zero && showsCompletedSections == false {
                 emptyState
             } else {
-                if !untouchedItems.isEmpty {
+                if shouldShowUntouchedSection {
                     untouchedSection
                 }
 
-                if !dormantItems.isEmpty {
+                if shouldShowDormantSection {
                     dormantSection
                 }
 
-                if !recoveryCandidateItems.isEmpty {
+                if shouldShowRecoverySection {
                     recoverySection
                 }
             }
@@ -97,6 +97,14 @@ struct StallyReviewView: View {
 }
 
 private extension StallyReviewView {
+    var policy: ItemReviewPolicy {
+        preferences.policy
+    }
+
+    var showsCompletedSections: Bool {
+        preferences.showCompletedSections
+    }
+
     var summary: ItemReviewSummary {
         ItemReviewCalculator.summary(
             from: items,
@@ -167,6 +175,18 @@ private extension StallyReviewView {
         }
     }
 
+    var shouldShowUntouchedSection: Bool {
+        showsCompletedSections || !untouchedItems.isEmpty
+    }
+
+    var shouldShowDormantSection: Bool {
+        showsCompletedSections || !dormantItems.isEmpty
+    }
+
+    var shouldShowRecoverySection: Bool {
+        showsCompletedSections || !recoveryCandidateItems.isEmpty
+    }
+
     var summaryCard: some View {
         VStack(alignment: .leading, spacing: theme.spacing.control) {
             HStack(alignment: .firstTextBaseline) {
@@ -212,26 +232,35 @@ private extension StallyReviewView {
         .mhSurface()
     }
 
+    @ViewBuilder
     var untouchedSection: some View {
-        reviewSection(
-            title: "Needs First Mark",
-            supporting: "Items that have been waiting quietly without a first mark.",
-            items: untouchedItems
-        ) {
-            untouchedSelectionControls
-        } rowContent: { item in
-            if isUntouchedSelectionModeEnabled {
-                selectableReviewRow(
-                    item: item,
-                    isSelected: selectedUntouchedItemIDs.contains(item.id),
-                    onToggleSelection: toggleUntouchedSelection(for:)
-                )
-            } else {
-                actionableReviewRow(
-                    item: item,
-                    actionTitle: "Archive Item",
-                    onItemAction: onArchiveItem
-                )
+        if untouchedItems.isEmpty {
+            reviewCompletedSection(
+                title: "Needs First Mark",
+                supporting: "Items that have been waiting quietly without a first mark.",
+                message: "Nothing in this lane right now."
+            )
+        } else {
+            reviewSection(
+                title: "Needs First Mark",
+                supporting: "Items that have been waiting quietly without a first mark.",
+                items: untouchedItems
+            ) {
+                untouchedSelectionControls
+            } rowContent: { item in
+                if isUntouchedSelectionModeEnabled {
+                    selectableReviewRow(
+                        item: item,
+                        isSelected: selectedUntouchedItemIDs.contains(item.id),
+                        onToggleSelection: toggleUntouchedSelection(for:)
+                    )
+                } else {
+                    actionableReviewRow(
+                        item: item,
+                        actionTitle: "Archive Item",
+                        onItemAction: onArchiveItem
+                    )
+                }
             }
         }
     }
@@ -258,50 +287,68 @@ private extension StallyReviewView {
         }
     }
 
+    @ViewBuilder
     var dormantSection: some View {
-        reviewSection(
-            title: "Dormant",
-            supporting: "Items whose last mark feels far enough away to revisit.",
-            items: dormantItems
-        ) {
-            dormantSelectionControls
-        } rowContent: { item in
-            if isDormantSelectionModeEnabled {
-                selectableReviewRow(
-                    item: item,
-                    isSelected: selectedDormantItemIDs.contains(item.id),
-                    onToggleSelection: toggleDormantSelection(for:)
-                )
-            } else {
-                actionableReviewRow(
-                    item: item,
-                    actionTitle: "Archive Item",
-                    onItemAction: onArchiveItem
-                )
+        if dormantItems.isEmpty {
+            reviewCompletedSection(
+                title: "Dormant",
+                supporting: "Items whose last mark feels far enough away to revisit.",
+                message: "Nothing currently looks dormant."
+            )
+        } else {
+            reviewSection(
+                title: "Dormant",
+                supporting: "Items whose last mark feels far enough away to revisit.",
+                items: dormantItems
+            ) {
+                dormantSelectionControls
+            } rowContent: { item in
+                if isDormantSelectionModeEnabled {
+                    selectableReviewRow(
+                        item: item,
+                        isSelected: selectedDormantItemIDs.contains(item.id),
+                        onToggleSelection: toggleDormantSelection(for:)
+                    )
+                } else {
+                    actionableReviewRow(
+                        item: item,
+                        actionTitle: "Archive Item",
+                        onItemAction: onArchiveItem
+                    )
+                }
             }
         }
     }
 
+    @ViewBuilder
     var recoverySection: some View {
-        reviewSection(
-            title: "Recovery Candidates",
-            supporting: "Archived items with enough history that they may deserve another turn.",
-            items: recoveryCandidateItems
-        ) {
-            recoverySelectionControls
-        } rowContent: { item in
-            if isRecoverySelectionModeEnabled {
-                selectableReviewRow(
-                    item: item,
-                    isSelected: selectedRecoveryItemIDs.contains(item.id),
-                    onToggleSelection: toggleRecoverySelection(for:)
-                )
-            } else {
-                actionableReviewRow(
-                    item: item,
-                    actionTitle: "Move Back to Home",
-                    onItemAction: onUnarchiveItem
-                )
+        if recoveryCandidateItems.isEmpty {
+            reviewCompletedSection(
+                title: "Recovery Candidates",
+                supporting: "Archived items with enough history that they may deserve another turn.",
+                message: "Archive is quiet for now."
+            )
+        } else {
+            reviewSection(
+                title: "Recovery Candidates",
+                supporting: "Archived items with enough history that they may deserve another turn.",
+                items: recoveryCandidateItems
+            ) {
+                recoverySelectionControls
+            } rowContent: { item in
+                if isRecoverySelectionModeEnabled {
+                    selectableReviewRow(
+                        item: item,
+                        isSelected: selectedRecoveryItemIDs.contains(item.id),
+                        onToggleSelection: toggleRecoverySelection(for:)
+                    )
+                } else {
+                    actionableReviewRow(
+                        item: item,
+                        actionTitle: "Move Back to Home",
+                        onItemAction: onUnarchiveItem
+                    )
+                }
             }
         }
     }
@@ -365,6 +412,22 @@ private extension StallyReviewView {
             title: Text(title),
             supporting: Text(supporting)
         )
+    }
+
+    func reviewCompletedSection(
+        title: String,
+        supporting: String,
+        message: String
+    ) -> some View {
+        Text(message)
+            .mhRowSupporting()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .mhSurfaceInset()
+            .mhSurface(role: .muted)
+            .mhSection(
+                title: Text(title),
+                supporting: Text(supporting)
+            )
     }
 
     func reviewSection<Controls: View, RowContent: View>(
@@ -594,7 +657,7 @@ private extension StallyReviewView {
     NavigationStack {
         StallyReviewView(
             items: items,
-            policy: .init(),
+            preferences: .init(),
             onArchiveItem: { _ in
                 // no-op
             },

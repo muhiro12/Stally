@@ -6,9 +6,12 @@ struct StallySettingsView: View {
     @Environment(MHAppRuntime.self)
     private var appRuntime
 
+    @Binding var reviewPreferences: StallyReviewPreferences
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             aboutSection
+            reviewPreferencesSection
             buildSection
             resourcesSection
         }
@@ -46,6 +49,34 @@ private extension StallySettingsView {
         .mhSection(title: Text("Build"))
     }
 
+    var reviewPreferencesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Stepper(
+                "Needs First Mark after \(reviewPreferences.untouchedGraceDays) days",
+                value: $reviewPreferences.untouchedGraceDays,
+                in: 1...90
+            )
+
+            Stepper(
+                "Dormant after \(reviewPreferences.dormantAfterDays) days",
+                value: $reviewPreferences.dormantAfterDays,
+                in: 1...180
+            )
+
+            Toggle(
+                "Show completed review sections",
+                isOn: $reviewPreferences.showCompletedSections
+            )
+
+            Text("These settings update Home and Review immediately.")
+                .mhRowSupporting()
+        }
+        .mhSection(
+            title: Text("Review Preferences"),
+            supporting: Text("Tune when items become review candidates and whether empty lanes stay visible.")
+        )
+    }
+
     @ViewBuilder
     var resourcesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -77,7 +108,9 @@ private extension StallySettingsView {
 }
 
 #Preview {
+    @Previewable @State var reviewPreferences = StallyReviewPreferences()
+
     NavigationStack {
-        StallySettingsView()
+        StallySettingsView(reviewPreferences: $reviewPreferences)
     }
 }
