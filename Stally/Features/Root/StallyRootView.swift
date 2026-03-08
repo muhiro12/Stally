@@ -123,6 +123,7 @@ extension StallyRootView {
                 onSeedSampleData: seedSampleData,
                 onOpenArchive: openArchive,
                 onOpenBackup: openBackup,
+                onOpenInsights: openInsights,
                 onOpenReview: openReview,
                 onOpenSettings: openSettings,
                 onToggleTodayMark: toggleTodayMark(for:)

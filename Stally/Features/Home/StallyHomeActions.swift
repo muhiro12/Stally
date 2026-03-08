@@ -7,6 +7,7 @@ struct StallyHomeActions {
     let onSeedSampleData: () -> Void
     let onOpenArchive: () -> Void
     let onOpenBackup: () -> Void
+    let onOpenInsights: () -> Void
     let onOpenReview: () -> Void
     let onOpenSettings: () -> Void
     let onToggleTodayMark: (Item) -> Void
@@ -25,6 +26,9 @@ struct StallyHomeActions {
             // no-op
         },
         onOpenBackup: {
+            // no-op
+        },
+        onOpenInsights: {
             // no-op
         },
         onOpenReview: {

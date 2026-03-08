@@ -31,6 +31,7 @@ struct StallyHomeView: View {
                 homeQuickFilters
                 homeSummaryCard
                 reviewEntryCard
+                insightsEntryCard
                 archiveEntryCard
                 backupEntryCard
 
@@ -105,8 +106,34 @@ private extension StallyHomeView {
         StallyDeepLinking.codec().preferredURL(for: .archive)
     }
 
+    var insightsRouteURL: URL? {
+        StallyDeepLinking.codec().preferredURL(for: .insights)
+    }
+
     var backupRouteURL: URL? {
         StallyDeepLinking.codec().preferredURL(for: .backup)
+    }
+
+    var insightsActivitySummary: CollectionActivitySummary {
+        ItemInsightsCalculator.activitySummary(
+            from: items,
+            range: .last30Days
+        )
+    }
+
+    var insightsStreakSummary: CollectionStreakSummary {
+        ItemInsightsCalculator.streakSummary(
+            from: items,
+            range: .last30Days
+        )
+    }
+
+    var insightsHealthSummary: CollectionHealthSummary {
+        ItemInsightsCalculator.healthSummary(
+            from: items,
+            range: .last30Days,
+            includeArchivedItems: false
+        )
     }
 
     var homeSummaryMetrics: [StallyMetricGrid.Metric] {
@@ -153,6 +180,21 @@ private extension StallyHomeView {
             ),
             .init(title: "Saved Marks", value: "\(archiveSummary.totalMarks)"),
             .init(title: "Latest Archive", value: archiveLatestDateTitle)
+        ]
+    }
+
+    var insightsMetrics: [StallyMetricGrid.Metric] {
+        [
+            .init(title: "Marks (30d)", value: "\(insightsActivitySummary.totalMarks)"),
+            .init(title: "Active Days", value: "\(insightsActivitySummary.activeDays)"),
+            .init(
+                title: "Current Streak",
+                value: "\(insightsStreakSummary.currentStreakDays)"
+            ),
+            .init(
+                title: "With History",
+                value: "\(insightsHealthSummary.itemsWithHistory)"
+            )
         ]
     }
 
@@ -226,6 +268,19 @@ private extension StallyHomeView {
             routeURL: archiveRouteURL,
             usesCompactLayout: usesCompactLayout,
             onOpen: actions.onOpenArchive
+        )
+    }
+
+    var insightsEntryCard: some View {
+        StallyHomeEntryCard(
+            title: "Insights",
+            value: "\(insightsActivitySummary.totalMarks)",
+            supporting: insightsCardSupportingText,
+            metrics: insightsMetrics,
+            primaryActionTitle: "Open Insights",
+            routeURL: insightsRouteURL,
+            usesCompactLayout: usesCompactLayout,
+            onOpen: actions.onOpenInsights
         )
     }
 
@@ -322,6 +377,14 @@ private extension StallyHomeView {
         }
 
         return "Keep preserved favorites close without letting them crowd the active list."
+    }
+
+    var insightsCardSupportingText: String {
+        if insightsActivitySummary.totalMarks == .zero {
+            return "Once marks start to accumulate, Insights will map cadence, trends, and coverage across the collection."
+        }
+
+        return "Read the last 30 days as a pattern: activity density, streaks, and how much of Home already has history."
     }
 
     var backupCardSupportingText: String {
