@@ -18,6 +18,7 @@ struct StallyInsightsView: View {
             overviewCard
             rangeSection
             activitySection
+            cadenceSection
             pendingSectionsCard
         }
         .mhScreen(
@@ -52,6 +53,14 @@ private extension StallyInsightsView {
 
     var streakSummary: CollectionStreakSummary {
         ItemInsightsCalculator.streakSummary(
+            from: items,
+            range: selectedRange,
+            includeArchivedItems: true
+        )
+    }
+
+    var cadenceSummary: CollectionCadenceSummary {
+        ItemInsightsCalculator.cadenceSummary(
             from: items,
             range: selectedRange,
             includeArchivedItems: true
@@ -135,6 +144,14 @@ private extension StallyInsightsView {
         StallyInsightsActivitySection(
             days: activityDays,
             summary: activitySummary,
+            usesCompactLayout: usesCompactLayout
+        )
+    }
+
+    var cadenceSection: some View {
+        StallyInsightsCadenceSection(
+            streakSummary: streakSummary,
+            cadenceSummary: cadenceSummary,
             usesCompactLayout: usesCompactLayout
         )
     }
