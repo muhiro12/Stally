@@ -20,6 +20,7 @@ struct StallyInsightsView: View {
             activitySection
             cadenceSection
             categorySection
+            rankingSection
             pendingSectionsCard
         }
         .mhScreen(
@@ -76,8 +77,32 @@ private extension StallyInsightsView {
         )
     }
 
+    var itemLookup: [UUID: Item] {
+        Dictionary(
+            uniqueKeysWithValues: items.map { item in
+                (item.id, item)
+            }
+        )
+    }
+
     var categorySummaries: [CollectionCategorySummary] {
         ItemInsightsCalculator.categorySummaries(
+            from: items,
+            range: selectedRange,
+            includeArchivedItems: true
+        )
+    }
+
+    var topRankings: [CollectionItemRanking] {
+        ItemInsightsCalculator.topItemRankings(
+            from: items,
+            range: selectedRange,
+            includeArchivedItems: true
+        )
+    }
+
+    var quietRankings: [CollectionItemRanking] {
+        ItemInsightsCalculator.quietItemRankings(
             from: items,
             range: selectedRange,
             includeArchivedItems: true
@@ -168,6 +193,15 @@ private extension StallyInsightsView {
     var categorySection: some View {
         StallyInsightsCategorySection(
             summaries: categorySummaries
+        )
+    }
+
+    var rankingSection: some View {
+        StallyInsightsRankingSection(
+            itemsByID: itemLookup,
+            topRankings: topRankings,
+            quietRankings: quietRankings,
+            usesCompactLayout: usesCompactLayout
         )
     }
 
