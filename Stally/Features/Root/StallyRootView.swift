@@ -89,6 +89,7 @@ struct StallyRootView: View {
                     StallyReviewView(
                         items: items,
                         policy: .init(),
+                        onArchiveItem: archiveItem(_:),
                         onOpenItem: { itemID in
                             path.append(.item(itemID))
                         }
@@ -274,6 +275,23 @@ private extension StallyRootView {
                     item: item
                 )
             }
+        } catch {
+            presentOperationError(error)
+        }
+    }
+
+    private func archiveItem(
+        _ item: Item
+    ) {
+        guard !item.isArchived else {
+            return
+        }
+
+        do {
+            try ItemService.archive(
+                context: context,
+                item: item
+            )
         } catch {
             presentOperationError(error)
         }

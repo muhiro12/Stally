@@ -9,6 +9,7 @@ struct StallyReviewView: View {
 
     let items: [Item]
     let policy: ItemReviewPolicy
+    let onArchiveItem: (Item) -> Void
     let onOpenItem: (UUID) -> Void
 
     var body: some View {
@@ -22,7 +23,9 @@ struct StallyReviewView: View {
                     reviewSection(
                         title: "Needs First Mark",
                         supporting: "Items that have been waiting quietly without a first mark.",
-                        items: untouchedItems
+                        items: untouchedItems,
+                        actionTitle: "Archive Item",
+                        onItemAction: onArchiveItem
                     )
                 }
 
@@ -153,17 +156,43 @@ private extension StallyReviewView {
     func reviewSection(
         title: String,
         supporting: String,
-        items: [Item]
+        items: [Item],
+        actionTitle: String? = nil,
+        onItemAction: ((Item) -> Void)? = nil
     ) -> some View {
         VStack(alignment: .leading, spacing: theme.spacing.control) {
             ForEach(items, id: \.id) { item in
-                reviewRow(item: item)
+                if let actionTitle,
+                   let onItemAction {
+                    actionableReviewRow(
+                        item: item,
+                        actionTitle: actionTitle,
+                        onItemAction: onItemAction
+                    )
+                } else {
+                    reviewRow(item: item)
+                }
             }
         }
         .mhSection(
             title: Text(title),
             supporting: Text(supporting)
         )
+    }
+
+    func actionableReviewRow(
+        item: Item,
+        actionTitle: String,
+        onItemAction: @escaping (Item) -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            reviewRow(item: item)
+
+            Button(actionTitle) {
+                onItemAction(item)
+            }
+            .buttonStyle(.mhSecondary)
+        }
     }
 
     func reviewRow(
@@ -243,6 +272,9 @@ private extension StallyReviewView {
         StallyReviewView(
             items: items,
             policy: .init(),
+            onArchiveItem: { _ in
+                // no-op
+            },
             onOpenItem: { _ in
                 // no-op
             }
