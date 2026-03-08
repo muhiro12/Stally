@@ -129,7 +129,9 @@ private extension StallyItemEditorView {
     }
 
     var photoSection: some View {
-        Section("Photo") {
+        let currentPhotoButtonTitle = photoButtonTitle
+
+        return Section("Photo") {
             HStack(spacing: 16) {
                 StallyItemArtworkView(
                     photoData: photoData,
@@ -145,7 +147,7 @@ private extension StallyItemEditorView {
                         preferredItemEncoding: .compatible
                     ) {
                         Label(
-                            photoButtonTitle,
+                            currentPhotoButtonTitle,
                             systemImage: "photo.on.rectangle"
                         )
                     }
