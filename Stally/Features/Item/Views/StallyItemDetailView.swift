@@ -1,3 +1,4 @@
+import MHDeepLinking
 import MHUI
 import StallyLibrary
 import SwiftData
@@ -66,6 +67,12 @@ private extension StallyItemDetailView {
 
     var historyDateRange: ClosedRange<Date> {
         item.createdAt...Date.now
+    }
+
+    var itemShareURL: URL? {
+        StallyDeepLinking.codec().preferredURL(
+            for: .item(item.id)
+        )
     }
 
     var heroSection: some View {
@@ -138,6 +145,17 @@ private extension StallyItemDetailView {
                 .frame(maxWidth: .infinity)
             }
             .buttonStyle(.mhSecondary)
+
+            if let itemShareURL {
+                ShareLink(item: itemShareURL) {
+                    Label(
+                        "Share Item Link",
+                        systemImage: "square.and.arrow.up"
+                    )
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.mhSecondary)
+            }
 
             Button(action: openHistoryEditor) {
                 Label(
