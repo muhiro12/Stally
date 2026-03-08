@@ -21,6 +21,7 @@ struct StallyInsightsView: View {
             cadenceSection
             categorySection
             rankingSection
+            rhythmSection
             pendingSectionsCard
         }
         .mhScreen(
@@ -87,6 +88,22 @@ private extension StallyInsightsView {
 
     var categorySummaries: [CollectionCategorySummary] {
         ItemInsightsCalculator.categorySummaries(
+            from: items,
+            range: selectedRange,
+            includeArchivedItems: true
+        )
+    }
+
+    var weekdaySummaries: [CollectionWeekdaySummary] {
+        ItemInsightsCalculator.weekdaySummaries(
+            from: items,
+            range: selectedRange,
+            includeArchivedItems: true
+        )
+    }
+
+    var monthlySummaries: [CollectionMonthSummary] {
+        ItemInsightsCalculator.monthlySummaries(
             from: items,
             range: selectedRange,
             includeArchivedItems: true
@@ -201,6 +218,14 @@ private extension StallyInsightsView {
             itemsByID: itemLookup,
             topRankings: topRankings,
             quietRankings: quietRankings,
+            usesCompactLayout: usesCompactLayout
+        )
+    }
+
+    var rhythmSection: some View {
+        StallyInsightsRhythmSection(
+            weekdaySummaries: weekdaySummaries,
+            monthlySummaries: monthlySummaries,
             usesCompactLayout: usesCompactLayout
         )
     }
