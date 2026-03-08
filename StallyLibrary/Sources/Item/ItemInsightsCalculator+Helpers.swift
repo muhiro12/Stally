@@ -13,6 +13,16 @@ extension ItemInsightsCalculator {
         var lastMarkedAt: Date?
     }
 
+    struct WeekdayRecord {
+        var markCount = 0
+        var activeDays = 0
+    }
+
+    struct WeekRecord {
+        var markCount = 0
+        var activeDays = 0
+    }
+
     static func defaultOrderedItems(
         from items: [Item],
         kind: ItemListQuery.ListKind,
@@ -535,6 +545,130 @@ extension ItemInsightsCalculator {
         }
 
         return Double(categoryMarks) / Double(totalMarks)
+    }
+
+    static func averagePerUnit(
+        total: Int,
+        count: Int
+    ) -> Double {
+        guard count > .zero else {
+            return .zero
+        }
+
+        return Double(total) / Double(count)
+    }
+
+    static func fraction(
+        numerator: Int,
+        denominator: Int
+    ) -> Double {
+        guard denominator > .zero else {
+            return .zero
+        }
+
+        return Double(numerator) / Double(denominator)
+    }
+
+    static func weekdaySummaries(
+        from activityDays: [CollectionActivityDay],
+        totalMarks: Int,
+        calendar: Calendar
+    ) -> [CollectionWeekdaySummary] {
+        let weekdayRecords = activityDays.reduce(into: [Int: WeekdayRecord]()) { partialResult, day in
+            let weekday = calendar.component(.weekday, from: day.date)
+            partialResult[weekday, default: .init()].markCount += day.markCount
+
+            if day.isActive {
+                partialResult[weekday, default: .init()].activeDays += 1
+            }
+        }
+
+        return orderedWeekdays(calendar: calendar).map { weekday in
+            let record = weekdayRecords[weekday, default: .init()]
+
+            return .init(
+                weekday: weekday,
+                title: weekdayTitle(
+                    for: weekday,
+                    calendar: calendar
+                ),
+                shortTitle: shortWeekdayTitle(
+                    for: weekday,
+                    calendar: calendar
+                ),
+                markCount: record.markCount,
+                activeDays: record.activeDays,
+                shareOfMarks: shareOfMarks(
+                    totalMarks: totalMarks,
+                    categoryMarks: record.markCount
+                )
+            )
+        }
+    }
+
+    static func weekRecords(
+        from activityDays: [CollectionActivityDay],
+        calendar: Calendar
+    ) -> [Date: WeekRecord] {
+        activityDays.reduce(into: [:]) { partialResult, day in
+            guard let weekStart = calendar.dateInterval(
+                of: .weekOfYear,
+                for: day.date
+            )?.start else {
+                return
+            }
+
+            partialResult[weekStart, default: .init()].markCount += day.markCount
+            if day.isActive {
+                partialResult[weekStart, default: .init()].activeDays += 1
+            }
+        }
+    }
+
+    static func orderedWeekdays(
+        calendar: Calendar
+    ) -> [Int] {
+        let start = calendar.firstWeekday
+
+        return (0..<7).map { offset in
+            ((start - 1 + offset) % 7) + 1
+        }
+    }
+
+    static func weekdayTitle(
+        for weekday: Int,
+        calendar: Calendar
+    ) -> String {
+        calendar.weekdaySymbols[weekday - 1]
+    }
+
+    static func shortWeekdayTitle(
+        for weekday: Int,
+        calendar: Calendar
+    ) -> String {
+        calendar.shortWeekdaySymbols[weekday - 1]
+    }
+
+    static func weekdayReferenceDate(
+        for weekday: Int,
+        calendar: Calendar
+    ) -> Date {
+        var components = DateComponents()
+        components.calendar = calendar
+        components.year = 2_026
+        components.month = 3
+        components.day = 1
+        components.hour = 12
+
+        let baseDate = components.date ?? .now
+        let baseWeekday = calendar.component(.weekday, from: baseDate)
+        let delta = weekday - baseWeekday
+
+        return calendar.date(
+            byAdding: .day,
+            value: delta,
+            to: baseDate
+        ) ?? baseDate
     }
 
     static func rankedItems(

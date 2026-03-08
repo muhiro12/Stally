@@ -385,6 +385,111 @@ public enum ItemInsightsCalculator {
         }
     }
 
+    /// Builds weekday-level mark summaries for the selected insight range.
+    public static func weekdaySummaries(
+        from items: [Item],
+        range: ItemInsightsRange,
+        includeArchivedItems: Bool = false,
+        referenceDate: Date = .now,
+        calendar: Calendar = .current
+    ) -> [CollectionWeekdaySummary] {
+        let activityDays = activityDays(
+            from: items,
+            range: range,
+            includeArchivedItems: includeArchivedItems,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        let totalMarks = activityDays.reduce(into: .zero) { partialResult, day in
+            partialResult += day.markCount
+        }
+
+        return weekdaySummaries(
+            from: activityDays,
+            totalMarks: totalMarks,
+            calendar: calendar
+        )
+    }
+
+    /// Builds weekly cadence metrics for the selected insight range.
+    public static func cadenceSummary(
+        from items: [Item],
+        range: ItemInsightsRange,
+        includeArchivedItems: Bool = false,
+        referenceDate: Date = .now,
+        calendar: Calendar = .current
+    ) -> CollectionCadenceSummary {
+        let activityDays = activityDays(
+            from: items,
+            range: range,
+            includeArchivedItems: includeArchivedItems,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        let weekRecords = weekRecords(
+            from: activityDays,
+            calendar: calendar
+        )
+        let totalMarks = activityDays.reduce(into: .zero) { partialResult, day in
+            partialResult += day.markCount
+        }
+        let totalActiveDays = activityDays.filter(\.isActive).count
+        let weekdaySummaries = weekdaySummaries(
+            from: activityDays,
+            totalMarks: totalMarks,
+            calendar: calendar
+        )
+        let weekendMarks = weekdaySummaries
+            .filter { summary in
+                calendar.isDateInWeekend(
+                    weekdayReferenceDate(
+                        for: summary.weekday,
+                        calendar: calendar
+                    )
+                )
+            }
+            .reduce(into: .zero) { partialResult, summary in
+                partialResult += summary.markCount
+            }
+        let weekdayMarks = max(totalMarks - weekendMarks, .zero)
+        let totalWeeks = weekRecords.count
+        let activeWeeks = weekRecords.values.filter { record in
+            record.markCount > .zero
+        }.count
+        let busiestWeekStart = weekRecords.max { lhs, rhs in
+            if lhs.value.markCount != rhs.value.markCount {
+                return lhs.value.markCount < rhs.value.markCount
+            }
+
+            return lhs.key < rhs.key
+        }?.key
+
+        return .init(
+            range: range,
+            totalWeeks: totalWeeks,
+            activeWeeks: activeWeeks,
+            averageMarksPerWeek: averagePerUnit(
+                total: totalMarks,
+                count: totalWeeks
+            ),
+            averageActiveDaysPerWeek: averagePerUnit(
+                total: totalActiveDays,
+                count: totalWeeks
+            ),
+            weekdayMarks: weekdayMarks,
+            weekendMarks: weekendMarks,
+            weekendShareOfMarks: shareOfMarks(
+                totalMarks: totalMarks,
+                categoryMarks: weekendMarks
+            ),
+            consistencyScore: fraction(
+                numerator: activeWeeks,
+                denominator: totalWeeks
+            ),
+            busiestWeekStart: busiestWeekStart
+        )
+    }
+
     /// Applies search, filter, and sort options to a list of items.
     public static func items(
         from items: [Item],
