@@ -229,6 +229,11 @@ private extension StallySettingsView {
                 supporting: "Open backup and restore tools."
             ),
             .init(
+                title: "Insights",
+                route: .insights,
+                supporting: "Open collection analytics and reports."
+            ),
+            .init(
                 title: "Review",
                 route: .review,
                 supporting: "Open the review workflow."

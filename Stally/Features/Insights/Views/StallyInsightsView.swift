@@ -1,7 +1,9 @@
+import MHDeepLinking
 import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
+import UIKit
 
 struct StallyInsightsView: View {
     @Environment(\.horizontalSizeClass)
@@ -27,6 +29,32 @@ struct StallyInsightsView: View {
             title: Text("Insights"),
             subtitle: Text("Read the collection as a pattern, not just a list.")
         )
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ShareLink(
+                    item: reportText,
+                    subject: Text("Stally Insights")
+                ) {
+                    Image(systemName: "square.and.arrow.up")
+                }
+            }
+
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button("Copy Report") {
+                        UIPasteboard.general.string = reportText
+                    }
+
+                    if let insightsURL {
+                        Button("Copy Link") {
+                            UIPasteboard.general.url = insightsURL
+                        }
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
+                }
+            }
+        }
         .navigationTitle("Insights")
         .navigationBarTitleDisplayMode(.inline)
     }
@@ -43,6 +71,10 @@ private extension StallyInsightsView {
 
     var includeArchivedItems: Bool {
         preferences.includesArchivedItems
+    }
+
+    var insightsURL: URL? {
+        StallyDeepLinking.codec().preferredURL(for: .insights)
     }
 
     var activitySummary: CollectionActivitySummary {
@@ -130,6 +162,19 @@ private extension StallyInsightsView {
             from: items,
             range: selectedRange,
             includeArchivedItems: includeArchivedItems
+        )
+    }
+
+    var reportText: String {
+        StallyInsightsReportBuilder.build(
+            range: selectedRange,
+            includesArchivedItems: includeArchivedItems,
+            activitySummary: activitySummary,
+            streakSummary: streakSummary,
+            healthSummary: healthSummary,
+            topRankings: topRankings,
+            quietRankings: quietRankings,
+            itemsByID: itemLookup
         )
     }
 
