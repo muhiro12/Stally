@@ -93,7 +93,10 @@ struct StallyRootView: View {
                         path.append(.item(itemID))
                     }
                 case .backup:
-                    StallyBackupCenterView(items: items)
+                    StallyBackupCenterView(
+                        items: items,
+                        onMergeImport: mergeImport(snapshot:)
+                    )
                 case .review:
                     StallyReviewView(
                         items: items,
@@ -415,6 +418,15 @@ private extension StallyRootView {
         } catch {
             presentOperationError(error)
         }
+    }
+
+    private func mergeImport(
+        snapshot: StallyBackupSnapshot
+    ) throws -> StallyBackupImportResult {
+        try StallyBackupImportService.merge(
+            context: context,
+            snapshot: snapshot
+        )
     }
 
     private func presentOperationError(

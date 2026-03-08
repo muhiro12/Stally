@@ -14,6 +14,11 @@ struct StallyBackupCenterView: View {
         }
     }
 
+    private struct ImportExecutionSummary {
+        let sourceName: String
+        let result: StallyBackupImportResult
+    }
+
     @Environment(\.mhTheme)
     private var theme
 
@@ -24,8 +29,10 @@ struct StallyBackupCenterView: View {
     @State private var isImporting = false
     @State private var importPreview: ImportPreview?
     @State private var importStatusMessage: String?
+    @State private var importExecutionSummary: ImportExecutionSummary?
 
     let items: [Item]
+    let onMergeImport: (StallyBackupSnapshot) throws -> StallyBackupImportResult
 
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {
@@ -191,6 +198,10 @@ private extension StallyBackupCenterView {
             Text("Preview shows the snapshot contents, overlap with local items, and any warnings before import actions are enabled.")
                 .mhRowSupporting()
 
+            if let importExecutionSummary {
+                importExecutionSummaryCard(importExecutionSummary)
+            }
+
             if let importPreview {
                 importPreviewCard(importPreview)
             }
@@ -273,6 +284,48 @@ private extension StallyBackupCenterView {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.vertical, 2)
                 }
+            }
+
+            Button("Merge Into Library", systemImage: "square.stack.3d.up") {
+                mergeImport(preview)
+            }
+            .buttonStyle(.mhSecondary)
+            .disabled(!preview.analysis.canImport)
+
+            Text("Merge import creates missing items, updates older local copies, and keeps newer local metadata when conflicts exist.")
+                .mhRowSupporting()
+        }
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
+    }
+
+    private func importExecutionSummaryCard(
+        _ summary: ImportExecutionSummary
+    ) -> some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Text("Last Merge Result")
+                .mhRowTitle()
+
+            Text(summary.sourceName)
+                .mhRowSupporting()
+
+            HStack(spacing: theme.spacing.group) {
+                summaryMetric(
+                    title: "Created",
+                    value: "\(summary.result.createdItems)"
+                )
+                summaryMetric(
+                    title: "Updated",
+                    value: "\(summary.result.updatedItems)"
+                )
+                summaryMetric(
+                    title: "Marks Added",
+                    value: "\(summary.result.insertedMarks)"
+                )
+                summaryMetric(
+                    title: "Skipped",
+                    value: "\(summary.result.skippedMarks)"
+                )
             }
         }
         .mhSurfaceInset()
@@ -357,6 +410,25 @@ private extension StallyBackupCenterView {
         )
     }
 
+    private func mergeImport(
+        _ preview: ImportPreview
+    ) {
+        do {
+            let result = try onMergeImport(
+                preview.analysis.snapshot
+            )
+            importExecutionSummary = .init(
+                sourceName: preview.sourceName,
+                result: result
+            )
+            importPreview = nil
+            importStatusMessage = "Merged \(preview.sourceName) into the current library."
+        } catch {
+            importStatusMessage = (error as? LocalizedError)?.errorDescription
+                ?? "Stally couldn't merge this backup."
+        }
+    }
+
     var exportDetailText: String {
         "\(items.count) items and \(totalMarks) marks are ready to export right now."
     }
@@ -399,6 +471,31 @@ private extension StallyBackupCenterView {
     @Previewable @Query var items: [Item]
 
     NavigationStack {
-        StallyBackupCenterView(items: items)
+        StallyBackupCenterView(
+            items: items,
+            onMergeImport: { _ in
+                .init(
+                    analysis: .init(
+                        snapshot: .init(
+                            exportedAt: .now,
+                            items: []
+                        ),
+                        summary: .init(
+                            totalItems: 0,
+                            archivedItems: 0,
+                            totalMarks: 0,
+                            existingItems: 0,
+                            newItems: 0
+                        ),
+                        issues: []
+                    ),
+                    deletedItems: 0,
+                    createdItems: 0,
+                    updatedItems: 0,
+                    insertedMarks: 0,
+                    skippedMarks: 0
+                )
+            }
+        )
     }
 }
