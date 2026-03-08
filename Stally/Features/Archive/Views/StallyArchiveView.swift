@@ -8,6 +8,8 @@ import UIKit
 struct StallyArchiveView: View {
     @Environment(\.mhTheme)
     private var theme
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
 
     @State private var query = ItemListQuery()
 
@@ -63,6 +65,30 @@ private extension StallyArchiveView {
         ItemInsightsCalculator.archiveSummary(from: displayedItems)
     }
 
+    var usesCompactLayout: Bool {
+        horizontalSizeClass != .regular
+    }
+
+    var archiveSummaryMetrics: [(title: String, value: String)] {
+        [
+            ("Items", "\(displayedSummary.totalItems)"),
+            ("With History", "\(displayedSummary.itemsWithMarksCount)"),
+            ("Saved Marks", "\(displayedSummary.totalMarks)"),
+            ("Latest Archive", latestArchiveTitle)
+        ]
+    }
+
+    var summaryMetricGridColumns: [GridItem] {
+        Array(
+            repeating: GridItem(
+                .flexible(minimum: 0, maximum: .infinity),
+                spacing: theme.spacing.group,
+                alignment: .leading
+            ),
+            count: 2
+        )
+    }
+
     var availableQuickFilters: [(title: String, filter: ItemListQuery.QuickFilter?)] {
         [
             ("All", nil),
@@ -71,48 +97,46 @@ private extension StallyArchiveView {
         ]
     }
 
+    @ViewBuilder
     var queryControls: some View {
-        HStack(alignment: .center, spacing: theme.spacing.control) {
-            Menu {
-                Button("All Categories") {
-                    query.category = nil
-                }
+        if usesCompactLayout {
+            VStack(alignment: .leading, spacing: theme.spacing.control) {
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: theme.spacing.control) {
+                        categoryMenu
+                        sortMenu
 
-                ForEach(ItemCategory.allCases, id: \.self) { category in
-                    Button {
-                        query.category = category
-                    } label: {
-                        categoryMenuLabel(for: category)
+                        if query.hasRefinements {
+                            clearFiltersButton
+                        }
+                    }
+                    VStack(alignment: .leading, spacing: theme.spacing.control) {
+                        categoryMenu
+                        sortMenu
+
+                        if query.hasRefinements {
+                            clearFiltersButton
+                        }
                     }
                 }
-            } label: {
-                Label(categoryControlTitle, systemImage: "line.3.horizontal.decrease.circle")
-            }
-            .buttonStyle(.mhSecondary)
 
-            Menu {
-                ForEach(ItemListQuery.SortOption.allCases, id: \.self) { sortOption in
-                    Button {
-                        query.sortOption = sortOption
-                    } label: {
-                        sortMenuLabel(for: sortOption)
-                    }
+                HStack(spacing: theme.spacing.control) {
+                    queryStatusLabel
+                    Spacer(minLength: .zero)
                 }
-            } label: {
-                Label(query.sortOption.title, systemImage: "arrow.up.arrow.down.circle")
             }
-            .buttonStyle(.mhSecondary)
+        } else {
+            HStack(alignment: .center, spacing: theme.spacing.control) {
+                categoryMenu
+                sortMenu
 
-            Spacer(minLength: theme.spacing.control)
+                Spacer(minLength: theme.spacing.control)
 
-            Text("\(displayedItems.count) shown")
-                .mhRowSupporting()
+                queryStatusLabel
 
-            if query.hasRefinements {
-                Button("Clear") {
-                    query = .init()
+                if query.hasRefinements {
+                    clearFiltersButton
                 }
-                .buttonStyle(.mhSecondary)
             }
         }
     }
@@ -136,24 +160,7 @@ private extension StallyArchiveView {
             Text("Archived items keep their history, so this view stays focused on preserved use rather than active rotation.")
                 .mhRowSupporting()
 
-            HStack(spacing: theme.spacing.group) {
-                summaryMetric(
-                    title: "Items",
-                    value: "\(displayedSummary.totalItems)"
-                )
-                summaryMetric(
-                    title: "With History",
-                    value: "\(displayedSummary.itemsWithMarksCount)"
-                )
-                summaryMetric(
-                    title: "Saved Marks",
-                    value: "\(displayedSummary.totalMarks)"
-                )
-                summaryMetric(
-                    title: "Latest Archive",
-                    value: latestArchiveTitle
-                )
-            }
+            summaryMetricsSection(archiveSummaryMetrics)
         }
         .mhSurfaceInset()
         .mhSurface(role: .muted)
@@ -179,6 +186,57 @@ private extension StallyArchiveView {
 
     var categoryControlTitle: String {
         query.category?.title ?? "All Categories"
+    }
+
+    var categoryMenu: some View {
+        Menu {
+            Button("All Categories") {
+                query.category = nil
+            }
+
+            ForEach(ItemCategory.allCases, id: \.self) { category in
+                Button {
+                    query.category = category
+                } label: {
+                    categoryMenuLabel(for: category)
+                }
+            }
+        } label: {
+            Label(categoryControlTitle, systemImage: "line.3.horizontal.decrease.circle")
+                .lineLimit(1)
+        }
+        .buttonStyle(.mhSecondary)
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    var sortMenu: some View {
+        Menu {
+            ForEach(ItemListQuery.SortOption.allCases, id: \.self) { sortOption in
+                Button {
+                    query.sortOption = sortOption
+                } label: {
+                    sortMenuLabel(for: sortOption)
+                }
+            }
+        } label: {
+            Label(query.sortOption.title, systemImage: "arrow.up.arrow.down.circle")
+                .lineLimit(1)
+        }
+        .buttonStyle(.mhSecondary)
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    var queryStatusLabel: some View {
+        Text("\(displayedItems.count) shown")
+            .mhRowSupporting()
+    }
+
+    var clearFiltersButton: some View {
+        Button("Clear") {
+            query = .init()
+        }
+        .buttonStyle(.mhSecondary)
+        .fixedSize(horizontal: true, vertical: false)
     }
 
     var latestArchiveTitle: String {
@@ -289,6 +347,35 @@ private extension StallyArchiveView {
         }
     }
 
+    @ViewBuilder
+    func summaryMetricsSection(
+        _ metrics: [(title: String, value: String)]
+    ) -> some View {
+        if usesCompactLayout {
+            LazyVGrid(
+                columns: summaryMetricGridColumns,
+                alignment: .leading,
+                spacing: theme.spacing.control
+            ) {
+                ForEach(metrics, id: \.title) { metric in
+                    summaryMetric(
+                        title: metric.title,
+                        value: metric.value
+                    )
+                }
+            }
+        } else {
+            HStack(spacing: theme.spacing.group) {
+                ForEach(metrics, id: \.title) { metric in
+                    summaryMetric(
+                        title: metric.title,
+                        value: metric.value
+                    )
+                }
+            }
+        }
+    }
+
     func summaryMetric(
         title: String,
         value: String
@@ -296,8 +383,10 @@ private extension StallyArchiveView {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
                 .mhRowSupporting()
+                .fixedSize(horizontal: false, vertical: true)
             Text(value)
                 .mhRowValue(colorRole: .accent)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

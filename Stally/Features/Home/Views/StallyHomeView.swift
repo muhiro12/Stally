@@ -7,6 +7,8 @@ import SwiftUI
 struct StallyHomeView: View {
     @Environment(\.mhTheme)
     private var theme
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
 
     @State private var query = ItemListQuery()
 
@@ -112,6 +114,30 @@ private extension StallyHomeView {
         ItemInsightsCalculator.activeSummary(from: displayedItems)
     }
 
+    var usesCompactLayout: Bool {
+        horizontalSizeClass != .regular
+    }
+
+    var homeSummaryMetrics: [(title: String, value: String)] {
+        [
+            ("Items", "\(displayedSummary.totalItems)"),
+            ("Marked Today", "\(displayedSummary.markedTodayCount)"),
+            ("Untouched", "\(displayedSummary.neverMarkedCount)"),
+            ("Total Marks", "\(displayedSummary.totalMarks)")
+        ]
+    }
+
+    var summaryMetricGridColumns: [GridItem] {
+        Array(
+            repeating: GridItem(
+                .flexible(minimum: 0, maximum: .infinity),
+                spacing: theme.spacing.group,
+                alignment: .leading
+            ),
+            count: 2
+        )
+    }
+
     var availableQuickFilters: [(title: String, filter: ItemListQuery.QuickFilter?)] {
         [
             ("All", nil),
@@ -121,48 +147,46 @@ private extension StallyHomeView {
         ]
     }
 
+    @ViewBuilder
     var queryControls: some View {
-        HStack(alignment: .center, spacing: theme.spacing.control) {
-            Menu {
-                Button("All Categories") {
-                    query.category = nil
-                }
+        if usesCompactLayout {
+            VStack(alignment: .leading, spacing: theme.spacing.control) {
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: theme.spacing.control) {
+                        categoryMenu
+                        sortMenu
 
-                ForEach(ItemCategory.allCases, id: \.self) { category in
-                    Button {
-                        query.category = category
-                    } label: {
-                        categoryMenuLabel(for: category)
+                        if query.hasRefinements {
+                            clearFiltersButton
+                        }
+                    }
+                    VStack(alignment: .leading, spacing: theme.spacing.control) {
+                        categoryMenu
+                        sortMenu
+
+                        if query.hasRefinements {
+                            clearFiltersButton
+                        }
                     }
                 }
-            } label: {
-                Label(categoryControlTitle, systemImage: "line.3.horizontal.decrease.circle")
-            }
-            .buttonStyle(.mhSecondary)
 
-            Menu {
-                ForEach(ItemListQuery.SortOption.allCases, id: \.self) { sortOption in
-                    Button {
-                        query.sortOption = sortOption
-                    } label: {
-                        sortMenuLabel(for: sortOption)
-                    }
+                HStack(spacing: theme.spacing.control) {
+                    queryStatusLabel
+                    Spacer(minLength: .zero)
                 }
-            } label: {
-                Label(query.sortOption.title, systemImage: "arrow.up.arrow.down.circle")
             }
-            .buttonStyle(.mhSecondary)
+        } else {
+            HStack(alignment: .center, spacing: theme.spacing.control) {
+                categoryMenu
+                sortMenu
 
-            Spacer(minLength: theme.spacing.control)
+                Spacer(minLength: theme.spacing.control)
 
-            Text("\(displayedItems.count) shown")
-                .mhRowSupporting()
+                queryStatusLabel
 
-            if query.hasRefinements {
-                Button("Clear") {
-                    query = .init()
+                if query.hasRefinements {
+                    clearFiltersButton
                 }
-                .buttonStyle(.mhSecondary)
             }
         }
     }
@@ -220,24 +244,7 @@ private extension StallyHomeView {
             Text("The current Home view balances today’s choices against what still has room to accumulate.")
                 .mhRowSupporting()
 
-            HStack(spacing: theme.spacing.group) {
-                summaryMetric(
-                    title: "Items",
-                    value: "\(displayedSummary.totalItems)"
-                )
-                summaryMetric(
-                    title: "Marked Today",
-                    value: "\(displayedSummary.markedTodayCount)"
-                )
-                summaryMetric(
-                    title: "Untouched",
-                    value: "\(displayedSummary.neverMarkedCount)"
-                )
-                summaryMetric(
-                    title: "Total Marks",
-                    value: "\(displayedSummary.totalMarks)"
-                )
-            }
+            summaryMetricsSection(homeSummaryMetrics)
         }
         .mhSurfaceInset()
         .mhSurface(role: .muted)
@@ -360,16 +367,94 @@ private extension StallyHomeView {
                 .mhRowSupporting()
 
             if !metrics.isEmpty {
-                HStack(spacing: theme.spacing.group) {
-                    ForEach(metrics, id: \.title) { metric in
-                        summaryMetric(
-                            title: metric.title,
-                            value: metric.value
-                        )
-                    }
-                }
+                summaryMetricsSection(metrics)
             }
 
+            routeEntryActions(
+                primaryActionTitle: primaryActionTitle,
+                routeURL: routeURL,
+                onOpen: onOpen
+            )
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
+    }
+
+    var categoryMenu: some View {
+        Menu {
+            Button("All Categories") {
+                query.category = nil
+            }
+
+            ForEach(ItemCategory.allCases, id: \.self) { category in
+                Button {
+                    query.category = category
+                } label: {
+                    categoryMenuLabel(for: category)
+                }
+            }
+        } label: {
+            Label(categoryControlTitle, systemImage: "line.3.horizontal.decrease.circle")
+                .lineLimit(1)
+        }
+        .buttonStyle(.mhSecondary)
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    var sortMenu: some View {
+        Menu {
+            ForEach(ItemListQuery.SortOption.allCases, id: \.self) { sortOption in
+                Button {
+                    query.sortOption = sortOption
+                } label: {
+                    sortMenuLabel(for: sortOption)
+                }
+            }
+        } label: {
+            Label(query.sortOption.title, systemImage: "arrow.up.arrow.down.circle")
+                .lineLimit(1)
+        }
+        .buttonStyle(.mhSecondary)
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    var queryStatusLabel: some View {
+        Text("\(displayedItems.count) shown")
+            .mhRowSupporting()
+    }
+
+    var clearFiltersButton: some View {
+        Button("Clear") {
+            query = .init()
+        }
+        .buttonStyle(.mhSecondary)
+        .fixedSize(horizontal: true, vertical: false)
+    }
+
+    @ViewBuilder
+    func routeEntryActions(
+        primaryActionTitle: String,
+        routeURL: URL?,
+        onOpen: @escaping () -> Void
+    ) -> some View {
+        if usesCompactLayout {
+            VStack(alignment: .leading, spacing: theme.spacing.control) {
+                Button(primaryActionTitle) {
+                    onOpen()
+                }
+                .buttonStyle(.mhSecondary)
+                .fixedSize(horizontal: true, vertical: false)
+
+                if let routeURL {
+                    ShareLink(item: routeURL) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    .buttonStyle(.mhSecondary)
+                    .fixedSize(horizontal: true, vertical: false)
+                }
+            }
+        } else {
             HStack(spacing: theme.spacing.control) {
                 Button(primaryActionTitle) {
                     onOpen()
@@ -384,9 +469,35 @@ private extension StallyHomeView {
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .mhSurfaceInset()
-        .mhSurface(role: .muted)
+    }
+
+    @ViewBuilder
+    func summaryMetricsSection(
+        _ metrics: [(title: String, value: String)]
+    ) -> some View {
+        if usesCompactLayout {
+            LazyVGrid(
+                columns: summaryMetricGridColumns,
+                alignment: .leading,
+                spacing: theme.spacing.control
+            ) {
+                ForEach(metrics, id: \.title) { metric in
+                    summaryMetric(
+                        title: metric.title,
+                        value: metric.value
+                    )
+                }
+            }
+        } else {
+            HStack(spacing: theme.spacing.group) {
+                ForEach(metrics, id: \.title) { metric in
+                    summaryMetric(
+                        title: metric.title,
+                        value: metric.value
+                    )
+                }
+            }
+        }
     }
 
     var categoryControlTitle: String {
@@ -449,8 +560,10 @@ private extension StallyHomeView {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
                 .mhRowSupporting()
+                .fixedSize(horizontal: false, vertical: true)
             Text(value)
                 .mhRowValue(colorRole: .accent)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

@@ -7,6 +7,8 @@ import SwiftUI
 struct StallyItemDetailView: View {
     @Environment(\.mhTheme)
     private var theme
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
 
     @State private var isHistoryEditorPresented = false
     @State private var selectedHistoryDate = Date.now
@@ -69,6 +71,10 @@ private extension StallyItemDetailView {
         item.createdAt...Date.now
     }
 
+    var usesCompactLayout: Bool {
+        horizontalSizeClass != .regular
+    }
+
     var itemShareURL: URL? {
         StallyDeepLinking.codec().preferredURL(
             for: .item(item.id)
@@ -77,32 +83,7 @@ private extension StallyItemDetailView {
 
     var heroSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {
-            HStack(alignment: .top, spacing: theme.spacing.group) {
-                StallyItemArtworkView(
-                    photoData: item.photoData,
-                    category: item.category,
-                    width: 132,
-                    height: 164
-                )
-
-                VStack(alignment: .leading, spacing: theme.spacing.group) {
-                    Text(item.name)
-                        .font(.system(size: 28, weight: .semibold, design: .serif))
-
-                    VStack(alignment: .leading, spacing: theme.spacing.control) {
-                        LabeledContent("Total marks", value: "\(summary.totalMarks)")
-                            .labeledContentStyle(.mhKeyValue)
-                        LabeledContent(
-                            "Last marked",
-                            value: summary.lastMarkedAt?.formatted(date: .abbreviated, time: .omitted)
-                                ?? "Not yet"
-                        )
-                        .labeledContentStyle(.mhKeyValue)
-                    }
-                }
-
-                Spacer(minLength: .zero)
-            }
+            heroContent
 
             if item.isArchived {
                 Label("Archived items stay out of Home until you move them back.", systemImage: "archivebox.fill")
@@ -117,6 +98,50 @@ private extension StallyItemDetailView {
                     .mhBadge(style: .accent)
             }
         )
+    }
+
+    @ViewBuilder
+    var heroContent: some View {
+        if usesCompactLayout {
+            VStack(alignment: .leading, spacing: theme.spacing.group) {
+                heroArtwork
+                heroTextBlock
+            }
+        } else {
+            HStack(alignment: .top, spacing: theme.spacing.group) {
+                heroArtwork
+                heroTextBlock
+                Spacer(minLength: .zero)
+            }
+        }
+    }
+
+    var heroArtwork: some View {
+        StallyItemArtworkView(
+            photoData: item.photoData,
+            category: item.category,
+            width: 132,
+            height: 164
+        )
+    }
+
+    var heroTextBlock: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.group) {
+            Text(item.name)
+                .font(.system(size: 28, weight: .semibold, design: .serif))
+
+            VStack(alignment: .leading, spacing: theme.spacing.control) {
+                LabeledContent("Total marks", value: "\(summary.totalMarks)")
+                    .labeledContentStyle(.mhKeyValue)
+                LabeledContent(
+                    "Last marked",
+                    value: summary.lastMarkedAt?.formatted(date: .abbreviated, time: .omitted)
+                        ?? "Not yet"
+                )
+                .labeledContentStyle(.mhKeyValue)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     var actionSection: some View {

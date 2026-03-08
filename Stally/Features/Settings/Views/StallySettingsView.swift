@@ -183,7 +183,8 @@ private extension StallySettingsView {
     }
 }
 
-#Preview {
+@available(iOS 18.0, *)
+#Preview(traits: .modifier(StallySampleData())) {
     @Previewable @State var reviewPreferences = StallyReviewPreferences()
 
     NavigationStack {

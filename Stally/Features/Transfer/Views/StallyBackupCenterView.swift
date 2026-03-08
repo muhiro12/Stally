@@ -36,6 +36,8 @@ struct StallyBackupCenterView: View {
 
     @Environment(\.mhTheme)
     private var theme
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
 
     @State private var exportDocument: StallyBackupDocument?
     @State private var isExporting = false
@@ -176,6 +178,30 @@ private extension StallyBackupCenterView {
         activeSummary.totalMarks + archiveSummary.totalMarks
     }
 
+    var usesCompactLayout: Bool {
+        horizontalSizeClass != .regular
+    }
+
+    var overviewMetrics: [(title: String, value: String)] {
+        [
+            ("Active", "\(activeSummary.totalItems)"),
+            ("Archived", "\(archiveSummary.totalItems)"),
+            ("Marks", "\(totalMarks)"),
+            ("Latest Change", latestChangeTitle)
+        ]
+    }
+
+    var summaryMetricGridColumns: [GridItem] {
+        Array(
+            repeating: GridItem(
+                .flexible(minimum: 0, maximum: .infinity),
+                spacing: theme.spacing.group,
+                alignment: .leading
+            ),
+            count: 2
+        )
+    }
+
     var latestChangeTitle: String {
         items
             .map(\.updatedAt)
@@ -192,24 +218,7 @@ private extension StallyBackupCenterView {
             Text("Exports will capture your active items, archived items, and mark history in one portable package.")
                 .mhRowSupporting()
 
-            HStack(spacing: theme.spacing.group) {
-                summaryMetric(
-                    title: "Active",
-                    value: "\(activeSummary.totalItems)"
-                )
-                summaryMetric(
-                    title: "Archived",
-                    value: "\(archiveSummary.totalItems)"
-                )
-                summaryMetric(
-                    title: "Marks",
-                    value: "\(totalMarks)"
-                )
-                summaryMetric(
-                    title: "Latest Change",
-                    value: latestChangeTitle
-                )
-            }
+            summaryMetricsSection(overviewMetrics)
         }
         .mhSurfaceInset()
         .mhSurface(role: .muted)
@@ -298,10 +307,41 @@ private extension StallyBackupCenterView {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
                 .mhRowSupporting()
+                .fixedSize(horizontal: false, vertical: true)
             Text(value)
                 .mhRowValue(colorRole: .accent)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder
+    func summaryMetricsSection(
+        _ metrics: [(title: String, value: String)]
+    ) -> some View {
+        if usesCompactLayout {
+            LazyVGrid(
+                columns: summaryMetricGridColumns,
+                alignment: .leading,
+                spacing: theme.spacing.control
+            ) {
+                ForEach(metrics, id: \.title) { metric in
+                    summaryMetric(
+                        title: metric.title,
+                        value: metric.value
+                    )
+                }
+            }
+        } else {
+            HStack(spacing: theme.spacing.group) {
+                ForEach(metrics, id: \.title) { metric in
+                    summaryMetric(
+                        title: metric.title,
+                        value: metric.value
+                    )
+                }
+            }
+        }
     }
 
     private func importPreviewCard(
@@ -314,28 +354,15 @@ private extension StallyBackupCenterView {
             Text(importPreviewSupportingText(preview))
                 .mhRowSupporting()
 
-            HStack(spacing: theme.spacing.group) {
-                summaryMetric(
-                    title: "Items",
-                    value: "\(preview.analysis.summary.totalItems)"
-                )
-                summaryMetric(
-                    title: "Archived",
-                    value: "\(preview.analysis.summary.archivedItems)"
-                )
-                summaryMetric(
-                    title: "Marks",
-                    value: "\(preview.analysis.summary.totalMarks)"
-                )
-                summaryMetric(
-                    title: "Existing",
-                    value: "\(preview.analysis.summary.existingItems)"
-                )
-                summaryMetric(
-                    title: "New",
-                    value: "\(preview.analysis.summary.newItems)"
-                )
-            }
+            summaryMetricsSection(
+                [
+                    ("Items", "\(preview.analysis.summary.totalItems)"),
+                    ("Archived", "\(preview.analysis.summary.archivedItems)"),
+                    ("Marks", "\(preview.analysis.summary.totalMarks)"),
+                    ("Existing", "\(preview.analysis.summary.existingItems)"),
+                    ("New", "\(preview.analysis.summary.newItems)")
+                ]
+            )
 
             if preview.analysis.issues.isEmpty {
                 Text("No validation issues were found in this backup.")
