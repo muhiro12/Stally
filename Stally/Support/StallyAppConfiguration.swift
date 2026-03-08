@@ -17,7 +17,7 @@ enum StallyAppConfiguration {
         .init(
             subscriptionProductIDs: [],
             subscriptionGroupID: nil,
-            nativeAdUnitID: nil,
+            nativeAdUnitID: StallyAdMobConfiguration.nativeAdUnitID,
             preferencesSuiteName: Bundle.main.bundleIdentifier,
             showsLicenses: true
         )
