@@ -10,10 +10,12 @@ struct StallySettingsView: View {
     private var appRuntime
 
     @Binding var reviewPreferences: StallyReviewPreferences
+    let onOpenBackup: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             aboutSection
+            backupSection
             reviewPreferencesSection
             deepLinkUtilitiesSection
             buildSection
@@ -51,6 +53,22 @@ private extension StallySettingsView {
                 .labeledContentStyle(.mhKeyValue)
         }
         .mhSection(title: Text("Build"))
+    }
+
+    var backupSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Open the dedicated backup workspace before you export or restore anything.")
+                .mhRowSupporting()
+
+            Button("Open Backup Center", systemImage: "externaldrive.badge.icloud") {
+                onOpenBackup()
+            }
+            .buttonStyle(.mhSecondary)
+        }
+        .mhSection(
+            title: Text("Backup"),
+            supporting: Text("Export and restore tools live in a separate workspace so higher-risk actions stay grouped together.")
+        )
     }
 
     var deepLinkUtilitiesSection: some View {
@@ -151,6 +169,7 @@ private extension StallySettingsView {
         [
             ("Home", .home, "Open the main collection view."),
             ("Archive", .archive, "Jump straight to archived items."),
+            ("Backup Center", .backup, "Open backup and restore tools."),
             ("Review", .review, "Open the review workflow."),
             ("Create Item", .createItem, "Start a new item from a link."),
             ("Settings", .settings, "Open Settings directly.")
@@ -168,6 +187,9 @@ private extension StallySettingsView {
     @Previewable @State var reviewPreferences = StallyReviewPreferences()
 
     NavigationStack {
-        StallySettingsView(reviewPreferences: $reviewPreferences)
+        StallySettingsView(
+            reviewPreferences: $reviewPreferences,
+            onOpenBackup: {}
+        )
     }
 }

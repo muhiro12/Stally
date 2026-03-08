@@ -4,6 +4,7 @@ import MHDeepLinking
 public enum StallyRoute: Equatable, Sendable, MHDeepLinkRoute {
     case home
     case archive
+    case backup
     case review
     case settings
     case createItem
@@ -15,6 +16,8 @@ public enum StallyRoute: Equatable, Sendable, MHDeepLinkRoute {
             .init(pathComponents: ["home"])
         case .archive:
             .init(pathComponents: ["archive"])
+        case .backup:
+            .init(pathComponents: ["backup"])
         case .review:
             .init(pathComponents: ["review"])
         case .settings:
@@ -41,6 +44,8 @@ public enum StallyRoute: Equatable, Sendable, MHDeepLinkRoute {
             self = .home
         case ["archive"]:
             self = .archive
+        case ["backup"]:
+            self = .backup
         case ["review"]:
             self = .review
         case ["settings"]:

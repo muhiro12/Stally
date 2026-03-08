@@ -13,6 +13,7 @@ import SwiftUI
 struct StallyRootView: View {
     private enum Route: Hashable {
         case archive
+        case backup
         case item(UUID)
         case review
         case settings
@@ -91,6 +92,8 @@ struct StallyRootView: View {
                     StallyArchiveView(items: archivedItems) { itemID in
                         path.append(.item(itemID))
                     }
+                case .backup:
+                    StallyBackupCenterView(items: items)
                 case .review:
                     StallyReviewView(
                         items: items,
@@ -104,7 +107,12 @@ struct StallyRootView: View {
                         }
                     )
                 case .settings:
-                    StallySettingsView(reviewPreferences: $reviewPreferences)
+                    StallySettingsView(
+                        reviewPreferences: $reviewPreferences,
+                        onOpenBackup: {
+                            path.append(.backup)
+                        }
+                    )
                 case .item(let itemID):
                     destinationView(for: itemID)
                 }
@@ -448,6 +456,10 @@ private extension StallyRootView {
             _ = await deepLinkInbox.consumeLatest(using: deepLinkCodec)
             editorRoute = nil
             path = [.archive]
+        case .backup:
+            _ = await deepLinkInbox.consumeLatest(using: deepLinkCodec)
+            editorRoute = nil
+            path = [.backup]
         case .review:
             _ = await deepLinkInbox.consumeLatest(using: deepLinkCodec)
             editorRoute = nil
