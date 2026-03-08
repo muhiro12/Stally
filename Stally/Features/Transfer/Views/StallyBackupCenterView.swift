@@ -2,10 +2,16 @@ import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct StallyBackupCenterView: View {
     @Environment(\.mhTheme)
     private var theme
+
+    @State private var exportDocument: StallyBackupDocument?
+    @State private var isExporting = false
+    @State private var exportFilename = exportFilename(for: .now)
+    @State private var exportStatusMessage: String?
 
     let items: [Item]
 
@@ -22,10 +28,41 @@ struct StallyBackupCenterView: View {
         )
         .navigationTitle("Backup Center")
         .navigationBarTitleDisplayMode(.inline)
+        .fileExporter(
+            isPresented: $isExporting,
+            document: exportDocument ?? .placeholder,
+            contentType: .stallyBackup,
+            defaultFilename: exportFilename
+        ) { result in
+            handleExportResult(result)
+        }
+        .alert(
+            "Backup Export",
+            isPresented: isExportStatusPresented
+        ) {
+            Button("OK", role: .cancel) {
+                exportStatusMessage = nil
+            }
+        } message: {
+            Text(exportStatusMessage ?? "")
+        }
     }
 }
 
 private extension StallyBackupCenterView {
+    var isExportStatusPresented: Binding<Bool> {
+        .init(
+            get: {
+                exportStatusMessage != nil
+            },
+            set: { isPresented in
+                if !isPresented {
+                    exportStatusMessage = nil
+                }
+            }
+        )
+    }
+
     var activeSummary: ItemInsightsCalculator.ActiveCollectionSummary {
         ItemInsightsCalculator.activeSummary(from: items)
     }
@@ -82,14 +119,16 @@ private extension StallyBackupCenterView {
             Text("Export")
                 .mhRowTitle()
 
-            Text("Create a single backup file with every item, photo, note, and mark. The file export action lands next.")
+            Text("Create a single backup file with every item, photo, note, and mark. Exports use the `.stallybackup` extension on top of JSON data.")
                 .mhRowSupporting()
 
             Button("Export Backup", systemImage: "square.and.arrow.up") {
-                // Implemented in a follow-up commit.
+                startExport()
             }
             .buttonStyle(.mhSecondary)
-            .disabled(true)
+
+            Text(exportDetailText)
+                .mhRowSupporting()
         }
         .mhSection(title: Text("Export Tools"))
     }
@@ -136,6 +175,53 @@ private extension StallyBackupCenterView {
                 .mhRowValue(colorRole: .accent)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    func startExport() {
+        let snapshot = StallyBackupCodec.snapshot(
+            from: items
+        )
+        exportDocument = StallyBackupDocument(
+            snapshot: snapshot
+        )
+        exportFilename = Self.exportFilename(
+            for: snapshot.exportedAt
+        )
+        isExporting = true
+    }
+
+    func handleExportResult(
+        _ result: Result<URL, any Error>
+    ) {
+        switch result {
+        case .success(let url):
+            exportStatusMessage = "Backup saved as \(url.lastPathComponent)."
+        case .failure(let error as CocoaError)
+            where error.code == .userCancelled:
+            exportStatusMessage = nil
+        case .failure(let error):
+            exportStatusMessage = (error as? LocalizedError)?.errorDescription
+                ?? "Stally couldn't export this backup."
+        }
+    }
+
+    var exportDetailText: String {
+        "\(items.count) items and \(totalMarks) marks are ready to export right now."
+    }
+
+    static func exportFilename(
+        for date: Date
+    ) -> String {
+        "stally-backup-\(backupTimestampFormatter.string(from: date))"
+    }
+
+    static var backupTimestampFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.calendar = .current
+        formatter.locale = .autoupdatingCurrent
+        formatter.timeZone = .autoupdatingCurrent
+        formatter.dateFormat = "yyyyMMdd-HHmm"
+        return formatter
     }
 }
 
