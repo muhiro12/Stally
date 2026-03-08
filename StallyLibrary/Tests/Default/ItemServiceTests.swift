@@ -51,4 +51,70 @@ final class ItemServiceTests: XCTestCase {
         XCTAssertGreaterThan(firstItemCount, 0)
         XCTAssertGreaterThan(firstMarkCount, 0)
     }
+
+    func testBulkArchiveArchivesOnlyActiveItemsAndPreservesMarks() throws {
+        let context = testContext()
+        let untouchedItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Quiet Tote",
+                category: .bags
+            ),
+            createdAt: localDate(year: 2026, month: 2, day: 15)
+        )
+        let markedItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Active Coat",
+                category: .clothing
+            ),
+            createdAt: localDate(year: 2026, month: 1, day: 15)
+        )
+        let existingArchive = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Stored Weekender",
+                category: .bags
+            ),
+            createdAt: localDate(year: 2026, month: 1, day: 10)
+        )
+        let initialArchiveDate = localDate(year: 2026, month: 3, day: 1)
+
+        _ = try MarkService.mark(
+            context: context,
+            item: markedItem,
+            on: localDate(year: 2026, month: 3, day: 5)
+        )
+        try ItemService.archive(
+            context: context,
+            item: existingArchive,
+            at: initialArchiveDate
+        )
+
+        let beforeSummary = ItemReviewCalculator.summary(
+            from: [untouchedItem, markedItem, existingArchive],
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        try ItemService.archive(
+            context: context,
+            items: [untouchedItem, markedItem, existingArchive, markedItem],
+            at: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        let afterSummary = ItemReviewCalculator.summary(
+            from: [untouchedItem, markedItem, existingArchive],
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        XCTAssertEqual(beforeSummary.totalReviewCount, 1)
+        XCTAssertEqual(beforeSummary.untouchedCount, 1)
+        XCTAssertEqual(afterSummary.totalReviewCount, 1)
+        XCTAssertEqual(afterSummary.untouchedCount, 0)
+        XCTAssertEqual(afterSummary.recoveryCandidateCount, 1)
+        XCTAssertEqual(afterSummary.coldArchiveCount, 2)
+        XCTAssertEqual(ItemInsightsCalculator.summary(for: markedItem).totalMarks, 1)
+        XCTAssertEqual(existingArchive.archivedAt, initialArchiveDate)
+        XCTAssertEqual(markedItem.archivedAt, localDate(year: 2026, month: 3, day: 8))
+    }
 }

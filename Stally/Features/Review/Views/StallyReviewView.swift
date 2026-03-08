@@ -7,9 +7,14 @@ struct StallyReviewView: View {
     @Environment(\.mhTheme)
     private var theme
 
+    @State private var isUntouchedSelectionModeEnabled = false
+    @State private var selectedUntouchedItemIDs: Set<UUID> = []
+    @State private var isUntouchedBulkArchiveConfirmationPresented = false
+
     let items: [Item]
     let policy: ItemReviewPolicy
     let onArchiveItem: (Item) -> Void
+    let onArchiveItems: ([Item]) -> Void
     let onOpenItem: (UUID) -> Void
 
     var body: some View {
@@ -20,13 +25,7 @@ struct StallyReviewView: View {
                 emptyState
             } else {
                 if !untouchedItems.isEmpty {
-                    reviewSection(
-                        title: "Needs First Mark",
-                        supporting: "Items that have been waiting quietly without a first mark.",
-                        items: untouchedItems,
-                        actionTitle: "Archive Item",
-                        onItemAction: onArchiveItem
-                    )
+                    untouchedSection
                 }
 
                 if !dormantItems.isEmpty {
@@ -34,7 +33,9 @@ struct StallyReviewView: View {
                         title: "Dormant",
                         supporting: "Items whose last mark feels far enough away to revisit.",
                         items: dormantItems
-                    )
+                    ) { item in
+                        reviewRow(item: item)
+                    }
                 }
 
                 if !recoveryCandidateItems.isEmpty {
@@ -42,7 +43,9 @@ struct StallyReviewView: View {
                         title: "Recovery Candidates",
                         supporting: "Archived items with enough history that they may deserve another turn.",
                         items: recoveryCandidateItems
-                    )
+                    ) { item in
+                        reviewRow(item: item)
+                    }
                 }
             }
         }
@@ -52,6 +55,20 @@ struct StallyReviewView: View {
         )
         .navigationTitle("Review")
         .navigationBarTitleDisplayMode(.inline)
+        .confirmationDialog(
+            "Archive Selected Items",
+            isPresented: $isUntouchedBulkArchiveConfirmationPresented,
+            titleVisibility: .visible
+        ) {
+            Button("Archive Selected", role: .destructive) {
+                archiveSelectedUntouchedItems()
+            }
+            Button("Cancel", role: .cancel) {
+                // no-op
+            }
+        } message: {
+            Text("Archive \(selectedUntouchedItems.count) items that still have no marks?")
+        }
     }
 }
 
@@ -108,6 +125,12 @@ private extension StallyReviewView {
         )
     }
 
+    var selectedUntouchedItems: [Item] {
+        untouchedItems.filter { item in
+            selectedUntouchedItemIDs.contains(item.id)
+        }
+    }
+
     var summaryCard: some View {
         VStack(alignment: .leading, spacing: theme.spacing.control) {
             HStack(alignment: .firstTextBaseline) {
@@ -153,25 +176,81 @@ private extension StallyReviewView {
         .mhSurface()
     }
 
-    func reviewSection(
+    var untouchedSection: some View {
+        reviewSection(
+            title: "Needs First Mark",
+            supporting: "Items that have been waiting quietly without a first mark.",
+            items: untouchedItems
+        ) {
+            untouchedSelectionControls
+        } rowContent: { item in
+            if isUntouchedSelectionModeEnabled {
+                selectableReviewRow(
+                    item: item,
+                    isSelected: selectedUntouchedItemIDs.contains(item.id),
+                    onToggleSelection: toggleUntouchedSelection(for:)
+                )
+            } else {
+                actionableReviewRow(
+                    item: item,
+                    actionTitle: "Archive Item",
+                    onItemAction: onArchiveItem
+                )
+            }
+        }
+    }
+
+    var untouchedSelectionControls: some View {
+        HStack(spacing: theme.spacing.control) {
+            Button(isUntouchedSelectionModeEnabled ? "Done" : "Select") {
+                toggleUntouchedSelectionMode()
+            }
+            .buttonStyle(.mhSecondary)
+
+            if isUntouchedSelectionModeEnabled {
+                Text("\(selectedUntouchedItems.count) selected")
+                    .mhRowSupporting()
+
+                Spacer(minLength: .zero)
+
+                Button("Archive Selected") {
+                    isUntouchedBulkArchiveConfirmationPresented = true
+                }
+                .buttonStyle(.mhPrimary)
+                .disabled(selectedUntouchedItems.isEmpty)
+            }
+        }
+    }
+
+    func reviewSection<RowContent: View>(
         title: String,
         supporting: String,
         items: [Item],
-        actionTitle: String? = nil,
-        onItemAction: ((Item) -> Void)? = nil
+        @ViewBuilder rowContent: @escaping (Item) -> RowContent
     ) -> some View {
         VStack(alignment: .leading, spacing: theme.spacing.control) {
             ForEach(items, id: \.id) { item in
-                if let actionTitle,
-                   let onItemAction {
-                    actionableReviewRow(
-                        item: item,
-                        actionTitle: actionTitle,
-                        onItemAction: onItemAction
-                    )
-                } else {
-                    reviewRow(item: item)
-                }
+                rowContent(item)
+            }
+        }
+        .mhSection(
+            title: Text(title),
+            supporting: Text(supporting)
+        )
+    }
+
+    func reviewSection<Controls: View, RowContent: View>(
+        title: String,
+        supporting: String,
+        items: [Item],
+        @ViewBuilder controls: () -> Controls,
+        @ViewBuilder rowContent: @escaping (Item) -> RowContent
+    ) -> some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            controls()
+
+            ForEach(items, id: \.id) { item in
+                rowContent(item)
             }
         }
         .mhSection(
@@ -195,44 +274,100 @@ private extension StallyReviewView {
         }
     }
 
+    func selectableReviewRow(
+        item: Item,
+        isSelected: Bool,
+        onToggleSelection: @escaping (Item) -> Void
+    ) -> some View {
+        Button {
+            onToggleSelection(item)
+        } label: {
+            reviewRowContent(item: item) {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .foregroundStyle(isSelected ? Color.accentColor : .secondary)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
     func reviewRow(
         item: Item
+    ) -> some View {
+        Button {
+            onOpenItem(item.id)
+        } label: {
+            reviewRowContent(item: item) {
+                Image(systemName: "chevron.right")
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    func reviewRowContent<TrailingView: View>(
+        item: Item,
+        @ViewBuilder trailingView: () -> TrailingView
     ) -> some View {
         let summary = ItemInsightsCalculator.summary(for: item)
         let snapshot = snapshotsByID[item.id]
 
-        return Button {
-            onOpenItem(item.id)
-        } label: {
-            HStack(spacing: theme.spacing.group) {
-                StallyItemArtworkView(
-                    photoData: item.photoData,
-                    category: item.category,
-                    width: 68,
-                    height: 82
-                )
+        return HStack(spacing: theme.spacing.group) {
+            StallyItemArtworkView(
+                photoData: item.photoData,
+                category: item.category,
+                width: 68,
+                height: 82
+            )
 
-                VStack(alignment: .leading, spacing: theme.spacing.control) {
-                    Text(item.name)
-                        .mhRowTitle()
+            VStack(alignment: .leading, spacing: theme.spacing.control) {
+                Text(item.name)
+                    .mhRowTitle()
 
-                    Text(item.category.title)
-                        .mhBadge(style: .neutral)
+                Text(item.category.title)
+                    .mhBadge(style: .neutral)
 
-                    Text(rowSupportingText(summary: summary, snapshot: snapshot))
-                        .mhRowSupporting()
-                }
-
-                Spacer(minLength: .zero)
-
-                Image(systemName: "chevron.right")
-                    .foregroundStyle(.secondary)
+                Text(rowSupportingText(summary: summary, snapshot: snapshot))
+                    .mhRowSupporting()
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .mhSurfaceInset()
-            .mhSurface()
+
+            Spacer(minLength: .zero)
+
+            trailingView()
+                .font(.title3)
         }
-        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .mhSurfaceInset()
+        .mhSurface()
+    }
+
+    func toggleUntouchedSelectionMode() {
+        isUntouchedSelectionModeEnabled.toggle()
+
+        if !isUntouchedSelectionModeEnabled {
+            selectedUntouchedItemIDs.removeAll()
+        }
+    }
+
+    func toggleUntouchedSelection(
+        for item: Item
+    ) {
+        if selectedUntouchedItemIDs.contains(item.id) {
+            selectedUntouchedItemIDs.remove(item.id)
+        } else {
+            selectedUntouchedItemIDs.insert(item.id)
+        }
+    }
+
+    func archiveSelectedUntouchedItems() {
+        let itemsToArchive = selectedUntouchedItems
+
+        guard !itemsToArchive.isEmpty else {
+            return
+        }
+
+        onArchiveItems(itemsToArchive)
+        selectedUntouchedItemIDs.removeAll()
+        isUntouchedSelectionModeEnabled = false
     }
 
     func rowSupportingText(
@@ -273,6 +408,9 @@ private extension StallyReviewView {
             items: items,
             policy: .init(),
             onArchiveItem: { _ in
+                // no-op
+            },
+            onArchiveItems: { _ in
                 // no-op
             },
             onOpenItem: { _ in
