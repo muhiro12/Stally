@@ -1,3 +1,4 @@
+import MHDeepLinking
 import MHUI
 import StallyLibrary
 import SwiftData
@@ -12,6 +13,7 @@ struct StallyHomeView: View {
     let items: [Item]
     let reviewPreferences: StallyReviewPreferences
     let reviewSummary: ItemReviewSummary
+    let archiveSummary: ItemInsightsCalculator.ArchiveCollectionSummary
     let onOpenItem: (UUID) -> Void
     let onCreateItem: () -> Void
     let onSeedSampleData: () -> Void
@@ -29,6 +31,7 @@ struct StallyHomeView: View {
                 homeQuickFilters
                 homeSummaryCard
                 reviewEntryCard
+                archiveEntryCard
 
                 if displayedItems.isEmpty {
                     filteredEmptyState
@@ -77,6 +80,18 @@ struct StallyHomeView: View {
 }
 
 private extension StallyHomeView {
+    var reviewRouteURL: URL? {
+        StallyDeepLinking.codec().preferredURL(
+            for: .review
+        )
+    }
+
+    var archiveRouteURL: URL? {
+        StallyDeepLinking.codec().preferredURL(
+            for: .archive
+        )
+    }
+
     var displayedItems: [Item] {
         ItemInsightsCalculator.items(
             from: items,
@@ -234,57 +249,122 @@ private extension StallyHomeView {
     }
 
     var reviewEntryCard: some View {
-        Button {
-            onOpenReview()
-        } label: {
-            VStack(alignment: .leading, spacing: theme.spacing.control) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text("Needs Review")
-                        .mhRowTitle()
+        routeEntryCard(
+            title: "Needs Review",
+            value: "\(reviewSummary.totalReviewCount)",
+            supporting: reviewCardSupportingText,
+            metrics: visibleReviewMetrics,
+            primaryActionTitle: "Open Review",
+            routeURL: reviewRouteURL,
+            onOpen: onOpenReview
+        )
+    }
 
-                    Spacer(minLength: theme.spacing.control)
+    var archiveEntryCard: some View {
+        routeEntryCard(
+            title: "Archive",
+            value: "\(archiveSummary.totalItems)",
+            supporting: archiveCardSupportingText,
+            metrics: archiveEntryMetrics,
+            primaryActionTitle: "Open Archive",
+            routeURL: archiveRouteURL,
+            onOpen: onOpenArchive
+        )
+    }
 
-                    Text("\(reviewSummary.totalReviewCount)")
-                        .mhRowValue(colorRole: .accent)
-                }
+    var archiveEntryMetrics: [(title: String, value: String)] {
+        [
+            ("Items", "\(archiveSummary.totalItems)"),
+            ("With History", "\(archiveSummary.itemsWithMarksCount)"),
+            ("Saved Marks", "\(archiveSummary.totalMarks)"),
+            ("Latest Archive", archiveLatestDateTitle)
+        ]
+    }
 
-                Text(reviewCardSupportingText)
-                    .mhRowSupporting()
+    var archiveLatestDateTitle: String {
+        archiveSummary.lastArchivedAt?.formatted(date: .abbreviated, time: .omitted)
+            ?? "None"
+    }
 
-                if !visibleReviewMetrics.isEmpty {
-                    HStack(spacing: theme.spacing.group) {
-                        ForEach(visibleReviewMetrics, id: \.title) { metric in
-                            summaryMetric(
-                                title: metric.title,
-                                value: "\(metric.value)"
-                            )
-                        }
+    var archiveCardSupportingText: String {
+        if archiveSummary.totalItems == .zero {
+            return "Archived items will gather here once you clear space from Home."
+        }
+
+        return "Keep preserved favorites close without letting them crowd the active list."
+    }
+
+    func routeEntryCard(
+        title: String,
+        value: String,
+        supporting: String,
+        metrics: [(title: String, value: String)],
+        primaryActionTitle: String,
+        routeURL: URL?,
+        onOpen: @escaping () -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(title)
+                    .mhRowTitle()
+
+                Spacer(minLength: theme.spacing.control)
+
+                Text(value)
+                    .mhRowValue(colorRole: .accent)
+            }
+
+            Text(supporting)
+                .mhRowSupporting()
+
+            if !metrics.isEmpty {
+                HStack(spacing: theme.spacing.group) {
+                    ForEach(metrics, id: \.title) { metric in
+                        summaryMetric(
+                            title: metric.title,
+                            value: metric.value
+                        )
                     }
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .mhSurfaceInset()
-            .mhSurface(role: .muted)
+
+            HStack(spacing: theme.spacing.control) {
+                Button(primaryActionTitle) {
+                    onOpen()
+                }
+                .buttonStyle(.mhSecondary)
+
+                if let routeURL {
+                    ShareLink(item: routeURL) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    .buttonStyle(.mhSecondary)
+                }
+            }
         }
-        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
     }
 
     var categoryControlTitle: String {
         query.category?.title ?? "All Categories"
     }
 
-    var visibleReviewMetrics: [(title: String, value: Int)] {
-        let metrics: [(title: String, value: Int)] = [
-            ("First Mark", reviewSummary.untouchedCount),
-            ("Dormant", reviewSummary.dormantCount),
-            ("Recovery", reviewSummary.recoveryCandidateCount)
+    var visibleReviewMetrics: [(title: String, value: String)] {
+        let metrics: [(title: String, value: String)] = [
+            ("First Mark", "\(reviewSummary.untouchedCount)"),
+            ("Dormant", "\(reviewSummary.dormantCount)"),
+            ("Recovery", "\(reviewSummary.recoveryCandidateCount)")
         ]
 
         if reviewPreferences.showCompletedSections {
             return metrics
         }
 
-        return metrics.filter { $0.value > 0 }
+        return metrics.filter { metric in
+            metric.value != "0"
+        }
     }
 
     var reviewCardSupportingText: String {
@@ -345,6 +425,9 @@ private extension StallyHomeView {
             ),
             reviewPreferences: .init(),
             reviewSummary: ItemReviewCalculator.summary(from: items),
+            archiveSummary: ItemInsightsCalculator.archiveSummary(
+                from: ItemInsightsCalculator.archivedItems(from: items)
+            ),
             onOpenItem: { _ in
                 // no-op
             },
@@ -377,6 +460,7 @@ private extension StallyHomeView {
             items: [],
             reviewPreferences: .init(),
             reviewSummary: ItemReviewCalculator.summary(from: []),
+            archiveSummary: ItemInsightsCalculator.archiveSummary(from: []),
             onOpenItem: { _ in
                 // no-op
             },

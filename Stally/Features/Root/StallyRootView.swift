@@ -64,6 +64,9 @@ struct StallyRootView: View {
                 items: activeItems,
                 reviewPreferences: reviewPreferences,
                 reviewSummary: reviewSummary,
+                archiveSummary: ItemInsightsCalculator.archiveSummary(
+                    from: archivedItems
+                ),
                 onOpenItem: { itemID in
                     path.append(.item(itemID))
                 },
