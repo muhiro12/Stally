@@ -22,7 +22,7 @@ extension StallyRootView {
                 onDeleteAll: deleteAllItems
             )
         case .insights:
-            StallyInsightsView()
+            StallyInsightsView(items: items)
         case .review:
             StallyReviewView(
                 items: items,
