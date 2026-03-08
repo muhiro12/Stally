@@ -10,6 +10,22 @@ public enum ItemInsightsCalculator {
         public let isMarkedToday: Bool
     }
 
+    /// Aggregate insight values for active items shown on Home.
+    public struct ActiveCollectionSummary: Equatable, Sendable {
+        public let totalItems: Int
+        public let markedTodayCount: Int
+        public let neverMarkedCount: Int
+        public let totalMarks: Int
+    }
+
+    /// Aggregate insight values for archived items shown in Archive.
+    public struct ArchiveCollectionSummary: Equatable, Sendable {
+        public let totalItems: Int
+        public let itemsWithMarksCount: Int
+        public let totalMarks: Int
+        public let lastArchivedAt: Date?
+    }
+
     public static func summary(
         for item: Item,
         referenceDate: Date = .now,
@@ -47,6 +63,30 @@ public enum ItemInsightsCalculator {
         }
     }
 
+    public static func activeSummary(
+        from items: [Item],
+        referenceDate: Date = .now,
+        calendar: Calendar = .current
+    ) -> ActiveCollectionSummary {
+        let activeItems = activeItems(from: items)
+        let itemSummaries = activeItems.map { item in
+            summary(
+                for: item,
+                referenceDate: referenceDate,
+                calendar: calendar
+            )
+        }
+
+        return .init(
+            totalItems: activeItems.count,
+            markedTodayCount: itemSummaries.filter(\.isMarkedToday).count,
+            neverMarkedCount: itemSummaries.filter { $0.totalMarks == .zero }.count,
+            totalMarks: itemSummaries.reduce(into: .zero) { partialResult, summary in
+                partialResult += summary.totalMarks
+            }
+        )
+    }
+
     public static func archivedItems(
         from items: [Item]
     ) -> [Item] {
@@ -55,6 +95,21 @@ public enum ItemInsightsCalculator {
                 item.isArchived
             }
             .sorted(by: archivedSort)
+    }
+
+    public static func archiveSummary(
+        from items: [Item]
+    ) -> ArchiveCollectionSummary {
+        let archivedItems = archivedItems(from: items)
+
+        return .init(
+            totalItems: archivedItems.count,
+            itemsWithMarksCount: archivedItems.filter { !$0.marks.isEmpty }.count,
+            totalMarks: archivedItems.reduce(into: .zero) { partialResult, item in
+                partialResult += item.marks.count
+            },
+            lastArchivedAt: archivedItems.compactMap(\.archivedAt).max()
+        )
     }
 
     public static func items(

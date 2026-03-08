@@ -76,6 +76,123 @@ final class ItemInsightsCalculatorTests: XCTestCase {
         )
     }
 
+    func testActiveSummaryCountsMarkedTodayUntouchedItemsAndTotalMarks() throws {
+        let context = testContext()
+        let markedTodayItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Black Tee",
+                category: .clothing
+            )
+        )
+        let previouslyMarkedItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Canvas Tote",
+                category: .bags
+            )
+        )
+        let untouchedItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Pocket Notebook",
+                category: .notebooks
+            )
+        )
+
+        _ = try MarkService.mark(
+            context: context,
+            item: markedTodayItem,
+            on: localDate(year: 2026, month: 3, day: 8)
+        )
+        _ = try MarkService.mark(
+            context: context,
+            item: previouslyMarkedItem,
+            on: localDate(year: 2026, month: 3, day: 6)
+        )
+        _ = try MarkService.mark(
+            context: context,
+            item: previouslyMarkedItem,
+            on: localDate(year: 2026, month: 3, day: 7)
+        )
+
+        let summary = ItemInsightsCalculator.activeSummary(
+            from: [markedTodayItem, previouslyMarkedItem, untouchedItem],
+            referenceDate: localDate(year: 2026, month: 3, day: 8, hour: 20)
+        )
+
+        XCTAssertEqual(summary.totalItems, 3)
+        XCTAssertEqual(summary.markedTodayCount, 1)
+        XCTAssertEqual(summary.neverMarkedCount, 1)
+        XCTAssertEqual(summary.totalMarks, 3)
+    }
+
+    func testArchiveSummaryTracksMarkedItemsAndLatestArchiveDate() throws {
+        let context = testContext()
+        let recentArchivedItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Recent Coat",
+                category: .clothing
+            )
+        )
+        let olderArchivedItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Old Tote",
+                category: .bags
+            )
+        )
+        let activeItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Active Notebook",
+                category: .notebooks
+            )
+        )
+
+        _ = try MarkService.mark(
+            context: context,
+            item: recentArchivedItem,
+            on: localDate(year: 2026, month: 3, day: 4)
+        )
+        _ = try MarkService.mark(
+            context: context,
+            item: olderArchivedItem,
+            on: localDate(year: 2026, month: 3, day: 1)
+        )
+        _ = try MarkService.mark(
+            context: context,
+            item: olderArchivedItem,
+            on: localDate(year: 2026, month: 3, day: 2)
+        )
+
+        try ItemService.archive(
+            context: context,
+            item: olderArchivedItem,
+            at: localDate(year: 2026, month: 3, day: 3)
+        )
+        try ItemService.archive(
+            context: context,
+            item: recentArchivedItem,
+            at: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        let summary = ItemInsightsCalculator.archiveSummary(
+            from: [olderArchivedItem, activeItem, recentArchivedItem]
+        )
+
+        XCTAssertEqual(summary.totalItems, 2)
+        XCTAssertEqual(summary.itemsWithMarksCount, 2)
+        XCTAssertEqual(summary.totalMarks, 3)
+        XCTAssertTrue(
+            Calendar.current.isDate(
+                summary.lastArchivedAt ?? .distantPast,
+                inSameDayAs: localDate(year: 2026, month: 3, day: 8)
+            )
+        )
+    }
+
     func testItemListQueryFiltersSearchAndCategoryThenSortsByMostMarked() throws {
         let context = testContext()
         let searchedItem = try ItemService.create(
