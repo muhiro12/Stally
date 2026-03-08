@@ -81,7 +81,7 @@ struct StallyRootView: View {
                         path.append(.item(itemID))
                     }
                 case .settings:
-                    settingsPlaceholderView
+                    StallySettingsView()
                 case .item(let itemID):
                     destinationView(for: itemID)
                 }
@@ -155,15 +155,6 @@ private extension StallyRootView {
         items.first { item in
             item.id == itemID
         }
-    }
-
-    var settingsPlaceholderView: some View {
-        ContentUnavailableView(
-            "Settings",
-            systemImage: "gearshape",
-            description: Text("Settings content will live here.")
-        )
-        .navigationTitle("Settings")
     }
 
     @ViewBuilder
