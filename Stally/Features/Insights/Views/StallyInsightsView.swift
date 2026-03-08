@@ -10,6 +10,7 @@ struct StallyInsightsView: View {
     private var theme
 
     @State private var selectedRange: ItemInsightsRange = .last30Days
+    @State private var includeArchivedItems = true
 
     let items: [Item]
 
@@ -42,7 +43,7 @@ private extension StallyInsightsView {
         ItemInsightsCalculator.activitySummary(
             from: items,
             range: selectedRange,
-            includeArchivedItems: true
+            includeArchivedItems: includeArchivedItems
         )
     }
 
@@ -50,7 +51,7 @@ private extension StallyInsightsView {
         ItemInsightsCalculator.activityDays(
             from: items,
             range: selectedRange,
-            includeArchivedItems: true
+            includeArchivedItems: includeArchivedItems
         )
     }
 
@@ -58,7 +59,7 @@ private extension StallyInsightsView {
         ItemInsightsCalculator.streakSummary(
             from: items,
             range: selectedRange,
-            includeArchivedItems: true
+            includeArchivedItems: includeArchivedItems
         )
     }
 
@@ -66,7 +67,7 @@ private extension StallyInsightsView {
         ItemInsightsCalculator.cadenceSummary(
             from: items,
             range: selectedRange,
-            includeArchivedItems: true
+            includeArchivedItems: includeArchivedItems
         )
     }
 
@@ -74,7 +75,7 @@ private extension StallyInsightsView {
         ItemInsightsCalculator.healthSummary(
             from: items,
             range: selectedRange,
-            includeArchivedItems: true
+            includeArchivedItems: includeArchivedItems
         )
     }
 
@@ -90,7 +91,7 @@ private extension StallyInsightsView {
         ItemInsightsCalculator.categorySummaries(
             from: items,
             range: selectedRange,
-            includeArchivedItems: true
+            includeArchivedItems: includeArchivedItems
         )
     }
 
@@ -98,7 +99,7 @@ private extension StallyInsightsView {
         ItemInsightsCalculator.weekdaySummaries(
             from: items,
             range: selectedRange,
-            includeArchivedItems: true
+            includeArchivedItems: includeArchivedItems
         )
     }
 
@@ -106,7 +107,7 @@ private extension StallyInsightsView {
         ItemInsightsCalculator.monthlySummaries(
             from: items,
             range: selectedRange,
-            includeArchivedItems: true
+            includeArchivedItems: includeArchivedItems
         )
     }
 
@@ -114,7 +115,7 @@ private extension StallyInsightsView {
         ItemInsightsCalculator.topItemRankings(
             from: items,
             range: selectedRange,
-            includeArchivedItems: true
+            includeArchivedItems: includeArchivedItems
         )
     }
 
@@ -122,7 +123,7 @@ private extension StallyInsightsView {
         ItemInsightsCalculator.quietItemRankings(
             from: items,
             range: selectedRange,
-            includeArchivedItems: true
+            includeArchivedItems: includeArchivedItems
         )
     }
 
@@ -187,6 +188,11 @@ private extension StallyInsightsView {
 
             Text("All metrics on this screen follow the selected window.")
                 .mhRowSupporting()
+
+            Toggle(
+                "Include archived items",
+                isOn: $includeArchivedItems
+            )
         }
         .mhSection(title: Text("Controls"))
     }
