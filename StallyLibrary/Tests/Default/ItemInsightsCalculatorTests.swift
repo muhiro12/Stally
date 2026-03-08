@@ -303,4 +303,114 @@ final class ItemInsightsCalculatorTests: XCTestCase {
             [laterArchivedItem.id, earlierArchivedItem.id]
         )
     }
+
+    func testItemListQueryQuickFilterSeparatesMarkedAndOpenItemsForReferenceDay() throws {
+        let context = testContext()
+        let markedTodayItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Marked Tee",
+                category: .clothing
+            )
+        )
+        let openTodayItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Open Tee",
+                category: .clothing
+            )
+        )
+
+        _ = try MarkService.mark(
+            context: context,
+            item: markedTodayItem,
+            on: localDate(year: 2026, month: 3, day: 8)
+        )
+        _ = try MarkService.mark(
+            context: context,
+            item: openTodayItem,
+            on: localDate(year: 2026, month: 3, day: 6)
+        )
+
+        let markedResults = ItemInsightsCalculator.items(
+            from: [openTodayItem, markedTodayItem],
+            matching: .init(
+                quickFilter: .markedOnReferenceDay
+            ),
+            kind: .active,
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+        let openResults = ItemInsightsCalculator.items(
+            from: [openTodayItem, markedTodayItem],
+            matching: .init(
+                quickFilter: .unmarkedOnReferenceDay
+            ),
+            kind: .active,
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        XCTAssertEqual(markedResults.map(\.id), [markedTodayItem.id])
+        XCTAssertEqual(openResults.map(\.id), [openTodayItem.id])
+    }
+
+    func testItemListQueryQuickFilterSeparatesItemsWithAndWithoutHistory() throws {
+        let context = testContext()
+        let withHistoryItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "History Tote",
+                category: .bags
+            )
+        )
+        let withoutHistoryItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Fresh Tote",
+                category: .bags
+            )
+        )
+        let archivedItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Archived Tote",
+                category: .bags
+            )
+        )
+
+        _ = try MarkService.mark(
+            context: context,
+            item: withHistoryItem,
+            on: localDate(year: 2026, month: 3, day: 5)
+        )
+        _ = try MarkService.mark(
+            context: context,
+            item: archivedItem,
+            on: localDate(year: 2026, month: 3, day: 2)
+        )
+        try ItemService.archive(
+            context: context,
+            item: archivedItem,
+            at: localDate(year: 2026, month: 3, day: 6)
+        )
+
+        let activeWithoutHistory = ItemInsightsCalculator.items(
+            from: [withHistoryItem, withoutHistoryItem, archivedItem],
+            matching: .init(
+                quickFilter: .withoutHistory
+            ),
+            kind: .active,
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+        let archivedWithHistory = ItemInsightsCalculator.items(
+            from: [withHistoryItem, withoutHistoryItem, archivedItem],
+            matching: .init(
+                quickFilter: .withHistory
+            ),
+            kind: .archived,
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        XCTAssertEqual(activeWithoutHistory.map(\.id), [withoutHistoryItem.id])
+        XCTAssertEqual(archivedWithHistory.map(\.id), [archivedItem.id])
+    }
 }

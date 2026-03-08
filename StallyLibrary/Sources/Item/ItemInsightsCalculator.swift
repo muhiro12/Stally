@@ -125,6 +125,13 @@ public enum ItemInsightsCalculator {
             referenceDate: referenceDate,
             calendar: calendar
         )
+        let itemSummaries = query.quickFilter == nil
+            ? [:]
+            : summariesByID(
+                for: defaultOrderedItems,
+                referenceDate: referenceDate,
+                calendar: calendar
+            )
 
         let filteredItems = defaultOrderedItems.filter { item in
             matchesSearch(
@@ -133,6 +140,10 @@ public enum ItemInsightsCalculator {
             ) && matchesCategory(
                 item: item,
                 category: query.category
+            ) && matchesQuickFilter(
+                item: item,
+                summary: itemSummaries[item.id],
+                quickFilter: query.quickFilter
             )
         }
 
@@ -287,6 +298,30 @@ private extension ItemInsightsCalculator {
         }
 
         return item.category == category
+    }
+
+    static func matchesQuickFilter(
+        item: Item,
+        summary: ItemSummary?,
+        quickFilter: ItemListQuery.QuickFilter?
+    ) -> Bool {
+        guard let quickFilter else {
+            return true
+        }
+
+        let totalMarks = summary?.totalMarks ?? item.marks.count
+        let isMarkedOnReferenceDay = summary?.isMarkedToday == true
+
+        switch quickFilter {
+        case .markedOnReferenceDay:
+            return isMarkedOnReferenceDay
+        case .unmarkedOnReferenceDay:
+            return !isMarkedOnReferenceDay
+        case .withHistory:
+            return totalMarks > .zero
+        case .withoutHistory:
+            return totalMarks == .zero
+        }
     }
 
     static func compareDescending(
