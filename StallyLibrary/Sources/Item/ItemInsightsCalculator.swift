@@ -490,6 +490,46 @@ public enum ItemInsightsCalculator {
         )
     }
 
+    /// Builds contiguous monthly summaries for the selected insight range.
+    public static func monthlySummaries(
+        from items: [Item],
+        range: ItemInsightsRange,
+        includeArchivedItems: Bool = false,
+        referenceDate: Date = .now,
+        calendar: Calendar = .current
+    ) -> [CollectionMonthSummary] {
+        let scopedItems = scopedItems(
+            from: items,
+            includeArchivedItems: includeArchivedItems
+        )
+        guard let windowStart = activityWindowStart(
+            from: scopedItems,
+            range: range,
+            referenceDate: referenceDate,
+            calendar: calendar
+        ) else {
+            return []
+        }
+
+        let windowEnd = DayStamp.storageDate(
+            from: referenceDate,
+            calendar: calendar
+        )
+        let groupedMarks = marksByDay(
+            from: scopedItems,
+            startingAt: windowStart,
+            endingAt: windowEnd,
+            calendar: calendar
+        )
+
+        return monthlySummaries(
+            startingAt: windowStart,
+            endingAt: windowEnd,
+            marksByDay: groupedMarks,
+            calendar: calendar
+        )
+    }
+
     /// Applies search, filter, and sort options to a list of items.
     public static func items(
         from items: [Item],

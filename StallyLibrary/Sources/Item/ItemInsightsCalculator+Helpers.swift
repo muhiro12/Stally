@@ -23,6 +23,13 @@ extension ItemInsightsCalculator {
         var activeDays = 0
     }
 
+    struct MonthRecord {
+        var markCount = 0
+        var activeDays = 0
+        var uniqueItemIDs = Set<UUID>()
+        var uniqueCategories = Set<ItemCategory>()
+    }
+
     static func defaultOrderedItems(
         from items: [Item],
         kind: ItemListQuery.ListKind,
@@ -729,5 +736,86 @@ extension ItemInsightsCalculator {
             .sorted(by: order)
             .prefix(max(limit, .zero))
             .map { $0 }
+    }
+
+    static func monthlySummaries(
+        startingAt windowStart: Date,
+        endingAt windowEnd: Date,
+        marksByDay: [Date: [ActivityMarkRecord]],
+        calendar: Calendar
+    ) -> [CollectionMonthSummary] {
+        guard let firstMonthStart = calendar.dateInterval(
+            of: .month,
+            for: windowStart
+        )?.start,
+        let lastMonthStart = calendar.dateInterval(
+            of: .month,
+            for: windowEnd
+        )?.start else {
+            return []
+        }
+
+        let monthFormatter = monthTitleFormatter(calendar: calendar)
+        var records = [Date: MonthRecord]()
+        for (day, marks) in marksByDay {
+            guard let monthStart = calendar.dateInterval(
+                of: .month,
+                for: day
+            )?.start else {
+                continue
+            }
+
+            records[monthStart, default: .init()].markCount += marks.count
+            records[monthStart, default: .init()].activeDays += 1
+            records[monthStart, default: .init()].uniqueItemIDs.formUnion(
+                marks.map(\.itemID)
+            )
+            records[monthStart, default: .init()].uniqueCategories.formUnion(
+                marks.map(\.category)
+            )
+        }
+
+        var summaries: [CollectionMonthSummary] = []
+        var cursor = firstMonthStart
+        while cursor <= lastMonthStart {
+            let record = records[cursor, default: .init()]
+
+            summaries.append(
+                .init(
+                    monthStart: cursor,
+                    monthTitle: monthFormatter.string(from: cursor),
+                    markCount: record.markCount,
+                    activeDays: record.activeDays,
+                    uniqueItems: record.uniqueItemIDs.count,
+                    uniqueCategories: record.uniqueCategories.count,
+                    averageMarksPerActiveDay: averagePerUnit(
+                        total: record.markCount,
+                        count: record.activeDays
+                    )
+                )
+            )
+
+            guard let nextMonth = calendar.date(
+                byAdding: .month,
+                value: 1,
+                to: cursor
+            ) else {
+                break
+            }
+
+            cursor = nextMonth
+        }
+
+        return summaries
+    }
+
+    static func monthTitleFormatter(
+        calendar: Calendar
+    ) -> DateFormatter {
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = calendar.locale ?? .current
+        formatter.setLocalizedDateFormatFromTemplate("MMM yyyy")
+        return formatter
     }
 }
