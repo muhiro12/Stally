@@ -294,4 +294,49 @@ final class ItemReviewCalculatorTests: XCTestCase {
         XCTAssertEqual(afterArchive.recoveryCandidateCount, 1)
         XCTAssertEqual(afterArchive.totalReviewCount, 1)
     }
+
+    func testUnarchivingRecoveryItemCanMakeItHealthyAgain() throws {
+        let context = testContext()
+        let recoveryItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Recovered Coat",
+                category: .clothing
+            ),
+            createdAt: localDate(year: 2026, month: 1, day: 1)
+        )
+
+        _ = try MarkService.mark(
+            context: context,
+            item: recoveryItem,
+            on: localDate(year: 2026, month: 3, day: 5)
+        )
+        try ItemService.archive(
+            context: context,
+            item: recoveryItem,
+            at: localDate(year: 2026, month: 3, day: 6)
+        )
+
+        let beforeUnarchive = ItemReviewCalculator.summary(
+            from: [recoveryItem],
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        try ItemService.unarchive(
+            context: context,
+            item: recoveryItem,
+            at: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        let afterUnarchive = ItemReviewCalculator.summary(
+            from: [recoveryItem],
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        XCTAssertEqual(beforeUnarchive.recoveryCandidateCount, 1)
+        XCTAssertEqual(beforeUnarchive.totalReviewCount, 1)
+        XCTAssertEqual(afterUnarchive.recoveryCandidateCount, 0)
+        XCTAssertEqual(afterUnarchive.healthyCount, 1)
+        XCTAssertEqual(afterUnarchive.totalReviewCount, 0)
+    }
 }

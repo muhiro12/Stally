@@ -18,6 +18,7 @@ struct StallyReviewView: View {
     let policy: ItemReviewPolicy
     let onArchiveItem: (Item) -> Void
     let onArchiveItems: ([Item]) -> Void
+    let onUnarchiveItem: (Item) -> Void
     let onOpenItem: (UUID) -> Void
 
     var body: some View {
@@ -36,13 +37,7 @@ struct StallyReviewView: View {
                 }
 
                 if !recoveryCandidateItems.isEmpty {
-                    reviewSection(
-                        title: "Recovery Candidates",
-                        supporting: "Archived items with enough history that they may deserve another turn.",
-                        items: recoveryCandidateItems
-                    ) { item in
-                        reviewRow(item: item)
-                    }
+                    recoverySection
                 }
             }
         }
@@ -260,6 +255,20 @@ private extension StallyReviewView {
                     onItemAction: onArchiveItem
                 )
             }
+        }
+    }
+
+    var recoverySection: some View {
+        reviewSection(
+            title: "Recovery Candidates",
+            supporting: "Archived items with enough history that they may deserve another turn.",
+            items: recoveryCandidateItems
+        ) { item in
+            actionableReviewRow(
+                item: item,
+                actionTitle: "Move Back to Home",
+                onItemAction: onUnarchiveItem
+            )
         }
     }
 
@@ -504,6 +513,9 @@ private extension StallyReviewView {
                 // no-op
             },
             onArchiveItems: { _ in
+                // no-op
+            },
+            onUnarchiveItem: { _ in
                 // no-op
             },
             onOpenItem: { _ in
