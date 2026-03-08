@@ -17,6 +17,7 @@ struct StallyInsightsView: View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {
             overviewCard
             rangeSection
+            activitySection
             pendingSectionsCard
         }
         .mhScreen(
@@ -35,6 +36,14 @@ private extension StallyInsightsView {
 
     var activitySummary: CollectionActivitySummary {
         ItemInsightsCalculator.activitySummary(
+            from: items,
+            range: selectedRange,
+            includeArchivedItems: true
+        )
+    }
+
+    var activityDays: [CollectionActivityDay] {
+        ItemInsightsCalculator.activityDays(
             from: items,
             range: selectedRange,
             includeArchivedItems: true
@@ -120,6 +129,14 @@ private extension StallyInsightsView {
                 .mhRowSupporting()
         }
         .mhSection(title: Text("Controls"))
+    }
+
+    var activitySection: some View {
+        StallyInsightsActivitySection(
+            days: activityDays,
+            summary: activitySummary,
+            usesCompactLayout: usesCompactLayout
+        )
     }
 
     var pendingSectionsCard: some View {
