@@ -25,6 +25,7 @@ struct StallyArchiveView: View {
                 .mhSurface()
             } else {
                 queryControls
+                archiveQuickFilters
                 archiveSummaryCard
 
                 if displayedItems.isEmpty {
@@ -58,6 +59,14 @@ private extension StallyArchiveView {
 
     var displayedSummary: ItemInsightsCalculator.ArchiveCollectionSummary {
         ItemInsightsCalculator.archiveSummary(from: displayedItems)
+    }
+
+    var availableQuickFilters: [(title: String, filter: ItemListQuery.QuickFilter?)] {
+        [
+            ("All", nil),
+            ("With History", .withHistory),
+            ("Without History", .withoutHistory)
+        ]
     }
 
     var queryControls: some View {
@@ -146,6 +155,24 @@ private extension StallyArchiveView {
         }
         .mhSurfaceInset()
         .mhSurface(role: .muted)
+    }
+
+    var archiveQuickFilters: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: theme.spacing.control) {
+                ForEach(availableQuickFilters, id: \.title) { option in
+                    Button(option.title) {
+                        query.quickFilter = option.filter
+                    }
+                    .buttonStyle(
+                        option.filter == query.quickFilter
+                            ? .mhPrimary
+                            : .mhSecondary
+                    )
+                }
+            }
+            .padding(.vertical, 2)
+        }
     }
 
     var categoryControlTitle: String {
