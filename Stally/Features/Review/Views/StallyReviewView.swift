@@ -29,13 +29,7 @@ struct StallyReviewView: View {
                 }
 
                 if !dormantItems.isEmpty {
-                    reviewSection(
-                        title: "Dormant",
-                        supporting: "Items whose last mark feels far enough away to revisit.",
-                        items: dormantItems
-                    ) { item in
-                        reviewRow(item: item)
-                    }
+                    dormantSection
                 }
 
                 if !recoveryCandidateItems.isEmpty {
@@ -219,6 +213,20 @@ private extension StallyReviewView {
                 .buttonStyle(.mhPrimary)
                 .disabled(selectedUntouchedItems.isEmpty)
             }
+        }
+    }
+
+    var dormantSection: some View {
+        reviewSection(
+            title: "Dormant",
+            supporting: "Items whose last mark feels far enough away to revisit.",
+            items: dormantItems
+        ) { item in
+            actionableReviewRow(
+                item: item,
+                actionTitle: "Archive Item",
+                onItemAction: onArchiveItem
+            )
         }
     }
 

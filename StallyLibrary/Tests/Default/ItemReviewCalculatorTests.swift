@@ -254,4 +254,44 @@ final class ItemReviewCalculatorTests: XCTestCase {
         XCTAssertEqual(afterArchive.coldArchiveCount, 1)
         XCTAssertEqual(afterArchive.totalReviewCount, 0)
     }
+
+    func testArchivingDormantItemRemovesItFromReviewCounts() throws {
+        let context = testContext()
+        let dormantItem = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Sleepy Coat",
+                category: .clothing
+            ),
+            createdAt: localDate(year: 2026, month: 1, day: 1)
+        )
+
+        _ = try MarkService.mark(
+            context: context,
+            item: dormantItem,
+            on: localDate(year: 2026, month: 2, day: 1)
+        )
+
+        let beforeArchive = ItemReviewCalculator.summary(
+            from: [dormantItem],
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        try ItemService.archive(
+            context: context,
+            item: dormantItem,
+            at: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        let afterArchive = ItemReviewCalculator.summary(
+            from: [dormantItem],
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        XCTAssertEqual(beforeArchive.dormantCount, 1)
+        XCTAssertEqual(beforeArchive.totalReviewCount, 1)
+        XCTAssertEqual(afterArchive.dormantCount, 0)
+        XCTAssertEqual(afterArchive.recoveryCandidateCount, 1)
+        XCTAssertEqual(afterArchive.totalReviewCount, 1)
+    }
 }
