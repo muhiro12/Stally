@@ -1,6 +1,8 @@
+import MHDeepLinking
 import MHUI
 import StallyLibrary
 import SwiftUI
+import UIKit
 
 struct StallyItemCard: View {
     @Environment(\.mhTheme)
@@ -30,6 +32,13 @@ struct StallyItemCard: View {
                 )
             }
             .buttonStyle(.plain)
+            .contextMenu {
+                if let itemLinkURL {
+                    Button("Copy Item Link", systemImage: "link") {
+                        UIPasteboard.general.url = itemLinkURL
+                    }
+                }
+            }
 
             markButton
         }
@@ -96,6 +105,12 @@ private extension StallyItemCard {
         }
 
         return "One mark is enough for today."
+    }
+
+    var itemLinkURL: URL? {
+        StallyDeepLinking.codec().preferredURL(
+            for: .item(item.id)
+        )
     }
 
     func statRow(
