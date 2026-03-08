@@ -22,6 +22,7 @@ struct StallyItemDetailView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.section) {
             heroSection
+            insightsSection
             actionSection
 
             if let note = item.note {
@@ -79,6 +80,15 @@ private extension StallyItemDetailView {
         StallyDeepLinking.codec().preferredURL(
             for: .item(item.id)
         )
+    }
+
+    var insightMetrics: [StallyMetricGrid.Metric] {
+        [
+            .init(title: "Marks (30d)", value: "\(markCount(inLast: 30))"),
+            .init(title: "Marks (90d)", value: "\(markCount(inLast: 90))"),
+            .init(title: "Months Used", value: "\(activeMonthCount)"),
+            .init(title: "Days Since Last", value: daysSinceLastMarkTitle)
+        ]
     }
 
     var heroSection: some View {
@@ -160,6 +170,22 @@ private extension StallyItemDetailView {
         .mhSection(
             title: Text("Actions"),
             supporting: Text("Mark the item for today or move it in and out of Archive without affecting past marks.")
+        )
+    }
+
+    var insightsSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Text("A tighter read on this one item across the last 30 and 90 days.")
+                .mhRowSupporting()
+
+            StallyMetricGrid(
+                metrics: insightMetrics,
+                usesCompactLayout: usesCompactLayout
+            )
+        }
+        .mhSection(
+            title: Text("Insights"),
+            supporting: Text("This helps you judge whether the item is current, fading, or still mostly historical.")
         )
     }
 
@@ -312,6 +338,52 @@ private extension StallyItemDetailView {
         if didSucceed {
             isHistoryEditorPresented = false
         }
+    }
+
+    func markCount(
+        inLast dayCount: Int
+    ) -> Int {
+        guard let windowStart = Calendar.current.date(
+            byAdding: .day,
+            value: -(dayCount - 1),
+            to: Date.now
+        ) else {
+            return .zero
+        }
+
+        let startDay = Calendar.current.startOfDay(for: windowStart)
+        let endDay = Calendar.current.startOfDay(for: Date.now)
+
+        return item.marks.filter { mark in
+            let day = Calendar.current.startOfDay(for: mark.day)
+            return day >= startDay && day <= endDay
+        }.count
+    }
+
+    var activeMonthCount: Int {
+        Set(
+            item.marks.map { mark in
+                let components = Calendar.current.dateComponents(
+                    [.year, .month],
+                    from: mark.day
+                )
+                return "\(components.year ?? 0)-\(components.month ?? 0)"
+            }
+        ).count
+    }
+
+    var daysSinceLastMarkTitle: String {
+        guard let lastMarkedAt = summary.lastMarkedAt else {
+            return "Never"
+        }
+
+        let dayCount = Calendar.current.dateComponents(
+            [.day],
+            from: Calendar.current.startOfDay(for: lastMarkedAt),
+            to: Calendar.current.startOfDay(for: Date.now)
+        ).day ?? .zero
+
+        return "\(max(dayCount, 0))"
     }
 }
 
