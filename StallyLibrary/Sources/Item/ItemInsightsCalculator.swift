@@ -594,6 +594,119 @@ public enum ItemInsightsCalculator {
         )
     }
 
+    /// Builds recommended next actions from the current insight state.
+    public static func recommendations(
+        from items: [Item],
+        range: ItemInsightsRange,
+        includeArchivedItems: Bool = false,
+        referenceDate: Date = .now,
+        calendar: Calendar = .current
+    ) -> [CollectionRecommendation] {
+        let scopedItems = scopedItems(
+            from: items,
+            includeArchivedItems: includeArchivedItems
+        )
+        let activitySummary = activitySummary(
+            from: scopedItems,
+            range: range,
+            includeArchivedItems: true,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        let healthSummary = healthSummary(
+            from: scopedItems,
+            range: range,
+            includeArchivedItems: true,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        let quietRankings = quietItemRankings(
+            from: scopedItems,
+            range: range,
+            includeArchivedItems: true,
+            limit: 3,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        let topRankings = topItemRankings(
+            from: scopedItems,
+            range: range,
+            includeArchivedItems: true,
+            limit: 3,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        let streakSummary = streakSummary(
+            from: scopedItems,
+            range: range,
+            includeArchivedItems: true,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+
+        var recommendations: [CollectionRecommendation] = []
+
+        if activitySummary.totalMarks == .zero, let firstItem = scopedItems.first {
+            recommendations.append(
+                .init(
+                    kind: .startTracking,
+                    title: "Start this range with one mark",
+                    message: "Nothing is marked in \(range.title.lowercased()) yet. One mark is enough to restart the signal.",
+                    itemIDs: [firstItem.id]
+                )
+            )
+        }
+
+        let quietItemIDs = quietRankings
+            .filter { ranking in
+                ranking.totalLifetimeMarks > .zero && ranking.totalMarksInRange == .zero
+            }
+            .map(\.itemID)
+        if !quietItemIDs.isEmpty {
+            recommendations.append(
+                .init(
+                    kind: .revisitQuietItems,
+                    title: "Revisit quiet favorites",
+                    message: "These items have history but no marks in the selected range.",
+                    itemIDs: quietItemIDs
+                )
+            )
+        }
+
+        let noteCandidateIDs: [UUID] = topRankings
+            .compactMap { ranking in
+                scopedItems.first(where: { $0.id == ranking.itemID })
+            }
+            .filter { item in
+                let note = item.note?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                return note.isEmpty
+            }
+            .map(\.id)
+        if healthSummary.noteCoverage < 0.5, !noteCandidateIDs.isEmpty {
+            recommendations.append(
+                .init(
+                    kind: .addContext,
+                    title: "Add context to your frequent items",
+                    message: "Several active items still have no note. A short note makes the history easier to read later.",
+                    itemIDs: noteCandidateIDs
+                )
+            )
+        }
+
+        if streakSummary.currentStreakDays >= 3, let leadItemID = topRankings.first?.itemID {
+            recommendations.append(
+                .init(
+                    kind: .protectStreak,
+                    title: "Protect the current streak",
+                    message: "You already have a \(streakSummary.currentStreakDays)-day streak in motion. Keep it alive today.",
+                    itemIDs: [leadItemID]
+                )
+            )
+        }
+
+        return recommendations
+    }
+
     /// Applies search, filter, and sort options to a list of items.
     public static func items(
         from items: [Item],
