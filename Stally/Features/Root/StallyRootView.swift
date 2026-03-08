@@ -78,6 +78,9 @@ struct StallyRootView: View {
                 onOpenArchive: {
                     path.append(.archive)
                 },
+                onOpenBackup: {
+                    path.append(.backup)
+                },
                 onOpenReview: {
                     path.append(.review)
                 },

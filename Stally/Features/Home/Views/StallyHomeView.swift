@@ -18,6 +18,7 @@ struct StallyHomeView: View {
     let onCreateItem: () -> Void
     let onSeedSampleData: () -> Void
     let onOpenArchive: () -> Void
+    let onOpenBackup: () -> Void
     let onOpenReview: () -> Void
     let onOpenSettings: () -> Void
     let onToggleTodayMark: (Item) -> Void
@@ -32,6 +33,7 @@ struct StallyHomeView: View {
                 homeSummaryCard
                 reviewEntryCard
                 archiveEntryCard
+                backupEntryCard
 
                 if displayedItems.isEmpty {
                     filteredEmptyState
@@ -89,6 +91,12 @@ private extension StallyHomeView {
     var archiveRouteURL: URL? {
         StallyDeepLinking.codec().preferredURL(
             for: .archive
+        )
+    }
+
+    var backupRouteURL: URL? {
+        StallyDeepLinking.codec().preferredURL(
+            for: .backup
         )
     }
 
@@ -177,6 +185,11 @@ private extension StallyHomeView {
 
             Button("Try Sample Items", systemImage: "sparkles.rectangle.stack") {
                 onSeedSampleData()
+            }
+            .buttonStyle(.mhSecondary)
+
+            Button("Restore From Backup", systemImage: "externaldrive.badge.icloud") {
+                onOpenBackup()
             }
             .buttonStyle(.mhSecondary)
 
@@ -272,12 +285,33 @@ private extension StallyHomeView {
         )
     }
 
+    var backupEntryCard: some View {
+        routeEntryCard(
+            title: "Backup Center",
+            value: "\(items.count)",
+            supporting: backupCardSupportingText,
+            metrics: backupEntryMetrics,
+            primaryActionTitle: "Open Backup Center",
+            routeURL: backupRouteURL,
+            onOpen: onOpenBackup
+        )
+    }
+
     var archiveEntryMetrics: [(title: String, value: String)] {
         [
             ("Items", "\(archiveSummary.totalItems)"),
             ("With History", "\(archiveSummary.itemsWithMarksCount)"),
             ("Saved Marks", "\(archiveSummary.totalMarks)"),
             ("Latest Archive", archiveLatestDateTitle)
+        ]
+    }
+
+    var backupEntryMetrics: [(title: String, value: String)] {
+        [
+            ("Library", "\(items.count)"),
+            ("Active", "\(displayedSummary.totalItems)"),
+            ("Archived", "\(archiveSummary.totalItems)"),
+            ("Marks", "\(displayedSummary.totalMarks + archiveSummary.totalMarks)")
         ]
     }
 
@@ -292,6 +326,14 @@ private extension StallyHomeView {
         }
 
         return "Keep preserved favorites close without letting them crowd the active list."
+    }
+
+    var backupCardSupportingText: String {
+        if items.isEmpty {
+            return "Restore a previous snapshot or keep an export ready before you start tracking again."
+        }
+
+        return "Export the full library, preview imported snapshots, and keep higher-risk restore actions in one place."
     }
 
     func routeEntryCard(
@@ -440,6 +482,9 @@ private extension StallyHomeView {
             onOpenArchive: {
                 // no-op
             },
+            onOpenBackup: {
+                // no-op
+            },
             onOpenReview: {
                 // no-op
             },
@@ -471,6 +516,9 @@ private extension StallyHomeView {
                 // no-op
             },
             onOpenArchive: {
+                // no-op
+            },
+            onOpenBackup: {
                 // no-op
             },
             onOpenReview: {
