@@ -1,7 +1,9 @@
+import MHDeepLinking
 import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
+import UIKit
 
 struct StallyReviewView: View {
     @Environment(\.mhTheme)
@@ -185,6 +187,14 @@ private extension StallyReviewView {
 
     var shouldShowRecoverySection: Bool {
         showsCompletedSections || !recoveryCandidateItems.isEmpty
+    }
+
+    func itemLinkURL(
+        for item: Item
+    ) -> URL? {
+        StallyDeepLinking.codec().preferredURL(
+            for: .item(item.id)
+        )
     }
 
     var summaryCard: some View {
@@ -529,6 +539,13 @@ private extension StallyReviewView {
         .frame(maxWidth: .infinity, alignment: .leading)
         .mhSurfaceInset()
         .mhSurface()
+        .contextMenu {
+            if let itemLinkURL = itemLinkURL(for: item) {
+                Button("Copy Item Link", systemImage: "link") {
+                    UIPasteboard.general.url = itemLinkURL
+                }
+            }
+        }
     }
 
     func toggleUntouchedSelectionMode() {
