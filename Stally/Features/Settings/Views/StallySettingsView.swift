@@ -1,11 +1,16 @@
+import MHPlatform
 import MHUI
 import SwiftUI
 
 struct StallySettingsView: View {
+    @Environment(MHAppRuntime.self)
+    private var appRuntime
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             aboutSection
             buildSection
+            resourcesSection
         }
         .mhScreen(
             title: Text("Settings"),
@@ -39,6 +44,25 @@ private extension StallySettingsView {
                 .labeledContentStyle(.mhKeyValue)
         }
         .mhSection(title: Text("Build"))
+    }
+
+    @ViewBuilder
+    var resourcesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if appRuntime.configuration.showsLicenses {
+                NavigationLink {
+                    appRuntime.licensesView()
+                        .navigationTitle("Licenses")
+                } label: {
+                    Label("Open Source Licenses", systemImage: "doc.text.magnifyingglass")
+                }
+                .buttonStyle(.plain)
+            } else {
+                Text("License information is unavailable for this app configuration.")
+                    .mhRowSupporting()
+            }
+        }
+        .mhSection(title: Text("Resources"))
     }
 
     var appVersion: String {
