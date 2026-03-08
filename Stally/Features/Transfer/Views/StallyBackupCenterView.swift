@@ -15,8 +15,23 @@ struct StallyBackupCenterView: View {
     }
 
     private struct ImportExecutionSummary {
+        enum Mode {
+            case merge
+            case replace
+        }
+
+        let mode: Mode
         let sourceName: String
         let result: StallyBackupImportResult
+
+        var title: String {
+            switch mode {
+            case .merge:
+                "Last Merge Result"
+            case .replace:
+                "Last Replace Result"
+            }
+        }
     }
 
     @Environment(\.mhTheme)
@@ -30,9 +45,13 @@ struct StallyBackupCenterView: View {
     @State private var importPreview: ImportPreview?
     @State private var importStatusMessage: String?
     @State private var importExecutionSummary: ImportExecutionSummary?
+    @State private var isReplaceConfirmationPresented = false
+    @State private var isDeleteAllConfirmationPresented = false
 
     let items: [Item]
     let onMergeImport: (StallyBackupSnapshot) throws -> StallyBackupImportResult
+    let onReplaceImport: (StallyBackupSnapshot) throws -> StallyBackupImportResult
+    let onDeleteAll: () throws -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {
@@ -40,6 +59,7 @@ struct StallyBackupCenterView: View {
             exportSection
             importSection
             safetySection
+            resetSection
         }
         .mhScreen(
             title: Text("Backup Center"),
@@ -81,6 +101,38 @@ struct StallyBackupCenterView: View {
             }
         } message: {
             Text(importStatusMessage ?? "")
+        }
+        .confirmationDialog(
+            "Replace the Current Library",
+            isPresented: $isReplaceConfirmationPresented,
+            titleVisibility: .visible
+        ) {
+            Button("Replace Library", role: .destructive) {
+                guard let importPreview else {
+                    return
+                }
+
+                replaceImport(importPreview)
+            }
+            Button("Cancel", role: .cancel) {
+                // no-op
+            }
+        } message: {
+            Text("This removes the current library before restoring the selected backup.")
+        }
+        .confirmationDialog(
+            "Delete Every Item",
+            isPresented: $isDeleteAllConfirmationPresented,
+            titleVisibility: .visible
+        ) {
+            Button("Delete Everything", role: .destructive) {
+                deleteAllItems()
+            }
+            Button("Cancel", role: .cancel) {
+                // no-op
+            }
+        } message: {
+            Text("This clears Home, Archive, photos, notes, and mark history from the current library.")
         }
     }
 }
@@ -223,6 +275,22 @@ private extension StallyBackupCenterView {
         .mhSection(title: Text("Guidance"))
     }
 
+    var resetSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Text("Reset")
+                .mhRowTitle()
+
+            Text("Use this only when you intentionally want an empty library before starting over or testing a restore flow.")
+                .mhRowSupporting()
+
+            Button("Delete Everything", systemImage: "trash") {
+                isDeleteAllConfirmationPresented = true
+            }
+            .buttonStyle(.mhSecondary)
+        }
+        .mhSection(title: Text("Reset Tools"))
+    }
+
     func summaryMetric(
         title: String,
         value: String
@@ -292,7 +360,16 @@ private extension StallyBackupCenterView {
             .buttonStyle(.mhSecondary)
             .disabled(!preview.analysis.canImport)
 
+            Button("Replace Library", systemImage: "arrow.trianglehead.2.clockwise.rotate.90") {
+                isReplaceConfirmationPresented = true
+            }
+            .buttonStyle(.mhSecondary)
+            .disabled(!preview.analysis.canImport)
+
             Text("Merge import creates missing items, updates older local copies, and keeps newer local metadata when conflicts exist.")
+                .mhRowSupporting()
+
+            Text("Replace import deletes the current library first, then restores exactly what is in the backup.")
                 .mhRowSupporting()
         }
         .mhSurfaceInset()
@@ -303,13 +380,17 @@ private extension StallyBackupCenterView {
         _ summary: ImportExecutionSummary
     ) -> some View {
         VStack(alignment: .leading, spacing: theme.spacing.control) {
-            Text("Last Merge Result")
+            Text(summary.title)
                 .mhRowTitle()
 
             Text(summary.sourceName)
                 .mhRowSupporting()
 
             HStack(spacing: theme.spacing.group) {
+                summaryMetric(
+                    title: "Deleted",
+                    value: "\(summary.result.deletedItems)"
+                )
                 summaryMetric(
                     title: "Created",
                     value: "\(summary.result.createdItems)"
@@ -418,6 +499,7 @@ private extension StallyBackupCenterView {
                 preview.analysis.snapshot
             )
             importExecutionSummary = .init(
+                mode: .merge,
                 sourceName: preview.sourceName,
                 result: result
             )
@@ -426,6 +508,38 @@ private extension StallyBackupCenterView {
         } catch {
             importStatusMessage = (error as? LocalizedError)?.errorDescription
                 ?? "Stally couldn't merge this backup."
+        }
+    }
+
+    private func replaceImport(
+        _ preview: ImportPreview
+    ) {
+        do {
+            let result = try onReplaceImport(
+                preview.analysis.snapshot
+            )
+            importExecutionSummary = .init(
+                mode: .replace,
+                sourceName: preview.sourceName,
+                result: result
+            )
+            importPreview = nil
+            importStatusMessage = "Replaced the current library with \(preview.sourceName)."
+        } catch {
+            importStatusMessage = (error as? LocalizedError)?.errorDescription
+                ?? "Stally couldn't replace the current library."
+        }
+    }
+
+    func deleteAllItems() {
+        do {
+            try onDeleteAll()
+            importPreview = nil
+            importExecutionSummary = nil
+            importStatusMessage = "Deleted every item from the current library."
+        } catch {
+            importStatusMessage = (error as? LocalizedError)?.errorDescription
+                ?? "Stally couldn't delete the current library."
         }
     }
 
@@ -495,6 +609,32 @@ private extension StallyBackupCenterView {
                     insertedMarks: 0,
                     skippedMarks: 0
                 )
+            },
+            onReplaceImport: { _ in
+                .init(
+                    analysis: .init(
+                        snapshot: .init(
+                            exportedAt: .now,
+                            items: []
+                        ),
+                        summary: .init(
+                            totalItems: 0,
+                            archivedItems: 0,
+                            totalMarks: 0,
+                            existingItems: 0,
+                            newItems: 0
+                        ),
+                        issues: []
+                    ),
+                    deletedItems: 0,
+                    createdItems: 0,
+                    updatedItems: 0,
+                    insertedMarks: 0,
+                    skippedMarks: 0
+                )
+            },
+            onDeleteAll: {
+                // no-op
             }
         )
     }

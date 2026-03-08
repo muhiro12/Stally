@@ -95,7 +95,9 @@ struct StallyRootView: View {
                 case .backup:
                     StallyBackupCenterView(
                         items: items,
-                        onMergeImport: mergeImport(snapshot:)
+                        onMergeImport: mergeImport(snapshot:),
+                        onReplaceImport: replaceImport(snapshot:),
+                        onDeleteAll: deleteAllItems
                     )
                 case .review:
                     StallyReviewView(
@@ -426,6 +428,21 @@ private extension StallyRootView {
         try StallyBackupImportService.merge(
             context: context,
             snapshot: snapshot
+        )
+    }
+
+    private func replaceImport(
+        snapshot: StallyBackupSnapshot
+    ) throws -> StallyBackupImportResult {
+        try StallyBackupImportService.replace(
+            context: context,
+            snapshot: snapshot
+        )
+    }
+
+    private func deleteAllItems() throws {
+        try ItemService.deleteAll(
+            context: context
         )
     }
 
