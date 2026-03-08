@@ -74,6 +74,25 @@ public enum ItemService {
         try context.save()
     }
 
+    public static func unarchive(
+        context: ModelContext,
+        items: [Item],
+        at date: Date = .now
+    ) throws {
+        var seenItemIDs: Set<UUID> = []
+        var didChange = false
+
+        for item in items
+        where item.isArchived && seenItemIDs.insert(item.id).inserted {
+            item.unarchive(at: date)
+            didChange = true
+        }
+
+        if didChange {
+            try context.save()
+        }
+    }
+
     public static func delete(
         context: ModelContext,
         item: Item

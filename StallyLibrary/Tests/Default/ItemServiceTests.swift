@@ -170,4 +170,62 @@ final class ItemServiceTests: XCTestCase {
         XCTAssertEqual(afterSummary.recoveryCandidateCount, 2)
         XCTAssertEqual(afterSummary.totalReviewCount, 2)
     }
+
+    func testBulkUnarchiveMovesRecoveryItemsBackToHealthyItems() throws {
+        let context = testContext()
+        let recoveryCoat = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Recovery Coat",
+                category: .clothing
+            ),
+            createdAt: localDate(year: 2026, month: 1, day: 1)
+        )
+        let recoveryTote = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Recovery Tote",
+                category: .bags
+            ),
+            createdAt: localDate(year: 2026, month: 1, day: 1)
+        )
+
+        _ = try MarkService.mark(
+            context: context,
+            item: recoveryCoat,
+            on: localDate(year: 2026, month: 3, day: 5)
+        )
+        _ = try MarkService.mark(
+            context: context,
+            item: recoveryTote,
+            on: localDate(year: 2026, month: 3, day: 6)
+        )
+        try ItemService.archive(
+            context: context,
+            items: [recoveryCoat, recoveryTote],
+            at: localDate(year: 2026, month: 3, day: 7)
+        )
+
+        let beforeSummary = ItemReviewCalculator.summary(
+            from: [recoveryCoat, recoveryTote],
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        try ItemService.unarchive(
+            context: context,
+            items: [recoveryCoat, recoveryTote],
+            at: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        let afterSummary = ItemReviewCalculator.summary(
+            from: [recoveryCoat, recoveryTote],
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        XCTAssertEqual(beforeSummary.recoveryCandidateCount, 2)
+        XCTAssertEqual(beforeSummary.totalReviewCount, 2)
+        XCTAssertEqual(afterSummary.recoveryCandidateCount, 0)
+        XCTAssertEqual(afterSummary.healthyCount, 2)
+        XCTAssertEqual(afterSummary.totalReviewCount, 0)
+    }
 }

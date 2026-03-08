@@ -13,12 +13,16 @@ struct StallyReviewView: View {
     @State private var isDormantSelectionModeEnabled = false
     @State private var selectedDormantItemIDs: Set<UUID> = []
     @State private var isDormantBulkArchiveConfirmationPresented = false
+    @State private var isRecoverySelectionModeEnabled = false
+    @State private var selectedRecoveryItemIDs: Set<UUID> = []
+    @State private var isRecoveryBulkUnarchiveConfirmationPresented = false
 
     let items: [Item]
     let policy: ItemReviewPolicy
     let onArchiveItem: (Item) -> Void
     let onArchiveItems: ([Item]) -> Void
     let onUnarchiveItem: (Item) -> Void
+    let onUnarchiveItems: ([Item]) -> Void
     let onOpenItem: (UUID) -> Void
 
     var body: some View {
@@ -74,6 +78,20 @@ struct StallyReviewView: View {
             }
         } message: {
             Text("Archive \(selectedDormantItems.count) dormant items and move them into Recovery Candidates?")
+        }
+        .confirmationDialog(
+            "Move Selected Items Back to Home",
+            isPresented: $isRecoveryBulkUnarchiveConfirmationPresented,
+            titleVisibility: .visible
+        ) {
+            Button("Move Back to Home") {
+                unarchiveSelectedRecoveryItems()
+            }
+            Button("Cancel", role: .cancel) {
+                // no-op
+            }
+        } message: {
+            Text("Move \(selectedRecoveryItems.count) archived items back into Home?")
         }
     }
 }
@@ -140,6 +158,12 @@ private extension StallyReviewView {
     var selectedDormantItems: [Item] {
         dormantItems.filter { item in
             selectedDormantItemIDs.contains(item.id)
+        }
+    }
+
+    var selectedRecoveryItems: [Item] {
+        recoveryCandidateItems.filter { item in
+            selectedRecoveryItemIDs.contains(item.id)
         }
     }
 
@@ -263,12 +287,22 @@ private extension StallyReviewView {
             title: "Recovery Candidates",
             supporting: "Archived items with enough history that they may deserve another turn.",
             items: recoveryCandidateItems
-        ) { item in
-            actionableReviewRow(
-                item: item,
-                actionTitle: "Move Back to Home",
-                onItemAction: onUnarchiveItem
-            )
+        ) {
+            recoverySelectionControls
+        } rowContent: { item in
+            if isRecoverySelectionModeEnabled {
+                selectableReviewRow(
+                    item: item,
+                    isSelected: selectedRecoveryItemIDs.contains(item.id),
+                    onToggleSelection: toggleRecoverySelection(for:)
+                )
+            } else {
+                actionableReviewRow(
+                    item: item,
+                    actionTitle: "Move Back to Home",
+                    onItemAction: onUnarchiveItem
+                )
+            }
         }
     }
 
@@ -290,6 +324,28 @@ private extension StallyReviewView {
                 }
                 .buttonStyle(.mhPrimary)
                 .disabled(selectedDormantItems.isEmpty)
+            }
+        }
+    }
+
+    var recoverySelectionControls: some View {
+        HStack(spacing: theme.spacing.control) {
+            Button(isRecoverySelectionModeEnabled ? "Done" : "Select") {
+                toggleRecoverySelectionMode()
+            }
+            .buttonStyle(.mhSecondary)
+
+            if isRecoverySelectionModeEnabled {
+                Text("\(selectedRecoveryItems.count) selected")
+                    .mhRowSupporting()
+
+                Spacer(minLength: .zero)
+
+                Button("Move Back to Home") {
+                    isRecoveryBulkUnarchiveConfirmationPresented = true
+                }
+                .buttonStyle(.mhPrimary)
+                .disabled(selectedRecoveryItems.isEmpty)
             }
         }
     }
@@ -472,6 +528,36 @@ private extension StallyReviewView {
         isDormantSelectionModeEnabled = false
     }
 
+    func toggleRecoverySelectionMode() {
+        isRecoverySelectionModeEnabled.toggle()
+
+        if !isRecoverySelectionModeEnabled {
+            selectedRecoveryItemIDs.removeAll()
+        }
+    }
+
+    func toggleRecoverySelection(
+        for item: Item
+    ) {
+        if selectedRecoveryItemIDs.contains(item.id) {
+            selectedRecoveryItemIDs.remove(item.id)
+        } else {
+            selectedRecoveryItemIDs.insert(item.id)
+        }
+    }
+
+    func unarchiveSelectedRecoveryItems() {
+        let itemsToUnarchive = selectedRecoveryItems
+
+        guard !itemsToUnarchive.isEmpty else {
+            return
+        }
+
+        onUnarchiveItems(itemsToUnarchive)
+        selectedRecoveryItemIDs.removeAll()
+        isRecoverySelectionModeEnabled = false
+    }
+
     func rowSupportingText(
         summary: ItemSummary,
         snapshot: ItemReviewSnapshot?
@@ -516,6 +602,9 @@ private extension StallyReviewView {
                 // no-op
             },
             onUnarchiveItem: { _ in
+                // no-op
+            },
+            onUnarchiveItems: { _ in
                 // no-op
             },
             onOpenItem: { _ in
