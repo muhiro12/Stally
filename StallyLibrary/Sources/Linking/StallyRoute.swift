@@ -12,6 +12,9 @@ public enum StallyRoute: Equatable, Hashable, Sendable, MHDeepLinkRoute {
     /// Opens backup export and restore tools.
     case backup
 
+    /// Opens the collection insights center.
+    case insights
+
     /// Opens the review workflow.
     case review
 
@@ -33,6 +36,8 @@ public enum StallyRoute: Equatable, Hashable, Sendable, MHDeepLinkRoute {
             .init(pathComponents: ["archive"])
         case .backup:
             .init(pathComponents: ["backup"])
+        case .insights:
+            .init(pathComponents: ["insights"])
         case .review:
             .init(pathComponents: ["review"])
         case .settings:
@@ -60,6 +65,8 @@ public enum StallyRoute: Equatable, Hashable, Sendable, MHDeepLinkRoute {
             self = .archive
         case ["backup"]:
             self = .backup
+        case ["insights"]:
+            self = .insights
         case ["review"]:
             self = .review
         case ["settings"]:

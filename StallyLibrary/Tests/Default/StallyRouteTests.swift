@@ -14,6 +14,10 @@ final class StallyRouteTests: XCTestCase {
             codec.preferredURL(for: .archive)?.absoluteString,
             "stally://archive"
         )
+        XCTAssertEqual(
+            codec.preferredURL(for: .insights)?.absoluteString,
+            "stally://insights"
+        )
     }
 
     func testItemRouteRoundTripsThroughCustomSchemeURL() throws {

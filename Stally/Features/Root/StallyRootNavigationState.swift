@@ -5,6 +5,7 @@ struct StallyRootNavigationState {
     enum Route: Hashable {
         case archive
         case backup
+        case insights
         case item(UUID)
         case review
         case settings

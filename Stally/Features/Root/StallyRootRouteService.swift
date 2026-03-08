@@ -42,6 +42,9 @@ enum StallyRootRouteService {
         case .backup:
             state.dismissEditor()
             state.path = [.backup]
+        case .insights:
+            state.dismissEditor()
+            state.path = [.insights]
         case .review:
             state.dismissEditor()
             state.path = [.review]

@@ -21,6 +21,8 @@ extension StallyRootView {
                 onReplaceImport: replaceImport(snapshot:),
                 onDeleteAll: deleteAllItems
             )
+        case .insights:
+            StallyInsightsView()
         case .review:
             StallyReviewView(
                 items: items,
@@ -130,6 +132,12 @@ extension StallyRootView {
     func openBackup() {
         navigationState.path.append(
             StallyRootNavigationState.Route.backup
+        )
+    }
+
+    func openInsights() {
+        navigationState.path.append(
+            StallyRootNavigationState.Route.insights
         )
     }
 
