@@ -23,6 +23,7 @@ struct StallyHomeView: View {
                 emptyState
             } else {
                 queryControls
+                homeSummaryCard
 
                 if displayedItems.isEmpty {
                     filteredEmptyState
@@ -77,6 +78,10 @@ private extension StallyHomeView {
             matching: query,
             kind: .active
         )
+    }
+
+    var displayedSummary: ItemInsightsCalculator.ActiveCollectionSummary {
+        ItemInsightsCalculator.activeSummary(from: displayedItems)
     }
 
     var queryControls: some View {
@@ -165,6 +170,37 @@ private extension StallyHomeView {
         .mhSurface(role: .muted)
     }
 
+    var homeSummaryCard: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Text("Collection Snapshot")
+                .mhRowTitle()
+
+            Text("The current Home view balances today’s choices against what still has room to accumulate.")
+                .mhRowSupporting()
+
+            HStack(spacing: theme.spacing.group) {
+                summaryMetric(
+                    title: "Items",
+                    value: "\(displayedSummary.totalItems)"
+                )
+                summaryMetric(
+                    title: "Marked Today",
+                    value: "\(displayedSummary.markedTodayCount)"
+                )
+                summaryMetric(
+                    title: "Untouched",
+                    value: "\(displayedSummary.neverMarkedCount)"
+                )
+                summaryMetric(
+                    title: "Total Marks",
+                    value: "\(displayedSummary.totalMarks)"
+                )
+            }
+        }
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
+    }
+
     var categoryControlTitle: String {
         query.category?.title ?? "All Categories"
     }
@@ -191,6 +227,19 @@ private extension StallyHomeView {
                 Text(sortOption.title)
             }
         }
+    }
+
+    func summaryMetric(
+        title: String,
+        value: String
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .mhRowSupporting()
+            Text(value)
+                .mhRowValue(colorRole: .accent)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
