@@ -7,6 +7,12 @@ extension ItemInsightsCalculator {
         let category: ItemCategory
     }
 
+    struct CategoryRecord {
+        var markCount = 0
+        var uniqueItemIDs = Set<UUID>()
+        var lastMarkedAt: Date?
+    }
+
     static func defaultOrderedItems(
         from items: [Item],
         kind: ItemListQuery.ListKind,
@@ -189,6 +195,22 @@ extension ItemInsightsCalculator {
         case (.some, .none):
             true
         case (.none, .some):
+            false
+        case (.none, .none):
+            false
+        }
+    }
+
+    static func compareAscending(
+        _ lhs: Date?,
+        _ rhs: Date?
+    ) -> Bool {
+        switch (lhs, rhs) {
+        case let (left?, right?):
+            left < right
+        case (.none, .some):
+            true
+        case (.some, .none):
             false
         case (.none, .none):
             false
@@ -475,5 +497,103 @@ extension ItemInsightsCalculator {
             from: lastActiveDay,
             to: referenceDay
         ).day
+    }
+
+    static func categoryRecords(
+        from items: [Item],
+        startingAt windowStart: Date,
+        endingAt windowEnd: Date,
+        calendar: Calendar
+    ) -> [ItemCategory: CategoryRecord] {
+        items.reduce(into: [:]) { partialResult, item in
+            for mark in item.marks {
+                let normalizedDay = DayStamp.storageDate(
+                    from: mark.day,
+                    calendar: calendar
+                )
+                guard normalizedDay >= windowStart, normalizedDay <= windowEnd else {
+                    continue
+                }
+
+                partialResult[item.category, default: .init()].markCount += 1
+                partialResult[item.category, default: .init()].uniqueItemIDs.insert(item.id)
+
+                let currentLastMarkedAt = partialResult[item.category, default: .init()].lastMarkedAt
+                if currentLastMarkedAt == nil || normalizedDay > currentLastMarkedAt! {
+                    partialResult[item.category, default: .init()].lastMarkedAt = normalizedDay
+                }
+            }
+        }
+    }
+
+    static func shareOfMarks(
+        totalMarks: Int,
+        categoryMarks: Int
+    ) -> Double {
+        guard totalMarks > .zero else {
+            return .zero
+        }
+
+        return Double(categoryMarks) / Double(totalMarks)
+    }
+
+    static func rankedItems(
+        from items: [Item],
+        range: ItemInsightsRange,
+        includeArchivedItems: Bool,
+        limit: Int,
+        referenceDate: Date,
+        calendar: Calendar,
+        order: (CollectionItemRanking, CollectionItemRanking) -> Bool
+    ) -> [CollectionItemRanking] {
+        let scopedItems = scopedItems(
+            from: items,
+            includeArchivedItems: includeArchivedItems
+        )
+        guard let windowStart = activityWindowStart(
+            from: scopedItems,
+            range: range,
+            referenceDate: referenceDate,
+            calendar: calendar
+        ) else {
+            return []
+        }
+
+        let windowEnd = DayStamp.storageDate(
+            from: referenceDate,
+            calendar: calendar
+        )
+
+        return scopedItems
+            .map { item in
+                let marksInRange = item.marks.filter { mark in
+                    let normalizedDay = DayStamp.storageDate(
+                        from: mark.day,
+                        calendar: calendar
+                    )
+                    return normalizedDay >= windowStart && normalizedDay <= windowEnd
+                }
+                let lastMarkedAt = item.marks
+                    .map(\.day)
+                    .max()
+                    .map { storageDay in
+                        DayStamp.localDate(
+                            from: storageDay,
+                            calendar: calendar
+                        )
+                    }
+
+                return CollectionItemRanking(
+                    itemID: item.id,
+                    totalMarksInRange: marksInRange.count,
+                    activeDaysInRange: Set(marksInRange.map(\.day)).count,
+                    totalLifetimeMarks: item.marks.count,
+                    lastMarkedAt: lastMarkedAt,
+                    isArchived: item.isArchived
+                )
+            }
+            .sorted(by: order)
+            .prefix(max(limit, .zero))
+            .map { $0 }
     }
 }

@@ -252,6 +252,139 @@ public enum ItemInsightsCalculator {
         )
     }
 
+    /// Builds a sorted mark breakdown by category for the selected insight range.
+    public static func categorySummaries(
+        from items: [Item],
+        range: ItemInsightsRange,
+        includeArchivedItems: Bool = false,
+        referenceDate: Date = .now,
+        calendar: Calendar = .current
+    ) -> [CollectionCategorySummary] {
+        let scopedItems = scopedItems(
+            from: items,
+            includeArchivedItems: includeArchivedItems
+        )
+        guard let windowStart = activityWindowStart(
+            from: scopedItems,
+            range: range,
+            referenceDate: referenceDate,
+            calendar: calendar
+        ) else {
+            return []
+        }
+
+        let windowEnd = DayStamp.storageDate(
+            from: referenceDate,
+            calendar: calendar
+        )
+        let categoryRecords = categoryRecords(
+            from: scopedItems,
+            startingAt: windowStart,
+            endingAt: windowEnd,
+            calendar: calendar
+        )
+        let totalMarks = categoryRecords.reduce(into: .zero) { partialResult, pair in
+            partialResult += pair.value.markCount
+        }
+
+        return categoryRecords
+            .map { category, record in
+                .init(
+                    category: category,
+                    totalMarks: record.markCount,
+                    uniqueItems: record.uniqueItemIDs.count,
+                    shareOfMarks: shareOfMarks(
+                        totalMarks: totalMarks,
+                        categoryMarks: record.markCount
+                    ),
+                    lastMarkedAt: record.lastMarkedAt.map { storageDay in
+                        DayStamp.localDate(
+                            from: storageDay,
+                            calendar: calendar
+                        )
+                    }
+                )
+            }
+            .sorted { lhs, rhs in
+                if lhs.totalMarks != rhs.totalMarks {
+                    return lhs.totalMarks > rhs.totalMarks
+                }
+
+                if lhs.lastMarkedAt != rhs.lastMarkedAt {
+                    return compareDescending(
+                        lhs.lastMarkedAt,
+                        rhs.lastMarkedAt
+                    )
+                }
+
+                return lhs.category.title.localizedCaseInsensitiveCompare(rhs.category.title) == .orderedAscending
+            }
+    }
+
+    /// Builds descending item rankings for the selected insight range.
+    public static func topItemRankings(
+        from items: [Item],
+        range: ItemInsightsRange,
+        includeArchivedItems: Bool = false,
+        limit: Int = 5,
+        referenceDate: Date = .now,
+        calendar: Calendar = .current
+    ) -> [CollectionItemRanking] {
+        rankedItems(
+            from: items,
+            range: range,
+            includeArchivedItems: includeArchivedItems,
+            limit: limit,
+            referenceDate: referenceDate,
+            calendar: calendar
+        ) { lhs, rhs in
+            if lhs.totalMarksInRange != rhs.totalMarksInRange {
+                return lhs.totalMarksInRange > rhs.totalMarksInRange
+            }
+
+            if lhs.activeDaysInRange != rhs.activeDaysInRange {
+                return lhs.activeDaysInRange > rhs.activeDaysInRange
+            }
+
+            return compareDescending(
+                lhs.lastMarkedAt,
+                rhs.lastMarkedAt
+            )
+        }
+    }
+
+    /// Builds quiet-item rankings for the selected insight range.
+    public static func quietItemRankings(
+        from items: [Item],
+        range: ItemInsightsRange,
+        includeArchivedItems: Bool = false,
+        limit: Int = 5,
+        referenceDate: Date = .now,
+        calendar: Calendar = .current
+    ) -> [CollectionItemRanking] {
+        rankedItems(
+            from: items,
+            range: range,
+            includeArchivedItems: includeArchivedItems,
+            limit: limit,
+            referenceDate: referenceDate,
+            calendar: calendar
+        ) { lhs, rhs in
+            if lhs.totalMarksInRange != rhs.totalMarksInRange {
+                return lhs.totalMarksInRange < rhs.totalMarksInRange
+            }
+
+            if lhs.lastMarkedAt != rhs.lastMarkedAt {
+                return compareAscending(
+                    lhs.lastMarkedAt,
+                    rhs.lastMarkedAt
+                )
+            }
+
+            return lhs.totalLifetimeMarks < rhs.totalLifetimeMarks
+        }
+    }
+
     /// Applies search, filter, and sort options to a list of items.
     public static func items(
         from items: [Item],
