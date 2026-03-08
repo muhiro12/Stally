@@ -5,50 +5,13 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct StallyBackupCenterView: View {
-    private struct ImportPreview {
-        let sourceURL: URL
-        let analysis: StallyBackupImportAnalysis
-
-        var sourceName: String {
-            sourceURL.lastPathComponent
-        }
-    }
-
-    private struct ImportExecutionSummary {
-        enum Mode {
-            case merge
-            case replace
-        }
-
-        let mode: Mode
-        let sourceName: String
-        let result: StallyBackupImportResult
-
-        var title: String {
-            switch mode {
-            case .merge:
-                "Last Merge Result"
-            case .replace:
-                "Last Replace Result"
-            }
-        }
-    }
-
     @Environment(\.mhTheme)
     private var theme
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
 
-    @State private var exportDocument: StallyBackupDocument?
-    @State private var isExporting = false
-    @State private var exportFilename = exportFilename(for: .now)
-    @State private var exportStatusMessage: String?
-    @State private var isImporting = false
-    @State private var importPreview: ImportPreview?
-    @State private var importStatusMessage: String?
-    @State private var importExecutionSummary: ImportExecutionSummary?
-    @State private var isReplaceConfirmationPresented = false
-    @State private var isDeleteAllConfirmationPresented = false
+    // swiftlint:disable:next private_swiftui_state
+    @State var state = StallyBackupCenterState()
 
     let items: [Item]
     let onMergeImport: (StallyBackupSnapshot) throws -> StallyBackupImportResult
@@ -70,15 +33,15 @@ struct StallyBackupCenterView: View {
         .navigationTitle("Backup Center")
         .navigationBarTitleDisplayMode(.inline)
         .fileExporter(
-            isPresented: $isExporting,
-            document: exportDocument ?? .placeholder,
+            isPresented: $state.isExporting,
+            document: state.exportDocument ?? .placeholder,
             contentType: .stallyBackup,
-            defaultFilename: exportFilename
+            defaultFilename: state.exportFilename
         ) { result in
-            handleExportResult(result)
+            state.recordExportResult(result)
         }
         .fileImporter(
-            isPresented: $isImporting,
+            isPresented: $state.isImporting,
             allowedContentTypes: StallyBackupDocument.readableContentTypes,
             allowsMultipleSelection: false
         ) { result in
@@ -89,32 +52,32 @@ struct StallyBackupCenterView: View {
             isPresented: isExportStatusPresented
         ) {
             Button("OK", role: .cancel) {
-                exportStatusMessage = nil
+                state.exportStatusMessage = nil
             }
         } message: {
-            Text(exportStatusMessage ?? "")
+            Text(state.exportStatusMessage ?? "")
         }
         .alert(
             "Backup Import",
             isPresented: isImportStatusPresented
         ) {
             Button("OK", role: .cancel) {
-                importStatusMessage = nil
+                state.importStatusMessage = nil
             }
         } message: {
-            Text(importStatusMessage ?? "")
+            Text(state.importStatusMessage ?? "")
         }
         .confirmationDialog(
             "Replace the Current Library",
-            isPresented: $isReplaceConfirmationPresented,
+            isPresented: $state.isReplaceConfirmationPresented,
             titleVisibility: .visible
         ) {
             Button("Replace Library", role: .destructive) {
-                guard let importPreview else {
+                guard let preview = state.importPreview else {
                     return
                 }
 
-                replaceImport(importPreview)
+                replaceImport(preview)
             }
             Button("Cancel", role: .cancel) {
                 // no-op
@@ -124,7 +87,7 @@ struct StallyBackupCenterView: View {
         }
         .confirmationDialog(
             "Delete Every Item",
-            isPresented: $isDeleteAllConfirmationPresented,
+            isPresented: $state.isDeleteAllConfirmationPresented,
             titleVisibility: .visible
         ) {
             Button("Delete Everything", role: .destructive) {
@@ -139,15 +102,19 @@ struct StallyBackupCenterView: View {
     }
 }
 
-private extension StallyBackupCenterView {
+extension StallyBackupCenterView {
+    var usesCompactLayout: Bool {
+        horizontalSizeClass != .regular
+    }
+
     var isExportStatusPresented: Binding<Bool> {
         .init(
             get: {
-                exportStatusMessage != nil
+                state.exportStatusMessage != nil
             },
             set: { isPresented in
                 if !isPresented {
-                    exportStatusMessage = nil
+                    state.exportStatusMessage = nil
                 }
             }
         )
@@ -156,11 +123,11 @@ private extension StallyBackupCenterView {
     var isImportStatusPresented: Binding<Bool> {
         .init(
             get: {
-                importStatusMessage != nil
+                state.importStatusMessage != nil
             },
             set: { isPresented in
                 if !isPresented {
-                    importStatusMessage = nil
+                    state.importStatusMessage = nil
                 }
             }
         )
@@ -178,28 +145,13 @@ private extension StallyBackupCenterView {
         activeSummary.totalMarks + archiveSummary.totalMarks
     }
 
-    var usesCompactLayout: Bool {
-        horizontalSizeClass != .regular
-    }
-
-    var overviewMetrics: [(title: String, value: String)] {
+    var overviewMetrics: [StallyMetricGrid.Metric] {
         [
-            ("Active", "\(activeSummary.totalItems)"),
-            ("Archived", "\(archiveSummary.totalItems)"),
-            ("Marks", "\(totalMarks)"),
-            ("Latest Change", latestChangeTitle)
+            .init(title: "Active", value: "\(activeSummary.totalItems)"),
+            .init(title: "Archived", value: "\(archiveSummary.totalItems)"),
+            .init(title: "Marks", value: "\(totalMarks)"),
+            .init(title: "Latest Change", value: latestChangeTitle)
         ]
-    }
-
-    var summaryMetricGridColumns: [GridItem] {
-        Array(
-            repeating: GridItem(
-                .flexible(minimum: 0, maximum: .infinity),
-                spacing: theme.spacing.group,
-                alignment: .leading
-            ),
-            count: 2
-        )
     }
 
     var latestChangeTitle: String {
@@ -210,6 +162,10 @@ private extension StallyBackupCenterView {
             ?? "None"
     }
 
+    var exportDetailText: String {
+        "\(items.count) items and \(totalMarks) marks are ready to export right now."
+    }
+
     var overviewCard: some View {
         VStack(alignment: .leading, spacing: theme.spacing.control) {
             Text("Backup Snapshot")
@@ -218,7 +174,10 @@ private extension StallyBackupCenterView {
             Text("Exports will capture your active items, archived items, and mark history in one portable package.")
                 .mhRowSupporting()
 
-            summaryMetricsSection(overviewMetrics)
+            StallyMetricGrid(
+                metrics: overviewMetrics,
+                usesCompactLayout: usesCompactLayout
+            )
         }
         .mhSurfaceInset()
         .mhSurface(role: .muted)
@@ -229,8 +188,13 @@ private extension StallyBackupCenterView {
             Text("Export")
                 .mhRowTitle()
 
-            Text("Create a single backup file with every item, photo, note, and mark. Exports use the `.stallybackup` extension on top of JSON data.")
-                .mhRowSupporting()
+            Text(
+                """
+                Create a single backup file with every item, photo, note, and mark.
+                Exports use the `.stallybackup` extension on top of JSON data.
+                """
+            )
+            .mhRowSupporting()
 
             Button("Export Backup", systemImage: "square.and.arrow.up") {
                 startExport()
@@ -248,24 +212,20 @@ private extension StallyBackupCenterView {
             Text("Import")
                 .mhRowTitle()
 
-            Text("Bring a backup back into Stally after previewing how many items would merge, replace, or be rejected.")
-                .mhRowSupporting()
+            Text(
+                "Bring a backup back into Stally after previewing how many items would merge, replace, or be rejected."
+            )
+            .mhRowSupporting()
 
             Button("Choose Backup File", systemImage: "square.and.arrow.down") {
-                isImporting = true
+                state.isImporting = true
             }
             .buttonStyle(.mhSecondary)
 
-            Text("Preview shows the snapshot contents, overlap with local items, and any warnings before import actions are enabled.")
+            Text(importSupportingText)
                 .mhRowSupporting()
 
-            if let importExecutionSummary {
-                importExecutionSummaryCard(importExecutionSummary)
-            }
-
-            if let importPreview {
-                importPreviewCard(importPreview)
-            }
+            importPreviewArea
         }
         .mhSection(title: Text("Import Tools"))
     }
@@ -275,11 +235,21 @@ private extension StallyBackupCenterView {
             Text("Safety")
                 .mhRowTitle()
 
-            Text("Keep one recent export before you try any replace-style restore. Merge import will preserve local items; replace import will overwrite them.")
-                .mhRowSupporting()
+            Text(
+                """
+                Keep one recent export before you try any replace-style restore.
+                Merge import will preserve local items; replace import will overwrite them.
+                """
+            )
+            .mhRowSupporting()
 
-            Text("Backup files are meant for your own archive and transfer workflow, not for syncing between multiple devices at once.")
-                .mhRowSupporting()
+            Text(
+                """
+                Backup files are meant for your own archive and transfer workflow,
+                not for syncing between multiple devices at once.
+                """
+            )
+            .mhRowSupporting()
         }
         .mhSection(title: Text("Guidance"))
     }
@@ -289,380 +259,19 @@ private extension StallyBackupCenterView {
             Text("Reset")
                 .mhRowTitle()
 
-            Text("Use this only when you intentionally want an empty library before starting over or testing a restore flow.")
-                .mhRowSupporting()
+            Text(
+                """
+                Use this only when you intentionally want an empty library
+                before starting over or testing a restore flow.
+                """
+            )
+            .mhRowSupporting()
 
             Button("Delete Everything", systemImage: "trash") {
-                isDeleteAllConfirmationPresented = true
+                state.isDeleteAllConfirmationPresented = true
             }
             .buttonStyle(.mhSecondary)
         }
         .mhSection(title: Text("Reset Tools"))
-    }
-
-    func summaryMetric(
-        title: String,
-        value: String
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .mhRowSupporting()
-                .fixedSize(horizontal: false, vertical: true)
-            Text(value)
-                .mhRowValue(colorRole: .accent)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    @ViewBuilder
-    func summaryMetricsSection(
-        _ metrics: [(title: String, value: String)]
-    ) -> some View {
-        if usesCompactLayout {
-            LazyVGrid(
-                columns: summaryMetricGridColumns,
-                alignment: .leading,
-                spacing: theme.spacing.control
-            ) {
-                ForEach(metrics, id: \.title) { metric in
-                    summaryMetric(
-                        title: metric.title,
-                        value: metric.value
-                    )
-                }
-            }
-        } else {
-            HStack(spacing: theme.spacing.group) {
-                ForEach(metrics, id: \.title) { metric in
-                    summaryMetric(
-                        title: metric.title,
-                        value: metric.value
-                    )
-                }
-            }
-        }
-    }
-
-    private func importPreviewCard(
-        _ preview: ImportPreview
-    ) -> some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            Text(preview.sourceName)
-                .mhRowTitle()
-
-            Text(importPreviewSupportingText(preview))
-                .mhRowSupporting()
-
-            summaryMetricsSection(
-                [
-                    ("Items", "\(preview.analysis.summary.totalItems)"),
-                    ("Archived", "\(preview.analysis.summary.archivedItems)"),
-                    ("Marks", "\(preview.analysis.summary.totalMarks)"),
-                    ("Existing", "\(preview.analysis.summary.existingItems)"),
-                    ("New", "\(preview.analysis.summary.newItems)")
-                ]
-            )
-
-            if preview.analysis.issues.isEmpty {
-                Text("No validation issues were found in this backup.")
-                    .mhRowSupporting()
-            } else {
-                ForEach(preview.analysis.issues) { issue in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(issueLabel(issue))
-                            .mhRowTitle()
-
-                        Text(issue.message)
-                            .mhRowSupporting()
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 2)
-                }
-            }
-
-            Button("Merge Into Library", systemImage: "square.stack.3d.up") {
-                mergeImport(preview)
-            }
-            .buttonStyle(.mhSecondary)
-            .disabled(!preview.analysis.canImport)
-
-            Button("Replace Library", systemImage: "arrow.trianglehead.2.clockwise.rotate.90") {
-                isReplaceConfirmationPresented = true
-            }
-            .buttonStyle(.mhSecondary)
-            .disabled(!preview.analysis.canImport)
-
-            Text("Merge import creates missing items, updates older local copies, and keeps newer local metadata when conflicts exist.")
-                .mhRowSupporting()
-
-            Text("Replace import deletes the current library first, then restores exactly what is in the backup.")
-                .mhRowSupporting()
-        }
-        .mhSurfaceInset()
-        .mhSurface(role: .muted)
-    }
-
-    private func importExecutionSummaryCard(
-        _ summary: ImportExecutionSummary
-    ) -> some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            Text(summary.title)
-                .mhRowTitle()
-
-            Text(summary.sourceName)
-                .mhRowSupporting()
-
-            HStack(spacing: theme.spacing.group) {
-                summaryMetric(
-                    title: "Deleted",
-                    value: "\(summary.result.deletedItems)"
-                )
-                summaryMetric(
-                    title: "Created",
-                    value: "\(summary.result.createdItems)"
-                )
-                summaryMetric(
-                    title: "Updated",
-                    value: "\(summary.result.updatedItems)"
-                )
-                summaryMetric(
-                    title: "Marks Added",
-                    value: "\(summary.result.insertedMarks)"
-                )
-                summaryMetric(
-                    title: "Skipped",
-                    value: "\(summary.result.skippedMarks)"
-                )
-            }
-        }
-        .mhSurfaceInset()
-        .mhSurface(role: .muted)
-    }
-
-    func startExport() {
-        let snapshot = StallyBackupCodec.snapshot(
-            from: items
-        )
-        exportDocument = StallyBackupDocument(
-            snapshot: snapshot
-        )
-        exportFilename = Self.exportFilename(
-            for: snapshot.exportedAt
-        )
-        isExporting = true
-    }
-
-    func handleExportResult(
-        _ result: Result<URL, any Error>
-    ) {
-        switch result {
-        case .success(let url):
-            exportStatusMessage = "Backup saved as \(url.lastPathComponent)."
-        case .failure(let error as CocoaError)
-            where error.code == .userCancelled:
-            exportStatusMessage = nil
-        case .failure(let error):
-            exportStatusMessage = (error as? LocalizedError)?.errorDescription
-                ?? "Stally couldn't export this backup."
-        }
-    }
-
-    func handleImportSelection(
-        _ result: Result<[URL], any Error>
-    ) {
-        switch result {
-        case .success(let urls):
-            guard let url = urls.first else {
-                importPreview = nil
-                return
-            }
-
-            do {
-                importPreview = try makeImportPreview(from: url)
-            } catch {
-                importPreview = nil
-                importStatusMessage = (error as? LocalizedError)?.errorDescription
-                    ?? "Stally couldn't read this backup file."
-            }
-        case .failure(let error as CocoaError)
-            where error.code == .userCancelled:
-            importStatusMessage = nil
-        case .failure(let error):
-            importStatusMessage = (error as? LocalizedError)?.errorDescription
-                ?? "Stally couldn't open the import picker."
-        }
-    }
-
-    private func makeImportPreview(
-        from url: URL
-    ) throws -> ImportPreview {
-        let accessedSecurityScope = url.startAccessingSecurityScopedResource()
-
-        defer {
-            if accessedSecurityScope {
-                url.stopAccessingSecurityScopedResource()
-            }
-        }
-
-        let data = try Data(contentsOf: url)
-        let snapshot = try StallyBackupCodec.decode(data)
-        let analysis = StallyBackupImportAnalyzer.analyze(
-            snapshot: snapshot,
-            existingItemIDs: Set(items.map(\.id))
-        )
-
-        return .init(
-            sourceURL: url,
-            analysis: analysis
-        )
-    }
-
-    private func mergeImport(
-        _ preview: ImportPreview
-    ) {
-        do {
-            let result = try onMergeImport(
-                preview.analysis.snapshot
-            )
-            importExecutionSummary = .init(
-                mode: .merge,
-                sourceName: preview.sourceName,
-                result: result
-            )
-            importPreview = nil
-            importStatusMessage = "Merged \(preview.sourceName) into the current library."
-        } catch {
-            importStatusMessage = (error as? LocalizedError)?.errorDescription
-                ?? "Stally couldn't merge this backup."
-        }
-    }
-
-    private func replaceImport(
-        _ preview: ImportPreview
-    ) {
-        do {
-            let result = try onReplaceImport(
-                preview.analysis.snapshot
-            )
-            importExecutionSummary = .init(
-                mode: .replace,
-                sourceName: preview.sourceName,
-                result: result
-            )
-            importPreview = nil
-            importStatusMessage = "Replaced the current library with \(preview.sourceName)."
-        } catch {
-            importStatusMessage = (error as? LocalizedError)?.errorDescription
-                ?? "Stally couldn't replace the current library."
-        }
-    }
-
-    func deleteAllItems() {
-        do {
-            try onDeleteAll()
-            importPreview = nil
-            importExecutionSummary = nil
-            importStatusMessage = "Deleted every item from the current library."
-        } catch {
-            importStatusMessage = (error as? LocalizedError)?.errorDescription
-                ?? "Stally couldn't delete the current library."
-        }
-    }
-
-    var exportDetailText: String {
-        "\(items.count) items and \(totalMarks) marks are ready to export right now."
-    }
-
-    private func importPreviewSupportingText(
-        _ preview: ImportPreview
-    ) -> String {
-        "Exported \(preview.analysis.snapshot.exportedAt.formatted(date: .abbreviated, time: .shortened)) with schema v\(preview.analysis.snapshot.schemaVersion)."
-    }
-
-    func issueLabel(
-        _ issue: StallyBackupImportIssue
-    ) -> String {
-        switch issue.severity {
-        case .error:
-            "Error: \(issue.code.rawValue)"
-        case .warning:
-            "Warning: \(issue.code.rawValue)"
-        }
-    }
-
-    static func exportFilename(
-        for date: Date
-    ) -> String {
-        "stally-backup-\(backupTimestampFormatter.string(from: date))"
-    }
-
-    static var backupTimestampFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.calendar = .current
-        formatter.locale = .autoupdatingCurrent
-        formatter.timeZone = .autoupdatingCurrent
-        formatter.dateFormat = "yyyyMMdd-HHmm"
-        return formatter
-    }
-}
-
-@available(iOS 18.0, *)
-#Preview(traits: .modifier(StallySampleData())) {
-    @Previewable @Query var items: [Item]
-
-    NavigationStack {
-        StallyBackupCenterView(
-            items: items,
-            onMergeImport: { _ in
-                .init(
-                    analysis: .init(
-                        snapshot: .init(
-                            exportedAt: .now,
-                            items: []
-                        ),
-                        summary: .init(
-                            totalItems: 0,
-                            archivedItems: 0,
-                            totalMarks: 0,
-                            existingItems: 0,
-                            newItems: 0
-                        ),
-                        issues: []
-                    ),
-                    deletedItems: 0,
-                    createdItems: 0,
-                    updatedItems: 0,
-                    insertedMarks: 0,
-                    skippedMarks: 0
-                )
-            },
-            onReplaceImport: { _ in
-                .init(
-                    analysis: .init(
-                        snapshot: .init(
-                            exportedAt: .now,
-                            items: []
-                        ),
-                        summary: .init(
-                            totalItems: 0,
-                            archivedItems: 0,
-                            totalMarks: 0,
-                            existingItems: 0,
-                            newItems: 0
-                        ),
-                        issues: []
-                    ),
-                    deletedItems: 0,
-                    createdItems: 0,
-                    updatedItems: 0,
-                    insertedMarks: 0,
-                    skippedMarks: 0
-                )
-            },
-            onDeleteAll: {
-                // no-op
-            }
-        )
     }
 }

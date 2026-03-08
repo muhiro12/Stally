@@ -26,6 +26,7 @@ public enum ItemInsightsCalculator {
         public let lastArchivedAt: Date?
     }
 
+    /// Builds a derived summary for one item.
     public static func summary(
         for item: Item,
         referenceDate: Date = .now,
@@ -55,6 +56,7 @@ public enum ItemInsightsCalculator {
         )
     }
 
+    /// Filters active items.
     public static func activeItems(
         from items: [Item]
     ) -> [Item] {
@@ -63,6 +65,7 @@ public enum ItemInsightsCalculator {
         }
     }
 
+    /// Builds aggregate insight values for active items.
     public static func activeSummary(
         from items: [Item],
         referenceDate: Date = .now,
@@ -87,16 +90,18 @@ public enum ItemInsightsCalculator {
         )
     }
 
+    /// Filters and sorts archived items.
     public static func archivedItems(
         from items: [Item]
     ) -> [Item] {
         items
-            .filter { item in
-                item.isArchived
+            .filter(\.isArchived)
+            .sorted { lhs, rhs in
+                archivedSort(lhs: lhs, rhs: rhs)
             }
-            .sorted(by: archivedSort)
     }
 
+    /// Builds aggregate insight values for archived items.
     public static func archiveSummary(
         from items: [Item]
     ) -> ArchiveCollectionSummary {
@@ -112,6 +117,7 @@ public enum ItemInsightsCalculator {
         )
     }
 
+    /// Applies search, filter, and sort options to a list of items.
     public static func items(
         from items: [Item],
         matching query: ItemListQuery,
@@ -119,7 +125,7 @@ public enum ItemInsightsCalculator {
         referenceDate: Date = .now,
         calendar: Calendar = .current
     ) -> [Item] {
-        let defaultOrderedItems = defaultOrderedItems(
+        let orderedItems = defaultOrderedItems(
             from: items,
             kind: kind,
             referenceDate: referenceDate,
@@ -128,70 +134,26 @@ public enum ItemInsightsCalculator {
         let itemSummaries = query.quickFilter == nil
             ? [:]
             : summariesByID(
-                for: defaultOrderedItems,
+                for: orderedItems,
                 referenceDate: referenceDate,
                 calendar: calendar
             )
 
-        let filteredItems = defaultOrderedItems.filter { item in
-            matchesSearch(
-                item: item,
-                searchText: query.trimmedSearchText
-            ) && matchesCategory(
-                item: item,
-                category: query.category
-            ) && matchesQuickFilter(
-                item: item,
-                summary: itemSummaries[item.id],
-                quickFilter: query.quickFilter
-            )
-        }
+        let filteredItems = filterItems(
+            orderedItems,
+            query: query,
+            itemSummaries: itemSummaries
+        )
 
-        guard query.sortOption != .defaultOrder else {
-            return filteredItems
-        }
-
-        let summaries = summariesByID(
-            for: filteredItems,
+        return sortFilteredItems(
+            filteredItems,
+            query: query,
             referenceDate: referenceDate,
             calendar: calendar
         )
-        let defaultIndexes = Dictionary(
-            uniqueKeysWithValues: filteredItems.enumerated().map { index, item in
-                (item.id, index)
-            }
-        )
-
-        return filteredItems.sorted { lhs, rhs in
-            switch query.sortOption {
-            case .defaultOrder:
-                false
-            case .recentlyMarked:
-                let leftDate = summaries[lhs.id]?.lastMarkedAt
-                let rightDate = summaries[rhs.id]?.lastMarkedAt
-
-                if leftDate != rightDate {
-                    return compareDescending(leftDate, rightDate)
-                }
-            case .mostMarked:
-                let leftCount = summaries[lhs.id]?.totalMarks ?? .zero
-                let rightCount = summaries[rhs.id]?.totalMarks ?? .zero
-
-                if leftCount != rightCount {
-                    return leftCount > rightCount
-                }
-            case .name:
-                let nameComparison = lhs.name.localizedCaseInsensitiveCompare(rhs.name)
-
-                if nameComparison != .orderedSame {
-                    return nameComparison == .orderedAscending
-                }
-            }
-
-            return (defaultIndexes[lhs.id] ?? .zero) < (defaultIndexes[rhs.id] ?? .zero)
-        }
     }
 
+    /// Applies the Home-specific default ordering.
     public static func homeSort(
         items: [Item],
         referenceDate: Date = .now,
@@ -235,123 +197,5 @@ public enum ItemInsightsCalculator {
 
             return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
         }
-    }
-}
-
-private extension ItemInsightsCalculator {
-    static func defaultOrderedItems(
-        from items: [Item],
-        kind: ItemListQuery.ListKind,
-        referenceDate: Date,
-        calendar: Calendar
-    ) -> [Item] {
-        switch kind {
-        case .active:
-            homeSort(
-                items: activeItems(from: items),
-                referenceDate: referenceDate,
-                calendar: calendar
-            )
-        case .archived:
-            archivedItems(from: items)
-        }
-    }
-
-    static func summariesByID(
-        for items: [Item],
-        referenceDate: Date,
-        calendar: Calendar
-    ) -> [UUID: ItemSummary] {
-        Dictionary(
-            uniqueKeysWithValues: items.map { item in
-                (
-                    item.id,
-                    summary(
-                        for: item,
-                        referenceDate: referenceDate,
-                        calendar: calendar
-                    )
-                )
-            }
-        )
-    }
-
-    static func matchesSearch(
-        item: Item,
-        searchText: String
-    ) -> Bool {
-        guard !searchText.isEmpty else {
-            return true
-        }
-
-        return item.name.localizedCaseInsensitiveContains(searchText)
-            || item.category.title.localizedCaseInsensitiveContains(searchText)
-            || (item.note?.localizedCaseInsensitiveContains(searchText) == true)
-    }
-
-    static func matchesCategory(
-        item: Item,
-        category: ItemCategory?
-    ) -> Bool {
-        guard let category else {
-            return true
-        }
-
-        return item.category == category
-    }
-
-    static func matchesQuickFilter(
-        item: Item,
-        summary: ItemSummary?,
-        quickFilter: ItemListQuery.QuickFilter?
-    ) -> Bool {
-        guard let quickFilter else {
-            return true
-        }
-
-        let totalMarks = summary?.totalMarks ?? item.marks.count
-        let isMarkedOnReferenceDay = summary?.isMarkedToday == true
-
-        switch quickFilter {
-        case .markedOnReferenceDay:
-            return isMarkedOnReferenceDay
-        case .unmarkedOnReferenceDay:
-            return !isMarkedOnReferenceDay
-        case .withHistory:
-            return totalMarks > .zero
-        case .withoutHistory:
-            return totalMarks == .zero
-        }
-    }
-
-    static func compareDescending(
-        _ lhs: Date?,
-        _ rhs: Date?
-    ) -> Bool {
-        switch (lhs, rhs) {
-        case let (left?, right?):
-            left > right
-        case (.some, .none):
-            true
-        case (.none, .some):
-            false
-        case (.none, .none):
-            false
-        }
-    }
-
-    static func archivedSort(
-        lhs: Item,
-        rhs: Item
-    ) -> Bool {
-        if lhs.archivedAt != rhs.archivedAt {
-            return compareDescending(lhs.archivedAt, rhs.archivedAt)
-        }
-
-        if lhs.updatedAt != rhs.updatedAt {
-            return lhs.updatedAt > rhs.updatedAt
-        }
-
-        return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
     }
 }

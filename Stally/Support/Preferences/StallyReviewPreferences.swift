@@ -2,7 +2,7 @@ import MHPlatform
 import StallyLibrary
 
 nonisolated struct StallyReviewPreferences: Codable, Equatable, Sendable {
-    static let preferenceKey = MHCodablePreferenceKey<StallyReviewPreferences>(
+    static let preferenceKey = MHCodablePreferenceKey<Self>(
         namespace: "com.muhiro12.stally.review",
         name: "preferences"
     )
@@ -10,6 +10,13 @@ nonisolated struct StallyReviewPreferences: Codable, Equatable, Sendable {
     var untouchedGraceDays: Int
     var dormantAfterDays: Int
     var showCompletedSections: Bool
+
+    var policy: ItemReviewPolicy {
+        .init(
+            untouchedGraceDays: untouchedGraceDays,
+            dormantAfterDays: dormantAfterDays
+        )
+    }
 
     init(
         untouchedGraceDays: Int = 14,
@@ -19,13 +26,6 @@ nonisolated struct StallyReviewPreferences: Codable, Equatable, Sendable {
         self.untouchedGraceDays = max(1, untouchedGraceDays)
         self.dormantAfterDays = max(1, dormantAfterDays)
         self.showCompletedSections = showCompletedSections
-    }
-
-    var policy: ItemReviewPolicy {
-        .init(
-            untouchedGraceDays: untouchedGraceDays,
-            dormantAfterDays: dormantAfterDays
-        )
     }
 
     static func load(

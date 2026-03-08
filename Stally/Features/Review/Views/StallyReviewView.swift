@@ -3,21 +3,14 @@ import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
-import UIKit
 
 struct StallyReviewView: View {
     @Environment(\.mhTheme)
     private var theme
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
 
-    @State private var isUntouchedSelectionModeEnabled = false
-    @State private var selectedUntouchedItemIDs: Set<UUID> = []
-    @State private var isUntouchedBulkArchiveConfirmationPresented = false
-    @State private var isDormantSelectionModeEnabled = false
-    @State private var selectedDormantItemIDs: Set<UUID> = []
-    @State private var isDormantBulkArchiveConfirmationPresented = false
-    @State private var isRecoverySelectionModeEnabled = false
-    @State private var selectedRecoveryItemIDs: Set<UUID> = []
-    @State private var isRecoveryBulkUnarchiveConfirmationPresented = false
+    @State private var selectionState = StallyReviewSelectionState()
 
     let items: [Item]
     let preferences: StallyReviewPreferences
@@ -31,7 +24,7 @@ struct StallyReviewView: View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {
             summaryCard
 
-            if summary.totalReviewCount == .zero && showsCompletedSections == false {
+            if summary.totalReviewCount == .zero, !showsCompletedSections {
                 emptyState
             } else {
                 if shouldShowUntouchedSection {
@@ -53,52 +46,14 @@ struct StallyReviewView: View {
         )
         .navigationTitle("Review")
         .navigationBarTitleDisplayMode(.inline)
-        .confirmationDialog(
-            "Archive Selected Items",
-            isPresented: $isUntouchedBulkArchiveConfirmationPresented,
-            titleVisibility: .visible
-        ) {
-            Button("Archive Selected", role: .destructive) {
-                archiveSelectedUntouchedItems()
-            }
-            Button("Cancel", role: .cancel) {
-                // no-op
-            }
-        } message: {
-            Text("Archive \(selectedUntouchedItems.count) items that still have no marks?")
-        }
-        .confirmationDialog(
-            "Archive Selected Items",
-            isPresented: $isDormantBulkArchiveConfirmationPresented,
-            titleVisibility: .visible
-        ) {
-            Button("Archive Selected", role: .destructive) {
-                archiveSelectedDormantItems()
-            }
-            Button("Cancel", role: .cancel) {
-                // no-op
-            }
-        } message: {
-            Text("Archive \(selectedDormantItems.count) dormant items and move them into Recovery Candidates?")
-        }
-        .confirmationDialog(
-            "Move Selected Items Back to Home",
-            isPresented: $isRecoveryBulkUnarchiveConfirmationPresented,
-            titleVisibility: .visible
-        ) {
-            Button("Move Back to Home") {
-                unarchiveSelectedRecoveryItems()
-            }
-            Button("Cancel", role: .cancel) {
-                // no-op
-            }
-        } message: {
-            Text("Move \(selectedRecoveryItems.count) archived items back into Home?")
-        }
     }
 }
 
 private extension StallyReviewView {
+    var usesCompactLayout: Bool {
+        horizontalSizeClass != .regular
+    }
+
     var policy: ItemReviewPolicy {
         preferences.policy
     }
@@ -112,6 +67,17 @@ private extension StallyReviewView {
             from: items,
             policy: policy
         )
+    }
+
+    var summaryMetrics: [StallyMetricGrid.Metric] {
+        [
+            .init(title: "First Mark", value: "\(summary.untouchedCount)"),
+            .init(title: "Dormant", value: "\(summary.dormantCount)"),
+            .init(
+                title: "Recovery",
+                value: "\(summary.recoveryCandidateCount)"
+            )
+        ]
     }
 
     var activeItems: [Item] {
@@ -150,31 +116,15 @@ private extension StallyReviewView {
 
     var snapshotsByID: [UUID: ItemReviewSnapshot] {
         Dictionary(
-            uniqueKeysWithValues: ItemReviewCalculator.snapshots(
-                from: items,
-                policy: policy
-            ).map { snapshot in
-                (snapshot.itemID, snapshot)
-            }
+            uniqueKeysWithValues: ItemReviewCalculator
+                .snapshots(
+                    from: items,
+                    policy: policy
+                )
+                .map { snapshot in
+                    (snapshot.itemID, snapshot)
+                }
         )
-    }
-
-    var selectedUntouchedItems: [Item] {
-        untouchedItems.filter { item in
-            selectedUntouchedItemIDs.contains(item.id)
-        }
-    }
-
-    var selectedDormantItems: [Item] {
-        dormantItems.filter { item in
-            selectedDormantItemIDs.contains(item.id)
-        }
-    }
-
-    var selectedRecoveryItems: [Item] {
-        recoveryCandidateItems.filter { item in
-            selectedRecoveryItemIDs.contains(item.id)
-        }
     }
 
     var shouldShowUntouchedSection: Bool {
@@ -187,14 +137,6 @@ private extension StallyReviewView {
 
     var shouldShowRecoverySection: Bool {
         showsCompletedSections || !recoveryCandidateItems.isEmpty
-    }
-
-    func itemLinkURL(
-        for item: Item
-    ) -> URL? {
-        StallyDeepLinking.codec().preferredURL(
-            for: .item(item.id)
-        )
     }
 
     var summaryCard: some View {
@@ -212,20 +154,10 @@ private extension StallyReviewView {
             Text("This brings together first-use lag, inactivity, and archive recovery into one review lane.")
                 .mhRowSupporting()
 
-            HStack(spacing: theme.spacing.group) {
-                summaryMetric(
-                    title: "First Mark",
-                    value: "\(summary.untouchedCount)"
-                )
-                summaryMetric(
-                    title: "Dormant",
-                    value: "\(summary.dormantCount)"
-                )
-                summaryMetric(
-                    title: "Recovery",
-                    value: "\(summary.recoveryCandidateCount)"
-                )
-            }
+            StallyMetricGrid(
+                metrics: summaryMetrics,
+                usesCompactLayout: usesCompactLayout
+            )
         }
         .mhSurfaceInset()
         .mhSurface(role: .muted)
@@ -235,435 +167,96 @@ private extension StallyReviewView {
         ContentUnavailableView(
             "Nothing Needs Review",
             systemImage: "checkmark.circle",
-            description: Text("Items that need a first mark, feel dormant, or look ready to return from Archive will appear here.")
+            description: Text(
+                "Items that need a first mark, feel dormant, or look ready to return from Archive will appear here."
+            )
         )
         .mhEmptyStateLayout()
         .mhSurfaceInset()
         .mhSurface()
     }
 
-    @ViewBuilder
     var untouchedSection: some View {
-        if untouchedItems.isEmpty {
-            reviewCompletedSection(
+        StallyReviewLaneSection(
+            selection: $selectionState.untouched,
+            configuration: .init(
                 title: "Needs First Mark",
                 supporting: "Items that have been waiting quietly without a first mark.",
-                message: "Nothing in this lane right now."
-            )
-        } else {
-            reviewSection(
-                title: "Needs First Mark",
-                supporting: "Items that have been waiting quietly without a first mark.",
-                items: untouchedItems
-            ) {
-                untouchedSelectionControls
-            } rowContent: { item in
-                if isUntouchedSelectionModeEnabled {
-                    selectableReviewRow(
-                        item: item,
-                        isSelected: selectedUntouchedItemIDs.contains(item.id),
-                        onToggleSelection: toggleUntouchedSelection(for:)
-                    )
-                } else {
-                    actionableReviewRow(
-                        item: item,
-                        actionTitle: "Archive Item",
-                        onItemAction: onArchiveItem
-                    )
-                }
-            }
-        }
+                emptyMessage: "Nothing in this lane right now.",
+                itemActionTitle: "Archive Item",
+                bulkActionTitle: "Archive Selected",
+                confirmationTitle: "Archive Selected Items",
+                confirmationMessage: { count in
+                    "Archive \(count) items that still have no marks?"
+                },
+                confirmationButtonTitle: "Archive Selected",
+                confirmationButtonRole: .destructive
+            ),
+            items: untouchedItems,
+            snapshotsByID: snapshotsByID,
+            onOpenItem: onOpenItem,
+            onItemAction: onArchiveItem,
+            onBulkAction: onArchiveItems,
+            itemLinkURL: itemLinkURL(for:)
+        )
     }
 
-    var untouchedSelectionControls: some View {
-        HStack(spacing: theme.spacing.control) {
-            Button(isUntouchedSelectionModeEnabled ? "Done" : "Select") {
-                toggleUntouchedSelectionMode()
-            }
-            .buttonStyle(.mhSecondary)
-
-            if isUntouchedSelectionModeEnabled {
-                Text("\(selectedUntouchedItems.count) selected")
-                    .mhRowSupporting()
-
-                Spacer(minLength: .zero)
-
-                Button("Archive Selected") {
-                    isUntouchedBulkArchiveConfirmationPresented = true
-                }
-                .buttonStyle(.mhPrimary)
-                .disabled(selectedUntouchedItems.isEmpty)
-            }
-        }
-    }
-
-    @ViewBuilder
     var dormantSection: some View {
-        if dormantItems.isEmpty {
-            reviewCompletedSection(
+        StallyReviewLaneSection(
+            selection: $selectionState.dormant,
+            configuration: .init(
                 title: "Dormant",
                 supporting: "Items whose last mark feels far enough away to revisit.",
-                message: "Nothing currently looks dormant."
-            )
-        } else {
-            reviewSection(
-                title: "Dormant",
-                supporting: "Items whose last mark feels far enough away to revisit.",
-                items: dormantItems
-            ) {
-                dormantSelectionControls
-            } rowContent: { item in
-                if isDormantSelectionModeEnabled {
-                    selectableReviewRow(
-                        item: item,
-                        isSelected: selectedDormantItemIDs.contains(item.id),
-                        onToggleSelection: toggleDormantSelection(for:)
-                    )
-                } else {
-                    actionableReviewRow(
-                        item: item,
-                        actionTitle: "Archive Item",
-                        onItemAction: onArchiveItem
-                    )
-                }
-            }
-        }
+                emptyMessage: "Nothing currently looks dormant.",
+                itemActionTitle: "Archive Item",
+                bulkActionTitle: "Archive Selected",
+                confirmationTitle: "Archive Selected Items",
+                confirmationMessage: { count in
+                    "Archive \(count) dormant items and move them into Recovery Candidates?"
+                },
+                confirmationButtonTitle: "Archive Selected",
+                confirmationButtonRole: .destructive
+            ),
+            items: dormantItems,
+            snapshotsByID: snapshotsByID,
+            onOpenItem: onOpenItem,
+            onItemAction: onArchiveItem,
+            onBulkAction: onArchiveItems,
+            itemLinkURL: itemLinkURL(for:)
+        )
     }
 
-    @ViewBuilder
     var recoverySection: some View {
-        if recoveryCandidateItems.isEmpty {
-            reviewCompletedSection(
+        StallyReviewLaneSection(
+            selection: $selectionState.recovery,
+            configuration: .init(
                 title: "Recovery Candidates",
                 supporting: "Archived items with enough history that they may deserve another turn.",
-                message: "Archive is quiet for now."
-            )
-        } else {
-            reviewSection(
-                title: "Recovery Candidates",
-                supporting: "Archived items with enough history that they may deserve another turn.",
-                items: recoveryCandidateItems
-            ) {
-                recoverySelectionControls
-            } rowContent: { item in
-                if isRecoverySelectionModeEnabled {
-                    selectableReviewRow(
-                        item: item,
-                        isSelected: selectedRecoveryItemIDs.contains(item.id),
-                        onToggleSelection: toggleRecoverySelection(for:)
-                    )
-                } else {
-                    actionableReviewRow(
-                        item: item,
-                        actionTitle: "Move Back to Home",
-                        onItemAction: onUnarchiveItem
-                    )
-                }
-            }
-        }
-    }
-
-    var dormantSelectionControls: some View {
-        HStack(spacing: theme.spacing.control) {
-            Button(isDormantSelectionModeEnabled ? "Done" : "Select") {
-                toggleDormantSelectionMode()
-            }
-            .buttonStyle(.mhSecondary)
-
-            if isDormantSelectionModeEnabled {
-                Text("\(selectedDormantItems.count) selected")
-                    .mhRowSupporting()
-
-                Spacer(minLength: .zero)
-
-                Button("Archive Selected") {
-                    isDormantBulkArchiveConfirmationPresented = true
-                }
-                .buttonStyle(.mhPrimary)
-                .disabled(selectedDormantItems.isEmpty)
-            }
-        }
-    }
-
-    var recoverySelectionControls: some View {
-        HStack(spacing: theme.spacing.control) {
-            Button(isRecoverySelectionModeEnabled ? "Done" : "Select") {
-                toggleRecoverySelectionMode()
-            }
-            .buttonStyle(.mhSecondary)
-
-            if isRecoverySelectionModeEnabled {
-                Text("\(selectedRecoveryItems.count) selected")
-                    .mhRowSupporting()
-
-                Spacer(minLength: .zero)
-
-                Button("Move Back to Home") {
-                    isRecoveryBulkUnarchiveConfirmationPresented = true
-                }
-                .buttonStyle(.mhPrimary)
-                .disabled(selectedRecoveryItems.isEmpty)
-            }
-        }
-    }
-
-    func reviewSection<RowContent: View>(
-        title: String,
-        supporting: String,
-        items: [Item],
-        @ViewBuilder rowContent: @escaping (Item) -> RowContent
-    ) -> some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            ForEach(items, id: \.id) { item in
-                rowContent(item)
-            }
-        }
-        .mhSection(
-            title: Text(title),
-            supporting: Text(supporting)
+                emptyMessage: "Archive is quiet for now.",
+                itemActionTitle: "Move Back to Home",
+                bulkActionTitle: "Move Back to Home",
+                confirmationTitle: "Move Selected Items Back to Home",
+                confirmationMessage: { count in
+                    "Move \(count) archived items back into Home?"
+                },
+                confirmationButtonTitle: "Move Back to Home",
+                confirmationButtonRole: nil
+            ),
+            items: recoveryCandidateItems,
+            snapshotsByID: snapshotsByID,
+            onOpenItem: onOpenItem,
+            onItemAction: onUnarchiveItem,
+            onBulkAction: onUnarchiveItems,
+            itemLinkURL: itemLinkURL(for:)
         )
     }
 
-    func reviewCompletedSection(
-        title: String,
-        supporting: String,
-        message: String
-    ) -> some View {
-        Text(message)
-            .mhRowSupporting()
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .mhSurfaceInset()
-            .mhSurface(role: .muted)
-            .mhSection(
-                title: Text(title),
-                supporting: Text(supporting)
-            )
-    }
-
-    func reviewSection<Controls: View, RowContent: View>(
-        title: String,
-        supporting: String,
-        items: [Item],
-        @ViewBuilder controls: () -> Controls,
-        @ViewBuilder rowContent: @escaping (Item) -> RowContent
-    ) -> some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            controls()
-
-            ForEach(items, id: \.id) { item in
-                rowContent(item)
-            }
-        }
-        .mhSection(
-            title: Text(title),
-            supporting: Text(supporting)
+    func itemLinkURL(
+        for item: Item
+    ) -> URL? {
+        StallyDeepLinking.codec().preferredURL(
+            for: .item(item.id)
         )
-    }
-
-    func actionableReviewRow(
-        item: Item,
-        actionTitle: String,
-        onItemAction: @escaping (Item) -> Void
-    ) -> some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            reviewRow(item: item)
-
-            Button(actionTitle) {
-                onItemAction(item)
-            }
-            .buttonStyle(.mhSecondary)
-        }
-    }
-
-    func selectableReviewRow(
-        item: Item,
-        isSelected: Bool,
-        onToggleSelection: @escaping (Item) -> Void
-    ) -> some View {
-        Button {
-            onToggleSelection(item)
-        } label: {
-            reviewRowContent(item: item) {
-                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundStyle(isSelected ? Color.accentColor : .secondary)
-            }
-        }
-        .buttonStyle(.plain)
-    }
-
-    func reviewRow(
-        item: Item
-    ) -> some View {
-        Button {
-            onOpenItem(item.id)
-        } label: {
-            reviewRowContent(item: item) {
-                Image(systemName: "chevron.right")
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .buttonStyle(.plain)
-    }
-
-    func reviewRowContent<TrailingView: View>(
-        item: Item,
-        @ViewBuilder trailingView: () -> TrailingView
-    ) -> some View {
-        let summary = ItemInsightsCalculator.summary(for: item)
-        let snapshot = snapshotsByID[item.id]
-
-        return HStack(spacing: theme.spacing.group) {
-            StallyItemArtworkView(
-                photoData: item.photoData,
-                category: item.category,
-                width: 68,
-                height: 82
-            )
-
-            VStack(alignment: .leading, spacing: theme.spacing.control) {
-                Text(item.name)
-                    .mhRowTitle()
-
-                Text(item.category.title)
-                    .mhBadge(style: .neutral)
-
-                Text(rowSupportingText(summary: summary, snapshot: snapshot))
-                    .mhRowSupporting()
-            }
-
-            Spacer(minLength: .zero)
-
-            trailingView()
-                .font(.title3)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .mhSurfaceInset()
-        .mhSurface()
-        .contextMenu {
-            if let itemLinkURL = itemLinkURL(for: item) {
-                Button("Copy Item Link", systemImage: "link") {
-                    UIPasteboard.general.url = itemLinkURL
-                }
-            }
-        }
-    }
-
-    func toggleUntouchedSelectionMode() {
-        isUntouchedSelectionModeEnabled.toggle()
-
-        if !isUntouchedSelectionModeEnabled {
-            selectedUntouchedItemIDs.removeAll()
-        }
-    }
-
-    func toggleUntouchedSelection(
-        for item: Item
-    ) {
-        if selectedUntouchedItemIDs.contains(item.id) {
-            selectedUntouchedItemIDs.remove(item.id)
-        } else {
-            selectedUntouchedItemIDs.insert(item.id)
-        }
-    }
-
-    func archiveSelectedUntouchedItems() {
-        let itemsToArchive = selectedUntouchedItems
-
-        guard !itemsToArchive.isEmpty else {
-            return
-        }
-
-        onArchiveItems(itemsToArchive)
-        selectedUntouchedItemIDs.removeAll()
-        isUntouchedSelectionModeEnabled = false
-    }
-
-    func toggleDormantSelectionMode() {
-        isDormantSelectionModeEnabled.toggle()
-
-        if !isDormantSelectionModeEnabled {
-            selectedDormantItemIDs.removeAll()
-        }
-    }
-
-    func toggleDormantSelection(
-        for item: Item
-    ) {
-        if selectedDormantItemIDs.contains(item.id) {
-            selectedDormantItemIDs.remove(item.id)
-        } else {
-            selectedDormantItemIDs.insert(item.id)
-        }
-    }
-
-    func archiveSelectedDormantItems() {
-        let itemsToArchive = selectedDormantItems
-
-        guard !itemsToArchive.isEmpty else {
-            return
-        }
-
-        onArchiveItems(itemsToArchive)
-        selectedDormantItemIDs.removeAll()
-        isDormantSelectionModeEnabled = false
-    }
-
-    func toggleRecoverySelectionMode() {
-        isRecoverySelectionModeEnabled.toggle()
-
-        if !isRecoverySelectionModeEnabled {
-            selectedRecoveryItemIDs.removeAll()
-        }
-    }
-
-    func toggleRecoverySelection(
-        for item: Item
-    ) {
-        if selectedRecoveryItemIDs.contains(item.id) {
-            selectedRecoveryItemIDs.remove(item.id)
-        } else {
-            selectedRecoveryItemIDs.insert(item.id)
-        }
-    }
-
-    func unarchiveSelectedRecoveryItems() {
-        let itemsToUnarchive = selectedRecoveryItems
-
-        guard !itemsToUnarchive.isEmpty else {
-            return
-        }
-
-        onUnarchiveItems(itemsToUnarchive)
-        selectedRecoveryItemIDs.removeAll()
-        isRecoverySelectionModeEnabled = false
-    }
-
-    func rowSupportingText(
-        summary: ItemSummary,
-        snapshot: ItemReviewSnapshot?
-    ) -> String {
-        if let daysSinceLastMark = snapshot?.daysSinceLastMark {
-            return "\(summary.totalMarks) marks • last used \(daysSinceLastMark)d ago"
-        }
-
-        if let daysSinceCreated = snapshot?.daysSinceCreated {
-            return "\(summary.totalMarks) marks • added \(daysSinceCreated)d ago"
-        }
-
-        return "\(summary.totalMarks) marks"
-    }
-
-    func summaryMetric(
-        title: String,
-        value: String
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .mhRowSupporting()
-            Text(value)
-                .mhRowValue(colorRole: .accent)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

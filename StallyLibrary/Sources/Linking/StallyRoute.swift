@@ -1,15 +1,30 @@
 import Foundation
 import MHDeepLinking
 
-public enum StallyRoute: Equatable, Sendable, MHDeepLinkRoute {
+/// Deep-linkable routes supported by Stally.
+public enum StallyRoute: Equatable, Hashable, Sendable, MHDeepLinkRoute {
+    /// Opens the default Home experience.
     case home
+
+    /// Opens the archived item list.
     case archive
+
+    /// Opens backup export and restore tools.
     case backup
+
+    /// Opens the review workflow.
     case review
+
+    /// Opens the Settings screen.
     case settings
+
+    /// Opens the create-item editor.
     case createItem
+
+    /// Opens one specific item.
     case item(UUID)
 
+    /// Encodes the route as a deep-link descriptor.
     public var deepLinkDescriptor: MHDeepLinkDescriptor {
         switch self {
         case .home:
@@ -34,13 +49,12 @@ public enum StallyRoute: Equatable, Sendable, MHDeepLinkRoute {
         }
     }
 
+    /// Decodes a route from a deep-link descriptor.
     public init?(
         deepLinkDescriptor: MHDeepLinkDescriptor
     ) {
         switch deepLinkDescriptor.pathComponents {
-        case []:
-            self = .home
-        case ["home"]:
+        case [], ["home"]:
             self = .home
         case ["archive"]:
             self = .archive
@@ -56,7 +70,8 @@ public enum StallyRoute: Equatable, Sendable, MHDeepLinkRoute {
             guard let itemID = deepLinkDescriptor.queryItems.first(where: { queryItem in
                 queryItem.name == "id"
             })?.value,
-                let uuid = UUID(uuidString: itemID) else {
+            let uuid = UUID(uuidString: itemID)
+            else {
                 return nil
             }
 
@@ -64,19 +79,5 @@ public enum StallyRoute: Equatable, Sendable, MHDeepLinkRoute {
         default:
             return nil
         }
-    }
-}
-
-public enum StallyDeepLinking {
-    public static let configuration = MHDeepLinkConfiguration(
-        customScheme: "stally",
-        preferredUniversalLinkHost: "stally.muhiro12.com",
-        allowedUniversalLinkHosts: ["stally.muhiro12.com"],
-        universalLinkPathPrefix: "app",
-        preferredTransport: .customScheme
-    )
-
-    public static func codec() -> MHDeepLinkCodec<StallyRoute> {
-        .init(configuration: configuration)
     }
 }

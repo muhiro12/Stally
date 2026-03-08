@@ -86,17 +86,16 @@ private extension StallyItemDetailView {
             heroContent
 
             if item.isArchived {
-                Label("Archived items stay out of Home until you move them back.", systemImage: "archivebox.fill")
-                    .mhRowSupporting()
+                Label(
+                    "Archived items stay out of Home until you move them back.",
+                    systemImage: "archivebox.fill"
+                )
+                .mhRowSupporting()
             }
         }
         .mhSection(
             title: Text("Overview"),
-            supporting: Text("Marks accumulate one day at a time."),
-            accessory: {
-                Text(item.category.title)
-                    .mhBadge(style: .accent)
-            }
+            supporting: Text("Marks accumulate one day at a time.")
         )
     }
 
@@ -130,6 +129,9 @@ private extension StallyItemDetailView {
             Text(item.name)
                 .font(.system(size: 28, weight: .semibold, design: .serif))
 
+            Text(item.category.title)
+                .mhBadge(style: .accent)
+
             VStack(alignment: .leading, spacing: theme.spacing.control) {
                 LabeledContent("Total marks", value: "\(summary.totalMarks)")
                     .labeledContentStyle(.mhKeyValue)
@@ -146,50 +148,14 @@ private extension StallyItemDetailView {
 
     var actionSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.control) {
-            Button {
-                onToggleTodayMark(item)
-            } label: {
-                Label(
-                    summary.isMarkedToday ? "Undo Today’s Mark" : "Mark Today",
-                    systemImage: summary.isMarkedToday ? "checkmark.circle.fill" : "circle.fill"
-                )
-                .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(
-                .mhAction(summary.isMarkedToday ? .secondary : .primary)
-            )
-            .disabled(item.isArchived)
-
-            Button {
-                onToggleArchiveState(item)
-            } label: {
-                Label(
-                    item.isArchived ? "Move Back to Home" : "Archive Item",
-                    systemImage: item.isArchived ? "tray.and.arrow.up.fill" : "archivebox.fill"
-                )
-                .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.mhSecondary)
+            toggleTodayMarkButton
+            toggleArchiveStateButton
 
             if let itemShareURL {
-                ShareLink(item: itemShareURL) {
-                    Label(
-                        "Share Item Link",
-                        systemImage: "square.and.arrow.up"
-                    )
-                    .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.mhSecondary)
+                shareButton(url: itemShareURL)
             }
 
-            Button(action: openHistoryEditor) {
-                Label(
-                    item.isArchived ? "Review Another Day" : "Adjust Another Day",
-                    systemImage: "calendar.badge.clock"
-                )
-                .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.mhSecondary)
+            historyEditorButton
         }
         .mhSection(
             title: Text("Actions"),
@@ -197,55 +163,52 @@ private extension StallyItemDetailView {
         )
     }
 
-    func noteSection(
-        note: String
-    ) -> some View {
-        Text(note)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .mhSection(title: Text("Note"))
+    var toggleTodayMarkButton: some View {
+        Button {
+            onToggleTodayMark(item)
+        } label: {
+            Label(
+                summary.isMarkedToday ? "Undo Today’s Mark" : "Mark Today",
+                systemImage: summary.isMarkedToday ? "checkmark.circle.fill" : "circle.fill"
+            )
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(
+            .mhAction(summary.isMarkedToday ? .secondary : .primary)
+        )
+        .disabled(item.isArchived)
+    }
+
+    var toggleArchiveStateButton: some View {
+        Button {
+            onToggleArchiveState(item)
+        } label: {
+            Label(
+                item.isArchived ? "Move Back to Home" : "Archive Item",
+                systemImage: item.isArchived ? "tray.and.arrow.up.fill" : "archivebox.fill"
+            )
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.mhSecondary)
+    }
+
+    var historyEditorButton: some View {
+        Button(action: openHistoryEditor) {
+            Label(
+                item.isArchived ? "Review Another Day" : "Adjust Another Day",
+                systemImage: "calendar.badge.clock"
+            )
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.mhSecondary)
     }
 
     var historyEditorSheet: some View {
         NavigationStack {
             Form {
-                Section("Day") {
-                    DatePicker(
-                        "Date",
-                        selection: $selectedHistoryDate,
-                        in: historyDateRange,
-                        displayedComponents: .date
-                    )
-                    .datePickerStyle(.graphical)
-                }
-
-                Section("Selected Day") {
-                    LabeledContent(
-                        "Date",
-                        value: selectedHistoryDate.formatted(date: .abbreviated, time: .omitted)
-                    )
-                    LabeledContent(
-                        "Current State",
-                        value: selectedDateSummary.isMarkedToday ? "Marked" : "Not marked"
-                    )
-                    .foregroundStyle(
-                        selectedDateSummary.isMarkedToday ? StallyDesign.tint : .secondary
-                    )
-
-                    if item.isArchived {
-                        Text("Archived items are read-only. Move this item back to Home to change history.")
-                            .mhRowSupporting()
-                    }
-                }
-
-                Section {
-                    Button {
-                        applyHistoryChange()
-                    } label: {
-                        Text(selectedDateSummary.isMarkedToday ? "Remove Mark" : "Add Mark")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .disabled(item.isArchived)
-                }
+                historyDateSection
+                selectedDaySection
+                historyActionSection
             }
             .navigationTitle("Adjust History")
             .navigationBarTitleDisplayMode(.inline)
@@ -257,6 +220,76 @@ private extension StallyItemDetailView {
                 }
             }
         }
+    }
+
+    var historyDateSection: some View {
+        Section("Day") {
+            DatePicker(
+                "Date",
+                selection: $selectedHistoryDate,
+                in: historyDateRange,
+                displayedComponents: .date
+            )
+            .datePickerStyle(.graphical)
+        }
+    }
+
+    @ViewBuilder
+    var selectedDaySection: some View {
+        Section("Selected Day") {
+            LabeledContent(
+                "Date",
+                value: selectedHistoryDate.formatted(
+                    date: .abbreviated,
+                    time: .omitted
+                )
+            )
+            LabeledContent(
+                "Current State",
+                value: selectedDateSummary.isMarkedToday ? "Marked" : "Not marked"
+            )
+            .foregroundStyle(
+                selectedDateSummary.isMarkedToday ? StallyDesign.tint : .secondary
+            )
+
+            if item.isArchived {
+                Text("Archived items are read-only. Move this item back to Home to change history.")
+                    .mhRowSupporting()
+            }
+        }
+    }
+
+    var historyActionSection: some View {
+        Section {
+            Button {
+                applyHistoryChange()
+            } label: {
+                Text(selectedDateSummary.isMarkedToday ? "Remove Mark" : "Add Mark")
+                    .frame(maxWidth: .infinity)
+            }
+            .disabled(item.isArchived)
+        }
+    }
+
+    func shareButton(
+        url: URL
+    ) -> some View {
+        ShareLink(item: url) {
+            Label(
+                "Share Item Link",
+                systemImage: "square.and.arrow.up"
+            )
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.mhSecondary)
+    }
+
+    func noteSection(
+        note: String
+    ) -> some View {
+        Text(note)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .mhSection(title: Text("Note"))
     }
 
     func openHistoryEditor() {

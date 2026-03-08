@@ -6,6 +6,16 @@ import SwiftUI
 import UIKit
 
 struct StallySettingsView: View {
+    private struct DeepLinkRow: Identifiable {
+        let title: String
+        let route: StallyRoute
+        let supporting: String
+
+        var id: String {
+            title
+        }
+    }
+
     @Environment(MHAppRuntime.self)
     private var appRuntime
 
@@ -67,13 +77,15 @@ private extension StallySettingsView {
         }
         .mhSection(
             title: Text("Backup"),
-            supporting: Text("Export and restore tools live in a separate workspace so higher-risk actions stay grouped together.")
+            supporting: Text(
+                "Export and restore tools live in a separate workspace so higher-risk actions stay grouped together."
+            )
         )
     }
 
     var deepLinkUtilitiesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            ForEach(deepLinkRows, id: \.title) { row in
+            ForEach(deepLinkRows) { row in
                 if let routeURL = routeURL(for: row.route) {
                     HStack(alignment: .center, spacing: 12) {
                         VStack(alignment: .leading, spacing: 4) {
@@ -104,7 +116,12 @@ private extension StallySettingsView {
         }
         .mhSection(
             title: Text("Deep Links"),
-            supporting: Text("Share the app’s main routes directly from Settings. Item-specific links remain available from item cards and detail.")
+            supporting: Text(
+                """
+                Share the app’s main routes directly from Settings.
+                Item-specific links remain available from item cards and detail.
+                """
+            )
         )
     }
 
@@ -165,14 +182,38 @@ private extension StallySettingsView {
             ?? "Unknown"
     }
 
-    var deepLinkRows: [(title: String, route: StallyRoute, supporting: String)] {
+    private var deepLinkRows: [DeepLinkRow] {
         [
-            ("Home", .home, "Open the main collection view."),
-            ("Archive", .archive, "Jump straight to archived items."),
-            ("Backup Center", .backup, "Open backup and restore tools."),
-            ("Review", .review, "Open the review workflow."),
-            ("Create Item", .createItem, "Start a new item from a link."),
-            ("Settings", .settings, "Open Settings directly.")
+            .init(
+                title: "Home",
+                route: .home,
+                supporting: "Open the main collection view."
+            ),
+            .init(
+                title: "Archive",
+                route: .archive,
+                supporting: "Jump straight to archived items."
+            ),
+            .init(
+                title: "Backup Center",
+                route: .backup,
+                supporting: "Open backup and restore tools."
+            ),
+            .init(
+                title: "Review",
+                route: .review,
+                supporting: "Open the review workflow."
+            ),
+            .init(
+                title: "Create Item",
+                route: .createItem,
+                supporting: "Start a new item from a link."
+            ),
+            .init(
+                title: "Settings",
+                route: .settings,
+                supporting: "Open Settings directly."
+            )
         ]
     }
 
@@ -189,8 +230,9 @@ private extension StallySettingsView {
 
     NavigationStack {
         StallySettingsView(
-            reviewPreferences: $reviewPreferences,
-            onOpenBackup: {}
-        )
+            reviewPreferences: $reviewPreferences
+        ) {
+            // no-op
+        }
     }
 }

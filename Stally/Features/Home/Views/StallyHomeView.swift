@@ -16,21 +16,18 @@ struct StallyHomeView: View {
     let reviewPreferences: StallyReviewPreferences
     let reviewSummary: ItemReviewSummary
     let archiveSummary: ItemInsightsCalculator.ArchiveCollectionSummary
-    let onOpenItem: (UUID) -> Void
-    let onCreateItem: () -> Void
-    let onSeedSampleData: () -> Void
-    let onOpenArchive: () -> Void
-    let onOpenBackup: () -> Void
-    let onOpenReview: () -> Void
-    let onOpenSettings: () -> Void
-    let onToggleTodayMark: (Item) -> Void
+    let actions: StallyHomeActions
 
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {
             if items.isEmpty {
                 emptyState
             } else {
-                queryControls
+                StallyItemQueryControls(
+                    query: $query,
+                    displayedCount: displayedItems.count,
+                    usesCompactLayout: usesCompactLayout
+                )
                 homeQuickFilters
                 homeSummaryCard
                 reviewEntryCard
@@ -45,10 +42,10 @@ struct StallyHomeView: View {
                             item: item,
                             summary: ItemInsightsCalculator.summary(for: item),
                             onOpen: {
-                                onOpenItem(item.id)
+                                actions.onOpenItem(item.id)
                             },
                             onToggleTodayMark: {
-                                onToggleTodayMark(item)
+                                actions.onToggleTodayMark(item)
                             }
                         )
                     }
@@ -66,17 +63,17 @@ struct StallyHomeView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button("Archive", systemImage: "archivebox") {
-                    onOpenArchive()
+                    actions.onOpenArchive()
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Settings", systemImage: "gearshape") {
-                    onOpenSettings()
+                    actions.onOpenSettings()
                 }
             }
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Add", systemImage: "plus") {
-                    onCreateItem()
+                    actions.onCreateItem()
                 }
             }
         }
@@ -84,22 +81,8 @@ struct StallyHomeView: View {
 }
 
 private extension StallyHomeView {
-    var reviewRouteURL: URL? {
-        StallyDeepLinking.codec().preferredURL(
-            for: .review
-        )
-    }
-
-    var archiveRouteURL: URL? {
-        StallyDeepLinking.codec().preferredURL(
-            for: .archive
-        )
-    }
-
-    var backupRouteURL: URL? {
-        StallyDeepLinking.codec().preferredURL(
-            for: .backup
-        )
+    var usesCompactLayout: Bool {
+        horizontalSizeClass != .regular
     }
 
     var displayedItems: [Item] {
@@ -114,81 +97,149 @@ private extension StallyHomeView {
         ItemInsightsCalculator.activeSummary(from: displayedItems)
     }
 
-    var usesCompactLayout: Bool {
-        horizontalSizeClass != .regular
+    var reviewRouteURL: URL? {
+        StallyDeepLinking.codec().preferredURL(for: .review)
     }
 
-    var homeSummaryMetrics: [(title: String, value: String)] {
+    var archiveRouteURL: URL? {
+        StallyDeepLinking.codec().preferredURL(for: .archive)
+    }
+
+    var backupRouteURL: URL? {
+        StallyDeepLinking.codec().preferredURL(for: .backup)
+    }
+
+    var homeSummaryMetrics: [StallyMetricGrid.Metric] {
         [
-            ("Items", "\(displayedSummary.totalItems)"),
-            ("Marked Today", "\(displayedSummary.markedTodayCount)"),
-            ("Untouched", "\(displayedSummary.neverMarkedCount)"),
-            ("Total Marks", "\(displayedSummary.totalMarks)")
+            .init(title: "Items", value: "\(displayedSummary.totalItems)"),
+            .init(
+                title: "Marked Today",
+                value: "\(displayedSummary.markedTodayCount)"
+            ),
+            .init(
+                title: "Untouched",
+                value: "\(displayedSummary.neverMarkedCount)"
+            ),
+            .init(title: "Total Marks", value: "\(displayedSummary.totalMarks)")
         ]
     }
 
-    var summaryMetricGridColumns: [GridItem] {
-        Array(
-            repeating: GridItem(
-                .flexible(minimum: 0, maximum: .infinity),
-                spacing: theme.spacing.group,
-                alignment: .leading
+    var reviewMetrics: [StallyMetricGrid.Metric] {
+        let metrics = [
+            StallyMetricGrid.Metric(
+                title: "First Mark",
+                value: "\(reviewSummary.untouchedCount)"
             ),
-            count: 2
+            .init(title: "Dormant", value: "\(reviewSummary.dormantCount)"),
+            .init(
+                title: "Recovery",
+                value: "\(reviewSummary.recoveryCandidateCount)"
+            )
+        ]
+
+        guard !reviewPreferences.showCompletedSections else {
+            return metrics
+        }
+
+        return metrics.filter { $0.value != "0" }
+    }
+
+    var archiveMetrics: [StallyMetricGrid.Metric] {
+        [
+            .init(title: "Items", value: "\(archiveSummary.totalItems)"),
+            .init(
+                title: "With History",
+                value: "\(archiveSummary.itemsWithMarksCount)"
+            ),
+            .init(title: "Saved Marks", value: "\(archiveSummary.totalMarks)"),
+            .init(title: "Latest Archive", value: archiveLatestDateTitle)
+        ]
+    }
+
+    var backupMetrics: [StallyMetricGrid.Metric] {
+        [
+            .init(title: "Library", value: "\(items.count)"),
+            .init(title: "Active", value: "\(displayedSummary.totalItems)"),
+            .init(title: "Archived", value: "\(archiveSummary.totalItems)"),
+            .init(
+                title: "Marks",
+                value: "\(displayedSummary.totalMarks + archiveSummary.totalMarks)"
+            )
+        ]
+    }
+
+    var homeQuickFilters: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: theme.spacing.control) {
+                ForEach(availableQuickFilters, id: \.title) { option in
+                    Button(option.title) {
+                        query.quickFilter = option.filter
+                    }
+                    .buttonStyle(
+                        option.filter == query.quickFilter
+                            ? .mhPrimary
+                            : .mhSecondary
+                    )
+                }
+            }
+            .padding(.vertical, 2)
+        }
+    }
+
+    var homeSummaryCard: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Text("Collection Snapshot")
+                .mhRowTitle()
+
+            Text("The current Home view balances today’s choices against what still has room to accumulate.")
+                .mhRowSupporting()
+
+            StallyMetricGrid(
+                metrics: homeSummaryMetrics,
+                usesCompactLayout: usesCompactLayout
+            )
+        }
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
+    }
+
+    var reviewEntryCard: some View {
+        StallyHomeEntryCard(
+            title: "Needs Review",
+            value: "\(reviewSummary.totalReviewCount)",
+            supporting: reviewCardSupportingText,
+            metrics: reviewMetrics,
+            primaryActionTitle: "Open Review",
+            routeURL: reviewRouteURL,
+            usesCompactLayout: usesCompactLayout,
+            onOpen: actions.onOpenReview
         )
     }
 
-    var availableQuickFilters: [(title: String, filter: ItemListQuery.QuickFilter?)] {
-        [
-            ("All", nil),
-            ("Open Today", .unmarkedOnReferenceDay),
-            ("Marked Today", .markedOnReferenceDay),
-            ("Never Marked", .withoutHistory)
-        ]
+    var archiveEntryCard: some View {
+        StallyHomeEntryCard(
+            title: "Archive",
+            value: "\(archiveSummary.totalItems)",
+            supporting: archiveCardSupportingText,
+            metrics: archiveMetrics,
+            primaryActionTitle: "Open Archive",
+            routeURL: archiveRouteURL,
+            usesCompactLayout: usesCompactLayout,
+            onOpen: actions.onOpenArchive
+        )
     }
 
-    @ViewBuilder
-    var queryControls: some View {
-        if usesCompactLayout {
-            VStack(alignment: .leading, spacing: theme.spacing.control) {
-                ViewThatFits(in: .horizontal) {
-                    HStack(spacing: theme.spacing.control) {
-                        categoryMenu
-                        sortMenu
-
-                        if query.hasRefinements {
-                            clearFiltersButton
-                        }
-                    }
-                    VStack(alignment: .leading, spacing: theme.spacing.control) {
-                        categoryMenu
-                        sortMenu
-
-                        if query.hasRefinements {
-                            clearFiltersButton
-                        }
-                    }
-                }
-
-                HStack(spacing: theme.spacing.control) {
-                    queryStatusLabel
-                    Spacer(minLength: .zero)
-                }
-            }
-        } else {
-            HStack(alignment: .center, spacing: theme.spacing.control) {
-                categoryMenu
-                sortMenu
-
-                Spacer(minLength: theme.spacing.control)
-
-                queryStatusLabel
-
-                if query.hasRefinements {
-                    clearFiltersButton
-                }
-            }
-        }
+    var backupEntryCard: some View {
+        StallyHomeEntryCard(
+            title: "Backup Center",
+            value: "\(items.count)",
+            supporting: backupCardSupportingText,
+            metrics: backupMetrics,
+            primaryActionTitle: "Open Backup Center",
+            routeURL: backupRouteURL,
+            usesCompactLayout: usesCompactLayout,
+            onOpen: actions.onOpenBackup
+        )
     }
 
     var emptyState: some View {
@@ -197,23 +248,26 @@ private extension StallyHomeView {
                 "Start with a few pieces you actually reach for.",
                 systemImage: "hanger",
                 description: Text(
-                    "Clothing, shoes, bags, notebooks, or one small other category are enough to begin. Add an item, mark it once when you chose it today, and let the accumulation build softly over time."
+                    """
+                    Clothing, shoes, bags, notebooks, or one small other category are enough to begin.
+                    Add an item, mark it once when you chose it today, and let the accumulation build softly over time.
+                    """
                 )
             )
             .mhEmptyStateLayout()
 
             Button("Add Your First Item", systemImage: "plus.circle.fill") {
-                onCreateItem()
+                actions.onCreateItem()
             }
             .buttonStyle(.mhPrimary)
 
             Button("Try Sample Items", systemImage: "sparkles.rectangle.stack") {
-                onSeedSampleData()
+                actions.onSeedSampleData()
             }
             .buttonStyle(.mhSecondary)
 
             Button("Restore From Backup", systemImage: "externaldrive.badge.icloud") {
-                onOpenBackup()
+                actions.onOpenBackup()
             }
             .buttonStyle(.mhSecondary)
 
@@ -236,95 +290,30 @@ private extension StallyHomeView {
         .mhSurface(role: .muted)
     }
 
-    var homeSummaryCard: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            Text("Collection Snapshot")
-                .mhRowTitle()
-
-            Text("The current Home view balances today’s choices against what still has room to accumulate.")
-                .mhRowSupporting()
-
-            summaryMetricsSection(homeSummaryMetrics)
-        }
-        .mhSurfaceInset()
-        .mhSurface(role: .muted)
-    }
-
-    var homeQuickFilters: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: theme.spacing.control) {
-                ForEach(availableQuickFilters, id: \.title) { option in
-                    Button(option.title) {
-                        query.quickFilter = option.filter
-                    }
-                    .buttonStyle(
-                        option.filter == query.quickFilter
-                            ? .mhPrimary
-                            : .mhSecondary
-                    )
-                }
-            }
-            .padding(.vertical, 2)
-        }
-    }
-
-    var reviewEntryCard: some View {
-        routeEntryCard(
-            title: "Needs Review",
-            value: "\(reviewSummary.totalReviewCount)",
-            supporting: reviewCardSupportingText,
-            metrics: visibleReviewMetrics,
-            primaryActionTitle: "Open Review",
-            routeURL: reviewRouteURL,
-            onOpen: onOpenReview
-        )
-    }
-
-    var archiveEntryCard: some View {
-        routeEntryCard(
-            title: "Archive",
-            value: "\(archiveSummary.totalItems)",
-            supporting: archiveCardSupportingText,
-            metrics: archiveEntryMetrics,
-            primaryActionTitle: "Open Archive",
-            routeURL: archiveRouteURL,
-            onOpen: onOpenArchive
-        )
-    }
-
-    var backupEntryCard: some View {
-        routeEntryCard(
-            title: "Backup Center",
-            value: "\(items.count)",
-            supporting: backupCardSupportingText,
-            metrics: backupEntryMetrics,
-            primaryActionTitle: "Open Backup Center",
-            routeURL: backupRouteURL,
-            onOpen: onOpenBackup
-        )
-    }
-
-    var archiveEntryMetrics: [(title: String, value: String)] {
+    var availableQuickFilters: [(title: String, filter: ItemListQuery.QuickFilter?)] {
         [
-            ("Items", "\(archiveSummary.totalItems)"),
-            ("With History", "\(archiveSummary.itemsWithMarksCount)"),
-            ("Saved Marks", "\(archiveSummary.totalMarks)"),
-            ("Latest Archive", archiveLatestDateTitle)
-        ]
-    }
-
-    var backupEntryMetrics: [(title: String, value: String)] {
-        [
-            ("Library", "\(items.count)"),
-            ("Active", "\(displayedSummary.totalItems)"),
-            ("Archived", "\(archiveSummary.totalItems)"),
-            ("Marks", "\(displayedSummary.totalMarks + archiveSummary.totalMarks)")
+            ("All", nil),
+            ("Open Today", .unmarkedOnReferenceDay),
+            ("Marked Today", .markedOnReferenceDay),
+            ("Never Marked", .withoutHistory)
         ]
     }
 
     var archiveLatestDateTitle: String {
         archiveSummary.lastArchivedAt?.formatted(date: .abbreviated, time: .omitted)
             ?? "None"
+    }
+
+    var reviewCardSupportingText: String {
+        if reviewSummary.totalReviewCount == .zero,
+           reviewPreferences.showCompletedSections == false {
+            return """
+                All review lanes are clear right now.
+                Turn on completed sections in Settings to keep zero-count lanes visible.
+                """
+        }
+
+        return "Surface items that need a first mark, feel dormant, or may deserve a return from Archive."
     }
 
     var archiveCardSupportingText: String {
@@ -342,231 +331,6 @@ private extension StallyHomeView {
 
         return "Export the full library, preview imported snapshots, and keep higher-risk restore actions in one place."
     }
-
-    func routeEntryCard(
-        title: String,
-        value: String,
-        supporting: String,
-        metrics: [(title: String, value: String)],
-        primaryActionTitle: String,
-        routeURL: URL?,
-        onOpen: @escaping () -> Void
-    ) -> some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(title)
-                    .mhRowTitle()
-
-                Spacer(minLength: theme.spacing.control)
-
-                Text(value)
-                    .mhRowValue(colorRole: .accent)
-            }
-
-            Text(supporting)
-                .mhRowSupporting()
-
-            if !metrics.isEmpty {
-                summaryMetricsSection(metrics)
-            }
-
-            routeEntryActions(
-                primaryActionTitle: primaryActionTitle,
-                routeURL: routeURL,
-                onOpen: onOpen
-            )
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .mhSurfaceInset()
-        .mhSurface(role: .muted)
-    }
-
-    var categoryMenu: some View {
-        Menu {
-            Button("All Categories") {
-                query.category = nil
-            }
-
-            ForEach(ItemCategory.allCases, id: \.self) { category in
-                Button {
-                    query.category = category
-                } label: {
-                    categoryMenuLabel(for: category)
-                }
-            }
-        } label: {
-            Label(categoryControlTitle, systemImage: "line.3.horizontal.decrease.circle")
-                .lineLimit(1)
-        }
-        .buttonStyle(.mhSecondary)
-        .fixedSize(horizontal: true, vertical: false)
-    }
-
-    var sortMenu: some View {
-        Menu {
-            ForEach(ItemListQuery.SortOption.allCases, id: \.self) { sortOption in
-                Button {
-                    query.sortOption = sortOption
-                } label: {
-                    sortMenuLabel(for: sortOption)
-                }
-            }
-        } label: {
-            Label(query.sortOption.title, systemImage: "arrow.up.arrow.down.circle")
-                .lineLimit(1)
-        }
-        .buttonStyle(.mhSecondary)
-        .fixedSize(horizontal: true, vertical: false)
-    }
-
-    var queryStatusLabel: some View {
-        Text("\(displayedItems.count) shown")
-            .mhRowSupporting()
-    }
-
-    var clearFiltersButton: some View {
-        Button("Clear") {
-            query = .init()
-        }
-        .buttonStyle(.mhSecondary)
-        .fixedSize(horizontal: true, vertical: false)
-    }
-
-    @ViewBuilder
-    func routeEntryActions(
-        primaryActionTitle: String,
-        routeURL: URL?,
-        onOpen: @escaping () -> Void
-    ) -> some View {
-        if usesCompactLayout {
-            VStack(alignment: .leading, spacing: theme.spacing.control) {
-                Button(primaryActionTitle) {
-                    onOpen()
-                }
-                .buttonStyle(.mhSecondary)
-                .fixedSize(horizontal: true, vertical: false)
-
-                if let routeURL {
-                    ShareLink(item: routeURL) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
-                    .buttonStyle(.mhSecondary)
-                    .fixedSize(horizontal: true, vertical: false)
-                }
-            }
-        } else {
-            HStack(spacing: theme.spacing.control) {
-                Button(primaryActionTitle) {
-                    onOpen()
-                }
-                .buttonStyle(.mhSecondary)
-
-                if let routeURL {
-                    ShareLink(item: routeURL) {
-                        Label("Share", systemImage: "square.and.arrow.up")
-                    }
-                    .buttonStyle(.mhSecondary)
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    func summaryMetricsSection(
-        _ metrics: [(title: String, value: String)]
-    ) -> some View {
-        if usesCompactLayout {
-            LazyVGrid(
-                columns: summaryMetricGridColumns,
-                alignment: .leading,
-                spacing: theme.spacing.control
-            ) {
-                ForEach(metrics, id: \.title) { metric in
-                    summaryMetric(
-                        title: metric.title,
-                        value: metric.value
-                    )
-                }
-            }
-        } else {
-            HStack(spacing: theme.spacing.group) {
-                ForEach(metrics, id: \.title) { metric in
-                    summaryMetric(
-                        title: metric.title,
-                        value: metric.value
-                    )
-                }
-            }
-        }
-    }
-
-    var categoryControlTitle: String {
-        query.category?.title ?? "All Categories"
-    }
-
-    var visibleReviewMetrics: [(title: String, value: String)] {
-        let metrics: [(title: String, value: String)] = [
-            ("First Mark", "\(reviewSummary.untouchedCount)"),
-            ("Dormant", "\(reviewSummary.dormantCount)"),
-            ("Recovery", "\(reviewSummary.recoveryCandidateCount)")
-        ]
-
-        if reviewPreferences.showCompletedSections {
-            return metrics
-        }
-
-        return metrics.filter { metric in
-            metric.value != "0"
-        }
-    }
-
-    var reviewCardSupportingText: String {
-        if reviewSummary.totalReviewCount == .zero,
-           reviewPreferences.showCompletedSections == false {
-            return "All review lanes are clear right now. Turn on completed sections in Settings to keep zero-count lanes visible."
-        }
-
-        return "Surface items that need a first mark, feel dormant, or may deserve a return from Archive."
-    }
-
-    func categoryMenuLabel(
-        for category: ItemCategory
-    ) -> some View {
-        Group {
-            if query.category == category {
-                Label(category.title, systemImage: "checkmark")
-            } else {
-                Text(category.title)
-            }
-        }
-    }
-
-    func sortMenuLabel(
-        for sortOption: ItemListQuery.SortOption
-    ) -> some View {
-        Group {
-            if query.sortOption == sortOption {
-                Label(sortOption.title, systemImage: "checkmark")
-            } else {
-                Text(sortOption.title)
-            }
-        }
-    }
-
-    func summaryMetric(
-        title: String,
-        value: String
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .mhRowSupporting()
-                .fixedSize(horizontal: false, vertical: true)
-            Text(value)
-                .mhRowValue(colorRole: .accent)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
 }
 
 @available(iOS 18.0, *)
@@ -583,30 +347,7 @@ private extension StallyHomeView {
             archiveSummary: ItemInsightsCalculator.archiveSummary(
                 from: ItemInsightsCalculator.archivedItems(from: items)
             ),
-            onOpenItem: { _ in
-                // no-op
-            },
-            onCreateItem: {
-                // no-op
-            },
-            onSeedSampleData: {
-                // no-op
-            },
-            onOpenArchive: {
-                // no-op
-            },
-            onOpenBackup: {
-                // no-op
-            },
-            onOpenReview: {
-                // no-op
-            },
-            onOpenSettings: {
-                // no-op
-            },
-            onToggleTodayMark: { _ in
-                // no-op
-            }
+            actions: .noop
         )
     }
 }
@@ -619,30 +360,7 @@ private extension StallyHomeView {
             reviewPreferences: .init(),
             reviewSummary: ItemReviewCalculator.summary(from: []),
             archiveSummary: ItemInsightsCalculator.archiveSummary(from: []),
-            onOpenItem: { _ in
-                // no-op
-            },
-            onCreateItem: {
-                // no-op
-            },
-            onSeedSampleData: {
-                // no-op
-            },
-            onOpenArchive: {
-                // no-op
-            },
-            onOpenBackup: {
-                // no-op
-            },
-            onOpenReview: {
-                // no-op
-            },
-            onOpenSettings: {
-                // no-op
-            },
-            onToggleTodayMark: { _ in
-                // no-op
-            }
+            actions: .noop
         )
     }
 }

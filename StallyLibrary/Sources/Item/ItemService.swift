@@ -3,6 +3,7 @@ import SwiftData
 
 /// Domain mutations for creating, updating, archiving, and seeding items.
 public enum ItemService {
+    /// Creates and saves a new item.
     @discardableResult
     public static func create(
         context: ModelContext,
@@ -24,6 +25,7 @@ public enum ItemService {
         return item
     }
 
+    /// Updates and saves an existing item.
     public static func update(
         context: ModelContext,
         item: Item,
@@ -37,6 +39,7 @@ public enum ItemService {
         try context.save()
     }
 
+    /// Archives and saves one item.
     public static func archive(
         context: ModelContext,
         item: Item,
@@ -46,6 +49,7 @@ public enum ItemService {
         try context.save()
     }
 
+    /// Archives and saves multiple items.
     public static func archive(
         context: ModelContext,
         items: [Item],
@@ -65,6 +69,7 @@ public enum ItemService {
         }
     }
 
+    /// Unarchives and saves one item.
     public static func unarchive(
         context: ModelContext,
         item: Item,
@@ -74,6 +79,7 @@ public enum ItemService {
         try context.save()
     }
 
+    /// Unarchives and saves multiple items.
     public static func unarchive(
         context: ModelContext,
         items: [Item],
@@ -93,6 +99,7 @@ public enum ItemService {
         }
     }
 
+    /// Deletes and saves one item.
     public static func delete(
         context: ModelContext,
         item: Item
@@ -101,6 +108,7 @@ public enum ItemService {
         try context.save()
     }
 
+    /// Deletes and saves every item in the store.
     public static func deleteAll(
         context: ModelContext
     ) throws {
@@ -117,6 +125,7 @@ public enum ItemService {
         try context.save()
     }
 
+    /// Seeds the library with sample items and marks.
     public static func seedSampleData(
         context: ModelContext,
         ifEmptyOnly: Bool = false,
@@ -131,137 +140,178 @@ public enum ItemService {
         }
 
         let calendar: Calendar = .current
-
-        let coat = try create(
+        let sampleItems = try createSampleItems(
             context: context,
-            input: .init(
-                name: "Black Wool Coat",
-                category: .clothing,
-                note: "The one I reach for on cold mornings."
-            ),
-            createdAt: shifted(
-                dayOffset: -140,
-                from: referenceDate,
-                calendar: calendar
-            )
+            referenceDate: referenceDate,
+            calendar: calendar
         )
-        let sneakers = try create(
+        try addSampleMarks(
             context: context,
-            input: .init(
-                name: "White Everyday Sneakers",
-                category: .shoes,
-                note: "Easy pair for short walks and errands."
-            ),
-            createdAt: shifted(
-                dayOffset: -90,
-                from: referenceDate,
-                calendar: calendar
-            )
+            sampleItems: sampleItems,
+            referenceDate: referenceDate,
+            calendar: calendar
         )
-        let tote = try create(
-            context: context,
-            input: .init(
-                name: "Canvas Tote",
-                category: .bags,
-                note: "Usually comes with me when I need one extra layer."
-            ),
-            createdAt: shifted(
-                dayOffset: -60,
-                from: referenceDate,
-                calendar: calendar
-            )
-        )
-        let notebook = try create(
-            context: context,
-            input: .init(
-                name: "Daily Field Notes",
-                category: .notebooks,
-                note: "Still waiting for its first stretch of regular use."
-            ),
-            createdAt: shifted(
-                dayOffset: -35,
-                from: referenceDate,
-                calendar: calendar
-            )
-        )
-        let archiveItem = try create(
-            context: context,
-            input: .init(
-                name: "Travel Weekender",
-                category: .bags,
-                note: "Archived because it only comes out a few times a year."
-            ),
-            createdAt: shifted(
-                dayOffset: -200,
-                from: referenceDate,
-                calendar: calendar
-            )
-        )
-
-        try MarkService.mark(
-            context: context,
-            item: coat,
-            on: shifted(dayOffset: -18, from: referenceDate, calendar: calendar)
-        )
-        try MarkService.mark(
-            context: context,
-            item: coat,
-            on: shifted(dayOffset: -6, from: referenceDate, calendar: calendar)
-        )
-        try MarkService.mark(
-            context: context,
-            item: coat,
-            on: referenceDate
-        )
-
-        try MarkService.mark(
-            context: context,
-            item: sneakers,
-            on: shifted(dayOffset: -20, from: referenceDate, calendar: calendar)
-        )
-        try MarkService.mark(
-            context: context,
-            item: sneakers,
-            on: shifted(dayOffset: -13, from: referenceDate, calendar: calendar)
-        )
-        try MarkService.mark(
-            context: context,
-            item: sneakers,
-            on: shifted(dayOffset: -1, from: referenceDate, calendar: calendar)
-        )
-
-        try MarkService.mark(
-            context: context,
-            item: tote,
-            on: shifted(dayOffset: -45, from: referenceDate, calendar: calendar)
-        )
-        try MarkService.mark(
-            context: context,
-            item: tote,
-            on: shifted(dayOffset: -11, from: referenceDate, calendar: calendar)
-        )
-
-        try MarkService.mark(
-            context: context,
-            item: archiveItem,
-            on: shifted(dayOffset: -90, from: referenceDate, calendar: calendar)
-        )
-        try MarkService.mark(
-            context: context,
-            item: archiveItem,
-            on: shifted(dayOffset: -65, from: referenceDate, calendar: calendar)
-        )
-        try archive(
-            context: context,
-            item: archiveItem,
-            at: shifted(dayOffset: -10, from: referenceDate, calendar: calendar)
-        )
-
-        _ = notebook
     }
 }
 
 private extension ItemService {
+    static func createSampleItems(
+        context: ModelContext,
+        referenceDate: Date,
+        calendar: Calendar
+    ) throws -> [String: Item] {
+        try sampleItemDefinitions().reduce(into: [:]) { partialResult, entry in
+            partialResult[entry.key] = try makeSampleItem(
+                context: context,
+                input: entry.value.input,
+                dayOffset: entry.value.dayOffset,
+                reference: (referenceDate, calendar)
+            )
+        }
+    }
+
+    static func addSampleMarks(
+        context: ModelContext,
+        sampleItems: [String: Item],
+        referenceDate: Date,
+        calendar: Calendar
+    ) throws {
+        guard let coat = sampleItems["coat"],
+              let sneakers = sampleItems["sneakers"],
+              let tote = sampleItems["tote"],
+              let archiveItem = sampleItems["archive"]
+        else {
+            return
+        }
+
+        try mark(
+            context: context,
+            item: coat,
+            dayOffsets: [-18, -6, 0],
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        try mark(
+            context: context,
+            item: sneakers,
+            dayOffsets: [-20, -13, -1],
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        try mark(
+            context: context,
+            item: tote,
+            dayOffsets: [-45, -11],
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        try mark(
+            context: context,
+            item: archiveItem,
+            dayOffsets: [-90, -65],
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        try archive(
+            context: context,
+            item: archiveItem,
+            at: shifted(
+                dayOffset: -10,
+                from: referenceDate,
+                calendar: calendar
+            )
+        )
+    }
+
+    static func makeSampleItem(
+        context: ModelContext,
+        input: ItemFormInput,
+        dayOffset: Int,
+        reference: (date: Date, calendar: Calendar)
+    ) throws -> Item {
+        try create(
+            context: context,
+            input: input,
+            createdAt: shifted(
+                dayOffset: dayOffset,
+                from: reference.date,
+                calendar: reference.calendar
+            )
+        )
+    }
+
+    static func sampleItemDefinitions() -> [String: (
+        input: ItemFormInput,
+        dayOffset: Int
+    )] {
+        [
+            "coat": (
+                .init(
+                    name: "Black Wool Coat",
+                    category: .clothing,
+                    note: "The one I reach for on cold mornings."
+                ),
+                -140
+            ),
+            "sneakers": (
+                .init(
+                    name: "White Everyday Sneakers",
+                    category: .shoes,
+                    note: "Easy pair for short walks and errands."
+                ),
+                -90
+            ),
+            "tote": (
+                .init(
+                    name: "Canvas Tote",
+                    category: .bags,
+                    note: "Usually comes with me when I need one extra layer."
+                ),
+                -60
+            ),
+            "notebook": (
+                .init(
+                    name: "Daily Field Notes",
+                    category: .notebooks,
+                    note: "Still waiting for its first stretch of regular use."
+                ),
+                -35
+            ),
+            "archive": (
+                .init(
+                    name: "Travel Weekender",
+                    category: .bags,
+                    note: "Archived because it only comes out a few times a year."
+                ),
+                -200
+            )
+        ]
+    }
+
+    static func mark(
+        context: ModelContext,
+        item: Item,
+        dayOffsets: [Int],
+        referenceDate: Date,
+        calendar: Calendar
+    ) throws {
+        for dayOffset in dayOffsets {
+            let date = dayOffset == .zero
+                ? referenceDate
+                : shifted(
+                    dayOffset: dayOffset,
+                    from: referenceDate,
+                    calendar: calendar
+                )
+
+            try MarkService.mark(
+                context: context,
+                item: item,
+                on: date
+            )
+        }
+    }
+
     static func shifted(
         dayOffset: Int,
         from date: Date,

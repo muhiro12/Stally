@@ -5,29 +5,27 @@ import XCTest
 final class MarkHistoryCalculatorTests: XCTestCase {
     func testMonthsMarkCellsAcrossMonthBoundaries() throws {
         let context = testContext()
-        let item = try ItemService.create(
+        let item = try createTestItem(
             context: context,
-            input: .init(
-                name: "Pocket Notebook",
-                category: .notebooks
-            )
+            name: "Pocket Notebook",
+            category: .notebooks
         )
 
-        _ = try MarkService.mark(
+        _ = try markTestItem(
             context: context,
             item: item,
-            on: localDate(year: 2026, month: 2, day: 28)
+            on: localDate(year: 2_026, month: 2, day: 28)
         )
-        _ = try MarkService.mark(
+        _ = try markTestItem(
             context: context,
             item: item,
-            on: localDate(year: 2026, month: 3, day: 1)
+            on: localDate(year: 2_026, month: 3, day: 1)
         )
 
         let months = MarkHistoryCalculator.months(
             for: item,
             count: 2,
-            referenceDate: localDate(year: 2026, month: 3, day: 12)
+            referenceDate: localDate(year: 2_026, month: 3, day: 12)
         )
 
         XCTAssertEqual(months.count, 2)
@@ -50,7 +48,7 @@ final class MarkHistoryCalculatorTests: XCTestCase {
             Calendar.current.component(.month, from: februaryMonth.monthStart),
             2
         )
-        XCTAssertTrue(marchOneCell?.isMarked == true)
-        XCTAssertTrue(februaryTwentyEightCell?.isMarked == true)
+        XCTAssertEqual(marchOneCell?.isMarked, true)
+        XCTAssertEqual(februaryTwentyEightCell?.isMarked, true)
     }
 }

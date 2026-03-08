@@ -24,6 +24,7 @@ public enum MarkHistoryCalculator {
         }
     }
 
+    /// Builds recent history months for one item.
     public static func months(
         for item: Item,
         count: Int = 6,

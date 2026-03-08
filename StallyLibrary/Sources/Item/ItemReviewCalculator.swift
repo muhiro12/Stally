@@ -1,79 +1,15 @@
 import Foundation
 
-public enum ItemReviewStatus: String, CaseIterable, Equatable, Sendable {
-    case untouched
-    case dormant
-    case healthy
-    case recoveryCandidate
-    case coldArchive
-
-    public var needsReview: Bool {
-        switch self {
-        case .untouched, .dormant, .recoveryCandidate:
-            true
-        case .healthy, .coldArchive:
-            false
-        }
-    }
-}
-
-public struct ItemReviewPolicy: Codable, Equatable, Sendable {
-    public let untouchedGraceDays: Int
-    public let dormantAfterDays: Int
-
-    public init(
-        untouchedGraceDays: Int = 14,
-        dormantAfterDays: Int = 30
-    ) {
-        self.untouchedGraceDays = max(1, untouchedGraceDays)
-        self.dormantAfterDays = max(1, dormantAfterDays)
-    }
-}
-
-public struct ItemReviewSnapshot: Equatable, Identifiable, Sendable {
-    public let itemID: UUID
-    public let status: ItemReviewStatus
-    public let totalMarks: Int
-    public let createdAt: Date
-    public let archivedAt: Date?
-    public let lastMarkedAt: Date?
-    public let daysSinceCreated: Int
-    public let daysSinceLastMark: Int?
-
-    public var id: UUID {
-        itemID
-    }
-
-    public var needsReview: Bool {
-        status.needsReview
-    }
-}
-
-public struct ItemReviewSummary: Equatable, Sendable {
-    public let totalItems: Int
-    public let untouchedCount: Int
-    public let dormantCount: Int
-    public let healthyCount: Int
-    public let recoveryCandidateCount: Int
-    public let coldArchiveCount: Int
-
-    public var totalReviewCount: Int {
-        untouchedCount + dormantCount + recoveryCandidateCount
-    }
-
-    public var activeReviewCount: Int {
-        untouchedCount + dormantCount
-    }
-}
-
+/// Derives review-oriented snapshots and summaries from items.
 public enum ItemReviewCalculator {
+    /// Builds a review snapshot for one item.
     public static func snapshot(
         for item: Item,
         policy: ItemReviewPolicy = .init(),
         referenceDate: Date = .now,
         calendar: Calendar = .current
     ) -> ItemReviewSnapshot {
-        let summary = ItemInsightsCalculator.summary(
+        let insightSummary = ItemInsightsCalculator.summary(
             for: item,
             referenceDate: referenceDate,
             calendar: calendar
@@ -83,7 +19,7 @@ public enum ItemReviewCalculator {
             until: referenceDate,
             calendar: calendar
         )
-        let daysSinceLastMark = summary.lastMarkedAt.map { lastMarkedAt in
+        let daysSinceLastMark = insightSummary.lastMarkedAt.map { lastMarkedAt in
             elapsedDays(
                 since: lastMarkedAt,
                 until: referenceDate,
@@ -95,20 +31,21 @@ public enum ItemReviewCalculator {
             itemID: item.id,
             status: status(
                 for: item,
-                totalMarks: summary.totalMarks,
+                totalMarks: insightSummary.totalMarks,
                 daysSinceCreated: daysSinceCreated,
                 daysSinceLastMark: daysSinceLastMark,
                 policy: policy
             ),
-            totalMarks: summary.totalMarks,
+            totalMarks: insightSummary.totalMarks,
             createdAt: item.createdAt,
             archivedAt: item.archivedAt,
-            lastMarkedAt: summary.lastMarkedAt,
+            lastMarkedAt: insightSummary.lastMarkedAt,
             daysSinceCreated: daysSinceCreated,
             daysSinceLastMark: daysSinceLastMark
         )
     }
 
+    /// Builds review snapshots for all items.
     public static func snapshots(
         from items: [Item],
         policy: ItemReviewPolicy = .init(),
@@ -125,6 +62,7 @@ public enum ItemReviewCalculator {
         }
     }
 
+    /// Filters items by one review status.
     public static func items(
         from items: [Item],
         with status: ItemReviewStatus,
@@ -148,6 +86,7 @@ public enum ItemReviewCalculator {
         }
     }
 
+    /// Summarizes review counts for all items.
     public static func summary(
         from items: [Item],
         policy: ItemReviewPolicy = .init(),

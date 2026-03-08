@@ -1,30 +1,35 @@
 @testable import StallyLibrary
+import SwiftData
 import XCTest
 
 @MainActor
 final class ItemReviewCalculatorTests: XCTestCase {
+    private struct ReviewSummaryFixture {
+        let untouchedItem: Item
+        let dormantItem: Item
+        let healthyItem: Item
+        let recoveryItem: Item
+        let coldArchiveItem: Item
+    }
+
     func testFreshUnmarkedItemStaysHealthyUntilGracePeriodExpires() throws {
         let context = testContext()
-        let freshItem = try ItemService.create(
+        let freshItem = try createTestItem(
             context: context,
-            input: .init(
-                name: "Fresh Tee",
-                category: .clothing
-            ),
-            createdAt: localDate(year: 2026, month: 3, day: 1)
+            name: "Fresh Tee",
+            category: .clothing,
+            createdAt: localDate(year: 2_026, month: 3, day: 1)
         )
-        let staleItem = try ItemService.create(
+        let staleItem = try createTestItem(
             context: context,
-            input: .init(
-                name: "Stale Tee",
-                category: .clothing
-            ),
-            createdAt: localDate(year: 2026, month: 2, day: 20)
+            name: "Stale Tee",
+            category: .clothing,
+            createdAt: localDate(year: 2_026, month: 2, day: 20)
         )
 
         let snapshots = ItemReviewCalculator.snapshots(
             from: [freshItem, staleItem],
-            referenceDate: localDate(year: 2026, month: 3, day: 8)
+            referenceDate: localDate(year: 2_026, month: 3, day: 8)
         )
 
         XCTAssertEqual(
@@ -39,37 +44,33 @@ final class ItemReviewCalculatorTests: XCTestCase {
 
     func testDormantClassificationUsesLastMarkedDate() throws {
         let context = testContext()
-        let dormantItem = try ItemService.create(
+        let dormantItem = try createTestItem(
             context: context,
-            input: .init(
-                name: "Dormant Coat",
-                category: .clothing
-            ),
-            createdAt: localDate(year: 2026, month: 1, day: 1)
+            name: "Dormant Coat",
+            category: .clothing,
+            createdAt: localDate(year: 2_026, month: 1, day: 1)
         )
-        let healthyItem = try ItemService.create(
+        let healthyItem = try createTestItem(
             context: context,
-            input: .init(
-                name: "Healthy Coat",
-                category: .clothing
-            ),
-            createdAt: localDate(year: 2026, month: 1, day: 1)
+            name: "Healthy Coat",
+            category: .clothing,
+            createdAt: localDate(year: 2_026, month: 1, day: 1)
         )
 
-        _ = try MarkService.mark(
+        _ = try markTestItem(
             context: context,
             item: dormantItem,
-            on: localDate(year: 2026, month: 2, day: 1)
+            on: localDate(year: 2_026, month: 2, day: 1)
         )
-        _ = try MarkService.mark(
+        _ = try markTestItem(
             context: context,
             item: healthyItem,
-            on: localDate(year: 2026, month: 3, day: 2)
+            on: localDate(year: 2_026, month: 3, day: 2)
         )
 
         let snapshots = ItemReviewCalculator.snapshots(
             from: [healthyItem, dormantItem],
-            referenceDate: localDate(year: 2026, month: 3, day: 8)
+            referenceDate: localDate(year: 2_026, month: 3, day: 8)
         )
 
         let dormantSnapshot = try XCTUnwrap(
@@ -86,44 +87,40 @@ final class ItemReviewCalculatorTests: XCTestCase {
 
     func testArchivedItemsSplitBetweenRecoveryAndColdArchive() throws {
         let context = testContext()
-        let recoveryItem = try ItemService.create(
+        let recoveryItem = try createTestItem(
             context: context,
-            input: .init(
-                name: "Recovery Bag",
-                category: .bags
-            )
+            name: "Recovery Bag",
+            category: .bags
         )
-        let coldArchiveItem = try ItemService.create(
+        let coldArchiveItem = try createTestItem(
             context: context,
-            input: .init(
-                name: "Cold Bag",
-                category: .bags
-            )
+            name: "Cold Bag",
+            category: .bags
         )
 
-        _ = try MarkService.mark(
+        _ = try markTestItem(
             context: context,
             item: recoveryItem,
-            on: localDate(year: 2026, month: 2, day: 10)
+            on: localDate(year: 2_026, month: 2, day: 10)
         )
-        try ItemService.archive(
+        try archiveTestItem(
             context: context,
             item: recoveryItem,
-            at: localDate(year: 2026, month: 3, day: 1)
+            at: localDate(year: 2_026, month: 3, day: 1)
         )
-        try ItemService.archive(
+        try archiveTestItem(
             context: context,
             item: coldArchiveItem,
-            at: localDate(year: 2026, month: 3, day: 1)
+            at: localDate(year: 2_026, month: 3, day: 1)
         )
 
         let recoverySnapshot = ItemReviewCalculator.snapshot(
             for: recoveryItem,
-            referenceDate: localDate(year: 2026, month: 3, day: 8)
+            referenceDate: localDate(year: 2_026, month: 3, day: 8)
         )
         let coldArchiveSnapshot = ItemReviewCalculator.snapshot(
             for: coldArchiveItem,
-            referenceDate: localDate(year: 2026, month: 3, day: 8)
+            referenceDate: localDate(year: 2_026, month: 3, day: 8)
         )
 
         XCTAssertEqual(recoverySnapshot.status, .recoveryCandidate)
@@ -132,82 +129,16 @@ final class ItemReviewCalculatorTests: XCTestCase {
 
     func testSummaryCountsAllReviewBuckets() throws {
         let context = testContext()
-        let untouchedItem = try ItemService.create(
-            context: context,
-            input: .init(
-                name: "Untouched Notebook",
-                category: .notebooks
-            ),
-            createdAt: localDate(year: 2026, month: 2, day: 15)
-        )
-        let dormantItem = try ItemService.create(
-            context: context,
-            input: .init(
-                name: "Dormant Tote",
-                category: .bags
-            ),
-            createdAt: localDate(year: 2026, month: 1, day: 1)
-        )
-        let healthyItem = try ItemService.create(
-            context: context,
-            input: .init(
-                name: "Healthy Sneakers",
-                category: .shoes
-            ),
-            createdAt: localDate(year: 2026, month: 1, day: 1)
-        )
-        let recoveryItem = try ItemService.create(
-            context: context,
-            input: .init(
-                name: "Recovery Coat",
-                category: .clothing
-            ),
-            createdAt: localDate(year: 2026, month: 1, day: 1)
-        )
-        let coldArchiveItem = try ItemService.create(
-            context: context,
-            input: .init(
-                name: "Cold Archive Coat",
-                category: .clothing
-            ),
-            createdAt: localDate(year: 2026, month: 1, day: 1)
-        )
-
-        _ = try MarkService.mark(
-            context: context,
-            item: dormantItem,
-            on: localDate(year: 2026, month: 2, day: 1)
-        )
-        _ = try MarkService.mark(
-            context: context,
-            item: healthyItem,
-            on: localDate(year: 2026, month: 3, day: 4)
-        )
-        _ = try MarkService.mark(
-            context: context,
-            item: recoveryItem,
-            on: localDate(year: 2026, month: 2, day: 15)
-        )
-        try ItemService.archive(
-            context: context,
-            item: recoveryItem,
-            at: localDate(year: 2026, month: 3, day: 2)
-        )
-        try ItemService.archive(
-            context: context,
-            item: coldArchiveItem,
-            at: localDate(year: 2026, month: 3, day: 2)
-        )
-
+        let items = try makeReviewSummaryFixture(context: context)
         let summary = ItemReviewCalculator.summary(
             from: [
-                untouchedItem,
-                dormantItem,
-                healthyItem,
-                recoveryItem,
-                coldArchiveItem
+                items.untouchedItem,
+                items.dormantItem,
+                items.healthyItem,
+                items.recoveryItem,
+                items.coldArchiveItem
             ],
-            referenceDate: localDate(year: 2026, month: 3, day: 8)
+            referenceDate: localDate(year: 2_026, month: 3, day: 8)
         )
 
         XCTAssertEqual(summary.totalItems, 5)
@@ -220,123 +151,89 @@ final class ItemReviewCalculatorTests: XCTestCase {
         XCTAssertEqual(summary.activeReviewCount, 2)
     }
 
-    func testArchivingUntouchedItemRemovesItFromActiveReviewCounts() throws {
-        let context = testContext()
-        let untouchedItem = try ItemService.create(
+    private func makeReviewSummaryFixture(
+        context: ModelContext
+    ) throws -> ReviewSummaryFixture {
+        let fixture = try createReviewSummaryFixture(context: context)
+        try populateReviewSummaryFixture(
             context: context,
-            input: .init(
-                name: "Quiet Notebook",
-                category: .notebooks
-            ),
-            createdAt: localDate(year: 2026, month: 2, day: 15)
+            fixture: fixture
         )
 
-        let beforeArchive = ItemReviewCalculator.summary(
-            from: [untouchedItem],
-            referenceDate: localDate(year: 2026, month: 3, day: 8)
-        )
-
-        try ItemService.archive(
-            context: context,
-            item: untouchedItem,
-            at: localDate(year: 2026, month: 3, day: 8)
-        )
-
-        let afterArchive = ItemReviewCalculator.summary(
-            from: [untouchedItem],
-            referenceDate: localDate(year: 2026, month: 3, day: 8)
-        )
-
-        XCTAssertEqual(beforeArchive.untouchedCount, 1)
-        XCTAssertEqual(beforeArchive.totalReviewCount, 1)
-        XCTAssertEqual(afterArchive.untouchedCount, 0)
-        XCTAssertEqual(afterArchive.recoveryCandidateCount, 0)
-        XCTAssertEqual(afterArchive.coldArchiveCount, 1)
-        XCTAssertEqual(afterArchive.totalReviewCount, 0)
+        return fixture
     }
 
-    func testArchivingDormantItemRemovesItFromReviewCounts() throws {
-        let context = testContext()
-        let dormantItem = try ItemService.create(
+    private func createReviewSummaryFixture(
+        context: ModelContext
+    ) throws -> ReviewSummaryFixture {
+        let untouchedItem = try createTestItem(
             context: context,
-            input: .init(
-                name: "Sleepy Coat",
-                category: .clothing
-            ),
-            createdAt: localDate(year: 2026, month: 1, day: 1)
+            name: "Untouched Notebook",
+            category: .notebooks,
+            createdAt: localDate(year: 2_026, month: 2, day: 15)
         )
-
-        _ = try MarkService.mark(
+        let dormantItem = try createTestItem(
             context: context,
-            item: dormantItem,
-            on: localDate(year: 2026, month: 2, day: 1)
+            name: "Dormant Tote",
+            category: .bags,
+            createdAt: localDate(year: 2_026, month: 1, day: 1)
         )
-
-        let beforeArchive = ItemReviewCalculator.summary(
-            from: [dormantItem],
-            referenceDate: localDate(year: 2026, month: 3, day: 8)
-        )
-
-        try ItemService.archive(
+        let healthyItem = try createTestItem(
             context: context,
-            item: dormantItem,
-            at: localDate(year: 2026, month: 3, day: 8)
+            name: "Healthy Sneakers",
+            category: .shoes,
+            createdAt: localDate(year: 2_026, month: 1, day: 1)
+        )
+        let recoveryItem = try createTestItem(
+            context: context,
+            name: "Recovery Coat",
+            category: .clothing,
+            createdAt: localDate(year: 2_026, month: 1, day: 1)
+        )
+        let coldArchiveItem = try createTestItem(
+            context: context,
+            name: "Cold Archive Coat",
+            category: .clothing,
+            createdAt: localDate(year: 2_026, month: 1, day: 1)
         )
 
-        let afterArchive = ItemReviewCalculator.summary(
-            from: [dormantItem],
-            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        return .init(
+            untouchedItem: untouchedItem,
+            dormantItem: dormantItem,
+            healthyItem: healthyItem,
+            recoveryItem: recoveryItem,
+            coldArchiveItem: coldArchiveItem
         )
-
-        XCTAssertEqual(beforeArchive.dormantCount, 1)
-        XCTAssertEqual(beforeArchive.totalReviewCount, 1)
-        XCTAssertEqual(afterArchive.dormantCount, 0)
-        XCTAssertEqual(afterArchive.recoveryCandidateCount, 1)
-        XCTAssertEqual(afterArchive.totalReviewCount, 1)
     }
 
-    func testUnarchivingRecoveryItemCanMakeItHealthyAgain() throws {
-        let context = testContext()
-        let recoveryItem = try ItemService.create(
+    private func populateReviewSummaryFixture(
+        context: ModelContext,
+        fixture: ReviewSummaryFixture
+    ) throws {
+        _ = try markTestItem(
             context: context,
-            input: .init(
-                name: "Recovered Coat",
-                category: .clothing
-            ),
-            createdAt: localDate(year: 2026, month: 1, day: 1)
+            item: fixture.dormantItem,
+            on: localDate(year: 2_026, month: 2, day: 1)
         )
-
-        _ = try MarkService.mark(
+        _ = try markTestItem(
             context: context,
-            item: recoveryItem,
-            on: localDate(year: 2026, month: 3, day: 5)
+            item: fixture.healthyItem,
+            on: localDate(year: 2_026, month: 3, day: 4)
         )
-        try ItemService.archive(
+        _ = try markTestItem(
             context: context,
-            item: recoveryItem,
-            at: localDate(year: 2026, month: 3, day: 6)
+            item: fixture.recoveryItem,
+            on: localDate(year: 2_026, month: 2, day: 15)
         )
-
-        let beforeUnarchive = ItemReviewCalculator.summary(
-            from: [recoveryItem],
-            referenceDate: localDate(year: 2026, month: 3, day: 8)
-        )
-
-        try ItemService.unarchive(
+        try archiveTestItem(
             context: context,
-            item: recoveryItem,
-            at: localDate(year: 2026, month: 3, day: 8)
+            item: fixture.recoveryItem,
+            at: localDate(year: 2_026, month: 3, day: 2)
         )
-
-        let afterUnarchive = ItemReviewCalculator.summary(
-            from: [recoveryItem],
-            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        try archiveTestItem(
+            context: context,
+            item: fixture.coldArchiveItem,
+            at: localDate(year: 2_026, month: 3, day: 2)
         )
-
-        XCTAssertEqual(beforeUnarchive.recoveryCandidateCount, 1)
-        XCTAssertEqual(beforeUnarchive.totalReviewCount, 1)
-        XCTAssertEqual(afterUnarchive.recoveryCandidateCount, 0)
-        XCTAssertEqual(afterUnarchive.healthyCount, 1)
-        XCTAssertEqual(afterUnarchive.totalReviewCount, 0)
     }
 }

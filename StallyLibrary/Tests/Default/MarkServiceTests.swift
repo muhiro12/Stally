@@ -17,12 +17,12 @@ final class MarkServiceTests: XCTestCase {
         _ = try MarkService.mark(
             context: context,
             item: item,
-            on: localDate(year: 2026, month: 3, day: 8, hour: 9)
+            on: localDate(year: 2_026, month: 3, day: 8, hour: 9)
         )
         _ = try MarkService.mark(
             context: context,
             item: item,
-            on: localDate(year: 2026, month: 3, day: 8, hour: 21)
+            on: localDate(year: 2_026, month: 3, day: 8, hour: 21)
         )
 
         XCTAssertEqual(item.marks.count, 1)
@@ -45,18 +45,18 @@ final class MarkServiceTests: XCTestCase {
         _ = try MarkService.mark(
             context: context,
             item: item,
-            on: localDate(year: 2026, month: 3, day: 2)
+            on: localDate(year: 2_026, month: 3, day: 2)
         )
         _ = try MarkService.mark(
             context: context,
             item: item,
-            on: localDate(year: 2026, month: 3, day: 8)
+            on: localDate(year: 2_026, month: 3, day: 8)
         )
 
         let didUnmark = try MarkService.unmark(
             context: context,
             item: item,
-            on: localDate(year: 2026, month: 3, day: 8, hour: 18)
+            on: localDate(year: 2_026, month: 3, day: 8, hour: 18)
         )
 
         XCTAssertTrue(didUnmark)
@@ -64,7 +64,7 @@ final class MarkServiceTests: XCTestCase {
 
         let summary = ItemInsightsCalculator.summary(
             for: item,
-            referenceDate: localDate(year: 2026, month: 3, day: 8)
+            referenceDate: localDate(year: 2_026, month: 3, day: 8)
         )
 
         XCTAssertEqual(summary.totalMarks, 1)
@@ -72,7 +72,7 @@ final class MarkServiceTests: XCTestCase {
         XCTAssertTrue(
             Calendar.current.isDate(
                 summary.lastMarkedAt ?? .distantPast,
-                inSameDayAs: localDate(year: 2026, month: 3, day: 2)
+                inSameDayAs: localDate(year: 2_026, month: 3, day: 2)
             )
         )
     }
@@ -89,19 +89,19 @@ final class MarkServiceTests: XCTestCase {
         _ = try MarkService.mark(
             context: context,
             item: item,
-            on: localDate(year: 2026, month: 3, day: 4)
+            on: localDate(year: 2_026, month: 3, day: 4)
         )
         try ItemService.archive(
             context: context,
             item: item,
-            at: localDate(year: 2026, month: 3, day: 8)
+            at: localDate(year: 2_026, month: 3, day: 8)
         )
 
         XCTAssertThrowsError(
             try MarkService.mark(
                 context: context,
                 item: item,
-                on: localDate(year: 2026, month: 3, day: 8)
+                on: localDate(year: 2_026, month: 3, day: 8)
             )
         ) { error in
             XCTAssertEqual(
@@ -128,19 +128,19 @@ final class MarkServiceTests: XCTestCase {
         _ = try MarkService.mark(
             context: context,
             item: item,
-            on: localDate(year: 2026, month: 3, day: 3)
+            on: localDate(year: 2_026, month: 3, day: 3)
         )
         try ItemService.archive(
             context: context,
             item: item,
-            at: localDate(year: 2026, month: 3, day: 8)
+            at: localDate(year: 2_026, month: 3, day: 8)
         )
 
         XCTAssertThrowsError(
             try MarkService.toggle(
                 context: context,
                 item: item,
-                on: localDate(year: 2026, month: 3, day: 8)
+                on: localDate(year: 2_026, month: 3, day: 8)
             )
         ) { error in
             XCTAssertEqual(
@@ -167,19 +167,19 @@ final class MarkServiceTests: XCTestCase {
         _ = try MarkService.mark(
             context: context,
             item: item,
-            on: localDate(year: 2026, month: 3, day: 5)
+            on: localDate(year: 2_026, month: 3, day: 5)
         )
         try ItemService.archive(
             context: context,
             item: item,
-            at: localDate(year: 2026, month: 3, day: 8)
+            at: localDate(year: 2_026, month: 3, day: 8)
         )
 
         XCTAssertThrowsError(
             try MarkService.unmark(
                 context: context,
                 item: item,
-                on: localDate(year: 2026, month: 3, day: 5)
+                on: localDate(year: 2_026, month: 3, day: 5)
             )
         ) { error in
             XCTAssertEqual(
@@ -203,7 +203,7 @@ final class MarkServiceTests: XCTestCase {
                 category: .notebooks
             )
         )
-        let historyDate = localDate(year: 2026, month: 2, day: 27)
+        let historyDate = localDate(year: 2_026, month: 2, day: 27)
 
         _ = try MarkService.mark(
             context: context,

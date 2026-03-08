@@ -3,15 +3,8 @@ import StallyLibrary
 import SwiftUI
 import UniformTypeIdentifiers
 
-extension UTType {
-    nonisolated static let stallyBackup = UTType(
-        exportedAs: "com.muhiro12.stally.backup",
-        conformingTo: .json
-    )
-}
-
 struct StallyBackupDocument: FileDocument {
-    static let placeholder = StallyBackupDocument(
+    static let placeholder = Self(
         snapshot: .init(
             exportedAt: .now,
             items: []
@@ -44,10 +37,17 @@ struct StallyBackupDocument: FileDocument {
     }
 
     func fileWrapper(
-        configuration: WriteConfiguration
+        configuration _: WriteConfiguration
     ) throws -> FileWrapper {
         .init(
             regularFileWithContents: try StallyBackupCodec.encode(snapshot)
         )
     }
+}
+
+extension UTType {
+    nonisolated static let stallyBackup = UTType(
+        exportedAs: "com.muhiro12.stally.backup",
+        conformingTo: .json
+    )
 }

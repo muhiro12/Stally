@@ -13,31 +13,20 @@ import SwiftUI
 
 @main
 struct StallyApp: App {
-    private let sharedModelContainer: ModelContainer
-    private let sharedAppRuntime: MHAppRuntime
-    private let sharedDeepLinkInbox: MHObservableDeepLinkInbox
+    private let sharedEnvironment: StallyPlatformEnvironment
     private let startupLogger = Self.logger(category: "AppStartup")
 
     var body: some Scene {
         WindowGroup {
             StallyRootView()
-                .modelContainer(sharedModelContainer)
-                .tint(StallyDesign.tint)
-                .mhTheme(MHTheme.standard())
-                .environment(sharedAppRuntime)
-                .environment(sharedDeepLinkInbox)
+                .stallyPlatformEnvironment(sharedEnvironment)
         }
     }
 
     @MainActor
     init() {
         startupLogger.notice("app startup began")
-
-        let bootstrap = StallyAppBootstrap.make()
-
-        sharedModelContainer = bootstrap.modelContainer
-        sharedAppRuntime = bootstrap.appRuntime
-        sharedDeepLinkInbox = bootstrap.deepLinkInbox
+        sharedEnvironment = StallyPlatformEnvironmentFactory.makeLive()
 
         startupLogger.notice("startup dependencies ready")
     }

@@ -52,6 +52,17 @@ public struct ItemListQuery: Equatable, Sendable {
     public var quickFilter: QuickFilter?
     public var sortOption: SortOption
 
+    public var trimmedSearchText: String {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    public var hasRefinements: Bool {
+        !trimmedSearchText.isEmpty
+            || category != nil
+            || quickFilter != nil
+            || sortOption != .defaultOrder
+    }
+
     public init(
         searchText: String = "",
         category: ItemCategory? = nil,
@@ -62,16 +73,5 @@ public struct ItemListQuery: Equatable, Sendable {
         self.category = category
         self.quickFilter = quickFilter
         self.sortOption = sortOption
-    }
-
-    public var trimmedSearchText: String {
-        searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    public var hasRefinements: Bool {
-        !trimmedSearchText.isEmpty
-            || category != nil
-            || quickFilter != nil
-            || sortOption != .defaultOrder
     }
 }

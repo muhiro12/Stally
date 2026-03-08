@@ -14,6 +14,7 @@ public enum MarkService {
         }
     }
 
+    /// Creates a mark for the given day when missing, or returns the existing one.
     @discardableResult
     public static func mark(
         context: ModelContext,
@@ -47,6 +48,7 @@ public enum MarkService {
         return mark
     }
 
+    /// Removes the mark for the given day when it exists.
     @discardableResult
     public static func unmark(
         context: ModelContext,
