@@ -117,4 +117,57 @@ final class ItemServiceTests: XCTestCase {
         XCTAssertEqual(existingArchive.archivedAt, initialArchiveDate)
         XCTAssertEqual(markedItem.archivedAt, localDate(year: 2026, month: 3, day: 8))
     }
+
+    func testBulkArchiveMovesDormantItemsIntoRecoveryCandidates() throws {
+        let context = testContext()
+        let dormantCoat = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Dormant Coat",
+                category: .clothing
+            ),
+            createdAt: localDate(year: 2026, month: 1, day: 1)
+        )
+        let dormantTote = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Dormant Tote",
+                category: .bags
+            ),
+            createdAt: localDate(year: 2026, month: 1, day: 1)
+        )
+
+        _ = try MarkService.mark(
+            context: context,
+            item: dormantCoat,
+            on: localDate(year: 2026, month: 2, day: 1)
+        )
+        _ = try MarkService.mark(
+            context: context,
+            item: dormantTote,
+            on: localDate(year: 2026, month: 2, day: 2)
+        )
+
+        let beforeSummary = ItemReviewCalculator.summary(
+            from: [dormantCoat, dormantTote],
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        try ItemService.archive(
+            context: context,
+            items: [dormantCoat, dormantTote],
+            at: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        let afterSummary = ItemReviewCalculator.summary(
+            from: [dormantCoat, dormantTote],
+            referenceDate: localDate(year: 2026, month: 3, day: 8)
+        )
+
+        XCTAssertEqual(beforeSummary.dormantCount, 2)
+        XCTAssertEqual(beforeSummary.recoveryCandidateCount, 0)
+        XCTAssertEqual(afterSummary.dormantCount, 0)
+        XCTAssertEqual(afterSummary.recoveryCandidateCount, 2)
+        XCTAssertEqual(afterSummary.totalReviewCount, 2)
+    }
 }

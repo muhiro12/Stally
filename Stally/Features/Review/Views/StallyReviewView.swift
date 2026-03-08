@@ -10,6 +10,9 @@ struct StallyReviewView: View {
     @State private var isUntouchedSelectionModeEnabled = false
     @State private var selectedUntouchedItemIDs: Set<UUID> = []
     @State private var isUntouchedBulkArchiveConfirmationPresented = false
+    @State private var isDormantSelectionModeEnabled = false
+    @State private var selectedDormantItemIDs: Set<UUID> = []
+    @State private var isDormantBulkArchiveConfirmationPresented = false
 
     let items: [Item]
     let policy: ItemReviewPolicy
@@ -62,6 +65,20 @@ struct StallyReviewView: View {
             }
         } message: {
             Text("Archive \(selectedUntouchedItems.count) items that still have no marks?")
+        }
+        .confirmationDialog(
+            "Archive Selected Items",
+            isPresented: $isDormantBulkArchiveConfirmationPresented,
+            titleVisibility: .visible
+        ) {
+            Button("Archive Selected", role: .destructive) {
+                archiveSelectedDormantItems()
+            }
+            Button("Cancel", role: .cancel) {
+                // no-op
+            }
+        } message: {
+            Text("Archive \(selectedDormantItems.count) dormant items and move them into Recovery Candidates?")
         }
     }
 }
@@ -122,6 +139,12 @@ private extension StallyReviewView {
     var selectedUntouchedItems: [Item] {
         untouchedItems.filter { item in
             selectedUntouchedItemIDs.contains(item.id)
+        }
+    }
+
+    var selectedDormantItems: [Item] {
+        dormantItems.filter { item in
+            selectedDormantItemIDs.contains(item.id)
         }
     }
 
@@ -221,12 +244,44 @@ private extension StallyReviewView {
             title: "Dormant",
             supporting: "Items whose last mark feels far enough away to revisit.",
             items: dormantItems
-        ) { item in
-            actionableReviewRow(
-                item: item,
-                actionTitle: "Archive Item",
-                onItemAction: onArchiveItem
-            )
+        ) {
+            dormantSelectionControls
+        } rowContent: { item in
+            if isDormantSelectionModeEnabled {
+                selectableReviewRow(
+                    item: item,
+                    isSelected: selectedDormantItemIDs.contains(item.id),
+                    onToggleSelection: toggleDormantSelection(for:)
+                )
+            } else {
+                actionableReviewRow(
+                    item: item,
+                    actionTitle: "Archive Item",
+                    onItemAction: onArchiveItem
+                )
+            }
+        }
+    }
+
+    var dormantSelectionControls: some View {
+        HStack(spacing: theme.spacing.control) {
+            Button(isDormantSelectionModeEnabled ? "Done" : "Select") {
+                toggleDormantSelectionMode()
+            }
+            .buttonStyle(.mhSecondary)
+
+            if isDormantSelectionModeEnabled {
+                Text("\(selectedDormantItems.count) selected")
+                    .mhRowSupporting()
+
+                Spacer(minLength: .zero)
+
+                Button("Archive Selected") {
+                    isDormantBulkArchiveConfirmationPresented = true
+                }
+                .buttonStyle(.mhPrimary)
+                .disabled(selectedDormantItems.isEmpty)
+            }
         }
     }
 
@@ -376,6 +431,36 @@ private extension StallyReviewView {
         onArchiveItems(itemsToArchive)
         selectedUntouchedItemIDs.removeAll()
         isUntouchedSelectionModeEnabled = false
+    }
+
+    func toggleDormantSelectionMode() {
+        isDormantSelectionModeEnabled.toggle()
+
+        if !isDormantSelectionModeEnabled {
+            selectedDormantItemIDs.removeAll()
+        }
+    }
+
+    func toggleDormantSelection(
+        for item: Item
+    ) {
+        if selectedDormantItemIDs.contains(item.id) {
+            selectedDormantItemIDs.remove(item.id)
+        } else {
+            selectedDormantItemIDs.insert(item.id)
+        }
+    }
+
+    func archiveSelectedDormantItems() {
+        let itemsToArchive = selectedDormantItems
+
+        guard !itemsToArchive.isEmpty else {
+            return
+        }
+
+        onArchiveItems(itemsToArchive)
+        selectedDormantItemIDs.removeAll()
+        isDormantSelectionModeEnabled = false
     }
 
     func rowSupportingText(
