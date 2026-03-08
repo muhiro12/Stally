@@ -125,7 +125,7 @@ struct StallyRootView: View {
             loadReviewPreferencesIfNeeded()
         }
         .task(id: deepLinkInbox.pendingURL) {
-            await applyPendingNavigableDeepLinkIfNeeded()
+            await applyPendingDeepLinkIfNeeded()
         }
         .onChange(of: scenePhase) {
             guard scenePhase == .active else {
@@ -425,7 +425,7 @@ private extension StallyRootView {
     }
 
     @MainActor
-    private func applyPendingNavigableDeepLinkIfNeeded() async {
+    private func applyPendingDeepLinkIfNeeded() async {
         guard let pendingURL = deepLinkInbox.pendingURL,
               let route = deepLinkCodec.parse(pendingURL) else {
             return
@@ -453,7 +453,9 @@ private extension StallyRootView {
             editorRoute = nil
             path = itemPath(for: itemID)
         case .createItem:
-            return
+            _ = await deepLinkInbox.consumeLatest(using: deepLinkCodec)
+            path.removeAll()
+            editorRoute = .init(mode: .create)
         }
     }
 
