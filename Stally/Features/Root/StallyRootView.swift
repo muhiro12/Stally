@@ -86,7 +86,13 @@ struct StallyRootView: View {
                         path.append(.item(itemID))
                     }
                 case .review:
-                    reviewPlaceholderView
+                    StallyReviewView(
+                        items: items,
+                        policy: .init(),
+                        onOpenItem: { itemID in
+                            path.append(.item(itemID))
+                        }
+                    )
                 case .settings:
                     StallySettingsView()
                 case .item(let itemID):
@@ -166,15 +172,6 @@ private extension StallyRootView {
         items.first { item in
             item.id == itemID
         }
-    }
-
-    var reviewPlaceholderView: some View {
-        ContentUnavailableView(
-            "Review",
-            systemImage: "tray.full",
-            description: Text("Review workflow content will live here.")
-        )
-        .navigationTitle("Review")
     }
 
     @ViewBuilder
