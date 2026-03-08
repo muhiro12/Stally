@@ -67,6 +67,18 @@ public extension Item {
         self.updatedAt = updatedAt
     }
 
+    func applyImportedSnapshot(
+        _ backupItem: StallyBackupItem
+    ) {
+        name = backupItem.name
+        category = backupItem.category
+        photoData = backupItem.photoData
+        note = backupItem.note
+        createdAt = backupItem.createdAt
+        updatedAt = backupItem.updatedAt
+        archivedAt = backupItem.archivedAt
+    }
+
     func archive(at date: Date = .now) {
         archivedAt = date
         updatedAt = date
