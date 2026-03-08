@@ -5,6 +5,15 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct StallyBackupCenterView: View {
+    private struct ImportPreview {
+        let sourceURL: URL
+        let analysis: StallyBackupImportAnalysis
+
+        var sourceName: String {
+            sourceURL.lastPathComponent
+        }
+    }
+
     @Environment(\.mhTheme)
     private var theme
 
@@ -12,6 +21,9 @@ struct StallyBackupCenterView: View {
     @State private var isExporting = false
     @State private var exportFilename = exportFilename(for: .now)
     @State private var exportStatusMessage: String?
+    @State private var isImporting = false
+    @State private var importPreview: ImportPreview?
+    @State private var importStatusMessage: String?
 
     let items: [Item]
 
@@ -36,6 +48,13 @@ struct StallyBackupCenterView: View {
         ) { result in
             handleExportResult(result)
         }
+        .fileImporter(
+            isPresented: $isImporting,
+            allowedContentTypes: StallyBackupDocument.readableContentTypes,
+            allowsMultipleSelection: false
+        ) { result in
+            handleImportSelection(result)
+        }
         .alert(
             "Backup Export",
             isPresented: isExportStatusPresented
@@ -45,6 +64,16 @@ struct StallyBackupCenterView: View {
             }
         } message: {
             Text(exportStatusMessage ?? "")
+        }
+        .alert(
+            "Backup Import",
+            isPresented: isImportStatusPresented
+        ) {
+            Button("OK", role: .cancel) {
+                importStatusMessage = nil
+            }
+        } message: {
+            Text(importStatusMessage ?? "")
         }
     }
 }
@@ -58,6 +87,19 @@ private extension StallyBackupCenterView {
             set: { isPresented in
                 if !isPresented {
                     exportStatusMessage = nil
+                }
+            }
+        )
+    }
+
+    var isImportStatusPresented: Binding<Bool> {
+        .init(
+            get: {
+                importStatusMessage != nil
+            },
+            set: { isPresented in
+                if !isPresented {
+                    importStatusMessage = nil
                 }
             }
         )
@@ -141,11 +183,17 @@ private extension StallyBackupCenterView {
             Text("Bring a backup back into Stally after previewing how many items would merge, replace, or be rejected.")
                 .mhRowSupporting()
 
-            Button("Import Backup", systemImage: "square.and.arrow.down") {
-                // Implemented in a follow-up commit.
+            Button("Choose Backup File", systemImage: "square.and.arrow.down") {
+                isImporting = true
             }
             .buttonStyle(.mhSecondary)
-            .disabled(true)
+
+            Text("Preview shows the snapshot contents, overlap with local items, and any warnings before import actions are enabled.")
+                .mhRowSupporting()
+
+            if let importPreview {
+                importPreviewCard(importPreview)
+            }
         }
         .mhSection(title: Text("Import Tools"))
     }
@@ -177,6 +225,60 @@ private extension StallyBackupCenterView {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
+    private func importPreviewCard(
+        _ preview: ImportPreview
+    ) -> some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Text(preview.sourceName)
+                .mhRowTitle()
+
+            Text(importPreviewSupportingText(preview))
+                .mhRowSupporting()
+
+            HStack(spacing: theme.spacing.group) {
+                summaryMetric(
+                    title: "Items",
+                    value: "\(preview.analysis.summary.totalItems)"
+                )
+                summaryMetric(
+                    title: "Archived",
+                    value: "\(preview.analysis.summary.archivedItems)"
+                )
+                summaryMetric(
+                    title: "Marks",
+                    value: "\(preview.analysis.summary.totalMarks)"
+                )
+                summaryMetric(
+                    title: "Existing",
+                    value: "\(preview.analysis.summary.existingItems)"
+                )
+                summaryMetric(
+                    title: "New",
+                    value: "\(preview.analysis.summary.newItems)"
+                )
+            }
+
+            if preview.analysis.issues.isEmpty {
+                Text("No validation issues were found in this backup.")
+                    .mhRowSupporting()
+            } else {
+                ForEach(preview.analysis.issues) { issue in
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(issueLabel(issue))
+                            .mhRowTitle()
+
+                        Text(issue.message)
+                            .mhRowSupporting()
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.vertical, 2)
+                }
+            }
+        }
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
+    }
+
     func startExport() {
         let snapshot = StallyBackupCodec.snapshot(
             from: items
@@ -205,8 +307,75 @@ private extension StallyBackupCenterView {
         }
     }
 
+    func handleImportSelection(
+        _ result: Result<[URL], any Error>
+    ) {
+        switch result {
+        case .success(let urls):
+            guard let url = urls.first else {
+                importPreview = nil
+                return
+            }
+
+            do {
+                importPreview = try makeImportPreview(from: url)
+            } catch {
+                importPreview = nil
+                importStatusMessage = (error as? LocalizedError)?.errorDescription
+                    ?? "Stally couldn't read this backup file."
+            }
+        case .failure(let error as CocoaError)
+            where error.code == .userCancelled:
+            importStatusMessage = nil
+        case .failure(let error):
+            importStatusMessage = (error as? LocalizedError)?.errorDescription
+                ?? "Stally couldn't open the import picker."
+        }
+    }
+
+    private func makeImportPreview(
+        from url: URL
+    ) throws -> ImportPreview {
+        let accessedSecurityScope = url.startAccessingSecurityScopedResource()
+
+        defer {
+            if accessedSecurityScope {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+
+        let data = try Data(contentsOf: url)
+        let snapshot = try StallyBackupCodec.decode(data)
+        let analysis = StallyBackupImportAnalyzer.analyze(
+            snapshot: snapshot,
+            existingItemIDs: Set(items.map(\.id))
+        )
+
+        return .init(
+            sourceURL: url,
+            analysis: analysis
+        )
+    }
+
     var exportDetailText: String {
         "\(items.count) items and \(totalMarks) marks are ready to export right now."
+    }
+
+    private func importPreviewSupportingText(
+        _ preview: ImportPreview
+    ) -> String {
+        "Exported \(preview.analysis.snapshot.exportedAt.formatted(date: .abbreviated, time: .shortened)) with schema v\(preview.analysis.snapshot.schemaVersion)."
+    }
+
+    func issueLabel(
+        _ issue: StallyBackupImportIssue
+    ) -> String {
+        switch issue.severity {
+        case .error:
+            "Error: \(issue.code.rawValue)"
+        case .warning:
+            "Warning: \(issue.code.rawValue)"
+        }
     }
 
     static func exportFilename(
