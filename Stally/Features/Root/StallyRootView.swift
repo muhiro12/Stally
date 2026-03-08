@@ -67,6 +67,9 @@ struct StallyRootView: View {
         .onChange(of: navigationState.reviewPreferences) { _, newValue in
             newValue.save(in: appRuntime.preferenceStore)
         }
+        .onChange(of: navigationState.insightsPreferences) { _, newValue in
+            newValue.save(in: appRuntime.preferenceStore)
+        }
         .stallyRuntimeLifecycle(
             plan: runtimeLifecyclePlan
         )

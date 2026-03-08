@@ -22,7 +22,10 @@ extension StallyRootView {
                 onDeleteAll: deleteAllItems
             )
         case .insights:
-            StallyInsightsView(items: items)
+            StallyInsightsView(
+                items: items,
+                preferences: $navigationState.insightsPreferences
+            )
         case .review:
             StallyReviewView(
                 items: items,
@@ -36,6 +39,7 @@ extension StallyRootView {
         case .settings:
             StallySettingsView(
                 reviewPreferences: $navigationState.reviewPreferences,
+                insightsPreferences: $navigationState.insightsPreferences,
                 onOpenBackup: openBackup
             )
         case .item(let itemID):
@@ -289,6 +293,9 @@ extension StallyRootView {
 
     func loadReviewPreferencesIfNeeded() {
         navigationState.loadReviewPreferencesIfNeeded(
+            from: appRuntime.preferenceStore
+        )
+        navigationState.loadInsightsPreferencesIfNeeded(
             from: appRuntime.preferenceStore
         )
     }

@@ -33,7 +33,9 @@ struct StallyRootNavigationState {
     var editorRoute: EditorRoute?
     var operationErrorMessage: String?
     var reviewPreferences = StallyReviewPreferences()
+    var insightsPreferences = StallyInsightsPreferences()
     private var hasLoadedReviewPreferences = false
+    private var hasLoadedInsightsPreferences = false
 
     mutating func dismissEditor() {
         editorRoute = nil
@@ -75,6 +77,19 @@ struct StallyRootNavigationState {
             from: store
         )
         hasLoadedReviewPreferences = true
+    }
+
+    mutating func loadInsightsPreferencesIfNeeded(
+        from store: MHPreferenceStore
+    ) {
+        guard hasLoadedInsightsPreferences == false else {
+            return
+        }
+
+        insightsPreferences = StallyInsightsPreferences.load(
+            from: store
+        )
+        hasLoadedInsightsPreferences = true
     }
 
     mutating func removeItemRoute(

@@ -9,10 +9,8 @@ struct StallyInsightsView: View {
     @Environment(\.mhTheme)
     private var theme
 
-    @State private var selectedRange: ItemInsightsRange = .last30Days
-    @State private var includeArchivedItems = true
-
     let items: [Item]
+    @Binding var preferences: StallyInsightsPreferences
 
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {
@@ -37,6 +35,14 @@ struct StallyInsightsView: View {
 private extension StallyInsightsView {
     var usesCompactLayout: Bool {
         horizontalSizeClass != .regular
+    }
+
+    var selectedRange: ItemInsightsRange {
+        preferences.defaultRange
+    }
+
+    var includeArchivedItems: Bool {
+        preferences.includesArchivedItems
     }
 
     var activitySummary: CollectionActivitySummary {
@@ -174,7 +180,7 @@ private extension StallyInsightsView {
                 HStack(spacing: theme.spacing.control) {
                     ForEach(ItemInsightsRange.allCases, id: \.self) { range in
                         Button(range.title) {
-                            selectedRange = range
+                            preferences.defaultRange = range
                         }
                         .buttonStyle(
                             selectedRange == range
@@ -191,7 +197,7 @@ private extension StallyInsightsView {
 
             Toggle(
                 "Include archived items",
-                isOn: $includeArchivedItems
+                isOn: $preferences.includesArchivedItems
             )
         }
         .mhSection(title: Text("Controls"))
@@ -256,8 +262,12 @@ private extension StallyInsightsView {
 @available(iOS 18.0, *)
 #Preview(traits: .modifier(StallySampleData())) {
     @Previewable @Query var items: [Item]
+    @Previewable @State var preferences = StallyInsightsPreferences()
 
     NavigationStack {
-        StallyInsightsView(items: items)
+        StallyInsightsView(
+            items: items,
+            preferences: $preferences
+        )
     }
 }

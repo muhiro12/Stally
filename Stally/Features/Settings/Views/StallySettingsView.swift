@@ -20,6 +20,7 @@ struct StallySettingsView: View {
     private var appRuntime
 
     @Binding var reviewPreferences: StallyReviewPreferences
+    @Binding var insightsPreferences: StallyInsightsPreferences
     let onOpenBackup: () -> Void
 
     var body: some View {
@@ -27,6 +28,7 @@ struct StallySettingsView: View {
             aboutSection
             backupSection
             reviewPreferencesSection
+            insightsPreferencesSection
             deepLinkUtilitiesSection
             buildSection
             resourcesSection
@@ -153,6 +155,33 @@ private extension StallySettingsView {
         )
     }
 
+    var insightsPreferencesSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Picker(
+                "Default range",
+                selection: $insightsPreferences.defaultRange
+            ) {
+                ForEach(ItemInsightsRange.allCases, id: \.self) { range in
+                    Text(range.title)
+                        .tag(range)
+                }
+            }
+            .pickerStyle(.menu)
+
+            Toggle(
+                "Include archived items by default",
+                isOn: $insightsPreferences.includesArchivedItems
+            )
+
+            Text("These defaults apply each time you open Insights.")
+                .mhRowSupporting()
+        }
+        .mhSection(
+            title: Text("Insights Preferences"),
+            supporting: Text("Choose the default time window and scope for Insights.")
+        )
+    }
+
     @ViewBuilder
     var resourcesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -227,10 +256,12 @@ private extension StallySettingsView {
 @available(iOS 18.0, *)
 #Preview(traits: .modifier(StallySampleData())) {
     @Previewable @State var reviewPreferences = StallyReviewPreferences()
+    @Previewable @State var insightsPreferences = StallyInsightsPreferences()
 
     NavigationStack {
         StallySettingsView(
-            reviewPreferences: $reviewPreferences
+            reviewPreferences: $reviewPreferences,
+            insightsPreferences: $insightsPreferences
         ) {
             // no-op
         }
