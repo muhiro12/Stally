@@ -1,7 +1,9 @@
+import MHDeepLinking
 import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
+import UIKit
 
 struct StallyArchiveView: View {
     @Environment(\.mhTheme)
@@ -184,6 +186,14 @@ private extension StallyArchiveView {
             ?? "None"
     }
 
+    func itemLinkURL(
+        for item: Item
+    ) -> URL? {
+        StallyDeepLinking.codec().preferredURL(
+            for: .item(item.id)
+        )
+    }
+
     func archiveCard(
         item: Item
     ) -> some View {
@@ -198,6 +208,13 @@ private extension StallyArchiveView {
             )
         }
         .buttonStyle(.plain)
+        .contextMenu {
+            if let itemLinkURL = itemLinkURL(for: item) {
+                Button("Copy Item Link", systemImage: "link") {
+                    UIPasteboard.general.url = itemLinkURL
+                }
+            }
+        }
     }
 
     func archiveCardLabel(
