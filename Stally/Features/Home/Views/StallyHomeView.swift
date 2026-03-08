@@ -23,6 +23,7 @@ struct StallyHomeView: View {
                 emptyState
             } else {
                 queryControls
+                homeQuickFilters
                 homeSummaryCard
 
                 if displayedItems.isEmpty {
@@ -82,6 +83,15 @@ private extension StallyHomeView {
 
     var displayedSummary: ItemInsightsCalculator.ActiveCollectionSummary {
         ItemInsightsCalculator.activeSummary(from: displayedItems)
+    }
+
+    var availableQuickFilters: [(title: String, filter: ItemListQuery.QuickFilter?)] {
+        [
+            ("All", nil),
+            ("Open Today", .unmarkedOnReferenceDay),
+            ("Marked Today", .markedOnReferenceDay),
+            ("Never Marked", .withoutHistory)
+        ]
     }
 
     var queryControls: some View {
@@ -199,6 +209,24 @@ private extension StallyHomeView {
         }
         .mhSurfaceInset()
         .mhSurface(role: .muted)
+    }
+
+    var homeQuickFilters: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: theme.spacing.control) {
+                ForEach(availableQuickFilters, id: \.title) { option in
+                    Button(option.title) {
+                        query.quickFilter = option.filter
+                    }
+                    .buttonStyle(
+                        option.filter == query.quickFilter
+                            ? .mhPrimary
+                            : .mhSecondary
+                    )
+                }
+            }
+            .padding(.vertical, 2)
+        }
     }
 
     var categoryControlTitle: String {
