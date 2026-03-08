@@ -13,6 +13,7 @@ struct StallyInsightsView: View {
 
     let items: [Item]
     @Binding var preferences: StallyInsightsPreferences
+    let onOpenItem: (UUID) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {
@@ -23,6 +24,7 @@ struct StallyInsightsView: View {
             categorySection
             rankingSection
             rhythmSection
+            recommendationsSection
             pendingSectionsCard
         }
         .mhScreen(
@@ -165,6 +167,14 @@ private extension StallyInsightsView {
         )
     }
 
+    var recommendations: [CollectionRecommendation] {
+        ItemInsightsCalculator.recommendations(
+            from: items,
+            range: selectedRange,
+            includeArchivedItems: includeArchivedItems
+        )
+    }
+
     var reportText: String {
         StallyInsightsReportBuilder.build(
             range: selectedRange,
@@ -287,6 +297,14 @@ private extension StallyInsightsView {
         )
     }
 
+    var recommendationsSection: some View {
+        StallyInsightsRecommendationsSection(
+            recommendations: recommendations,
+            itemsByID: itemLookup,
+            onOpenItem: onOpenItem
+        )
+    }
+
     var pendingSectionsCard: some View {
         VStack(alignment: .leading, spacing: theme.spacing.control) {
             Text("More Sections Are Coming")
@@ -312,7 +330,10 @@ private extension StallyInsightsView {
     NavigationStack {
         StallyInsightsView(
             items: items,
-            preferences: $preferences
+            preferences: $preferences,
+            onOpenItem: { _ in
+                // no-op
+            }
         )
     }
 }

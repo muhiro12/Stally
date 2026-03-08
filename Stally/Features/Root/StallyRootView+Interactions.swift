@@ -24,7 +24,8 @@ extension StallyRootView {
         case .insights:
             StallyInsightsView(
                 items: items,
-                preferences: $navigationState.insightsPreferences
+                preferences: $navigationState.insightsPreferences,
+                onOpenItem: openItem(_:)
             )
         case .review:
             StallyReviewView(
