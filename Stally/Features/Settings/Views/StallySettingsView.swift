@@ -22,6 +22,7 @@ struct StallySettingsView: View {
     @Binding var reviewPreferences: StallyReviewPreferences
     @Binding var insightsPreferences: StallyInsightsPreferences
     let onOpenBackup: () -> Void
+    let onResetTips: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
@@ -29,6 +30,7 @@ struct StallySettingsView: View {
             backupSection
             reviewPreferencesSection
             insightsPreferencesSection
+            guidanceSection
             deepLinkUtilitiesSection
             buildSection
             resourcesSection
@@ -120,7 +122,7 @@ private extension StallySettingsView {
             title: Text("Deep Links"),
             supporting: Text(
                 """
-                Share the app’s main routes directly from Settings.
+                Share the app's main routes directly from Settings.
                 Item-specific links remain available from item cards and detail.
                 """
             )
@@ -129,17 +131,23 @@ private extension StallySettingsView {
 
     var reviewPreferencesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Stepper(
-                "Needs First Mark after \(reviewPreferences.untouchedGraceDays) days",
-                value: $reviewPreferences.untouchedGraceDays,
-                in: 1...90
-            )
+            Stepper(value: $reviewPreferences.untouchedGraceDays, in: 1...90) {
+                Text(
+                    StallyLocalization.format(
+                        "Needs First Mark after %lld days",
+                        reviewPreferences.untouchedGraceDays
+                    )
+                )
+            }
 
-            Stepper(
-                "Dormant after \(reviewPreferences.dormantAfterDays) days",
-                value: $reviewPreferences.dormantAfterDays,
-                in: 1...180
-            )
+            Stepper(value: $reviewPreferences.dormantAfterDays, in: 1...180) {
+                Text(
+                    StallyLocalization.format(
+                        "Dormant after %lld days",
+                        reviewPreferences.dormantAfterDays
+                    )
+                )
+            }
 
             Toggle(
                 "Show completed review sections",
@@ -182,6 +190,22 @@ private extension StallySettingsView {
         )
     }
 
+    var guidanceSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Tips appear again when the related screen and state become relevant.")
+                .mhRowSupporting()
+
+            Button("Show Tips Again", systemImage: "lightbulb") {
+                onResetTips()
+            }
+            .buttonStyle(.mhSecondary)
+        }
+        .mhSection(
+            title: Text("Guidance"),
+            supporting: Text("Replay the first-use tips if you want another quiet walkthrough of the main flows.")
+        )
+    }
+
     @ViewBuilder
     var resourcesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -203,50 +227,50 @@ private extension StallySettingsView {
 
     var appVersion: String {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-            ?? "Unknown"
+            ?? StallyLocalization.string("Unknown")
     }
 
     var buildNumber: String {
         Bundle.main.object(forInfoDictionaryKey: kCFBundleVersionKey as String) as? String
-            ?? "Unknown"
+            ?? StallyLocalization.string("Unknown")
     }
 
     private var deepLinkRows: [DeepLinkRow] {
         [
             .init(
-                title: "Home",
+                title: StallyLocalization.string("Home"),
                 route: .home,
-                supporting: "Open the main collection view."
+                supporting: StallyLocalization.string("Open the main collection view.")
             ),
             .init(
-                title: "Archive",
+                title: StallyLocalization.string("Archive"),
                 route: .archive,
-                supporting: "Jump straight to archived items."
+                supporting: StallyLocalization.string("Jump straight to archived items.")
             ),
             .init(
-                title: "Backup Center",
+                title: StallyLocalization.string("Backup Center"),
                 route: .backup,
-                supporting: "Open backup and restore tools."
+                supporting: StallyLocalization.string("Open backup and restore tools.")
             ),
             .init(
-                title: "Insights",
+                title: StallyLocalization.string("Insights"),
                 route: .insights,
-                supporting: "Open collection analytics and reports."
+                supporting: StallyLocalization.string("Open collection analytics and reports.")
             ),
             .init(
-                title: "Review",
+                title: StallyLocalization.string("Review"),
                 route: .review,
-                supporting: "Open the review workflow."
+                supporting: StallyLocalization.string("Open the review workflow.")
             ),
             .init(
-                title: "Create Item",
+                title: StallyLocalization.string("Create Item"),
                 route: .createItem,
-                supporting: "Start a new item from a link."
+                supporting: StallyLocalization.string("Start a new item from a link.")
             ),
             .init(
-                title: "Settings",
+                title: StallyLocalization.string("Settings"),
                 route: .settings,
-                supporting: "Open Settings directly."
+                supporting: StallyLocalization.string("Open Settings directly.")
             )
         ]
     }
@@ -268,6 +292,8 @@ private extension StallySettingsView {
             reviewPreferences: $reviewPreferences,
             insightsPreferences: $insightsPreferences
         ) {
+            // no-op
+        } onResetTips: {
             // no-op
         }
     }

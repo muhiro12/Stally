@@ -3,6 +3,7 @@ import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
+import TipKit
 import UIKit
 
 struct StallyInsightsView: View {
@@ -39,6 +40,7 @@ struct StallyInsightsView: View {
                 ) {
                     Image(systemName: "square.and.arrow.up")
                 }
+                .accessibilityLabel(Text("Share"))
             }
 
             ToolbarItem(placement: .topBarTrailing) {
@@ -55,6 +57,7 @@ struct StallyInsightsView: View {
                 } label: {
                     Image(systemName: "ellipsis.circle")
                 }
+                .accessibilityLabel(Text("Actions"))
             }
         }
         .navigationTitle("Insights")
@@ -190,10 +193,22 @@ private extension StallyInsightsView {
 
     var overviewMetrics: [StallyMetricGrid.Metric] {
         [
-            .init(title: "Marks", value: "\(activitySummary.totalMarks)"),
-            .init(title: "Active Days", value: "\(activitySummary.activeDays)"),
-            .init(title: "Best Streak", value: "\(streakSummary.bestStreakDays)"),
-            .init(title: "Items", value: "\(healthSummary.totalItems)")
+            .init(
+                title: StallyLocalization.string("Marks"),
+                value: "\(activitySummary.totalMarks)"
+            ),
+            .init(
+                title: StallyLocalization.string("Active Days"),
+                value: "\(activitySummary.activeDays)"
+            ),
+            .init(
+                title: StallyLocalization.string("Best Streak"),
+                value: "\(streakSummary.bestStreakDays)"
+            ),
+            .init(
+                title: StallyLocalization.string("Items"),
+                value: "\(healthSummary.totalItems)"
+            )
         ]
     }
 
@@ -246,6 +261,7 @@ private extension StallyInsightsView {
                 }
                 .padding(.vertical, 2)
             }
+            .popoverTip(insightsRangeTip, arrowEdge: .top)
 
             Text("All metrics on this screen follow the selected window.")
                 .mhRowSupporting()
@@ -311,14 +327,23 @@ private extension StallyInsightsView {
                 .mhRowTitle()
 
             Text(
-                """
-                This space can expand into longer-range comparisons, saved reports, and trend views that look beyond one selected window.
-                """
+                StallyLocalization.string(
+                    "This space can expand into longer-range comparisons, saved reports, and trend views "
+                        + "that look beyond one selected window."
+                )
             )
             .mhRowSupporting()
         }
         .mhSurfaceInset()
         .mhSurface()
+    }
+
+    var insightsRangeTip: (any Tip)? {
+        guard items.isEmpty == false else {
+            return nil
+        }
+
+        return StallyTips.InsightsRangeTip()
     }
 }
 
@@ -330,10 +355,9 @@ private extension StallyInsightsView {
     NavigationStack {
         StallyInsightsView(
             items: items,
-            preferences: $preferences,
-            onOpenItem: { _ in
-                // no-op
-            }
-        )
+            preferences: $preferences
+        ) { _ in
+            // no-op
+        }
     }
 }

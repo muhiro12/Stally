@@ -1,5 +1,6 @@
 import MHUI
 import SwiftUI
+import TipKit
 
 struct StallyHomeEntryCard: View {
     @Environment(\.mhTheme)
@@ -11,6 +12,7 @@ struct StallyHomeEntryCard: View {
     let metrics: [StallyMetricGrid.Metric]
     let primaryActionTitle: String
     let routeURL: URL?
+    let primaryActionTip: (any Tip)?
     let usesCompactLayout: Bool
     let onOpen: () -> Void
 
@@ -42,6 +44,30 @@ struct StallyHomeEntryCard: View {
         .mhSurfaceInset()
         .mhSurface(role: .muted)
     }
+
+    // swiftlint:disable function_default_parameter_at_end
+    init(
+        title: String,
+        value: String,
+        supporting: String,
+        metrics: [StallyMetricGrid.Metric],
+        primaryActionTitle: String,
+        routeURL: URL?,
+        primaryActionTip: (any Tip)? = nil,
+        usesCompactLayout: Bool,
+        onOpen: @escaping () -> Void
+    ) {
+        self.title = title
+        self.value = value
+        self.supporting = supporting
+        self.metrics = metrics
+        self.primaryActionTitle = primaryActionTitle
+        self.routeURL = routeURL
+        self.primaryActionTip = primaryActionTip
+        self.usesCompactLayout = usesCompactLayout
+        self.onOpen = onOpen
+    }
+    // swiftlint:enable function_default_parameter_at_end
 }
 
 private extension StallyHomeEntryCard {
@@ -66,6 +92,7 @@ private extension StallyHomeEntryCard {
         }
         .buttonStyle(.mhSecondary)
         .fixedSize(horizontal: true, vertical: false)
+        .popoverTip(primaryActionTip, arrowEdge: .top)
     }
 
     @ViewBuilder

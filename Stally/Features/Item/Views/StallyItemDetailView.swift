@@ -3,7 +3,9 @@ import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
+import TipKit
 
+// swiftlint:disable file_length type_contents_order
 struct StallyItemDetailView: View {
     @Environment(\.mhTheme)
     private var theme
@@ -55,7 +57,6 @@ struct StallyItemDetailView: View {
         }
     }
 }
-
 private extension StallyItemDetailView {
     var summary: ItemSummary {
         ItemInsightsCalculator.summary(for: item)
@@ -84,10 +85,22 @@ private extension StallyItemDetailView {
 
     var insightMetrics: [StallyMetricGrid.Metric] {
         [
-            .init(title: "Marks (30d)", value: "\(markCount(inLast: 30))"),
-            .init(title: "Marks (90d)", value: "\(markCount(inLast: 90))"),
-            .init(title: "Months Used", value: "\(activeMonthCount)"),
-            .init(title: "Days Since Last", value: daysSinceLastMarkTitle)
+            .init(
+                title: StallyLocalization.string("Marks (30d)"),
+                value: "\(markCount(inLast: 30))"
+            ),
+            .init(
+                title: StallyLocalization.string("Marks (90d)"),
+                value: "\(markCount(inLast: 90))"
+            ),
+            .init(
+                title: StallyLocalization.string("Months Used"),
+                value: "\(activeMonthCount)"
+            ),
+            .init(
+                title: StallyLocalization.string("Days Since Last"),
+                value: daysSinceLastMarkTitle
+            )
         ]
     }
 
@@ -148,7 +161,7 @@ private extension StallyItemDetailView {
                 LabeledContent(
                     "Last marked",
                     value: summary.lastMarkedAt?.formatted(date: .abbreviated, time: .omitted)
-                        ?? "Not yet"
+                        ?? StallyLocalization.string("Not yet")
                 )
                 .labeledContentStyle(.mhKeyValue)
             }
@@ -194,7 +207,9 @@ private extension StallyItemDetailView {
             onToggleTodayMark(item)
         } label: {
             Label(
-                summary.isMarkedToday ? "Undo Today’s Mark" : "Mark Today",
+                summary.isMarkedToday
+                    ? StallyLocalization.string("Undo Today's Mark")
+                    : StallyLocalization.string("Mark Today"),
                 systemImage: summary.isMarkedToday ? "checkmark.circle.fill" : "circle.fill"
             )
             .frame(maxWidth: .infinity)
@@ -210,7 +225,9 @@ private extension StallyItemDetailView {
             onToggleArchiveState(item)
         } label: {
             Label(
-                item.isArchived ? "Move Back to Home" : "Archive Item",
+                item.isArchived
+                    ? StallyLocalization.string("Move Back to Home")
+                    : StallyLocalization.string("Archive Item"),
                 systemImage: item.isArchived ? "tray.and.arrow.up.fill" : "archivebox.fill"
             )
             .frame(maxWidth: .infinity)
@@ -221,12 +238,15 @@ private extension StallyItemDetailView {
     var historyEditorButton: some View {
         Button(action: openHistoryEditor) {
             Label(
-                item.isArchived ? "Review Another Day" : "Adjust Another Day",
+                item.isArchived
+                    ? StallyLocalization.string("Review Another Day")
+                    : StallyLocalization.string("Adjust Another Day"),
                 systemImage: "calendar.badge.clock"
             )
             .frame(maxWidth: .infinity)
         }
         .buttonStyle(.mhSecondary)
+        .popoverTip(adjustHistoryTip, arrowEdge: .top)
     }
 
     var historyEditorSheet: some View {
@@ -272,7 +292,9 @@ private extension StallyItemDetailView {
             )
             LabeledContent(
                 "Current State",
-                value: selectedDateSummary.isMarkedToday ? "Marked" : "Not marked"
+                value: selectedDateSummary.isMarkedToday
+                    ? StallyLocalization.string("Marked")
+                    : StallyLocalization.string("Not marked")
             )
             .foregroundStyle(
                 selectedDateSummary.isMarkedToday ? StallyDesign.tint : .secondary
@@ -290,8 +312,12 @@ private extension StallyItemDetailView {
             Button {
                 applyHistoryChange()
             } label: {
-                Text(selectedDateSummary.isMarkedToday ? "Remove Mark" : "Add Mark")
-                    .frame(maxWidth: .infinity)
+                Text(
+                    selectedDateSummary.isMarkedToday
+                        ? StallyLocalization.string("Remove Mark")
+                        : StallyLocalization.string("Add Mark")
+                )
+                .frame(maxWidth: .infinity)
             }
             .disabled(item.isArchived)
         }
@@ -374,7 +400,7 @@ private extension StallyItemDetailView {
 
     var daysSinceLastMarkTitle: String {
         guard let lastMarkedAt = summary.lastMarkedAt else {
-            return "Never"
+            return StallyLocalization.string("Never")
         }
 
         let dayCount = Calendar.current.dateComponents(
@@ -385,8 +411,15 @@ private extension StallyItemDetailView {
 
         return "\(max(dayCount, 0))"
     }
-}
 
+    var adjustHistoryTip: (any Tip)? {
+        guard item.isArchived == false else {
+            return nil
+        }
+
+        return StallyTips.AdjustHistoryTip()
+    }
+}
 @available(iOS 18.0, *)
 #Preview(traits: .modifier(StallySampleData())) {
     @Previewable @Query var items: [Item]
@@ -413,3 +446,4 @@ private extension StallyItemDetailView {
         }
     }
 }
+// swiftlint:enable file_length type_contents_order

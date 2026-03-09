@@ -40,7 +40,8 @@ extension StallyRootView {
             StallySettingsView(
                 reviewPreferences: reviewPreferencesBinding,
                 insightsPreferences: insightsPreferencesBinding,
-                onOpenBackup: openBackup
+                onOpenBackup: openBackup,
+                onResetTips: resetTips
             )
         case .item(let itemID):
             destinationView(for: itemID)
@@ -155,6 +156,12 @@ extension StallyRootView {
         navigationState.path.append(
             StallyRootNavigationState.Route.settings
         )
+    }
+
+    func resetTips() {
+        performAction {
+            try StallyRootActionService.resetTips()
+        }
     }
 
     func toggleTodayMark(
@@ -290,5 +297,4 @@ extension StallyRootView {
             return false
         }
     }
-
 }

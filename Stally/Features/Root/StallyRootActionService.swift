@@ -3,6 +3,10 @@ import StallyLibrary
 import SwiftData
 
 enum StallyRootActionService {
+    static func resetTips() throws {
+        try StallyTips.reset()
+    }
+
     static func toggleTodayMark(
         context: ModelContext,
         item: Item

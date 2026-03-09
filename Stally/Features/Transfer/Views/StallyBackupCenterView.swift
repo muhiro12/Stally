@@ -2,6 +2,7 @@ import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
+import TipKit
 import UniformTypeIdentifiers
 
 struct StallyBackupCenterView: View {
@@ -147,10 +148,22 @@ extension StallyBackupCenterView {
 
     var overviewMetrics: [StallyMetricGrid.Metric] {
         [
-            .init(title: "Active", value: "\(activeSummary.totalItems)"),
-            .init(title: "Archived", value: "\(archiveSummary.totalItems)"),
-            .init(title: "Marks", value: "\(totalMarks)"),
-            .init(title: "Latest Change", value: latestChangeTitle)
+            .init(
+                title: StallyLocalization.string("Active"),
+                value: "\(activeSummary.totalItems)"
+            ),
+            .init(
+                title: StallyLocalization.string("Archived"),
+                value: "\(archiveSummary.totalItems)"
+            ),
+            .init(
+                title: StallyLocalization.string("Marks"),
+                value: "\(totalMarks)"
+            ),
+            .init(
+                title: StallyLocalization.string("Latest Change"),
+                value: latestChangeTitle
+            )
         ]
     }
 
@@ -159,11 +172,15 @@ extension StallyBackupCenterView {
             .map(\.updatedAt)
             .max()?
             .formatted(date: .abbreviated, time: .omitted)
-            ?? "None"
+            ?? StallyLocalization.string("None")
     }
 
     var exportDetailText: String {
-        "\(items.count) items and \(totalMarks) marks are ready to export right now."
+        StallyLocalization.format(
+            "%1$lld items and %2$lld marks are ready to export right now.",
+            items.count,
+            totalMarks
+        )
     }
 
     var overviewCard: some View {
@@ -200,6 +217,7 @@ extension StallyBackupCenterView {
                 startExport()
             }
             .buttonStyle(.mhSecondary)
+            .popoverTip(backupSafetyTip, arrowEdge: .top)
 
             Text(exportDetailText)
                 .mhRowSupporting()
@@ -273,5 +291,13 @@ extension StallyBackupCenterView {
             .buttonStyle(.mhSecondary)
         }
         .mhSection(title: Text("Reset Tools"))
+    }
+
+    var backupSafetyTip: (any Tip)? {
+        guard items.isEmpty == false else {
+            return nil
+        }
+
+        return StallyTips.BackupSafetyTip()
     }
 }

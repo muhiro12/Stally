@@ -28,5 +28,14 @@ struct StallyApp: App {
         sharedAssembly = StallyAppAssemblyFactory.makeLive()
 
         startupLogger.notice("startup dependencies ready")
+
+        do {
+            try StallyTips.configure()
+            startupLogger.notice("tip guidance ready")
+        } catch {
+            startupLogger.error(
+                "tip guidance failed to configure: \(String(describing: error))"
+            )
+        }
     }
 }

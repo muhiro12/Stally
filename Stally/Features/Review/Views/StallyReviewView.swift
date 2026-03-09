@@ -5,6 +5,12 @@ import SwiftData
 import SwiftUI
 
 struct StallyReviewView: View {
+    enum SelectionTipLane {
+        case untouched
+        case dormant
+        case recovery
+    }
+
     @Environment(\.mhTheme)
     private var theme
     @Environment(\.horizontalSizeClass)
@@ -71,10 +77,16 @@ private extension StallyReviewView {
 
     var summaryMetrics: [StallyMetricGrid.Metric] {
         [
-            .init(title: "First Mark", value: "\(summary.untouchedCount)"),
-            .init(title: "Dormant", value: "\(summary.dormantCount)"),
             .init(
-                title: "Recovery",
+                title: StallyLocalization.string("First Mark"),
+                value: "\(summary.untouchedCount)"
+            ),
+            .init(
+                title: StallyLocalization.string("Dormant"),
+                value: "\(summary.dormantCount)"
+            ),
+            .init(
+                title: StallyLocalization.string("Recovery"),
                 value: "\(summary.recoveryCandidateCount)"
             )
         ]
@@ -139,6 +151,22 @@ private extension StallyReviewView {
         showsCompletedSections || !recoveryCandidateItems.isEmpty
     }
 
+    var selectionTipLane: SelectionTipLane? {
+        if shouldShowUntouchedSection, untouchedItems.count >= 2 {
+            return .untouched
+        }
+
+        if shouldShowDormantSection, dormantItems.count >= 2 {
+            return .dormant
+        }
+
+        if shouldShowRecoverySection, recoveryCandidateItems.count >= 2 {
+            return .recovery
+        }
+
+        return nil
+    }
+
     var summaryCard: some View {
         VStack(alignment: .leading, spacing: theme.spacing.control) {
             HStack(alignment: .firstTextBaseline) {
@@ -180,16 +208,21 @@ private extension StallyReviewView {
         StallyReviewLaneSection(
             selection: $selectionState.untouched,
             configuration: .init(
-                title: "Needs First Mark",
-                supporting: "Items that have been waiting quietly without a first mark.",
-                emptyMessage: "Nothing in this lane right now.",
-                itemActionTitle: "Archive Item",
-                bulkActionTitle: "Archive Selected",
-                confirmationTitle: "Archive Selected Items",
+                title: StallyLocalization.string("Needs First Mark"),
+                supporting: StallyLocalization.string(
+                    "Items that have been waiting quietly without a first mark."
+                ),
+                emptyMessage: StallyLocalization.string("Nothing in this lane right now."),
+                itemActionTitle: StallyLocalization.string("Archive Item"),
+                bulkActionTitle: StallyLocalization.string("Archive Selected"),
+                confirmationTitle: StallyLocalization.string("Archive Selected Items"),
                 confirmationMessage: { count in
-                    "Archive \(count) items that still have no marks?"
+                    StallyLocalization.format(
+                        "Archive %lld items that still have no marks?",
+                        count
+                    )
                 },
-                confirmationButtonTitle: "Archive Selected",
+                confirmationButtonTitle: StallyLocalization.string("Archive Selected"),
                 confirmationButtonRole: .destructive
             ),
             items: untouchedItems,
@@ -197,7 +230,8 @@ private extension StallyReviewView {
             onOpenItem: onOpenItem,
             onItemAction: onArchiveItem,
             onBulkAction: onArchiveItems,
-            itemLinkURL: itemLinkURL(for:)
+            itemLinkURL: itemLinkURL(for:),
+            showsSelectionTip: selectionTipLane == .untouched
         )
     }
 
@@ -205,16 +239,21 @@ private extension StallyReviewView {
         StallyReviewLaneSection(
             selection: $selectionState.dormant,
             configuration: .init(
-                title: "Dormant",
-                supporting: "Items whose last mark feels far enough away to revisit.",
-                emptyMessage: "Nothing currently looks dormant.",
-                itemActionTitle: "Archive Item",
-                bulkActionTitle: "Archive Selected",
-                confirmationTitle: "Archive Selected Items",
+                title: StallyLocalization.string("Dormant"),
+                supporting: StallyLocalization.string(
+                    "Items whose last mark feels far enough away to revisit."
+                ),
+                emptyMessage: StallyLocalization.string("Nothing currently looks dormant."),
+                itemActionTitle: StallyLocalization.string("Archive Item"),
+                bulkActionTitle: StallyLocalization.string("Archive Selected"),
+                confirmationTitle: StallyLocalization.string("Archive Selected Items"),
                 confirmationMessage: { count in
-                    "Archive \(count) dormant items and move them into Recovery Candidates?"
+                    StallyLocalization.format(
+                        "Archive %lld dormant items and move them into Recovery Candidates?",
+                        count
+                    )
                 },
-                confirmationButtonTitle: "Archive Selected",
+                confirmationButtonTitle: StallyLocalization.string("Archive Selected"),
                 confirmationButtonRole: .destructive
             ),
             items: dormantItems,
@@ -222,7 +261,8 @@ private extension StallyReviewView {
             onOpenItem: onOpenItem,
             onItemAction: onArchiveItem,
             onBulkAction: onArchiveItems,
-            itemLinkURL: itemLinkURL(for:)
+            itemLinkURL: itemLinkURL(for:),
+            showsSelectionTip: selectionTipLane == .dormant
         )
     }
 
@@ -230,16 +270,23 @@ private extension StallyReviewView {
         StallyReviewLaneSection(
             selection: $selectionState.recovery,
             configuration: .init(
-                title: "Recovery Candidates",
-                supporting: "Archived items with enough history that they may deserve another turn.",
-                emptyMessage: "Archive is quiet for now.",
-                itemActionTitle: "Move Back to Home",
-                bulkActionTitle: "Move Back to Home",
-                confirmationTitle: "Move Selected Items Back to Home",
+                title: StallyLocalization.string("Recovery Candidates"),
+                supporting: StallyLocalization.string(
+                    "Archived items with enough history that they may deserve another turn."
+                ),
+                emptyMessage: StallyLocalization.string("Archive is quiet for now."),
+                itemActionTitle: StallyLocalization.string("Move Back to Home"),
+                bulkActionTitle: StallyLocalization.string("Move Back to Home"),
+                confirmationTitle: StallyLocalization.string(
+                    "Move Selected Items Back to Home"
+                ),
                 confirmationMessage: { count in
-                    "Move \(count) archived items back into Home?"
+                    StallyLocalization.format(
+                        "Move %lld archived items back into Home?",
+                        count
+                    )
                 },
-                confirmationButtonTitle: "Move Back to Home",
+                confirmationButtonTitle: StallyLocalization.string("Move Back to Home"),
                 confirmationButtonRole: nil
             ),
             items: recoveryCandidateItems,
@@ -247,7 +294,8 @@ private extension StallyReviewView {
             onOpenItem: onOpenItem,
             onItemAction: onUnarchiveItem,
             onBulkAction: onUnarchiveItems,
-            itemLinkURL: itemLinkURL(for:)
+            itemLinkURL: itemLinkURL(for:),
+            showsSelectionTip: selectionTipLane == .recovery
         )
     }
 

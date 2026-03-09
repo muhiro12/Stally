@@ -3,7 +3,9 @@ import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
+import TipKit
 
+// swiftlint:disable file_length
 struct StallyHomeView: View {
     @Environment(\.mhTheme)
     private var theme
@@ -46,8 +48,8 @@ struct StallyHomeView: View {
         }
     }
 }
-
 private extension StallyHomeView {
+    // swiftlint:disable closure_body_length
     var screenContent: some View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {
             if items.isEmpty {
@@ -84,6 +86,7 @@ private extension StallyHomeView {
             }
         }
     }
+    // swiftlint:enable closure_body_length
 
     @ToolbarContentBuilder
     var homeToolbar: some ToolbarContent {
@@ -160,28 +163,37 @@ private extension StallyHomeView {
 
     var homeSummaryMetrics: [StallyMetricGrid.Metric] {
         [
-            .init(title: "Items", value: "\(displayedSummary.totalItems)"),
             .init(
-                title: "Marked Today",
+                title: StallyLocalization.string("Items"),
+                value: "\(displayedSummary.totalItems)"
+            ),
+            .init(
+                title: StallyLocalization.string("Marked Today"),
                 value: "\(displayedSummary.markedTodayCount)"
             ),
             .init(
-                title: "Untouched",
+                title: StallyLocalization.string("Untouched"),
                 value: "\(displayedSummary.neverMarkedCount)"
             ),
-            .init(title: "Total Marks", value: "\(displayedSummary.totalMarks)")
+            .init(
+                title: StallyLocalization.string("Total Marks"),
+                value: "\(displayedSummary.totalMarks)"
+            )
         ]
     }
 
     var reviewMetrics: [StallyMetricGrid.Metric] {
         let metrics = [
             StallyMetricGrid.Metric(
-                title: "First Mark",
+                title: StallyLocalization.string("First Mark"),
                 value: "\(reviewSummary.untouchedCount)"
             ),
-            .init(title: "Dormant", value: "\(reviewSummary.dormantCount)"),
             .init(
-                title: "Recovery",
+                title: StallyLocalization.string("Dormant"),
+                value: "\(reviewSummary.dormantCount)"
+            ),
+            .init(
+                title: StallyLocalization.string("Recovery"),
                 value: "\(reviewSummary.recoveryCandidateCount)"
             )
         ]
@@ -195,26 +207,41 @@ private extension StallyHomeView {
 
     var archiveMetrics: [StallyMetricGrid.Metric] {
         [
-            .init(title: "Items", value: "\(archiveSummary.totalItems)"),
             .init(
-                title: "With History",
+                title: StallyLocalization.string("Items"),
+                value: "\(archiveSummary.totalItems)"
+            ),
+            .init(
+                title: StallyLocalization.string("With History"),
                 value: "\(archiveSummary.itemsWithMarksCount)"
             ),
-            .init(title: "Saved Marks", value: "\(archiveSummary.totalMarks)"),
-            .init(title: "Latest Archive", value: archiveLatestDateTitle)
+            .init(
+                title: StallyLocalization.string("Saved Marks"),
+                value: "\(archiveSummary.totalMarks)"
+            ),
+            .init(
+                title: StallyLocalization.string("Latest Archive"),
+                value: archiveLatestDateTitle
+            )
         ]
     }
 
     var insightsMetrics: [StallyMetricGrid.Metric] {
         [
-            .init(title: "Marks (30d)", value: "\(insightsActivitySummary.totalMarks)"),
-            .init(title: "Active Days", value: "\(insightsActivitySummary.activeDays)"),
             .init(
-                title: "Current Streak",
+                title: StallyLocalization.string("Marks (30d)"),
+                value: "\(insightsActivitySummary.totalMarks)"
+            ),
+            .init(
+                title: StallyLocalization.string("Active Days"),
+                value: "\(insightsActivitySummary.activeDays)"
+            ),
+            .init(
+                title: StallyLocalization.string("Current Streak"),
                 value: "\(insightsStreakSummary.currentStreakDays)"
             ),
             .init(
-                title: "With History",
+                title: StallyLocalization.string("With History"),
                 value: "\(insightsHealthSummary.itemsWithHistory)"
             )
         ]
@@ -222,11 +249,20 @@ private extension StallyHomeView {
 
     var backupMetrics: [StallyMetricGrid.Metric] {
         [
-            .init(title: "Library", value: "\(items.count)"),
-            .init(title: "Active", value: "\(displayedSummary.totalItems)"),
-            .init(title: "Archived", value: "\(archiveSummary.totalItems)"),
             .init(
-                title: "Marks",
+                title: StallyLocalization.string("Library"),
+                value: "\(items.count)"
+            ),
+            .init(
+                title: StallyLocalization.string("Active"),
+                value: "\(displayedSummary.totalItems)"
+            ),
+            .init(
+                title: StallyLocalization.string("Archived"),
+                value: "\(archiveSummary.totalItems)"
+            ),
+            .init(
+                title: StallyLocalization.string("Marks"),
                 value: "\(displayedSummary.totalMarks + archiveSummary.totalMarks)"
             )
         ]
@@ -255,7 +291,7 @@ private extension StallyHomeView {
             Text("Collection Snapshot")
                 .mhRowTitle()
 
-            Text("The current Home view balances today’s choices against what still has room to accumulate.")
+            Text("The current Home view balances today's choices against what still has room to accumulate.")
                 .mhRowSupporting()
 
             StallyMetricGrid(
@@ -269,12 +305,13 @@ private extension StallyHomeView {
 
     var reviewEntryCard: some View {
         StallyHomeEntryCard(
-            title: "Needs Review",
+            title: StallyLocalization.string("Needs Review"),
             value: "\(reviewSummary.totalReviewCount)",
             supporting: reviewCardSupportingText,
             metrics: reviewMetrics,
-            primaryActionTitle: "Open Review",
+            primaryActionTitle: StallyLocalization.string("Open Review"),
             routeURL: reviewRouteURL,
+            primaryActionTip: openReviewTip,
             usesCompactLayout: usesCompactLayout,
             onOpen: actions.onOpenReview
         )
@@ -282,11 +319,11 @@ private extension StallyHomeView {
 
     var archiveEntryCard: some View {
         StallyHomeEntryCard(
-            title: "Archive",
+            title: StallyLocalization.string("Archive"),
             value: "\(archiveSummary.totalItems)",
             supporting: archiveCardSupportingText,
             metrics: archiveMetrics,
-            primaryActionTitle: "Open Archive",
+            primaryActionTitle: StallyLocalization.string("Open Archive"),
             routeURL: archiveRouteURL,
             usesCompactLayout: usesCompactLayout,
             onOpen: actions.onOpenArchive
@@ -295,11 +332,11 @@ private extension StallyHomeView {
 
     var insightsEntryCard: some View {
         StallyHomeEntryCard(
-            title: "Insights",
+            title: StallyLocalization.string("Insights"),
             value: "\(insightsActivitySummary.totalMarks)",
             supporting: insightsCardSupportingText,
             metrics: insightsMetrics,
-            primaryActionTitle: "Open Insights",
+            primaryActionTitle: StallyLocalization.string("Open Insights"),
             routeURL: insightsRouteURL,
             usesCompactLayout: usesCompactLayout,
             onOpen: actions.onOpenInsights
@@ -308,11 +345,11 @@ private extension StallyHomeView {
 
     var backupEntryCard: some View {
         StallyHomeEntryCard(
-            title: "Backup Center",
+            title: StallyLocalization.string("Backup Center"),
             value: "\(items.count)",
             supporting: backupCardSupportingText,
             metrics: backupMetrics,
-            primaryActionTitle: "Open Backup Center",
+            primaryActionTitle: StallyLocalization.string("Open Backup Center"),
             routeURL: backupRouteURL,
             usesCompactLayout: usesCompactLayout,
             onOpen: actions.onOpenBackup
@@ -337,6 +374,7 @@ private extension StallyHomeView {
                 actions.onCreateItem()
             }
             .buttonStyle(.mhPrimary)
+            .popoverTip(addFirstItemTip, arrowEdge: .top)
 
             Button("Try Sample Items", systemImage: "sparkles.rectangle.stack") {
                 actions.onSeedSampleData()
@@ -369,55 +407,86 @@ private extension StallyHomeView {
 
     var availableQuickFilters: [(title: String, filter: ItemListQuery.QuickFilter?)] {
         [
-            ("All", nil),
-            ("Open Today", .unmarkedOnReferenceDay),
-            ("Marked Today", .markedOnReferenceDay),
-            ("Never Marked", .withoutHistory)
+            (StallyLocalization.string("All"), nil),
+            (StallyLocalization.string("Open Today"), .unmarkedOnReferenceDay),
+            (StallyLocalization.string("Marked Today"), .markedOnReferenceDay),
+            (StallyLocalization.string("Never Marked"), .withoutHistory)
         ]
     }
 
     var archiveLatestDateTitle: String {
         archiveSummary.lastArchivedAt?.formatted(date: .abbreviated, time: .omitted)
-            ?? "None"
+            ?? StallyLocalization.string("None")
     }
 
     var reviewCardSupportingText: String {
         if reviewSummary.totalReviewCount == .zero,
            reviewPreferences.showCompletedSections == false {
-            return """
+            return StallyLocalization.string(
+                """
                 All review lanes are clear right now.
                 Turn on completed sections in Settings to keep zero-count lanes visible.
                 """
+            )
         }
 
-        return "Surface items that need a first mark, feel dormant, or may deserve a return from Archive."
+        return StallyLocalization.string(
+            "Surface items that need a first mark, feel dormant, or may deserve a return from Archive."
+        )
     }
 
     var archiveCardSupportingText: String {
         if archiveSummary.totalItems == .zero {
-            return "Archived items will gather here once you clear space from Home."
+            return StallyLocalization.string(
+                "Archived items will gather here once you clear space from Home."
+            )
         }
 
-        return "Keep preserved favorites close without letting them crowd the active list."
+        return StallyLocalization.string(
+            "Keep preserved favorites close without letting them crowd the active list."
+        )
     }
 
     var insightsCardSupportingText: String {
         if insightsActivitySummary.totalMarks == .zero {
-            return "Once marks start to accumulate, Insights will map cadence, trends, and coverage across the collection."
+            return StallyLocalization.string(
+                "Once marks start to accumulate, Insights will map cadence, trends, and coverage across the collection."
+            )
         }
 
-        return "Read the last 30 days as a pattern: activity density, streaks, and how much of Home already has history."
+        return StallyLocalization.string(
+            "Read the last 30 days as a pattern: activity density, streaks, and how much of Home already has history."
+        )
     }
 
     var backupCardSupportingText: String {
         if items.isEmpty {
-            return "Restore a previous snapshot or keep an export ready before you start tracking again."
+            return StallyLocalization.string(
+                "Restore a previous snapshot or keep an export ready before you start tracking again."
+            )
         }
 
-        return "Export the full library, preview imported snapshots, and keep higher-risk restore actions in one place."
+        return StallyLocalization.string(
+            "Export the full library, preview imported snapshots, and keep higher-risk restore actions in one place."
+        )
+    }
+
+    var addFirstItemTip: (any Tip)? {
+        if items.isEmpty {
+            return StallyTips.AddFirstItemTip()
+        }
+
+        return nil
+    }
+
+    var openReviewTip: (any Tip)? {
+        if reviewSummary.totalReviewCount > .zero {
+            return StallyTips.OpenReviewTip()
+        }
+
+        return nil
     }
 }
-
 @available(iOS 18.0, *)
 #Preview(traits: .modifier(StallySampleData())) {
     @Previewable @Query var items: [Item]
@@ -449,3 +518,4 @@ private extension StallyHomeView {
         )
     }
 }
+// swiftlint:enable file_length

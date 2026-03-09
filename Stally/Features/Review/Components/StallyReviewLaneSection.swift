@@ -1,6 +1,7 @@
 import MHUI
 import StallyLibrary
 import SwiftUI
+import TipKit
 import UIKit
 
 struct StallyReviewLaneSection: View {
@@ -28,6 +29,7 @@ struct StallyReviewLaneSection: View {
     let onItemAction: (Item) -> Void
     let onBulkAction: ([Item]) -> Void
     let itemLinkURL: (Item) -> URL?
+    let showsSelectionTip: Bool
 
     var body: some View {
         content
@@ -93,14 +95,24 @@ private extension StallyReviewLaneSection {
 
     var selectionControls: some View {
         HStack(spacing: theme.spacing.control) {
-            Button(selection.isSelectionModeEnabled ? "Done" : "Select") {
+            Button(
+                selection.isSelectionModeEnabled
+                    ? StallyLocalization.string("Done")
+                    : StallyLocalization.string("Select")
+            ) {
                 selection.toggleSelectionMode()
             }
             .buttonStyle(.mhSecondary)
+            .popoverTip(selectionTip, arrowEdge: .bottom)
 
             if selection.isSelectionModeEnabled {
-                Text("\(selectedItems.count) selected")
-                    .mhRowSupporting()
+                Text(
+                    StallyLocalization.format(
+                        "%lld selected",
+                        selectedItems.count
+                    )
+                )
+                .mhRowSupporting()
 
                 Spacer(minLength: .zero)
 
@@ -111,6 +123,16 @@ private extension StallyReviewLaneSection {
                 .disabled(selectedItems.isEmpty)
             }
         }
+    }
+
+    var selectionTip: (any Tip)? {
+        guard showsSelectionTip,
+              selection.isSelectionModeEnabled == false,
+              items.count >= 2 else {
+            return nil
+        }
+
+        return StallyTips.ReviewBulkSelectTip()
     }
 
     func actionableReviewRow(
@@ -215,14 +237,25 @@ private extension StallyReviewLaneSection {
         snapshot: ItemReviewSnapshot?
     ) -> String {
         if let daysSinceLastMark = snapshot?.daysSinceLastMark {
-            return "\(summary.totalMarks) marks • last used \(daysSinceLastMark)d ago"
+            return StallyLocalization.format(
+                "%1$lld marks | last used %2$lldd ago",
+                summary.totalMarks,
+                daysSinceLastMark
+            )
         }
 
         if let daysSinceCreated = snapshot?.daysSinceCreated {
-            return "\(summary.totalMarks) marks • added \(daysSinceCreated)d ago"
+            return StallyLocalization.format(
+                "%1$lld marks | added %2$lldd ago",
+                summary.totalMarks,
+                daysSinceCreated
+            )
         }
 
-        return "\(summary.totalMarks) marks"
+        return StallyLocalization.format(
+            "%lld marks",
+            summary.totalMarks
+        )
     }
 
     func performBulkAction() {
