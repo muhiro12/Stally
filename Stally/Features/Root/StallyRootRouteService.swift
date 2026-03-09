@@ -1,35 +1,10 @@
 import Foundation
-import MHPlatform
 import StallyLibrary
 
 enum StallyRootRouteService {
-    enum PendingRouteResolution {
-        case none
-        case route(StallyRoute)
-        case unsupported
-    }
-
-    @MainActor
-    static func resolvePendingRoute(
-        from inbox: MHObservableDeepLinkInbox,
-        codec: MHDeepLinkCodec<StallyRoute>
-    ) async -> PendingRouteResolution {
-        guard let pendingURL = inbox.pendingURL else {
-            return .none
-        }
-
-        guard let route = codec.parse(pendingURL) else {
-            _ = await inbox.consumeLatestURL()
-            return .unsupported
-        }
-
-        _ = await inbox.consumeLatest(using: codec)
-        return .route(route)
-    }
-
     static func apply(
         route: StallyRoute,
-        to state: inout StallyRootNavigationState,
+        to state: StallyRootNavigationState,
         items: [Item]
     ) {
         switch route {

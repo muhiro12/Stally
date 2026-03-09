@@ -1,5 +1,4 @@
 import Foundation
-import MHAppRuntime
 import StallyLibrary
 import SwiftUI
 
@@ -24,7 +23,7 @@ extension StallyRootView {
         case .insights:
             StallyInsightsView(
                 items: items,
-                preferences: $navigationState.insightsPreferences,
+                preferences: insightsPreferencesBinding,
                 onOpenItem: openItem(_:)
             )
         case .review:
@@ -39,8 +38,8 @@ extension StallyRootView {
             )
         case .settings:
             StallySettingsView(
-                reviewPreferences: $navigationState.reviewPreferences,
-                insightsPreferences: $navigationState.insightsPreferences,
+                reviewPreferences: reviewPreferencesBinding,
+                insightsPreferences: insightsPreferencesBinding,
                 onOpenBackup: openBackup
             )
         case .item(let itemID):
@@ -292,30 +291,4 @@ extension StallyRootView {
         }
     }
 
-    func loadReviewPreferencesIfNeeded() {
-        navigationState.loadReviewPreferencesIfNeeded(
-            from: appRuntime.preferenceStore
-        )
-        navigationState.loadInsightsPreferencesIfNeeded(
-            from: appRuntime.preferenceStore
-        )
-    }
-
-    func synchronizePendingRouteIfNeeded() async {
-        switch await StallyRootRouteService.resolvePendingRoute(
-            from: deepLinkInbox,
-            codec: deepLinkCodec
-        ) {
-        case .none:
-            return
-        case .route(let route):
-            StallyRootRouteService.apply(
-                route: route,
-                to: &navigationState,
-                items: items
-            )
-        case .unsupported:
-            navigationState.presentUnsupportedDeepLinkError()
-        }
-    }
 }

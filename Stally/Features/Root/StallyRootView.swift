@@ -11,12 +11,16 @@ import SwiftData
 import SwiftUI
 
 struct StallyRootView: View {
+    @Environment(StallyRootNavigationState.self)
+    var navigationState
     @Environment(\.modelContext)
     var context
     @Environment(MHAppRuntime.self)
     var appRuntime
     @Environment(MHObservableDeepLinkInbox.self)
     var deepLinkInbox
+    @Environment(MHObservableRouteInbox<StallyRoute>.self)
+    var routeInbox
 
     @Query(
         sort: [
@@ -25,11 +29,8 @@ struct StallyRootView: View {
     )
     var items: [Item]
 
-    // swiftlint:disable:next private_swiftui_state
-    @State var navigationState = StallyRootNavigationState()
-
     var body: some View {
-        NavigationStack(path: $navigationState.path) {
+        NavigationStack(path: pathBinding) {
             navigationContent
         }
         .alert(
@@ -42,27 +43,30 @@ struct StallyRootView: View {
         } message: {
             Text(navigationState.operationErrorMessage ?? "")
         }
-        .sheet(item: $navigationState.editorRoute) { route in
+        .sheet(item: editorRouteBinding) { route in
             editorDestination(for: route)
         }
-        .onChange(of: deepLinkInbox.pendingURL) {
-            Task {
-                await synchronizePendingRouteIfNeeded()
-            }
-        }
-        .onOpenURL { url in
-            Task {
-                await deepLinkInbox.ingest(url)
-            }
-        }
-        .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { userActivity in
-            guard let webpageURL = userActivity.webpageURL else {
+        .onChange(of: deepLinkInbox.pendingURL) { _, pendingURL in
+            guard let pendingURL,
+            deepLinkCodec.parse(pendingURL) == nil
+            else {
                 return
             }
 
-            Task {
-                await deepLinkInbox.ingest(webpageURL)
+            navigationState.presentUnsupportedDeepLinkError()
+        }
+        .onChange(of: routeInbox.pendingRoute) { _, pendingRoute in
+            guard pendingRoute != nil,
+            let route = routeInbox.consumeLatest()
+            else {
+                return
             }
+
+            StallyRootRouteService.apply(
+                route: route,
+                to: navigationState,
+                items: items
+            )
         }
         .onChange(of: navigationState.reviewPreferences) { _, newValue in
             newValue.save(in: appRuntime.preferenceStore)
@@ -70,9 +74,6 @@ struct StallyRootView: View {
         .onChange(of: navigationState.insightsPreferences) { _, newValue in
             newValue.save(in: appRuntime.preferenceStore)
         }
-        .stallyRuntimeLifecycle(
-            plan: runtimeLifecyclePlan
-        )
     }
 }
 
@@ -112,6 +113,50 @@ extension StallyRootView {
         )
     }
 
+    var pathBinding: Binding<[StallyRootNavigationState.Route]> {
+        .init(
+            get: {
+                navigationState.path
+            },
+            set: { newValue in
+                navigationState.path = newValue
+            }
+        )
+    }
+
+    var editorRouteBinding: Binding<StallyRootNavigationState.EditorRoute?> {
+        .init(
+            get: {
+                navigationState.editorRoute
+            },
+            set: { newValue in
+                navigationState.editorRoute = newValue
+            }
+        )
+    }
+
+    var reviewPreferencesBinding: Binding<StallyReviewPreferences> {
+        .init(
+            get: {
+                navigationState.reviewPreferences
+            },
+            set: { newValue in
+                navigationState.reviewPreferences = newValue
+            }
+        )
+    }
+
+    var insightsPreferencesBinding: Binding<StallyInsightsPreferences> {
+        .init(
+            get: {
+                navigationState.insightsPreferences
+            },
+            set: { newValue in
+                navigationState.insightsPreferences = newValue
+            }
+        )
+    }
+
     var navigationContent: some View {
         StallyHomeView(
             items: activeItems,
@@ -137,19 +182,5 @@ extension StallyRootView {
         ) { route in
             rootDestination(for: route)
         }
-    }
-
-    var runtimeLifecyclePlan: StallyRuntimeLifecycleSupport.Plan {
-        StallyRuntimeLifecycleSupport.makePlan(
-            startRuntimeIfNeeded: {
-                appRuntime.startIfNeeded()
-            },
-            loadReviewPreferencesIfNeeded: {
-                loadReviewPreferencesIfNeeded()
-            },
-            applyPendingDeepLinkIfNeeded: {
-                await synchronizePendingRouteIfNeeded()
-            }
-        )
     }
 }

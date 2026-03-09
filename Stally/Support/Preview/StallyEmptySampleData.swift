@@ -1,10 +1,10 @@
 import SwiftUI
 
 struct StallyEmptySampleData: PreviewModifier {
-    typealias Context = StallyPlatformEnvironment
+    typealias Context = StallyAppAssembly
 
     static func makeSharedContext() throws -> Context {
-        try StallyPlatformEnvironmentFactory.makePreview(
+        try StallyAppAssemblyFactory.makePreview(
             seedSampleData: false
         )
     }
@@ -13,6 +13,6 @@ struct StallyEmptySampleData: PreviewModifier {
         content: Content,
         context: Context
     ) -> some View {
-        content.stallyPlatformEnvironment(context)
+        content.stallyAppAssembly(context)
     }
 }

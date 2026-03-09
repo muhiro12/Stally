@@ -7,26 +7,25 @@
 
 import MHUI
 import MHPlatform
-import StallyLibrary
-import SwiftData
 import SwiftUI
 
 @main
 struct StallyApp: App {
-    private let sharedEnvironment: StallyPlatformEnvironment
+    private let sharedAssembly: StallyAppAssembly
     private let startupLogger = Self.logger(category: "AppStartup")
 
     var body: some Scene {
         WindowGroup {
             StallyRootView()
-                .stallyPlatformEnvironment(sharedEnvironment)
+                .stallyAppAssembly(sharedAssembly)
+                .mhAppRuntimeBootstrap(sharedAssembly.bootstrap)
         }
     }
 
     @MainActor
     init() {
         startupLogger.notice("app startup began")
-        sharedEnvironment = StallyPlatformEnvironmentFactory.makeLive()
+        sharedAssembly = StallyAppAssemblyFactory.makeLive()
 
         startupLogger.notice("startup dependencies ready")
     }

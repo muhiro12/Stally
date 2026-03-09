@@ -1,7 +1,10 @@
 import Foundation
 import MHPlatform
+import Observation
 
-struct StallyRootNavigationState {
+@MainActor
+@Observable
+final class StallyRootNavigationState {
     enum Route: Hashable {
         case archive
         case backup
@@ -37,36 +40,36 @@ struct StallyRootNavigationState {
     private var hasLoadedReviewPreferences = false
     private var hasLoadedInsightsPreferences = false
 
-    mutating func dismissEditor() {
+    func dismissEditor() {
         editorRoute = nil
     }
 
-    mutating func dismissOperationError() {
+    func dismissOperationError() {
         operationErrorMessage = nil
     }
 
-    mutating func presentCreateEditor() {
+    func presentCreateEditor() {
         editorRoute = .init(mode: .create)
     }
 
-    mutating func presentEditEditor(
+    func presentEditEditor(
         _ itemID: UUID
     ) {
         editorRoute = .init(mode: .edit(itemID))
     }
 
-    mutating func presentOperationError(
+    func presentOperationError(
         _ error: any Error
     ) {
         operationErrorMessage = (error as? LocalizedError)?.errorDescription
             ?? "Please try again."
     }
 
-    mutating func presentUnsupportedDeepLinkError() {
+    func presentUnsupportedDeepLinkError() {
         operationErrorMessage = "This link isn't supported by this version of Stally."
     }
 
-    mutating func loadReviewPreferencesIfNeeded(
+    func loadReviewPreferencesIfNeeded(
         from store: MHPreferenceStore
     ) {
         guard hasLoadedReviewPreferences == false else {
@@ -79,7 +82,7 @@ struct StallyRootNavigationState {
         hasLoadedReviewPreferences = true
     }
 
-    mutating func loadInsightsPreferencesIfNeeded(
+    func loadInsightsPreferencesIfNeeded(
         from store: MHPreferenceStore
     ) {
         guard hasLoadedInsightsPreferences == false else {
@@ -92,7 +95,7 @@ struct StallyRootNavigationState {
         hasLoadedInsightsPreferences = true
     }
 
-    mutating func removeItemRoute(
+    func removeItemRoute(
         _ itemID: UUID
     ) {
         path.removeAll { route in
