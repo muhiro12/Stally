@@ -1,5 +1,5 @@
 {
-  "originHash" : "c9e05de36810de98ee5b84a086195a767dbb5476dce2f6861c0dacb90ddb93e7",
+  "originHash" : "9784661166c51f50c07958ec62aa4b2c4bc8f3dcf045b44627806a560643425e",
   "pins" : [
     {
       "identity" : "googlemobileadswrapper",
@@ -25,7 +25,7 @@
       "location" : "https://github.com/muhiro12/MHPlatform.git",
       "state" : {
         "branch" : "main",
-        "revision" : "e0fb1fb89d78c83de11c469b3c8cf5465e9faaaa"
+        "revision" : "f4419e3388f00fb2dce567687531f4d1494f05f2"
       }
     },
     {

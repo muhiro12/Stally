@@ -5,22 +5,18 @@
 //  Created by Hiromu Nakano on 2026/03/08.
 //
 
-import MHPlatform
+import MHAppRuntimeCore
 import StallyLibrary
 import SwiftData
 import SwiftUI
 
 struct StallyRootView: View {
-    @Environment(StallyRootNavigationState.self)
-    var navigationState
+    @Environment(StallyAppAssembly.self)
+    var assembly
     @Environment(\.modelContext)
     var context
     @Environment(MHAppRuntime.self)
     var appRuntime
-    @Environment(MHObservableDeepLinkInbox.self)
-    var deepLinkInbox
-    @Environment(MHObservableRouteInbox<StallyRoute>.self)
-    var routeInbox
 
     @Query(
         sort: [
@@ -46,28 +42,16 @@ struct StallyRootView: View {
         .sheet(item: editorRouteBinding) { route in
             editorDestination(for: route)
         }
-        .onChange(of: deepLinkInbox.pendingURL) { _, pendingURL in
-            guard let pendingURL,
-                  deepLinkCodec.parse(pendingURL) == nil
+        .onChange(of: assembly.routePipeline.lastParseFailureURL) { _, failedURL in
+            guard failedURL != nil
             else {
                 return
             }
 
             navigationState.presentUnsupportedDeepLinkError()
+            assembly.routePipeline.clearLastParseFailure()
         }
-        .onChange(of: routeInbox.pendingRoute) { _, pendingRoute in
-            guard pendingRoute != nil,
-                  let route = routeInbox.consumeLatest()
-            else {
-                return
-            }
-
-            StallyRootRouteService.apply(
-                route: route,
-                to: navigationState,
-                items: items
-            )
-        }
+        .mhRouteHandler(assembly.routeInbox, apply: applyRoute(_:))
         .onChange(of: navigationState.reviewPreferences) { _, newValue in
             newValue.save(in: appRuntime.preferenceStore)
         }
@@ -79,8 +63,18 @@ struct StallyRootView: View {
 
 @MainActor
 extension StallyRootView {
-    var deepLinkCodec: MHDeepLinkCodec<StallyRoute> {
-        StallyDeepLinking.codec()
+    var navigationState: StallyRootNavigationState {
+        assembly.navigationState
+    }
+
+    func applyRoute(
+        _ route: StallyRoute
+    ) async throws {
+        StallyRootRouteService.apply(
+            route: route,
+            to: navigationState,
+            items: items
+        )
     }
 
     var activeItems: [Item] {

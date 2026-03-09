@@ -1,4 +1,4 @@
-import MHPlatform
+import MHPreferences
 import StallyLibrary
 
 nonisolated struct StallyInsightsPreferences: Codable, Equatable, Sendable {

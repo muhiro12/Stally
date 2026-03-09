@@ -45,7 +45,6 @@ struct StallyHomeEntryCard: View {
         .mhSurface(role: .muted)
     }
 
-    // swiftlint:disable function_default_parameter_at_end
     init(
         title: String,
         value: String,
@@ -53,7 +52,30 @@ struct StallyHomeEntryCard: View {
         metrics: [StallyMetricGrid.Metric],
         primaryActionTitle: String,
         routeURL: URL?,
-        primaryActionTip: (any Tip)? = nil,
+        usesCompactLayout: Bool,
+        onOpen: @escaping () -> Void
+    ) {
+        self.init(
+            title: title,
+            value: value,
+            supporting: supporting,
+            metrics: metrics,
+            primaryActionTitle: primaryActionTitle,
+            routeURL: routeURL,
+            actionTip: nil,
+            usesCompactLayout: usesCompactLayout,
+            onOpen: onOpen
+        )
+    }
+
+    init(
+        title: String,
+        value: String,
+        supporting: String,
+        metrics: [StallyMetricGrid.Metric],
+        primaryActionTitle: String,
+        routeURL: URL?,
+        actionTip: (any Tip)?,
         usesCompactLayout: Bool,
         onOpen: @escaping () -> Void
     ) {
@@ -63,11 +85,10 @@ struct StallyHomeEntryCard: View {
         self.metrics = metrics
         self.primaryActionTitle = primaryActionTitle
         self.routeURL = routeURL
-        self.primaryActionTip = primaryActionTip
+        self.primaryActionTip = actionTip
         self.usesCompactLayout = usesCompactLayout
         self.onOpen = onOpen
     }
-    // swiftlint:enable function_default_parameter_at_end
 }
 
 private extension StallyHomeEntryCard {

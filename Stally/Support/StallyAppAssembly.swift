@@ -1,5 +1,7 @@
 import MHUI
-import MHPlatform
+import MHAppRuntimeCore
+import MHPreferences
+import MHRouteExecution
 import Observation
 import StallyLibrary
 import SwiftData
@@ -12,7 +14,7 @@ final class StallyAppAssembly {
     let modelContainer: ModelContainer
     let navigationState: StallyRootNavigationState
     let routeInbox: MHObservableRouteInbox<StallyRoute>
-    let deepLinkInbox: MHObservableDeepLinkInbox
+    let routePipeline: MHAppRoutePipeline<StallyRoute>
     let bootstrap: MHAppRuntimeBootstrap
 
     private init(
@@ -21,8 +23,7 @@ final class StallyAppAssembly {
     ) {
         let navigationState = StallyRootNavigationState()
         let routeInbox = MHObservableRouteInbox<StallyRoute>()
-        let deepLinkInbox = MHObservableDeepLinkInbox()
-        let runtime = MHAppRuntime(
+        let runtime = StallyPlatformRuntime.make(
             configuration: StallyAppConfiguration.runtimeConfiguration
         )
         let routePipeline = MHAppRoutePipeline(
@@ -33,14 +34,13 @@ final class StallyAppAssembly {
             ),
             using: StallyDeepLinking.codec(),
             routeInbox: routeInbox,
-            pendingSources: [],
-            inbox: deepLinkInbox
+            pendingSources: []
         )
 
         self.modelContainer = modelContainer
         self.navigationState = navigationState
         self.routeInbox = routeInbox
-        self.deepLinkInbox = deepLinkInbox
+        self.routePipeline = routePipeline
         self.bootstrap = .init(
             runtime: runtime,
             lifecyclePlan: lifecyclePlanStyle.makePlan(
@@ -173,10 +173,6 @@ extension View {
             .tint(StallyDesign.tint)
             .mhTheme(MHTheme.standard())
             .environment(assembly)
-            .environment(assembly.navigationState)
-            .environment(assembly.routeInbox)
-            .environment(assembly.deepLinkInbox)
-            .environment(assembly.bootstrap.runtime)
     }
 }
 // swiftlint:enable file_types_order one_declaration_per_file

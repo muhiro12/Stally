@@ -5,7 +5,7 @@
 //  Created by Hiromu Nakano on 2026/03/08.
 //
 
-import MHPlatform
+import MHLogging
 
 extension StallyApp {
     nonisolated static let loggerFactory = MHLoggerFactory.osLogDefault

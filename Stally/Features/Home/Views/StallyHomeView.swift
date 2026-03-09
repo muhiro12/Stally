@@ -311,7 +311,7 @@ private extension StallyHomeView {
             metrics: reviewMetrics,
             primaryActionTitle: StallyLocalization.string("Open Review"),
             routeURL: reviewRouteURL,
-            primaryActionTip: openReviewTip,
+            actionTip: openReviewTip,
             usesCompactLayout: usesCompactLayout,
             onOpen: actions.onOpenReview
         )

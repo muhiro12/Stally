@@ -1,5 +1,5 @@
 import MHDeepLinking
-import MHPlatform
+import MHAppRuntimeCore
 import MHUI
 import StallyLibrary
 import SwiftUI

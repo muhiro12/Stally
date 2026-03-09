@@ -1,5 +1,5 @@
 import Foundation
-import MHPlatform
+import MHPreferences
 import Observation
 
 @MainActor

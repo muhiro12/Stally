@@ -8,8 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		AD91A1062F5C544100BC027C /* StallyLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = AD91A1072F5C544100BC027C /* StallyLibrary */; };
-		B0A1C0012F5D000100000001 /* MHPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C0032F5D000100000001 /* MHPlatform */; };
+		B0A1C0042F5D000100000001 /* MHAppRuntimeCore in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C0052F5D000100000001 /* MHAppRuntimeCore */; };
+		B0A1C0062F5D000100000001 /* MHDeepLinking in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C0072F5D000100000001 /* MHDeepLinking */; };
+		B0A1C0082F5D000100000001 /* MHLogging in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C0092F5D000100000001 /* MHLogging */; };
+		B0A1C00A2F5D000100000001 /* MHPreferences in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C00B2F5D000100000001 /* MHPreferences */; };
+		B0A1C00C2F5D000100000001 /* MHRouteExecution in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C00D2F5D000100000001 /* MHRouteExecution */; };
 		C1F0A0012F5F100100000001 /* MHUI in Frameworks */ = {isa = PBXBuildFile; productRef = C1F0A0032F5F100100000001 /* MHUI */; };
+		D2E3F0012F60000100000001 /* LicenseList in Frameworks */ = {isa = PBXBuildFile; productRef = D2E3F0032F60000100000001 /* LicenseList */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,8 +49,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				AD91A1062F5C544100BC027C /* StallyLibrary in Frameworks */,
-				B0A1C0012F5D000100000001 /* MHPlatform in Frameworks */,
+				B0A1C0042F5D000100000001 /* MHAppRuntimeCore in Frameworks */,
+				B0A1C0062F5D000100000001 /* MHDeepLinking in Frameworks */,
+				B0A1C0082F5D000100000001 /* MHLogging in Frameworks */,
+				B0A1C00A2F5D000100000001 /* MHPreferences in Frameworks */,
+				B0A1C00C2F5D000100000001 /* MHRouteExecution in Frameworks */,
 				C1F0A0012F5F100100000001 /* MHUI in Frameworks */,
+				D2E3F0012F60000100000001 /* LicenseList in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,8 +100,13 @@
 			name = Stally;
 			packageProductDependencies = (
 				AD91A1072F5C544100BC027C /* StallyLibrary */,
-				B0A1C0032F5D000100000001 /* MHPlatform */,
+				B0A1C0052F5D000100000001 /* MHAppRuntimeCore */,
+				B0A1C0072F5D000100000001 /* MHDeepLinking */,
+				B0A1C0092F5D000100000001 /* MHLogging */,
+				B0A1C00B2F5D000100000001 /* MHPreferences */,
+				B0A1C00D2F5D000100000001 /* MHRouteExecution */,
 				C1F0A0032F5F100100000001 /* MHUI */,
+				D2E3F0032F60000100000001 /* LicenseList */,
 			);
 			productName = Stally;
 			productReference = AD91A0F12F5C543E00BC027C /* Stally.app */;
@@ -129,6 +144,7 @@
 				AD91A1042F5C544100BC027C /* XCLocalSwiftPackageReference "StallyLibrary" */,
 				B0A1C0022F5D000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */,
 				C1F0A0022F5F100100000001 /* XCLocalSwiftPackageReference "MHUI" */,
+				D2E3F0022F60000100000001 /* XCRemoteSwiftPackageReference "LicenseList" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AD91A0F22F5C543E00BC027C /* Products */;
@@ -412,6 +428,14 @@
 				kind = branch;
 			};
 		};
+		D2E3F0022F60000100000001 /* XCRemoteSwiftPackageReference "LicenseList" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/cybozu/LicenseList.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -420,15 +444,40 @@
 			package = AD91A1042F5C544100BC027C /* XCLocalSwiftPackageReference "StallyLibrary" */;
 			productName = StallyLibrary;
 		};
-		B0A1C0032F5D000100000001 /* MHPlatform */ = {
+		B0A1C0052F5D000100000001 /* MHAppRuntimeCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B0A1C0022F5D000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */;
-			productName = MHPlatform;
+			productName = MHAppRuntimeCore;
+		};
+		B0A1C0072F5D000100000001 /* MHDeepLinking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B0A1C0022F5D000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */;
+			productName = MHDeepLinking;
+		};
+		B0A1C0092F5D000100000001 /* MHLogging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B0A1C0022F5D000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */;
+			productName = MHLogging;
+		};
+		B0A1C00B2F5D000100000001 /* MHPreferences */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B0A1C0022F5D000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */;
+			productName = MHPreferences;
+		};
+		B0A1C00D2F5D000100000001 /* MHRouteExecution */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B0A1C0022F5D000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */;
+			productName = MHRouteExecution;
 		};
 		C1F0A0032F5F100100000001 /* MHUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C1F0A0022F5F100100000001 /* XCLocalSwiftPackageReference "MHUI" */;
 			productName = MHUI;
+		};
+		D2E3F0032F60000100000001 /* LicenseList */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D2E3F0022F60000100000001 /* XCRemoteSwiftPackageReference "LicenseList" */;
+			productName = LicenseList;
 		};
 /* End XCSwiftPackageProductDependency section */
 
