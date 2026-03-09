@@ -307,12 +307,12 @@ private extension StallyInsightsView {
 
     var pendingSectionsCard: some View {
         VStack(alignment: .leading, spacing: theme.spacing.control) {
-            Text("More Sections Are Coming")
+            Text("More Comparisons Are Coming")
                 .mhRowTitle()
 
             Text(
                 """
-                Category breakdowns, quiet-item rankings, monthly trends, and cadence views land here next.
+                This space can expand into longer-range comparisons, saved reports, and trend views that look beyond one selected window.
                 """
             )
             .mhRowSupporting()

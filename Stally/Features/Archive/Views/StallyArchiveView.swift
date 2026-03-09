@@ -16,7 +16,31 @@ struct StallyArchiveView: View {
     let items: [Item]
     let onOpenItem: (UUID) -> Void
 
+    @ViewBuilder
     var body: some View {
+        if items.isEmpty {
+            screenContent
+                .mhScreen(
+                    title: Text("Archive"),
+                    subtitle: Text("Past favorites can stay nearby without crowding the main list.")
+                )
+        } else {
+            screenContent
+                .mhScreen(
+                    title: Text("Archive"),
+                    subtitle: Text("Past favorites can stay nearby without crowding the main list.")
+                )
+                .searchable(
+                    text: $query.searchText,
+                    placement: .navigationBarDrawer(displayMode: .always),
+                    prompt: "Search archive"
+                )
+        }
+    }
+}
+
+private extension StallyArchiveView {
+    var screenContent: some View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {
             if items.isEmpty {
                 emptyState
@@ -38,18 +62,8 @@ struct StallyArchiveView: View {
                 }
             }
         }
-        .mhScreen(
-            title: Text("Archive"),
-            subtitle: Text("Past favorites can stay nearby without crowding the main list.")
-        )
-        .searchable(
-            text: $query.searchText,
-            prompt: "Search archive"
-        )
     }
-}
 
-private extension StallyArchiveView {
     var usesCompactLayout: Bool {
         horizontalSizeClass != .regular
     }

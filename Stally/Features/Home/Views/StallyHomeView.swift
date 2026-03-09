@@ -18,7 +18,37 @@ struct StallyHomeView: View {
     let archiveSummary: ItemInsightsCalculator.ArchiveCollectionSummary
     let actions: StallyHomeActions
 
+    @ViewBuilder
     var body: some View {
+        if items.isEmpty {
+            screenContent
+                .mhScreen(
+                    title: Text(StallyAppConfiguration.displayName),
+                    subtitle: Text("A quiet record of the things you keep choosing.")
+                )
+                .toolbar {
+                    homeToolbar
+                }
+        } else {
+            screenContent
+                .mhScreen(
+                    title: Text(StallyAppConfiguration.displayName),
+                    subtitle: Text("A quiet record of the things you keep choosing.")
+                )
+                .searchable(
+                    text: $query.searchText,
+                    placement: .navigationBarDrawer(displayMode: .always),
+                    prompt: "Search items"
+                )
+                .toolbar {
+                    homeToolbar
+                }
+        }
+    }
+}
+
+private extension StallyHomeView {
+    var screenContent: some View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {
             if items.isEmpty {
                 emptyState
@@ -53,35 +83,27 @@ struct StallyHomeView: View {
                 }
             }
         }
-        .mhScreen(
-            title: Text(StallyAppConfiguration.displayName),
-            subtitle: Text("A quiet record of the things you keep choosing.")
-        )
-        .searchable(
-            text: $query.searchText,
-            prompt: "Search items"
-        )
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Archive", systemImage: "archivebox") {
-                    actions.onOpenArchive()
-                }
+    }
+
+    @ToolbarContentBuilder
+    var homeToolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button("Archive", systemImage: "archivebox") {
+                actions.onOpenArchive()
             }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Settings", systemImage: "gearshape") {
-                    actions.onOpenSettings()
-                }
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Settings", systemImage: "gearshape") {
+                actions.onOpenSettings()
             }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button("Add", systemImage: "plus") {
-                    actions.onCreateItem()
-                }
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Add", systemImage: "plus") {
+                actions.onCreateItem()
             }
         }
     }
-}
 
-private extension StallyHomeView {
     var usesCompactLayout: Bool {
         horizontalSizeClass != .regular
     }
