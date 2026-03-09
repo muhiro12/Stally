@@ -23,6 +23,7 @@ struct StallyInsightsRhythmSection: View {
 }
 
 private extension StallyInsightsRhythmSection {
+    // swiftlint:disable closure_body_length
     var weekdayLane: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Weekdays")
@@ -62,6 +63,7 @@ private extension StallyInsightsRhythmSection {
         .mhSurfaceInset()
         .mhSurface(role: .muted)
     }
+    // swiftlint:enable closure_body_length
 
     var monthlyLane: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -113,8 +115,13 @@ private extension StallyInsightsRhythmSection {
             VStack(alignment: .leading, spacing: 2) {
                 Text(summary.monthTitle)
                     .font(.headline)
-                Text("\(summary.activeDays) active days")
-                    .mhRowSupporting()
+                Text(
+                    StallyLocalization.format(
+                        "%lld active days",
+                        summary.activeDays
+                    )
+                )
+                .mhRowSupporting()
             }
 
             Spacer(minLength: 12)

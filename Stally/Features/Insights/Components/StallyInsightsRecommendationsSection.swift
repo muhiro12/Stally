@@ -65,6 +65,8 @@ private extension StallyInsightsRecommendationsSection {
             .prefix(3)
             .joined(separator: ", ")
 
-        return titles.isEmpty ? "Suggested items are unavailable." : titles
+        return titles.isEmpty
+            ? StallyLocalization.string("Suggested items are unavailable.")
+            : titles
     }
 }

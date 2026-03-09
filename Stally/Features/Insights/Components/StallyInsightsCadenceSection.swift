@@ -12,8 +12,13 @@ struct StallyInsightsCadenceSection: View {
             Text("Consistency")
                 .mhRowTitle()
 
-            Text("A compact read on streak strength, weekly steadiness, and how much activity is concentrated on weekends.")
-                .mhRowSupporting()
+            Text(
+                StallyLocalization.string(
+                    "A compact read on streak strength, weekly steadiness, and how much activity is "
+                        + "concentrated on weekends."
+                )
+            )
+            .mhRowSupporting()
 
             StallyMetricGrid(
                 metrics: metrics,
@@ -27,18 +32,30 @@ struct StallyInsightsCadenceSection: View {
 private extension StallyInsightsCadenceSection {
     var metrics: [StallyMetricGrid.Metric] {
         [
-            .init(title: "Current Streak", value: "\(streakSummary.currentStreakDays)"),
-            .init(title: "Best Streak", value: "\(streakSummary.bestStreakDays)"),
-            .init(title: "Idle Gap", value: "\(streakSummary.longestIdleGapDays)"),
             .init(
-                title: "Avg Marks / Week",
+                title: StallyLocalization.string("Current Streak"),
+                value: "\(streakSummary.currentStreakDays)"
+            ),
+            .init(
+                title: StallyLocalization.string("Best Streak"),
+                value: "\(streakSummary.bestStreakDays)"
+            ),
+            .init(
+                title: StallyLocalization.string("Idle Gap"),
+                value: "\(streakSummary.longestIdleGapDays)"
+            ),
+            .init(
+                title: StallyLocalization.string("Avg Marks / Week"),
                 value: cadenceSummary.averageMarksPerWeek.formatted(
                     .number.precision(.fractionLength(1))
                 )
             ),
-            .init(title: "Active Weeks", value: "\(cadenceSummary.activeWeeks)"),
             .init(
-                title: "Weekend Share",
+                title: StallyLocalization.string("Active Weeks"),
+                value: "\(cadenceSummary.activeWeeks)"
+            ),
+            .init(
+                title: StallyLocalization.string("Weekend Share"),
                 value: cadenceSummary.weekendShareOfMarks.formatted(
                     .percent.precision(.fractionLength(0))
                 )

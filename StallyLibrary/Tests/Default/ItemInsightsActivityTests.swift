@@ -4,6 +4,7 @@ import XCTest
 
 @MainActor
 final class ItemInsightsActivityTests: XCTestCase {
+    // swiftlint:disable:next function_body_length
     func testActivityDaysBuildFixedRangeTimelineForActiveItems() throws {
         let context = testContext()
         let activeItem = try createTestItem(
@@ -114,6 +115,7 @@ final class ItemInsightsActivityTests: XCTestCase {
         XCTAssertEqual(combinedSummary.uniqueMarkedCategories, 2)
     }
 
+    // swiftlint:disable:next function_body_length
     func testAllTimeSummaryStartsAtEarliestKnownCollectionDay() throws {
         let context = testContext()
         let item = try createTestItem(

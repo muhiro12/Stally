@@ -27,10 +27,12 @@ extension StallyBackupCenterView {
     }
 
     var importSupportingText: String {
-        """
+        StallyLocalization.string(
+            """
         Preview shows the snapshot contents, overlap with local items,
         and any warnings before import actions are enabled.
         """
+        )
     }
 
     func startExport() {
@@ -56,7 +58,9 @@ extension StallyBackupCenterView {
             } catch {
                 state.recordImportFailure(
                     error,
-                    fallback: "Stally couldn't read this backup file."
+                    fallback: StallyLocalization.string(
+                        "Stally couldn't read this backup file."
+                    )
                 )
             }
         case .failure(let error as CocoaError)
@@ -65,7 +69,9 @@ extension StallyBackupCenterView {
         case .failure(let error):
             state.recordImportFailure(
                 error,
-                fallback: "Stally couldn't open the import picker."
+                fallback: StallyLocalization.string(
+                    "Stally couldn't open the import picker."
+                )
             )
         }
     }
@@ -106,7 +112,9 @@ extension StallyBackupCenterView {
         } catch {
             state.recordImportFailure(
                 error,
-                fallback: "Stally couldn't merge this backup."
+                fallback: StallyLocalization.string(
+                    "Stally couldn't merge this backup."
+                )
             )
         }
     }
@@ -123,7 +131,9 @@ extension StallyBackupCenterView {
         } catch {
             state.recordImportFailure(
                 error,
-                fallback: "Stally couldn't replace the current library."
+                fallback: StallyLocalization.string(
+                    "Stally couldn't replace the current library."
+                )
             )
         }
     }
@@ -135,7 +145,9 @@ extension StallyBackupCenterView {
         } catch {
             state.recordImportFailure(
                 error,
-                fallback: "Stally couldn't delete the current library."
+                fallback: StallyLocalization.string(
+                    "Stally couldn't delete the current library."
+                )
             )
         }
     }

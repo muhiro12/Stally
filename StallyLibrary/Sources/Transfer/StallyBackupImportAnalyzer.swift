@@ -64,7 +64,10 @@ private extension StallyBackupImportAnalyzer {
             .init(
                 severity: .error,
                 code: .unsupportedSchemaVersion,
-                message: "Backup schema version \(snapshot.schemaVersion) is unsupported."
+                message: StallyLibraryLocalization.format(
+                    "Backup schema version %lld is unsupported.",
+                    snapshot.schemaVersion
+                )
             )
         ]
     }
@@ -99,7 +102,10 @@ private extension StallyBackupImportAnalyzer {
                 .init(
                     severity: .error,
                     code: .duplicateItemID,
-                    message: "Backup contains duplicate item ID \(item.id.uuidString).",
+                    message: StallyLibraryLocalization.format(
+                        "Backup contains duplicate item ID %@.",
+                        item.id.uuidString
+                    ),
                     itemID: item.id
                 )
             )
@@ -110,7 +116,10 @@ private extension StallyBackupImportAnalyzer {
                 .init(
                     severity: .warning,
                     code: .unknownCategory,
-                    message: "Unknown category '\(item.categoryRawValue)' will be imported as Other.",
+                    message: StallyLibraryLocalization.format(
+                        "Unknown category '%@' will be imported as Other.",
+                        item.categoryRawValue
+                    ),
                     itemID: item.id,
                     categoryRawValue: item.categoryRawValue
                 )
@@ -134,7 +143,10 @@ private extension StallyBackupImportAnalyzer {
                 .init(
                     severity: .error,
                     code: .duplicateMarkID,
-                    message: "Backup contains duplicate mark ID \(mark.id.uuidString).",
+                    message: StallyLibraryLocalization.format(
+                        "Backup contains duplicate mark ID %@.",
+                        mark.id.uuidString
+                    ),
                     itemID: item.id,
                     markID: mark.id
                 )

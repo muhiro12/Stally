@@ -11,7 +11,9 @@ struct StallyHomeActions {
     let onOpenReview: () -> Void
     let onOpenSettings: () -> Void
     let onToggleTodayMark: (Item) -> Void
+}
 
+extension StallyHomeActions {
     static let noop = Self(
         onOpenItem: { _ in
             // no-op

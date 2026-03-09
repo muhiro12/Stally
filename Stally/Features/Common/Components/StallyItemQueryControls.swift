@@ -79,7 +79,7 @@ private extension StallyItemQueryControls {
             }
         } label: {
             Label(
-                query.category?.title ?? "All Categories",
+                query.category?.title ?? StallyLocalization.string("All Categories"),
                 systemImage: "line.3.horizontal.decrease.circle"
             )
             .lineLimit(1)
@@ -109,8 +109,10 @@ private extension StallyItemQueryControls {
     }
 
     var queryStatusLabel: some View {
-        Text("\(displayedCount) shown")
-            .mhRowSupporting()
+        Text(
+            StallyLocalization.format("%lld shown", displayedCount)
+        )
+        .mhRowSupporting()
     }
 
     var clearFiltersButton: some View {

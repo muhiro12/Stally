@@ -240,6 +240,7 @@ private extension ItemService {
         )
     }
 
+    // swiftlint:disable:next function_body_length
     static func sampleItemDefinitions() -> [String: (
         input: ItemFormInput,
         dayOffset: Int
@@ -247,41 +248,51 @@ private extension ItemService {
         [
             "coat": (
                 .init(
-                    name: "Black Wool Coat",
+                    name: StallyLibraryLocalization.string("Black Wool Coat"),
                     category: .clothing,
-                    note: "The one I reach for on cold mornings."
+                    note: StallyLibraryLocalization.string(
+                        "The one I reach for on cold mornings."
+                    )
                 ),
                 -140
             ),
             "sneakers": (
                 .init(
-                    name: "White Everyday Sneakers",
+                    name: StallyLibraryLocalization.string("White Everyday Sneakers"),
                     category: .shoes,
-                    note: "Easy pair for short walks and errands."
+                    note: StallyLibraryLocalization.string(
+                        "Easy pair for short walks and errands."
+                    )
                 ),
                 -90
             ),
             "tote": (
                 .init(
-                    name: "Canvas Tote",
+                    name: StallyLibraryLocalization.string("Canvas Tote"),
                     category: .bags,
-                    note: "Usually comes with me when I need one extra layer."
+                    note: StallyLibraryLocalization.string(
+                        "Usually comes with me when I need one extra layer."
+                    )
                 ),
                 -60
             ),
             "notebook": (
                 .init(
-                    name: "Daily Field Notes",
+                    name: StallyLibraryLocalization.string("Daily Field Notes"),
                     category: .notebooks,
-                    note: "Still waiting for its first stretch of regular use."
+                    note: StallyLibraryLocalization.string(
+                        "Still waiting for its first stretch of regular use."
+                    )
                 ),
                 -35
             ),
             "archive": (
                 .init(
-                    name: "Travel Weekender",
+                    name: StallyLibraryLocalization.string("Travel Weekender"),
                     category: .bags,
-                    note: "Archived because it only comes out a few times a year."
+                    note: StallyLibraryLocalization.string(
+                        "Archived because it only comes out a few times a year."
+                    )
                 ),
                 -200
             )

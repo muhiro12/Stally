@@ -9,7 +9,9 @@ public enum MarkService {
         public var errorDescription: String? {
             switch self {
             case .archivedItem:
-                "Archived items are read-only. Move this item back to Home to change its marks."
+                StallyLibraryLocalization.string(
+                    "Archived items are read-only. Move this item back to Home to change its marks."
+                )
             }
         }
     }

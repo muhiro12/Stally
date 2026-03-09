@@ -1,5 +1,6 @@
 import Foundation
 
+// swiftlint:disable type_body_length function_body_length file_length
 /// Derived item state used across the home and detail experiences.
 public enum ItemInsightsCalculator {
     /// Summary of derived mark state for one item.
@@ -650,8 +651,11 @@ public enum ItemInsightsCalculator {
             recommendations.append(
                 .init(
                     kind: .startTracking,
-                    title: "Start this range with one mark",
-                    message: "Nothing is marked in \(range.title.lowercased()) yet. One mark is enough to restart the signal.",
+                    title: StallyLibraryLocalization.string("Start this range with one mark"),
+                    message: StallyLibraryLocalization.format(
+                        "Nothing is marked in %@ yet. One mark is enough to restart the signal.",
+                        range.title
+                    ),
                     itemIDs: [firstItem.id]
                 )
             )
@@ -666,8 +670,10 @@ public enum ItemInsightsCalculator {
             recommendations.append(
                 .init(
                     kind: .revisitQuietItems,
-                    title: "Revisit quiet favorites",
-                    message: "These items have history but no marks in the selected range.",
+                    title: StallyLibraryLocalization.string("Revisit quiet favorites"),
+                    message: StallyLibraryLocalization.string(
+                        "These items have history but no marks in the selected range."
+                    ),
                     itemIDs: quietItemIDs
                 )
             )
@@ -675,7 +681,7 @@ public enum ItemInsightsCalculator {
 
         let noteCandidateIDs: [UUID] = topRankings
             .compactMap { ranking in
-                scopedItems.first(where: { $0.id == ranking.itemID })
+                scopedItems.first { $0.id == ranking.itemID }
             }
             .filter { item in
                 let note = item.note?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
@@ -686,8 +692,10 @@ public enum ItemInsightsCalculator {
             recommendations.append(
                 .init(
                     kind: .addContext,
-                    title: "Add context to your frequent items",
-                    message: "Several active items still have no note. A short note makes the history easier to read later.",
+                    title: StallyLibraryLocalization.string("Add context to your frequent items"),
+                    message: StallyLibraryLocalization.string(
+                        "Several active items still have no note. A short note makes the history easier to read later."
+                    ),
                     itemIDs: noteCandidateIDs
                 )
             )
@@ -697,8 +705,11 @@ public enum ItemInsightsCalculator {
             recommendations.append(
                 .init(
                     kind: .protectStreak,
-                    title: "Protect the current streak",
-                    message: "You already have a \(streakSummary.currentStreakDays)-day streak in motion. Keep it alive today.",
+                    title: StallyLibraryLocalization.string("Protect the current streak"),
+                    message: StallyLibraryLocalization.format(
+                        "You already have a %lld-day streak in motion. Keep it alive today.",
+                        streakSummary.currentStreakDays
+                    ),
                     itemIDs: [leadItemID]
                 )
             )
@@ -789,3 +800,4 @@ public enum ItemInsightsCalculator {
         }
     }
 }
+// swiftlint:enable type_body_length function_body_length file_length

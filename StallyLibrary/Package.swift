@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package( // swiftlint:disable:this prefixed_toplevel_constant
     name: "StallyLibrary",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v18)
     ],
@@ -32,6 +33,9 @@ let package = Package( // swiftlint:disable:this prefixed_toplevel_constant
             path: ".",
             sources: [
                 "Sources"
+            ],
+            resources: [
+                .process("Resources")
             ]
         ),
         .testTarget(

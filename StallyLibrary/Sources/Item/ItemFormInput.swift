@@ -9,7 +9,7 @@ public struct ItemFormInput: Equatable, Sendable {
         public var errorDescription: String? {
             switch self {
             case .emptyName:
-                "Name is required."
+                StallyLibraryLocalization.string("Name is required.")
             }
         }
     }

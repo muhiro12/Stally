@@ -192,18 +192,18 @@ private extension StallyItemEditorView {
     var navigationTitle: String {
         switch mode {
         case .create:
-            "Add Item"
+            StallyLocalization.string("Add Item")
         case .edit:
-            "Edit Item"
+            StallyLocalization.string("Edit Item")
         }
     }
 
     var saveButtonTitle: String {
         switch mode {
         case .create:
-            "Save"
+            StallyLocalization.string("Save")
         case .edit:
-            "Save"
+            StallyLocalization.string("Save")
         }
     }
 
@@ -212,15 +212,21 @@ private extension StallyItemEditorView {
     }
 
     var photoButtonTitle: String {
-        photoData == nil ? "Choose Photo" : "Replace Photo"
+        photoData == nil
+            ? StallyLocalization.string("Choose Photo")
+            : StallyLocalization.string("Replace Photo")
     }
 
     var screenSubtitle: String {
         switch mode {
         case .create:
-            "Create an item you can mark once when you chose it today."
+            StallyLocalization.string(
+                "Create an item you can mark once when you chose it today."
+            )
         case .edit:
-            "Adjust the basics without changing the marks you already kept."
+            StallyLocalization.string(
+                "Adjust the basics without changing the marks you already kept."
+            )
         }
     }
 
@@ -254,7 +260,7 @@ private extension StallyItemEditorView {
         do {
             photoData = try await selectedPhotoItem.loadTransferable(type: Data.self)
         } catch {
-            errorMessage = "Failed to load the selected photo."
+            errorMessage = StallyLocalization.string("Failed to load the selected photo.")
         }
     }
 
@@ -279,7 +285,7 @@ private extension StallyItemEditorView {
             dismiss()
         } catch {
             errorMessage = (error as? LocalizedError)?.errorDescription
-                ?? "Failed to save this item."
+                ?? StallyLocalization.string("Failed to save this item.")
         }
     }
 
@@ -296,7 +302,7 @@ private extension StallyItemEditorView {
             onDelete(existingItem.id)
             dismiss()
         } catch {
-            errorMessage = "Failed to delete this item."
+            errorMessage = StallyLocalization.string("Failed to delete this item.")
         }
     }
 }

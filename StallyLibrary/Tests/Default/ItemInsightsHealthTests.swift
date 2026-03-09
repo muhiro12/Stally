@@ -3,6 +3,7 @@ import XCTest
 
 @MainActor
 final class ItemInsightsHealthTests: XCTestCase {
+    // swiftlint:disable:next function_body_length
     func testHealthSummaryTracksCoverageAgeAndRecentItems() throws {
         let context = testContext()
         let activeDetailed = try createTestItem(

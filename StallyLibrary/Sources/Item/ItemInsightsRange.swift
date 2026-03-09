@@ -1,5 +1,6 @@
 import Foundation
 
+// swiftlint:disable raw_value_for_camel_cased_codable_enum
 /// Time windows used by the collection insights surfaces.
 public enum ItemInsightsRange: String, CaseIterable, Codable, Equatable, Sendable {
     case last30Days
@@ -11,13 +12,13 @@ public enum ItemInsightsRange: String, CaseIterable, Codable, Equatable, Sendabl
     public var title: String {
         switch self {
         case .last30Days:
-            "30 Days"
+            StallyLibraryLocalization.string("30 Days")
         case .last90Days:
-            "90 Days"
+            StallyLibraryLocalization.string("90 Days")
         case .last365Days:
-            "365 Days"
+            StallyLibraryLocalization.string("365 Days")
         case .allTime:
-            "All Time"
+            StallyLibraryLocalization.string("All Time")
         }
     }
 
@@ -35,3 +36,4 @@ public enum ItemInsightsRange: String, CaseIterable, Codable, Equatable, Sendabl
         }
     }
 }
+// swiftlint:enable raw_value_for_camel_cased_codable_enum

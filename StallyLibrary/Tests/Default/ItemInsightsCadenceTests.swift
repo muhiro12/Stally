@@ -3,6 +3,7 @@ import XCTest
 
 @MainActor
 final class ItemInsightsCadenceTests: XCTestCase {
+    // swiftlint:disable:next function_body_length
     func testWeekdaySummariesAggregateMarksAndActiveDays() throws {
         let context = testContext()
         let weekdayItem = try createTestItem(

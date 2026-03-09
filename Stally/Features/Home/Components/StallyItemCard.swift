@@ -68,12 +68,12 @@ private extension StallyItemCard {
                 }
 
                 statRow(
-                    title: "Total marks",
+                    title: StallyLocalization.string("Total marks"),
                     value: "\(summary.totalMarks)",
                     colorRole: .accent
                 )
                 statRow(
-                    title: "Last marked",
+                    title: StallyLocalization.string("Last marked"),
                     value: lastMarkedValue
                 )
             }
@@ -83,7 +83,11 @@ private extension StallyItemCard {
     }
 
     var markButton: some View {
-        Button(summary.isMarkedToday ? "Marked Today" : "Mark Today") {
+        Button(
+            summary.isMarkedToday
+                ? StallyLocalization.string("Marked Today")
+                : StallyLocalization.string("Mark Today")
+        ) {
             onToggleTodayMark()
         }
         .buttonStyle(
@@ -96,15 +100,15 @@ private extension StallyItemCard {
             return lastMarkedAt.formatted(date: .abbreviated, time: .omitted)
         }
 
-        return "Not yet"
+        return StallyLocalization.string("Not yet")
     }
 
     var markSupportingText: String {
         if summary.isMarkedToday {
-            return "Tap again to remove today’s mark."
+            return StallyLocalization.string("Tap again to remove today's mark.")
         }
 
-        return "One mark is enough for today."
+        return StallyLocalization.string("One mark is enough for today.")
     }
 
     var itemLinkURL: URL? {

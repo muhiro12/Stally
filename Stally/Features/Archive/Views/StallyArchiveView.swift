@@ -82,13 +82,22 @@ private extension StallyArchiveView {
 
     var archiveSummaryMetrics: [StallyMetricGrid.Metric] {
         [
-            .init(title: "Items", value: "\(displayedSummary.totalItems)"),
             .init(
-                title: "With History",
+                title: StallyLocalization.string("Items"),
+                value: "\(displayedSummary.totalItems)"
+            ),
+            .init(
+                title: StallyLocalization.string("With History"),
                 value: "\(displayedSummary.itemsWithMarksCount)"
             ),
-            .init(title: "Saved Marks", value: "\(displayedSummary.totalMarks)"),
-            .init(title: "Latest Archive", value: latestArchiveTitle)
+            .init(
+                title: StallyLocalization.string("Saved Marks"),
+                value: "\(displayedSummary.totalMarks)"
+            ),
+            .init(
+                title: StallyLocalization.string("Latest Archive"),
+                value: latestArchiveTitle
+            )
         ]
     }
 
@@ -156,15 +165,15 @@ private extension StallyArchiveView {
 
     var availableQuickFilters: [(title: String, filter: ItemListQuery.QuickFilter?)] {
         [
-            ("All", nil),
-            ("With History", .withHistory),
-            ("Without History", .withoutHistory)
+            (StallyLocalization.string("All"), nil),
+            (StallyLocalization.string("With History"), .withHistory),
+            (StallyLocalization.string("Without History"), .withoutHistory)
         ]
     }
 
     var latestArchiveTitle: String {
         displayedSummary.lastArchivedAt?.formatted(date: .abbreviated, time: .omitted)
-            ?? "None"
+            ?? StallyLocalization.string("None")
     }
 
     func itemLinkURL(
@@ -248,10 +257,13 @@ private extension StallyArchiveView {
         for item: Item
     ) -> String {
         if let archivedAt = item.archivedAt {
-            return "Archived \(archivedAt.formatted(date: .abbreviated, time: .omitted))"
+            return StallyLocalization.format(
+                "Archived %@",
+                archivedAt.formatted(date: .abbreviated, time: .omitted)
+            )
         }
 
-        return "Archived"
+        return StallyLocalization.string("Archived")
     }
 }
 

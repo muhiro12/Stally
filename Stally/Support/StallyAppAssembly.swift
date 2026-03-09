@@ -5,6 +5,7 @@ import StallyLibrary
 import SwiftData
 import SwiftUI
 
+// swiftlint:disable file_types_order one_declaration_per_file
 @MainActor
 @Observable
 final class StallyAppAssembly {
@@ -14,7 +15,7 @@ final class StallyAppAssembly {
     let deepLinkInbox: MHObservableDeepLinkInbox
     let bootstrap: MHAppRuntimeBootstrap
 
-    fileprivate init(
+    private init(
         modelContainer: ModelContainer,
         lifecyclePlanStyle: LifecyclePlanStyle
     ) {
@@ -50,8 +51,36 @@ final class StallyAppAssembly {
             routePipeline: routePipeline
         )
     }
-}
 
+    @MainActor
+    static func make(
+        modelContainer: ModelContainer,
+        lifecyclePlanStyle: LifecyclePlanStyle
+    ) -> StallyAppAssembly {
+        .init(
+            modelContainer: modelContainer,
+            lifecyclePlanStyle: lifecyclePlanStyle
+        )
+    }
+
+    @MainActor
+    static func makeLiveAssembly() throws -> StallyAppAssembly {
+        make(
+            modelContainer: try ModelContainerFactory.shared(),
+            lifecyclePlanStyle: .live
+        )
+    }
+
+    static func makePreviewModelContainer() throws -> ModelContainer {
+        try ModelContainer(
+            for: Item.self,
+            Mark.self,
+            configurations: .init(
+                isStoredInMemoryOnly: true
+            )
+        )
+    }
+}
 enum StallyAppAssemblyFactory {
     @MainActor
     static func makeLive() -> StallyAppAssembly {
@@ -68,7 +97,7 @@ enum StallyAppAssemblyFactory {
     static func makePreview(
         seedSampleData: Bool
     ) throws -> StallyAppAssembly {
-        let modelContainer = try makePreviewModelContainer()
+        let modelContainer = try StallyAppAssembly.makePreviewModelContainer()
 
         if seedSampleData {
             try? ItemService.seedSampleData(
@@ -77,7 +106,7 @@ enum StallyAppAssemblyFactory {
             )
         }
 
-        return .init(
+        return StallyAppAssembly.make(
             modelContainer: modelContainer,
             lifecyclePlanStyle: .preview
         )
@@ -87,20 +116,7 @@ enum StallyAppAssemblyFactory {
 private extension StallyAppAssemblyFactory {
     @MainActor
     static func makeLiveAssembly() throws -> StallyAppAssembly {
-        try .init(
-            modelContainer: ModelContainerFactory.shared(),
-            lifecyclePlanStyle: .live
-        )
-    }
-
-    static func makePreviewModelContainer() throws -> ModelContainer {
-        try ModelContainer(
-            for: Item.self,
-            Mark.self,
-            configurations: .init(
-                isStoredInMemoryOnly: true
-            )
-        )
+        try StallyAppAssembly.makeLiveAssembly()
     }
 }
 
@@ -148,7 +164,6 @@ extension StallyAppAssembly {
         }
     }
 }
-
 extension View {
     func stallyAppAssembly(
         _ assembly: StallyAppAssembly
@@ -164,3 +179,4 @@ extension View {
             .environment(assembly.bootstrap.runtime)
     }
 }
+// swiftlint:enable file_types_order one_declaration_per_file

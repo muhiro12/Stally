@@ -16,13 +16,13 @@ public struct ItemListQuery: Equatable, Sendable {
         public var title: String {
             switch self {
             case .defaultOrder:
-                "Default Order"
+                StallyLibraryLocalization.string("Default Order")
             case .recentlyMarked:
-                "Recently Marked"
+                StallyLibraryLocalization.string("Recently Marked")
             case .mostMarked:
-                "Most Marked"
+                StallyLibraryLocalization.string("Most Marked")
             case .name:
-                "Name"
+                StallyLibraryLocalization.string("Name")
             }
         }
     }
@@ -36,13 +36,13 @@ public struct ItemListQuery: Equatable, Sendable {
         public var title: String {
             switch self {
             case .markedOnReferenceDay:
-                "Marked on Day"
+                StallyLibraryLocalization.string("Marked on Day")
             case .unmarkedOnReferenceDay:
-                "Open on Day"
+                StallyLibraryLocalization.string("Open on Day")
             case .withHistory:
-                "With History"
+                StallyLibraryLocalization.string("With History")
             case .withoutHistory:
-                "Without History"
+                StallyLibraryLocalization.string("Without History")
             }
         }
     }

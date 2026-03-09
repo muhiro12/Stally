@@ -1,5 +1,6 @@
 import Foundation
 
+// swiftlint:disable file_length function_body_length function_parameter_count
 extension ItemInsightsCalculator {
     struct ActivityMarkRecord {
         let day: Date
@@ -292,7 +293,7 @@ extension ItemInsightsCalculator {
             earliestMarkDay,
             earliestCreatedDay
         ]
-        .compactMap { $0 }
+        .compactMap(\.self)
 
         return candidateDays.min() ?? referenceDay
     }
@@ -386,15 +387,15 @@ extension ItemInsightsCalculator {
 
         return Set(
             items.compactMap { item in
-                item.marks.contains(where: { mark in
+                item.marks.contains { mark in
                     let day = DayStamp.storageDate(
                         from: mark.day,
                         calendar: calendar
                     )
                     return day >= windowStart && day <= windowEnd
-                })
-                    ? item.id
-                    : nil
+                }
+                ? item.id
+                : nil
             }
         ).count
     }
@@ -421,15 +422,15 @@ extension ItemInsightsCalculator {
 
         return Set(
             items.compactMap { item in
-                item.marks.contains(where: { mark in
+                item.marks.contains { mark in
                     let day = DayStamp.storageDate(
                         from: mark.day,
                         calendar: calendar
                     )
                     return day >= windowStart && day <= windowEnd
-                })
-                    ? item.category
-                    : nil
+                }
+                ? item.category
+                : nil
             }
         ).count
     }
@@ -448,7 +449,7 @@ extension ItemInsightsCalculator {
     static func currentStreakDays(
         from activityDays: [CollectionActivityDay]
     ) -> Int {
-        activityDays.reversed().prefix { $0.isActive }.count
+        activityDays.reversed().prefix(while: \.isActive).count
     }
 
     static func bestStreakDays(
@@ -535,8 +536,11 @@ extension ItemInsightsCalculator {
                 partialResult[item.category, default: .init()].markCount += 1
                 partialResult[item.category, default: .init()].uniqueItemIDs.insert(item.id)
 
-                let currentLastMarkedAt = partialResult[item.category, default: .init()].lastMarkedAt
-                if currentLastMarkedAt == nil || normalizedDay > currentLastMarkedAt! {
+                let currentLastMarkedAt = partialResult[
+                    item.category,
+                    default: .init()
+                ].lastMarkedAt
+                if currentLastMarkedAt.map({ normalizedDay > $0 }) ?? true {
                     partialResult[item.category, default: .init()].lastMarkedAt = normalizedDay
                 }
             }
@@ -735,7 +739,7 @@ extension ItemInsightsCalculator {
             }
             .sorted(by: order)
             .prefix(max(limit, .zero))
-            .map { $0 }
+            .map(\.self)
     }
 
     static func monthlySummaries(
@@ -882,3 +886,4 @@ extension ItemInsightsCalculator {
         )
     }
 }
+// swiftlint:enable file_length function_body_length function_parameter_count

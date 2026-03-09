@@ -2,6 +2,11 @@ import Foundation
 import StallyLibrary
 
 struct StallyBackupCenterState {
+    enum ImportExecutionMode {
+        case merge
+        case replace
+    }
+
     struct ImportPreview {
         let sourceURL: URL
         let analysis: StallyBackupImportAnalysis
@@ -12,21 +17,16 @@ struct StallyBackupCenterState {
     }
 
     struct ImportExecutionSummary {
-        enum Mode {
-            case merge
-            case replace
-        }
-
-        let mode: Mode
+        let mode: ImportExecutionMode
         let sourceName: String
         let result: StallyBackupImportResult
 
         var title: String {
             switch mode {
             case .merge:
-                "Last Merge Result"
+                StallyLocalization.string("Last Merge Result")
             case .replace:
-                "Last Replace Result"
+                StallyLocalization.string("Last Replace Result")
             }
         }
     }
@@ -57,13 +57,16 @@ struct StallyBackupCenterState {
     ) {
         switch result {
         case .success(let url):
-            exportStatusMessage = "Backup saved as \(url.lastPathComponent)."
+            exportStatusMessage = StallyLocalization.format(
+                "Backup saved as %@.",
+                url.lastPathComponent
+            )
         case .failure(let error as CocoaError)
                 where error.code == .userCancelled:
             exportStatusMessage = nil
         case .failure(let error):
             exportStatusMessage = (error as? LocalizedError)?.errorDescription
-                ?? "Stally couldn't export this backup."
+                ?? StallyLocalization.string("Stally couldn't export this backup.")
         }
     }
 
@@ -92,7 +95,10 @@ struct StallyBackupCenterState {
             result: result
         )
         importPreview = nil
-        importStatusMessage = "Merged \(preview.sourceName) into the current library."
+        importStatusMessage = StallyLocalization.format(
+            "Merged %@ into the current library.",
+            preview.sourceName
+        )
     }
 
     mutating func recordReplace(
@@ -105,19 +111,18 @@ struct StallyBackupCenterState {
             result: result
         )
         importPreview = nil
-        importStatusMessage = "Replaced the current library with \(preview.sourceName)."
+        importStatusMessage = StallyLocalization.format(
+            "Replaced the current library with %@.",
+            preview.sourceName
+        )
     }
 
     mutating func recordDeleteAllSuccess() {
         importPreview = nil
         importExecutionSummary = nil
-        importStatusMessage = "Deleted every item from the current library."
-    }
-
-    static func exportFilename(
-        for date: Date
-    ) -> String {
-        "stally-backup-\(backupTimestampFormatter.string(from: date))"
+        importStatusMessage = StallyLocalization.string(
+            "Deleted every item from the current library."
+        )
     }
 }
 
@@ -129,5 +134,11 @@ private extension StallyBackupCenterState {
         formatter.timeZone = .autoupdatingCurrent
         formatter.dateFormat = "yyyyMMdd-HHmm"
         return formatter
+    }
+
+    static func exportFilename(
+        for date: Date
+    ) -> String {
+        "stally-backup-\(backupTimestampFormatter.string(from: date))"
     }
 }

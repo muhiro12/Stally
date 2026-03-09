@@ -37,19 +37,22 @@ struct StallyInsightsActivitySection: View {
 private extension StallyInsightsActivitySection {
     var metrics: [StallyMetricGrid.Metric] {
         [
-            .init(title: "Unique Items", value: "\(summary.uniqueMarkedItems)"),
             .init(
-                title: "Categories",
+                title: StallyLocalization.string("Unique Items"),
+                value: "\(summary.uniqueMarkedItems)"
+            ),
+            .init(
+                title: StallyLocalization.string("Categories"),
                 value: "\(summary.uniqueMarkedCategories)"
             ),
             .init(
-                title: "Avg / Active Day",
+                title: StallyLocalization.string("Avg / Active Day"),
                 value: summary.averageMarksPerActiveDay.formatted(
                     .number.precision(.fractionLength(1))
                 )
             ),
             .init(
-                title: "Busiest Day",
+                title: StallyLocalization.string("Busiest Day"),
                 value: busiestDayValue
             )
         ]
@@ -89,6 +92,18 @@ private extension StallyInsightsActivitySection {
         .mhSurface(role: .muted)
     }
 
+    var busiestDayValue: String {
+        guard let busiestDay = summary.busiestDay else {
+            return StallyLocalization.string("None")
+        }
+
+        return StallyLocalization.format(
+            "%1$lld on %2$@",
+            busiestDay.markCount,
+            busiestDay.date.formatted(date: .abbreviated, time: .omitted)
+        )
+    }
+
     func barHeight(
         for day: CollectionActivityDay
     ) -> CGFloat {
@@ -111,13 +126,5 @@ private extension StallyInsightsActivitySection {
 
         let divisor = max(days.count / 4, 1)
         return index.isMultiple(of: divisor)
-    }
-
-    var busiestDayValue: String {
-        guard let busiestDay = summary.busiestDay else {
-            return "None"
-        }
-
-        return "\(busiestDay.markCount) on \(busiestDay.date.formatted(date: .abbreviated, time: .omitted))"
     }
 }

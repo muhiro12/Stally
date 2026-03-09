@@ -62,11 +62,13 @@ final class StallyRootNavigationState {
         _ error: any Error
     ) {
         operationErrorMessage = (error as? LocalizedError)?.errorDescription
-            ?? "Please try again."
+            ?? StallyLocalization.string("Please try again.")
     }
 
     func presentUnsupportedDeepLinkError() {
-        operationErrorMessage = "This link isn't supported by this version of Stally."
+        operationErrorMessage = StallyLocalization.string(
+            "This link isn't supported by this version of Stally."
+        )
     }
 
     func loadReviewPreferencesIfNeeded(

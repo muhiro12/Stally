@@ -19,22 +19,22 @@ struct StallyInsightsRankingSection: View {
             if usesCompactLayout {
                 VStack(alignment: .leading, spacing: 12) {
                     rankingColumn(
-                        title: "Top Items",
+                        title: StallyLocalization.string("Top Items"),
                         rankings: topRankings
                     )
                     rankingColumn(
-                        title: "Quiet Items",
+                        title: StallyLocalization.string("Quiet Items"),
                         rankings: quietRankings
                     )
                 }
             } else {
                 HStack(alignment: .top, spacing: 12) {
                     rankingColumn(
-                        title: "Top Items",
+                        title: StallyLocalization.string("Top Items"),
                         rankings: topRankings
                     )
                     rankingColumn(
-                        title: "Quiet Items",
+                        title: StallyLocalization.string("Quiet Items"),
                         rankings: quietRankings
                     )
                 }
@@ -74,7 +74,8 @@ private extension StallyInsightsRankingSection {
         ordinal: Int,
         ranking: CollectionItemRanking
     ) -> some View {
-        let itemName = itemsByID[ranking.itemID]?.name ?? "Unknown Item"
+        let itemName = itemsByID[ranking.itemID]?.name
+            ?? StallyLocalization.string("Unknown Item")
 
         return VStack(alignment: .leading, spacing: 4) {
             HStack(alignment: .firstTextBaseline, spacing: 12) {
@@ -97,12 +98,19 @@ private extension StallyInsightsRankingSection {
     ) -> String {
         if ranking.totalMarksInRange == .zero {
             if ranking.totalLifetimeMarks == .zero {
-                return "Still untouched."
+                return StallyLocalization.string("Still untouched.")
             }
 
-            return "No marks in range, \(ranking.totalLifetimeMarks) lifetime."
+            return StallyLocalization.format(
+                "No marks in range, %lld lifetime.",
+                ranking.totalLifetimeMarks
+            )
         }
 
-        return "\(ranking.activeDaysInRange) active days, \(ranking.totalLifetimeMarks) lifetime."
+        return StallyLocalization.format(
+            "%1$lld active days, %2$lld lifetime.",
+            ranking.activeDaysInRange,
+            ranking.totalLifetimeMarks
+        )
     }
 }

@@ -10,8 +10,18 @@ import MHPlatform
 
 enum StallyAppConfiguration {
     static let displayName = "Stally"
-    static let conceptLine = "An app for marking your own actions and quietly building up counts."
-    static let baselineNote = "This is the app baseline built on MHPlatform, ready for future features."
+
+    static var conceptLine: String {
+        StallyLocalization.string(
+            "An app for marking your own actions and quietly building up counts."
+        )
+    }
+
+    static var baselineNote: String {
+        StallyLocalization.string(
+            "This is the app baseline built on MHPlatform, ready for future features."
+        )
+    }
 
     static var runtimeConfiguration: MHAppConfiguration {
         .init(

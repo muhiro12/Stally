@@ -53,7 +53,11 @@ private extension StallyInsightsCategorySection {
                 .frame(height: 8)
 
             Text(
-                "\(summary.uniqueItems) items, \(summary.shareOfMarks.formatted(.percent.precision(.fractionLength(0)))) of marks"
+                StallyLocalization.format(
+                    "%1$lld items, %2$@ of marks",
+                    summary.uniqueItems,
+                    summary.shareOfMarks.formatted(.percent.precision(.fractionLength(0)))
+                )
             )
             .mhRowSupporting()
         }

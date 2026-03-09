@@ -12,15 +12,15 @@ public enum ItemCategory: String, CaseIterable, Codable, Sendable {
     public var title: String {
         switch self {
         case .clothing:
-            "Clothing"
+            StallyLibraryLocalization.string("Clothing")
         case .shoes:
-            "Shoes"
+            StallyLibraryLocalization.string("Shoes")
         case .bags:
-            "Bags"
+            StallyLibraryLocalization.string("Bags")
         case .notebooks:
-            "Notebooks"
+            StallyLibraryLocalization.string("Notebooks")
         case .other:
-            "Other"
+            StallyLibraryLocalization.string("Other")
         }
     }
 

@@ -48,7 +48,7 @@ struct StallyRootView: View {
         }
         .onChange(of: deepLinkInbox.pendingURL) { _, pendingURL in
             guard let pendingURL,
-            deepLinkCodec.parse(pendingURL) == nil
+                  deepLinkCodec.parse(pendingURL) == nil
             else {
                 return
             }
@@ -57,7 +57,7 @@ struct StallyRootView: View {
         }
         .onChange(of: routeInbox.pendingRoute) { _, pendingRoute in
             guard pendingRoute != nil,
-            let route = routeInbox.consumeLatest()
+                  let route = routeInbox.consumeLatest()
             else {
                 return
             }
