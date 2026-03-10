@@ -67,16 +67,6 @@ extension StallyRootView {
         assembly.navigationState
     }
 
-    func applyRoute(
-        _ route: StallyRoute
-    ) async throws {
-        StallyRootRouteService.apply(
-            route: route,
-            to: navigationState,
-            items: items
-        )
-    }
-
     var activeItems: [Item] {
         ItemInsightsCalculator.homeSort(
             items: ItemInsightsCalculator.activeItems(from: items)
@@ -176,5 +166,15 @@ extension StallyRootView {
         ) { route in
             rootDestination(for: route)
         }
+    }
+
+    func applyRoute(
+        _ route: StallyRoute
+    ) {
+        StallyRootRouteService.apply(
+            route: route,
+            to: navigationState,
+            items: items
+        )
     }
 }

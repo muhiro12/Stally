@@ -4,12 +4,10 @@ enum StallyLibraryLocalization {
     nonisolated static func string(
         _ key: String
     ) -> String {
-        NSLocalizedString(
-            key,
-            tableName: "Localizable",
-            bundle: .module,
+        Bundle.module.localizedString(
+            forKey: key,
             value: key,
-            comment: ""
+            table: "Localizable"
         )
     }
 

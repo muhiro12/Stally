@@ -11,6 +11,7 @@ enum StallyPlatformRuntime {
     static func make(
         configuration: MHAppConfiguration
     ) -> MHAppRuntime {
+        // swiftlint:disable multiple_closures_with_trailing_closure opening_brace
         MHAppRuntime(
             configuration: configuration,
             preferenceStore: .init(
@@ -25,25 +26,25 @@ enum StallyPlatformRuntime {
                 AnyView(EmptyView())
             },
             startAds: nil,
-            nativeAdViewBuilder: nil,
-            licensesViewBuilder: {
-                guard configuration.showsLicenses else {
-                    return AnyView(EmptyView())
-                }
-
-                #if canImport(LicenseList)
-                return AnyView(
-                    LicenseList.LicenseListView()
-                        .licenseViewStyle(.withRepositoryAnchorLink)
-                )
-                #else
-                return AnyView(
-                    Text("License list is unavailable on this platform.")
-                        .foregroundStyle(.secondary)
-                )
-                #endif
+            nativeAdViewBuilder: nil
+        )            {
+            guard configuration.showsLicenses else {
+                return AnyView(EmptyView())
             }
-        )
+
+            #if canImport(LicenseList)
+            return AnyView(
+                LicenseList.LicenseListView()
+                    .licenseViewStyle(.withRepositoryAnchorLink)
+            )
+            #else
+            return AnyView(
+                Text("License list is unavailable on this platform.")
+                    .foregroundStyle(.secondary)
+            )
+            #endif
+        }
+        // swiftlint:enable multiple_closures_with_trailing_closure opening_brace
     }
 }
 

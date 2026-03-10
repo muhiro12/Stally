@@ -3,29 +3,6 @@ import SwiftUI
 import TipKit
 
 enum StallyTips {
-    static func configure() throws {
-        do {
-            try Tips.configure(configurationOptions)
-        } catch {
-            throw RuntimeError.configurationFailed
-        }
-    }
-
-    static func reset() throws {
-        do {
-            try Tips.resetDatastore()
-            try Tips.configure(configurationOptions)
-        } catch {
-            throw RuntimeError.resetFailed
-        }
-    }
-
-    static var configurationOptions: [Tips.ConfigurationOption] {
-        [
-            .displayFrequency(.immediate)
-        ]
-    }
-
     struct AddFirstItemTip: Tip {
         var title: Text {
             Text("Begin with one item")
@@ -50,7 +27,9 @@ enum StallyTips {
         }
 
         var message: Text? {
-            Text("Review gathers items that still need a first mark, feel dormant, or may deserve a return from Archive.")
+            Text(
+                "Review gathers items that still need a first mark, feel dormant, or may deserve a return from Archive."
+            )
         }
 
         var image: Image? {
@@ -131,6 +110,31 @@ enum StallyTips {
 
         var options: [any TipOption] {
             MaxDisplayCount(1)
+        }
+    }
+}
+
+extension StallyTips {
+    static var configurationOptions: [Tips.ConfigurationOption] {
+        [
+            .displayFrequency(.immediate)
+        ]
+    }
+
+    static func configure() throws {
+        do {
+            try Tips.configure(configurationOptions)
+        } catch {
+            throw RuntimeError.configurationFailed
+        }
+    }
+
+    static func reset() throws {
+        do {
+            try Tips.resetDatastore()
+            try Tips.configure(configurationOptions)
+        } catch {
+            throw RuntimeError.resetFailed
         }
     }
 }
