@@ -23,7 +23,7 @@ future app-side entry points.
 | --- | --- | --- |
 | Shared domain logic | `StallyLibrary` | `Item`, `Mark`, `ItemService`, `MarkService`, `ItemReviewCalculator`, `ItemInsightsCalculator`, `StallyBackupCodec`, `StallyBackupImportService`, `StallyDeepLinking` |
 | Apple framework adapters | `Stally` | `StallyTips`, `StallyBackupDocument`, `ShareLink`, `UIPasteboard`, file importer/exporter flows |
-| App-side platform support | `Stally/Sources/Common/Platform` | `StallyAppAssembly`, `StallyAppConfiguration`, `MHAppRuntime` and `MHAppRuntimeBootstrap` integration, app-wide localization and design glue |
+| App-side platform support | `Stally/Sources/Common/Platform` | `StallyAppAssembly`, `StallyAppConfiguration`, `MHAppRuntimeCore` plus split runtime bundles, `MHAppRuntimeBootstrap` integration, app-wide localization and design glue |
 | Presentation orchestration | `Stally/Sources/Main` and `Stally/Sources/**/Views` | SwiftUI views, navigation state, app-side route application, thin mutation adapters |
 
 ## Canonical Shared APIs
@@ -65,8 +65,9 @@ operations:
   framework adapter, while backup encoding and import application remain in
   `StallyLibrary`.
 - `StallyAppAssembly` stays in `Stally` because runtime bootstrap assembly
-  still depends on app configuration, route wiring, and SwiftUI injection even
-  when the runtime itself is package-owned.
+  still depends on app configuration, route wiring, SwiftUI injection, and how
+  Stally composes `MHAppRuntimeCore` with the package-owned defaults, ads, and
+  licenses bundles.
 - `StallyTips` stays in `Stally` because TipKit guidance is a platform concern,
   not shared business logic.
 

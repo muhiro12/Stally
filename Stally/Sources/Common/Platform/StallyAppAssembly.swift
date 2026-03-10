@@ -1,8 +1,10 @@
-import MHAppRuntime
-import MHUI
+import MHAppRuntimeAds
 import MHAppRuntimeCore
+import MHAppRuntimeDefaults
+import MHAppRuntimeLicenses
 import MHPreferences
 import MHRouteExecution
+import MHUI
 import Observation
 import StallyLibrary
 import SwiftData
@@ -24,8 +26,25 @@ final class StallyAppAssembly {
     ) {
         let navigationState = StallyRootNavigationState()
         let routeInbox = MHObservableRouteInbox<StallyRoute>()
+        let configuration = StallyAppConfiguration.runtimeConfiguration
+        let defaultsBundle = MHAppRuntimeDefaultsBundle(
+            configuration: configuration
+        )
+        let adsBundle = MHAppRuntimeAdsBundle(
+            configuration: configuration
+        )
+        let licensesBundle = MHAppRuntimeLicensesBundle(
+            configuration: configuration
+        )
         let runtime = MHAppRuntime(
-            configuration: StallyAppConfiguration.runtimeConfiguration
+            configuration: configuration,
+            preferenceStore: defaultsBundle.preferenceStore,
+            startStore: defaultsBundle.startStore,
+            subscriptionSectionViewBuilder:
+                defaultsBundle.subscriptionSectionViewBuilder,
+            startAds: adsBundle.startAds,
+            nativeAdViewBuilder: adsBundle.nativeAdViewBuilder,
+            licensesViewBuilder: licensesBundle.licensesViewBuilder
         )
         let routePipeline = MHAppRoutePipeline(
             routeLifecycle: .init(

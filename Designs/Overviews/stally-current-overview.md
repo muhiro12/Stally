@@ -86,6 +86,8 @@ Current app-side directories under `Stally/Sources/` follow this shape:
 This layout intentionally mirrors the stronger repository boundary used in
 Incomes while staying scoped to Stally's simpler single-app product surface.
 
-Runtime startup is currently built from `MHAppRuntime(configuration:)` and
-`MHAppRuntimeBootstrap`, while Stally keeps app-specific route meaning,
-navigation state, and feature presentation in the app target.
+Runtime startup is currently built from `MHAppRuntimeCore` composed with
+`MHAppRuntimeDefaultsBundle`, `MHAppRuntimeAdsBundle`,
+`MHAppRuntimeLicensesBundle`, and `MHAppRuntimeBootstrap`, while Stally keeps
+app-specific route meaning, navigation state, and feature presentation in the
+app target.
