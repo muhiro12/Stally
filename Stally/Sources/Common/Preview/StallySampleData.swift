@@ -1,11 +1,12 @@
+import MHAppRuntimeCore
 import SwiftUI
 
-struct StallyEmptySampleData: PreviewModifier {
+struct StallySampleData: PreviewModifier {
     typealias Context = StallyAppAssembly
 
     static func makeSharedContext() throws -> Context {
         try StallyAppAssemblyFactory.makePreview(
-            seedSampleData: false
+            seedSampleData: true
         )
     }
 
@@ -13,6 +14,8 @@ struct StallyEmptySampleData: PreviewModifier {
         content: Content,
         context: Context
     ) -> some View {
-        content.stallyAppAssembly(context)
+        content
+            .stallyAppAssembly(context)
+            .mhAppRuntimeEnvironment(context.bootstrap)
     }
 }

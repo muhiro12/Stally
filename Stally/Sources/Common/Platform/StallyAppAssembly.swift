@@ -1,3 +1,4 @@
+import MHAppRuntime
 import MHUI
 import MHAppRuntimeCore
 import MHPreferences
@@ -23,7 +24,7 @@ final class StallyAppAssembly {
     ) {
         let navigationState = StallyRootNavigationState()
         let routeInbox = MHObservableRouteInbox<StallyRoute>()
-        let runtime = StallyPlatformRuntime.make(
+        let runtime = MHAppRuntime(
             configuration: StallyAppConfiguration.runtimeConfiguration
         )
         let routePipeline = MHAppRoutePipeline(
