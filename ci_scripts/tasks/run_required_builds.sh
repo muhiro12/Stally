@@ -224,6 +224,11 @@ run_note="Executed required CI steps based on local changes."
 
 if $needs_stally_build; then
   run_logged_step \
+    "check_models_directory_consistency" \
+    "Check Models directory consistency" \
+    bash "$repository_root/ci_scripts/tasks/check_models_directory_consistency.sh"
+
+  run_logged_step \
     "build_app" \
     "Build Stally scheme" \
     bash "$repository_root/ci_scripts/tasks/build_app.sh"
