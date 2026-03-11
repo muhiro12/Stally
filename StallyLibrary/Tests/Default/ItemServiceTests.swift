@@ -33,6 +33,39 @@ final class ItemServiceTests: XCTestCase {
         XCTAssertNil(item.photoData)
     }
 
+    func testUpdateNormalizesInputAndRefreshesUpdatedAt() throws {
+        let context = testContext()
+        let item = try ItemService.create(
+            context: context,
+            input: .init(
+                name: "Canvas Tote",
+                category: .bags,
+                photoData: Data([1, 2, 3]),
+                note: "Carries my notebook."
+            ),
+            createdAt: localDate(year: 2_026, month: 3, day: 1)
+        )
+        let updatedAt = localDate(year: 2_026, month: 3, day: 8)
+
+        try ItemService.update(
+            context: context,
+            item: item,
+            input: .init(
+                name: "  Daily Tote  ",
+                category: .clothing,
+                photoData: Data(),
+                note: "   "
+            ),
+            updatedAt: updatedAt
+        )
+
+        XCTAssertEqual(item.name, "Daily Tote")
+        XCTAssertEqual(item.category, .clothing)
+        XCTAssertNil(item.note)
+        XCTAssertNil(item.photoData)
+        XCTAssertEqual(item.updatedAt, updatedAt)
+    }
+
     func testSeedSampleDataDoesNotDuplicateWhenIfEmptyOnlyIsTrue() throws {
         let context = testContext()
 
