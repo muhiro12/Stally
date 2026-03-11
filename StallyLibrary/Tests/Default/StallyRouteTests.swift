@@ -52,6 +52,30 @@ final class StallyRouteTests: XCTestCase {
         )
     }
 
+    func testItemRouteRoundTripsThroughUniversalLinkURL() throws {
+        let codec = StallyDeepLinking.codec()
+        let itemID = try XCTUnwrap(
+            UUID(uuidString: "D1C0A8D1-0E8F-4B61-B915-8A1257B5AD4D")
+        )
+        let route = StallyRoute.item(itemID)
+
+        let url = try XCTUnwrap(
+            codec.url(
+                for: route,
+                transport: .universalLink
+            )
+        )
+
+        XCTAssertEqual(
+            url.absoluteString,
+            "https://stally.muhiro12.com/app/item?id=d1c0a8d1-0e8f-4b61-b915-8a1257b5ad4d"
+        )
+        XCTAssertEqual(
+            codec.parse(url),
+            route
+        )
+    }
+
     func testUniversalLinksRoundTripForAllStaticRoutes() throws {
         let codec = StallyDeepLinking.codec()
         let cases: [(route: StallyRoute, expectedURL: String)] = [
@@ -113,6 +137,17 @@ final class StallyRouteTests: XCTestCase {
         )
         XCTAssertNil(
             codec.parse(missingUUIDURL)
+        )
+    }
+
+    func testUniversalLinkFromUnexpectedHostIsRejected() throws {
+        let codec = StallyDeepLinking.codec()
+        let url = try XCTUnwrap(
+            URL(string: "https://example.com/app/home")
+        )
+
+        XCTAssertNil(
+            codec.parse(url)
         )
     }
 }
