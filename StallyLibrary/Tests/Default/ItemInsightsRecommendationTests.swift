@@ -155,4 +155,69 @@ final class ItemInsightsRecommendationTests: XCTestCase {
             }
         )
     }
+
+    func testRecommendationsExcludeArchivedItemsByDefault() throws {
+        let context = testContext()
+        let archivedItem = try createTestItem(
+            context: context,
+            name: "Archived Tote",
+            category: .bags,
+            createdAt: localDate(year: 2_026, month: 1, day: 1)
+        )
+
+        _ = try markTestItem(
+            context: context,
+            item: archivedItem,
+            on: localDate(year: 2_026, month: 1, day: 10)
+        )
+        try archiveTestItem(
+            context: context,
+            item: archivedItem,
+            at: localDate(year: 2_026, month: 2, day: 1)
+        )
+
+        let recommendations = ItemInsightsCalculator.recommendations(
+            from: [archivedItem],
+            range: .last30Days,
+            includeArchivedItems: false,
+            referenceDate: localDate(year: 2_026, month: 3, day: 8)
+        )
+
+        XCTAssertTrue(recommendations.isEmpty)
+    }
+
+    func testRecommendationsCanIncludeArchivedItemsWhenRequested() throws {
+        let context = testContext()
+        let archivedItem = try createTestItem(
+            context: context,
+            name: "Archived Tote",
+            category: .bags,
+            createdAt: localDate(year: 2_026, month: 1, day: 1)
+        )
+
+        _ = try markTestItem(
+            context: context,
+            item: archivedItem,
+            on: localDate(year: 2_026, month: 1, day: 10)
+        )
+        try archiveTestItem(
+            context: context,
+            item: archivedItem,
+            at: localDate(year: 2_026, month: 2, day: 1)
+        )
+
+        let recommendations = ItemInsightsCalculator.recommendations(
+            from: [archivedItem],
+            range: .last30Days,
+            includeArchivedItems: true,
+            referenceDate: localDate(year: 2_026, month: 3, day: 8)
+        )
+
+        XCTAssertTrue(
+            recommendations.contains { recommendation in
+                recommendation.kind == .revisitQuietItems
+                    && recommendation.itemIDs == [archivedItem.id]
+            }
+        )
+    }
 }
