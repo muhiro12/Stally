@@ -3,21 +3,32 @@ import MHDeepLinking
 import XCTest
 
 final class StallyRouteTests: XCTestCase {
-    func testPreferredURLUsesCustomSchemeForStaticRoutes() {
+    func testPreferredURLUsesCustomSchemeForAllStaticRoutes() throws {
         let codec = StallyDeepLinking.codec()
+        let cases: [(route: StallyRoute, expectedURL: String)] = [
+            (.home, "stally://home"),
+            (.archive, "stally://archive"),
+            (.backup, "stally://backup"),
+            (.insights, "stally://insights"),
+            (.review, "stally://review"),
+            (.settings, "stally://settings"),
+            (.createItem, "stally://create")
+        ]
 
-        XCTAssertEqual(
-            codec.preferredURL(for: .review)?.absoluteString,
-            "stally://review"
-        )
-        XCTAssertEqual(
-            codec.preferredURL(for: .archive)?.absoluteString,
-            "stally://archive"
-        )
-        XCTAssertEqual(
-            codec.preferredURL(for: .insights)?.absoluteString,
-            "stally://insights"
-        )
+        for testCase in cases {
+            let url = try XCTUnwrap(
+                URL(string: testCase.expectedURL)
+            )
+
+            XCTAssertEqual(
+                codec.preferredURL(for: testCase.route)?.absoluteString,
+                testCase.expectedURL
+            )
+            XCTAssertEqual(
+                codec.parse(url),
+                testCase.route
+            )
+        }
     }
 
     func testItemRouteRoundTripsThroughCustomSchemeURL() throws {
@@ -41,23 +52,35 @@ final class StallyRouteTests: XCTestCase {
         )
     }
 
-    func testUniversalLinkRoundTripsWhenRequested() throws {
+    func testUniversalLinksRoundTripForAllStaticRoutes() throws {
         let codec = StallyDeepLinking.codec()
-        let url = try XCTUnwrap(
-            codec.url(
-                for: .settings,
-                transport: .universalLink
-            )
-        )
+        let cases: [(route: StallyRoute, expectedURL: String)] = [
+            (.home, "https://stally.muhiro12.com/app/home"),
+            (.archive, "https://stally.muhiro12.com/app/archive"),
+            (.backup, "https://stally.muhiro12.com/app/backup"),
+            (.insights, "https://stally.muhiro12.com/app/insights"),
+            (.review, "https://stally.muhiro12.com/app/review"),
+            (.settings, "https://stally.muhiro12.com/app/settings"),
+            (.createItem, "https://stally.muhiro12.com/app/create")
+        ]
 
-        XCTAssertEqual(
-            url.absoluteString,
-            "https://stally.muhiro12.com/app/settings"
-        )
-        XCTAssertEqual(
-            codec.parse(url),
-            .settings
-        )
+        for testCase in cases {
+            let url = try XCTUnwrap(
+                codec.url(
+                    for: testCase.route,
+                    transport: .universalLink
+                )
+            )
+
+            XCTAssertEqual(
+                url.absoluteString,
+                testCase.expectedURL
+            )
+            XCTAssertEqual(
+                codec.parse(url),
+                testCase.route
+            )
+        }
     }
 
     func testHomeRouteAcceptsBareSchemeAndExplicitHomePath() throws {
