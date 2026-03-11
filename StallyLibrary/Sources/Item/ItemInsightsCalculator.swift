@@ -621,14 +621,6 @@ public enum ItemInsightsCalculator {
             referenceDate: referenceDate,
             calendar: calendar
         )
-        let quietRankings = quietItemRankings(
-            from: scopedItems,
-            range: range,
-            includeArchivedItems: true,
-            limit: 3,
-            referenceDate: referenceDate,
-            calendar: calendar
-        )
         let topRankings = topItemRankings(
             from: scopedItems,
             range: range,
@@ -661,11 +653,19 @@ public enum ItemInsightsCalculator {
             )
         }
 
-        let quietItemIDs = quietRankings
-            .filter { ranking in
-                ranking.totalLifetimeMarks > .zero && ranking.totalMarksInRange == .zero
-            }
-            .map(\.itemID)
+        let quietItemIDs = quietItemRankings(
+            from: scopedItems,
+            range: range,
+            includeArchivedItems: true,
+            limit: scopedItems.count,
+            referenceDate: referenceDate,
+            calendar: calendar
+        )
+        .filter { ranking in
+            ranking.totalLifetimeMarks > .zero && ranking.totalMarksInRange == .zero
+        }
+        .prefix(3)
+        .map(\.itemID)
         if !quietItemIDs.isEmpty {
             recommendations.append(
                 .init(
