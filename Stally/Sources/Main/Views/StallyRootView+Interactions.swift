@@ -1,300 +1,138 @@
-import Foundation
 import StallyLibrary
 import SwiftUI
 
 @MainActor
 extension StallyRootView {
-    @ViewBuilder
-    func rootDestination(
-        for route: StallyRootNavigationState.Route
-    ) -> some View {
-        switch route {
-        case .archive:
-            StallyArchiveView(items: archivedItems) { itemID in
-                openItem(itemID)
-            }
-        case .backup:
-            StallyBackupCenterView(
-                items: items,
-                onMergeImport: mergeImport(snapshot:),
-                onReplaceImport: replaceImport(snapshot:),
-                onDeleteAll: deleteAllItems
-            )
-        case .insights:
-            StallyInsightsView(
-                items: items,
-                preferences: insightsPreferencesBinding,
-                onOpenItem: openItem(_:)
-            )
-        case .review:
-            StallyReviewView(
-                items: items,
-                preferences: navigationState.reviewPreferences,
-                onArchiveItem: archiveItem(_:),
-                onArchiveItems: archiveItems(_:),
-                onUnarchiveItem: unarchiveItem(_:),
-                onUnarchiveItems: unarchiveItems(_:),
-                onOpenItem: openItem(_:)
-            )
-        case .settings:
-            StallySettingsView(
-                reviewPreferences: reviewPreferencesBinding,
-                insightsPreferences: insightsPreferencesBinding,
-                onOpenBackup: openBackup,
-                onResetTips: resetTips
-            )
-        case .item(let itemID):
-            destinationView(for: itemID)
-        }
+    var librarySnapshot: StallyLibrarySnapshot {
+        StallyLibrarySnapshotBuilder.build(
+            items: items,
+            reviewPreferences: appModel.reviewPreferences
+        )
     }
 
-    func item(
-        for itemID: UUID
-    ) -> Item? {
-        items.first { item in
-            item.id == itemID
+    var archiveSnapshot: StallyArchiveSnapshot {
+        StallyArchiveSnapshotBuilder.build(
+            items: items
+        )
+    }
+
+    var reviewSnapshot: StallyReviewSnapshot {
+        StallyReviewSnapshotBuilder.build(
+            items: items,
+            preferences: appModel.reviewPreferences
+        )
+    }
+
+    var insightsSnapshot: StallyInsightsSnapshot {
+        StallyInsightsSnapshotBuilder.build(
+            items: items,
+            preferences: appModel.insightsPreferences
+        )
+    }
+
+    var settingsSnapshot: StallySettingsSnapshot {
+        StallySettingsSnapshotBuilder.build()
+    }
+
+    var isOperationErrorPresented: Binding<Bool> {
+        .init(
+            get: {
+                appModel.operationErrorMessage != nil
+            },
+            set: { isPresented in
+                if !isPresented {
+                    appModel.dismissOperationError()
+                }
+            }
+        )
+    }
+
+    func stackHost<Content: View>(
+        path: Binding<[StallyAppModel.StackDestination]>,
+        @ViewBuilder content: @escaping () -> Content
+    ) -> some View {
+        NavigationStack(path: path) {
+            content()
+                .navigationDestination(
+                    for: StallyAppModel.StackDestination.self
+                ) { destination in
+                    destinationView(for: destination)
+                }
         }
     }
 
     @ViewBuilder
     func destinationView(
-        for itemID: UUID
+        for destination: StallyAppModel.StackDestination
     ) -> some View {
-        if let item = item(for: itemID) {
-            StallyItemDetailView(
-                item: item,
-                onEdit: { editableItemID in
-                    navigationState.presentEditEditor(editableItemID)
-                },
-                onToggleTodayMark: toggleTodayMark(for:),
-                onToggleArchiveState: toggleArchiveState(for:),
-                onSetMarkState: setMarkState(for:on:shouldBeMarked:)
-            )
-        } else {
-            ContentUnavailableView(
-                "Item Unavailable",
-                systemImage: "questionmark.square.dashed",
-                description: Text("This item no longer exists.")
-            )
-            .task {
-                navigationState.removeItemRoute(itemID)
+        switch destination {
+        case .item(let itemID):
+            if let item = items.first(where: { $0.id == itemID }) {
+                StallyItemDetailView(
+                    item: item,
+                    navigationNamespace: navigationNamespace
+                )
+            } else {
+                ContentUnavailableView(
+                    "Item Unavailable",
+                    systemImage: "questionmark.square.dashed",
+                    description: Text("This item no longer exists.")
+                )
+                .task {
+                    appModel.removeItemDestination(itemID)
+                }
             }
+        case .settings:
+            StallySettingsView(
+                snapshot: settingsSnapshot
+            )
+        case .backup:
+            StallyBackupCenterView(
+                items: items
+            )
         }
     }
 
     @ViewBuilder
     func editorDestination(
-        for route: StallyRootNavigationState.EditorRoute
+        for route: StallyAppModel.EditorRoute
     ) -> some View {
         NavigationStack {
             switch route.mode {
             case .create:
-                StallyItemEditorView(mode: .create) { createdItemID in
-                    navigationState.dismissEditor()
-
-                    if let createdItemID {
-                        openItem(createdItemID)
-                    }
-                } onDelete: { _ in
-                    // no-op
-                }
+                StallyItemEditorView(
+                    mode: .create,
+                    navigationNamespace: navigationNamespace
+                )
+                .navigationTransition(
+                    .zoom(
+                        sourceID: "create-item",
+                        in: navigationNamespace
+                    )
+                )
             case .edit(let itemID):
-                if let item = item(for: itemID) {
-                    StallyItemEditorView(mode: .edit(item)) { _ in
-                        navigationState.dismissEditor()
-                    } onDelete: { deletedItemID in
-                        navigationState.dismissEditor()
-                        navigationState.removeItemRoute(deletedItemID)
-                    }
+                if let item = items.first(where: { $0.id == itemID }) {
+                    StallyItemEditorView(
+                        mode: .edit(item),
+                        navigationNamespace: navigationNamespace
+                    )
                 } else {
                     Color.clear
                         .task {
-                            navigationState.dismissEditor()
+                            appModel.dismissEditor()
                         }
                 }
             }
         }
     }
 
-    func openItem(
-        _ itemID: UUID
+    func applyRoute(
+        _ route: StallyRoute
     ) {
-        navigationState.path.append(
-            StallyRootNavigationState.Route.item(itemID)
+        StallyAppRouteService.apply(
+            route: route,
+            to: appModel,
+            items: items
         )
-    }
-
-    func openCreateItem() {
-        navigationState.presentCreateEditor()
-    }
-
-    func openArchive() {
-        navigationState.path.append(
-            StallyRootNavigationState.Route.archive
-        )
-    }
-
-    func openBackup() {
-        navigationState.path.append(
-            StallyRootNavigationState.Route.backup
-        )
-    }
-
-    func openInsights() {
-        navigationState.path.append(
-            StallyRootNavigationState.Route.insights
-        )
-    }
-
-    func openReview() {
-        navigationState.path.append(
-            StallyRootNavigationState.Route.review
-        )
-    }
-
-    func openSettings() {
-        navigationState.path.append(
-            StallyRootNavigationState.Route.settings
-        )
-    }
-
-    func resetTips() {
-        performAction {
-            try StallyRootActionService.resetTips()
-        }
-    }
-
-    func toggleTodayMark(
-        for item: Item
-    ) {
-        performAction {
-            try StallyRootActionService.toggleTodayMark(
-                context: context,
-                item: item
-            )
-        }
-    }
-
-    func toggleArchiveState(
-        for item: Item
-    ) {
-        performAction {
-            try StallyRootActionService.toggleArchiveState(
-                context: context,
-                item: item
-            )
-        }
-    }
-
-    func archiveItem(
-        _ item: Item
-    ) {
-        performAction {
-            try StallyRootActionService.archive(
-                context: context,
-                item: item
-            )
-        }
-    }
-
-    func archiveItems(
-        _ items: [Item]
-    ) {
-        performAction {
-            try StallyRootActionService.archive(
-                context: context,
-                items: items
-            )
-        }
-    }
-
-    func unarchiveItem(
-        _ item: Item
-    ) {
-        performAction {
-            try StallyRootActionService.unarchive(
-                context: context,
-                item: item
-            )
-        }
-    }
-
-    func unarchiveItems(
-        _ items: [Item]
-    ) {
-        performAction {
-            try StallyRootActionService.unarchive(
-                context: context,
-                items: items
-            )
-        }
-    }
-
-    func setMarkState(
-        for item: Item,
-        on date: Date,
-        shouldBeMarked: Bool
-    ) -> Bool {
-        performBooleanAction {
-            try StallyRootActionService.setMarkState(
-                context: context,
-                item: item,
-                on: date,
-                shouldBeMarked: shouldBeMarked
-            )
-        }
-    }
-
-    func seedSampleData() {
-        performAction {
-            try StallyRootActionService.seedSampleData(
-                context: context
-            )
-        }
-    }
-
-    func mergeImport(
-        snapshot: StallyBackupSnapshot
-    ) throws -> StallyBackupImportResult {
-        try StallyRootActionService.mergeImport(
-            context: context,
-            snapshot: snapshot
-        )
-    }
-
-    func replaceImport(
-        snapshot: StallyBackupSnapshot
-    ) throws -> StallyBackupImportResult {
-        try StallyRootActionService.replaceImport(
-            context: context,
-            snapshot: snapshot
-        )
-    }
-
-    func deleteAllItems() throws {
-        try StallyRootActionService.deleteAllItems(
-            context: context
-        )
-    }
-
-    func performAction(
-        _ operation: () throws -> Void
-    ) {
-        do {
-            try operation()
-        } catch {
-            navigationState.presentOperationError(error)
-        }
-    }
-
-    func performBooleanAction(
-        _ operation: () throws -> Bool
-    ) -> Bool {
-        do {
-            return try operation()
-        } catch {
-            navigationState.presentOperationError(error)
-            return false
-        }
     }
 }

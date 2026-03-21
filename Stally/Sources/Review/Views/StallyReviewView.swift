@@ -1,194 +1,145 @@
 import MHDeepLinking
-import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
 
 struct StallyReviewView: View {
-    enum SelectionTipLane {
-        case untouched
-        case dormant
-        case recovery
-    }
+    @Environment(StallyAppModel.self)
+    private var appModel
+    @Environment(\.modelContext)
+    private var context
 
-    @Environment(\.mhTheme)
-    private var theme
-    @Environment(\.horizontalSizeClass)
-    private var horizontalSizeClass
+    @State private var screenModel: StallyReviewScreenModel
 
-    @State private var selectionState = StallyReviewSelectionState()
-
-    let items: [Item]
-    let preferences: StallyReviewPreferences
-    let onArchiveItem: (Item) -> Void
-    let onArchiveItems: ([Item]) -> Void
-    let onUnarchiveItem: (Item) -> Void
-    let onUnarchiveItems: ([Item]) -> Void
-    let onOpenItem: (UUID) -> Void
+    let snapshot: StallyReviewSnapshot
 
     var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
-            summaryCard
+        ScrollView {
+            VStack(alignment: .leading, spacing: StallyDesign.Layout.sectionSpacing) {
+                summaryCard
 
-            if summary.totalReviewCount == .zero, !showsCompletedSections {
-                emptyState
-            } else {
-                if shouldShowUntouchedSection {
-                    untouchedSection
+                if snapshot.summary.totalReviewCount == .zero, !screenModel.showsCompletedSections {
+                    emptyState
+                } else {
+                    if screenModel.shouldShowUntouchedSection {
+                        untouchedSection
+                    }
+
+                    if screenModel.shouldShowDormantSection {
+                        dormantSection
+                    }
+
+                    if screenModel.shouldShowRecoverySection {
+                        recoverySection
+                    }
                 }
-
-                if shouldShowDormantSection {
-                    dormantSection
-                }
-
-                if shouldShowRecoverySection {
-                    recoverySection
+            }
+            .padding(.horizontal, StallyDesign.Layout.screenPadding)
+            .padding(.top, 12)
+            .safeAreaPadding(.bottom, 28)
+        }
+        .contentMargins(.bottom, 28, for: .scrollContent)
+        .navigationTitle("Review")
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    appModel.openSettings(in: .review)
+                } label: {
+                    Image(systemName: "slider.horizontal.3")
+                        .font(.headline.weight(.semibold))
+                        .foregroundStyle(StallyDesign.Palette.ink)
                 }
             }
         }
-        .mhScreen(
-            title: Text("Review"),
-            subtitle: Text("Find the items that deserve attention before they drift too far out of mind.")
+        .task(
+            id: [
+                snapshot.syncKey,
+                appModel.reviewPreferences.showCompletedSections ? "1" : "0",
+            ].joined(separator: "#")
+        ) {
+            screenModel.update(
+                snapshot: snapshot,
+                showsCompletedSections: appModel.reviewPreferences.showCompletedSections
+            )
+        }
+        .stallyScreenBackground()
+    }
+
+    init(
+        snapshot: StallyReviewSnapshot
+    ) {
+        self.snapshot = snapshot
+        _screenModel = State(
+            initialValue: .init(
+                snapshot: snapshot,
+                showsCompletedSections: false
+            )
         )
-        .navigationTitle("Review")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
 private extension StallyReviewView {
-    var usesCompactLayout: Bool {
-        horizontalSizeClass != .regular
-    }
-
-    var policy: ItemReviewPolicy {
-        preferences.policy
-    }
-
-    var showsCompletedSections: Bool {
-        preferences.showCompletedSections
-    }
-
-    var summary: ItemReviewSummary {
-        ItemReviewCalculator.summary(
-            from: items,
-            policy: policy
+    var untouchedSelectionBinding: Binding<StallyReviewSelectionState.LaneSelection> {
+        .init(
+            get: {
+                screenModel.selectionState.untouched
+            },
+            set: { newValue in
+                screenModel.selectionState.untouched = newValue
+            }
         )
     }
 
-    var summaryMetrics: [StallyMetricGrid.Metric] {
-        [
-            .init(
-                title: StallyLocalization.string("First Mark"),
-                value: "\(summary.untouchedCount)"
-            ),
-            .init(
-                title: StallyLocalization.string("Dormant"),
-                value: "\(summary.dormantCount)"
-            ),
-            .init(
-                title: StallyLocalization.string("Recovery"),
-                value: "\(summary.recoveryCandidateCount)"
-            )
-        ]
-    }
-
-    var activeItems: [Item] {
-        ItemInsightsCalculator.homeSort(
-            items: ItemInsightsCalculator.activeItems(from: items)
+    var dormantSelectionBinding: Binding<StallyReviewSelectionState.LaneSelection> {
+        .init(
+            get: {
+                screenModel.selectionState.dormant
+            },
+            set: { newValue in
+                screenModel.selectionState.dormant = newValue
+            }
         )
     }
 
-    var archivedItems: [Item] {
-        ItemInsightsCalculator.archivedItems(from: items)
-    }
-
-    var untouchedItems: [Item] {
-        ItemReviewCalculator.items(
-            from: activeItems,
-            with: .untouched,
-            policy: policy
+    var recoverySelectionBinding: Binding<StallyReviewSelectionState.LaneSelection> {
+        .init(
+            get: {
+                screenModel.selectionState.recovery
+            },
+            set: { newValue in
+                screenModel.selectionState.recovery = newValue
+            }
         )
-    }
-
-    var dormantItems: [Item] {
-        ItemReviewCalculator.items(
-            from: activeItems,
-            with: .dormant,
-            policy: policy
-        )
-    }
-
-    var recoveryCandidateItems: [Item] {
-        ItemReviewCalculator.items(
-            from: archivedItems,
-            with: .recoveryCandidate,
-            policy: policy
-        )
-    }
-
-    var snapshotsByID: [UUID: ItemReviewSnapshot] {
-        Dictionary(
-            uniqueKeysWithValues: ItemReviewCalculator
-                .snapshots(
-                    from: items,
-                    policy: policy
-                )
-                .map { snapshot in
-                    (snapshot.itemID, snapshot)
-                }
-        )
-    }
-
-    var shouldShowUntouchedSection: Bool {
-        showsCompletedSections || !untouchedItems.isEmpty
-    }
-
-    var shouldShowDormantSection: Bool {
-        showsCompletedSections || !dormantItems.isEmpty
-    }
-
-    var shouldShowRecoverySection: Bool {
-        showsCompletedSections || !recoveryCandidateItems.isEmpty
-    }
-
-    var selectionTipLane: SelectionTipLane? {
-        if shouldShowUntouchedSection, untouchedItems.count >= 2 {
-            return .untouched
-        }
-
-        if shouldShowDormantSection, dormantItems.count >= 2 {
-            return .dormant
-        }
-
-        if shouldShowRecoverySection, recoveryCandidateItems.count >= 2 {
-            return .recovery
-        }
-
-        return nil
     }
 
     var summaryCard: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
+        VStack(alignment: .leading, spacing: 14) {
+            StallySectionHeader(
+                eyebrow: "Snapshot",
+                title: "What needs attention next",
+                subtitle: "This combines first-use lag, inactivity, and possible returns from archive."
+            )
+
             HStack(alignment: .firstTextBaseline) {
-                Text("Review Snapshot")
-                    .mhRowTitle()
+                Text("Pending")
+                    .font(StallyDesign.Typography.caption)
+                    .foregroundStyle(StallyDesign.Palette.mutedInk)
 
-                Spacer(minLength: theme.spacing.control)
+                Spacer(minLength: .zero)
 
-                Text("\(summary.totalReviewCount)")
-                    .mhRowValue(colorRole: .accent)
+                Text("\(snapshot.summary.totalReviewCount)")
+                    .font(.largeTitle.weight(.semibold))
+                    .foregroundStyle(StallyDesign.Palette.accent)
+                    .contentTransition(.symbolEffect)
             }
 
-            Text("This brings together first-use lag, inactivity, and archive recovery into one review lane.")
-                .mhRowSupporting()
-
             StallyMetricGrid(
-                metrics: summaryMetrics,
-                usesCompactLayout: usesCompactLayout
+                metrics: screenModel.summaryMetrics,
+                usesCompactLayout: true
             )
         }
-        .mhSurfaceInset()
-        .mhSurface(role: .muted)
+        .stallyPanel(.base)
     }
 
     var emptyState: some View {
@@ -199,14 +150,13 @@ private extension StallyReviewView {
                 "Items that need a first mark, feel dormant, or look ready to return from Archive will appear here."
             )
         )
-        .mhEmptyStateLayout()
-        .mhSurfaceInset()
-        .mhSurface()
+        .frame(maxWidth: .infinity)
+        .stallyPanel(.quiet)
     }
 
     var untouchedSection: some View {
         StallyReviewLaneSection(
-            selection: $selectionState.untouched,
+            selection: untouchedSelectionBinding,
             configuration: .init(
                 title: StallyLocalization.string("Needs First Mark"),
                 supporting: StallyLocalization.string(
@@ -225,19 +175,19 @@ private extension StallyReviewView {
                 confirmationButtonTitle: StallyLocalization.string("Archive Selected"),
                 confirmationButtonRole: .destructive
             ),
-            items: untouchedItems,
-            snapshotsByID: snapshotsByID,
-            onOpenItem: onOpenItem,
-            onItemAction: onArchiveItem,
-            onBulkAction: onArchiveItems,
+            items: screenModel.untouchedItems,
+            snapshotsByID: screenModel.snapshotsByID,
+            onOpenItem: openItem(_:),
+            onItemAction: archiveItem(_:),
+            onBulkAction: archiveItems(_:),
             itemLinkURL: itemLinkURL(for:),
-            showsSelectionTip: selectionTipLane == .untouched
+            showsSelectionTip: screenModel.selectionTipLane == .untouched
         )
     }
 
     var dormantSection: some View {
         StallyReviewLaneSection(
-            selection: $selectionState.dormant,
+            selection: dormantSelectionBinding,
             configuration: .init(
                 title: StallyLocalization.string("Dormant"),
                 supporting: StallyLocalization.string(
@@ -256,47 +206,98 @@ private extension StallyReviewView {
                 confirmationButtonTitle: StallyLocalization.string("Archive Selected"),
                 confirmationButtonRole: .destructive
             ),
-            items: dormantItems,
-            snapshotsByID: snapshotsByID,
-            onOpenItem: onOpenItem,
-            onItemAction: onArchiveItem,
-            onBulkAction: onArchiveItems,
+            items: screenModel.dormantItems,
+            snapshotsByID: screenModel.snapshotsByID,
+            onOpenItem: openItem(_:),
+            onItemAction: archiveItem(_:),
+            onBulkAction: archiveItems(_:),
             itemLinkURL: itemLinkURL(for:),
-            showsSelectionTip: selectionTipLane == .dormant
+            showsSelectionTip: screenModel.selectionTipLane == .dormant
         )
     }
 
     var recoverySection: some View {
         StallyReviewLaneSection(
-            selection: $selectionState.recovery,
+            selection: recoverySelectionBinding,
             configuration: .init(
                 title: StallyLocalization.string("Recovery Candidates"),
                 supporting: StallyLocalization.string(
-                    "Archived items with enough history that they may deserve another turn."
+                    "Archived items whose history suggests they may deserve another turn."
                 ),
-                emptyMessage: StallyLocalization.string("Archive is quiet for now."),
-                itemActionTitle: StallyLocalization.string("Move Back to Home"),
-                bulkActionTitle: StallyLocalization.string("Move Back to Home"),
-                confirmationTitle: StallyLocalization.string(
-                    "Move Selected Items Back to Home"
-                ),
+                emptyMessage: StallyLocalization.string("Nothing is asking to come back right now."),
+                itemActionTitle: StallyLocalization.string("Move Back to Library"),
+                bulkActionTitle: StallyLocalization.string("Move Back to Library"),
+                confirmationTitle: StallyLocalization.string("Move Back to Library"),
                 confirmationMessage: { count in
                     StallyLocalization.format(
-                        "Move %lld archived items back into Home?",
+                        "Move %lld items back into the main library?",
                         count
                     )
                 },
-                confirmationButtonTitle: StallyLocalization.string("Move Back to Home"),
+                confirmationButtonTitle: StallyLocalization.string("Move Back to Library"),
                 confirmationButtonRole: nil
             ),
-            items: recoveryCandidateItems,
-            snapshotsByID: snapshotsByID,
-            onOpenItem: onOpenItem,
-            onItemAction: onUnarchiveItem,
-            onBulkAction: onUnarchiveItems,
+            items: screenModel.recoveryCandidateItems,
+            snapshotsByID: screenModel.snapshotsByID,
+            onOpenItem: openItem(_:),
+            onItemAction: unarchiveItem(_:),
+            onBulkAction: unarchiveItems(_:),
             itemLinkURL: itemLinkURL(for:),
-            showsSelectionTip: selectionTipLane == .recovery
+            showsSelectionTip: screenModel.selectionTipLane == .recovery
         )
+    }
+
+    func openItem(
+        _ itemID: UUID
+    ) {
+        appModel.openItem(
+            itemID,
+            in: .review
+        )
+    }
+
+    func archiveItem(
+        _ item: Item
+    ) {
+        appModel.performAction {
+            try StallyAppActionService.archive(
+                context: context,
+                item: item
+            )
+        }
+    }
+
+    func archiveItems(
+        _ items: [Item]
+    ) {
+        appModel.performAction {
+            try StallyAppActionService.archive(
+                context: context,
+                items: items
+            )
+        }
+    }
+
+    func unarchiveItem(
+        _ item: Item
+    ) {
+        appModel.performAction {
+            try StallyAppActionService.unarchive(
+                context: context,
+                item: item
+            )
+        }
+    }
+
+    func unarchiveItems(
+        _ items: [Item]
+    ) {
+        appModel.performAction {
+            try StallyAppActionService.unarchive(
+                context: context,
+                items: items
+            )
+        }
     }
 
     func itemLinkURL(
@@ -308,29 +309,16 @@ private extension StallyReviewView {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 26.0, *)
 #Preview(traits: .modifier(StallySampleData())) {
     @Previewable @Query var items: [Item]
 
     NavigationStack {
         StallyReviewView(
-            items: items,
-            preferences: .init(),
-            onArchiveItem: { _ in
-                // no-op
-            },
-            onArchiveItems: { _ in
-                // no-op
-            },
-            onUnarchiveItem: { _ in
-                // no-op
-            },
-            onUnarchiveItems: { _ in
-                // no-op
-            },
-            onOpenItem: { _ in
-                // no-op
-            }
+            snapshot: StallyReviewSnapshotBuilder.build(
+                items: items,
+                preferences: .init()
+            )
         )
     }
 }

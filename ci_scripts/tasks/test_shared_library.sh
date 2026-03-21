@@ -78,9 +78,11 @@ timestamp=$(date +%s)
 result_bundle_path="$results_directory/TestResults_StallyLibrary_${timestamp}.xcresult"
 
 HOME="$local_home_directory" \
+CFFIXED_USER_HOME="$local_home_directory" \
 TMPDIR="$temporary_directory" \
 XDG_CACHE_HOME="$cache_directory" \
 CLANG_MODULE_CACHE_PATH="$clang_module_cache_directory" \
+SWIFTPM_MODULECACHE_OVERRIDE="$clang_module_cache_directory" \
 SWIFTPM_CACHE_PATH="$swiftpm_cache_directory" \
 SWIFTPM_CONFIG_PATH="$swiftpm_config_directory" \
 PLL_SOURCE_PACKAGES_PATH="$cloned_source_packages_directory" \
@@ -88,6 +90,7 @@ xcodebuild \
   -project "$project_path" \
   -scheme "$scheme_name" \
   "${destination[@]}" \
+  -skipPackagePluginValidation \
   -derivedDataPath "$derived_data_path" \
   -resultBundlePath "$result_bundle_path" \
   -clonedSourcePackagesDirPath "$cloned_source_packages_directory" \

@@ -1,13 +1,7 @@
-import MHUI
 import StallyLibrary
 import SwiftUI
 import TipKit
 import UIKit
-
-private enum StallyReviewSelectionControlID: String, Sendable {
-    case selectionMode
-    case bulkAction
-}
 
 struct StallyReviewLaneSection: View {
     struct Configuration {
@@ -22,11 +16,6 @@ struct StallyReviewLaneSection: View {
         let confirmationButtonRole: ButtonRole?
     }
 
-    @Environment(\.mhTheme)
-    private var theme
-
-    @Namespace private var selectionControlNamespace
-
     @Binding var selection: StallyReviewSelectionState.LaneSelection
 
     let configuration: Configuration
@@ -39,44 +28,20 @@ struct StallyReviewLaneSection: View {
     let showsSelectionTip: Bool
 
     var body: some View {
-        content
-            .confirmationDialog(
-                configuration.confirmationTitle,
-                isPresented: $selection.isBulkConfirmationPresented,
-                titleVisibility: .visible
-            ) {
-                Button(
-                    configuration.confirmationButtonTitle,
-                    role: configuration.confirmationButtonRole
-                ) {
-                    performBulkAction()
-                }
-                Button("Cancel", role: .cancel) {
-                    selection.cancelBulkAction()
-                }
-            } message: {
-                Text(
-                    configuration.confirmationMessage(selectedItems.count)
-                )
-            }
-    }
-}
+        VStack(alignment: .leading, spacing: 14) {
+            StallySectionHeader(
+                eyebrow: nil,
+                title: configuration.title,
+                subtitle: configuration.supporting
+            )
 
-private extension StallyReviewLaneSection {
-    @ViewBuilder
-    var content: some View {
-        if items.isEmpty {
-            Text(configuration.emptyMessage)
-                .mhRowSupporting()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .mhSurfaceInset()
-                .mhSurface(role: .muted)
-                .mhSection(
-                    title: Text(configuration.title),
-                    supporting: Text(configuration.supporting)
-                )
-        } else {
-            VStack(alignment: .leading, spacing: theme.spacing.control) {
+            if items.isEmpty {
+                Text(configuration.emptyMessage)
+                    .font(StallyDesign.Typography.caption)
+                    .foregroundStyle(StallyDesign.Palette.mutedInk)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .stallyPanel(.quiet)
+            } else {
                 selectionControls
 
                 ForEach(items, id: \.id) { item in
@@ -87,13 +52,28 @@ private extension StallyReviewLaneSection {
                     }
                 }
             }
-            .mhSection(
-                title: Text(configuration.title),
-                supporting: Text(configuration.supporting)
-            )
+        }
+        .confirmationDialog(
+            configuration.confirmationTitle,
+            isPresented: $selection.isBulkConfirmationPresented,
+            titleVisibility: .visible
+        ) {
+            Button(
+                configuration.confirmationButtonTitle,
+                role: configuration.confirmationButtonRole
+            ) {
+                performBulkAction()
+            }
+            Button("Cancel", role: .cancel) {
+                selection.cancelBulkAction()
+            }
+        } message: {
+            Text(configuration.confirmationMessage(selectedItems.count))
         }
     }
+}
 
+private extension StallyReviewLaneSection {
     var selectedItems: [Item] {
         items.filter { item in
             selection.selectedItemIDs.contains(item.id)
@@ -101,45 +81,37 @@ private extension StallyReviewLaneSection {
     }
 
     var selectionControls: some View {
-        MHGlassContainer(spacing: theme.spacing.control) {
-            HStack(spacing: theme.spacing.control) {
-                Button(
-                    selection.isSelectionModeEnabled
-                        ? StallyLocalization.string("Done")
-                        : StallyLocalization.string("Select")
-                ) {
-                    selection.toggleSelectionMode()
-                }
-                .buttonStyle(.mhSecondary)
-                .mhGlassEffectID(
-                    StallyReviewSelectionControlID.selectionMode,
-                    in: selectionControlNamespace
+        HStack(spacing: 12) {
+            Button(
+                selection.isSelectionModeEnabled
+                    ? StallyLocalization.string("Done")
+                    : StallyLocalization.string("Select")
+            ) {
+                selection.toggleSelectionMode()
+            }
+            .buttonStyle(StallySecondaryButtonStyle())
+            .popoverTip(selectionTip, arrowEdge: .bottom)
+
+            if selection.isSelectionModeEnabled {
+                Text(
+                    StallyLocalization.format(
+                        "%lld selected",
+                        selectedItems.count
+                    )
                 )
-                .popoverTip(selectionTip, arrowEdge: .bottom)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(StallyDesign.Palette.mutedInk)
 
-                if selection.isSelectionModeEnabled {
-                    Text(
-                        StallyLocalization.format(
-                            "%lld selected",
-                            selectedItems.count
-                        )
-                    )
-                    .mhRowSupporting()
+                Spacer(minLength: .zero)
 
-                    Spacer(minLength: .zero)
-
-                    Button(configuration.bulkActionTitle) {
-                        selection.requestBulkAction()
-                    }
-                    .buttonStyle(.mhPrimary)
-                    .mhGlassEffectID(
-                        StallyReviewSelectionControlID.bulkAction,
-                        in: selectionControlNamespace
-                    )
-                    .disabled(selectedItems.isEmpty)
+                Button(configuration.bulkActionTitle) {
+                    selection.requestBulkAction()
                 }
+                .buttonStyle(StallyPrimaryButtonStyle())
+                .disabled(selectedItems.isEmpty)
             }
         }
+        .stallyPanel(.elevated, padding: 12)
     }
 
     var selectionTip: (any Tip)? {
@@ -155,13 +127,13 @@ private extension StallyReviewLaneSection {
     func actionableReviewRow(
         item: Item
     ) -> some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
+        VStack(alignment: .leading, spacing: 12) {
             reviewRow(item: item)
 
             Button(configuration.itemActionTitle) {
                 onItemAction(item)
             }
-            .buttonStyle(.mhSecondary)
+            .buttonStyle(StallySecondaryButtonStyle())
         }
     }
 
@@ -179,7 +151,7 @@ private extension StallyReviewLaneSection {
                 )
                 .foregroundStyle(
                     selection.selectedItemIDs.contains(item.id)
-                        ? Color.accentColor
+                        ? StallyDesign.Palette.accent
                         : .secondary
                 )
             }
@@ -208,7 +180,7 @@ private extension StallyReviewLaneSection {
         let summary = ItemInsightsCalculator.summary(for: item)
         let snapshot = snapshotsByID[item.id]
 
-        return HStack(spacing: theme.spacing.group) {
+        return HStack(spacing: 16) {
             StallyItemArtworkView(
                 photoData: item.photoData,
                 category: item.category,
@@ -216,12 +188,15 @@ private extension StallyReviewLaneSection {
                 height: 82
             )
 
-            VStack(alignment: .leading, spacing: theme.spacing.control) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(item.name)
-                    .mhRowTitle()
+                    .font(StallyDesign.Typography.cardTitle)
+                    .foregroundStyle(StallyDesign.Palette.ink)
 
-                Text(item.category.title)
-                    .mhBadge(style: .neutral)
+                StallyTag(
+                    title: item.category.title,
+                    tone: .elevated
+                )
 
                 Text(
                     rowSupportingText(
@@ -229,7 +204,8 @@ private extension StallyReviewLaneSection {
                         snapshot: snapshot
                     )
                 )
-                .mhRowSupporting()
+                .font(StallyDesign.Typography.caption)
+                .foregroundStyle(StallyDesign.Palette.mutedInk)
             }
 
             Spacer(minLength: .zero)
@@ -238,8 +214,7 @@ private extension StallyReviewLaneSection {
                 .font(.title3)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .mhSurfaceInset()
-        .mhSurface()
+        .stallyPanel(.base)
         .contextMenu {
             if let itemLinkURL = itemLinkURL(item) {
                 Button("Copy Item Link", systemImage: "link") {

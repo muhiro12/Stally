@@ -14,8 +14,9 @@ struct StallyItemArtworkView: View {
                 .fill(
                     LinearGradient(
                         colors: [
-                            StallyDesign.artworkCool.opacity(0.8),
-                            StallyDesign.artworkWarm.opacity(0.85)
+                            StallyDesign.artworkCool.opacity(0.9),
+                            StallyDesign.artworkWarm.opacity(0.95),
+                            StallyDesign.Palette.accentSoft.opacity(0.9)
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -31,18 +32,34 @@ struct StallyItemArtworkView: View {
                 VStack(spacing: 10) {
                     Image(systemName: category.symbolName)
                         .font(.system(size: min(width, height) * 0.28, weight: .semibold))
-                        .foregroundStyle(StallyDesign.tint)
+                        .foregroundStyle(StallyDesign.Palette.tint)
 
                     Text(category.title)
                         .font(.footnote.weight(.medium))
-                        .foregroundStyle(StallyDesign.tint.opacity(0.85))
+                        .foregroundStyle(StallyDesign.Palette.tint.opacity(0.85))
+                        .multilineTextAlignment(.center)
                 }
                 .padding(12)
             }
         }
         .frame(width: width, height: height)
         .clipShape(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
+            RoundedRectangle(
+                cornerRadius: StallyDesign.Radius.artwork,
+                style: .continuous
+            )
+        )
+        .overlay(
+            RoundedRectangle(
+                cornerRadius: StallyDesign.Radius.artwork,
+                style: .continuous
+            )
+            .stroke(Color.white.opacity(0.35), lineWidth: 1)
+        )
+        .shadow(
+            color: StallyDesign.Palette.shadow,
+            radius: 18,
+            y: 10
         )
         .accessibilityHidden(true)
     }

@@ -1,21 +1,7 @@
-import MHUI
 import StallyLibrary
 import SwiftUI
 
-private enum StallyItemQueryControlID: String, Sendable {
-    case category
-    case sort
-    case clear
-}
-
 struct StallyItemQueryControls: View {
-    @Environment(\.mhTheme)
-    private var theme
-
-    @Namespace private var compactHorizontalMenuNamespace
-    @Namespace private var compactVerticalMenuNamespace
-    @Namespace private var regularMenuNamespace
-
     @Binding var query: ItemListQuery
 
     let displayedCount: Int
@@ -23,35 +9,26 @@ struct StallyItemQueryControls: View {
 
     var body: some View {
         if usesCompactLayout {
-            VStack(alignment: .leading, spacing: theme.spacing.control) {
+            VStack(alignment: .leading, spacing: 12) {
                 ViewThatFits(in: .horizontal) {
                     horizontalMenus
                     verticalMenus
                 }
 
-                HStack(spacing: theme.spacing.control) {
+                HStack(spacing: 12) {
                     queryStatusLabel
                     Spacer(minLength: .zero)
                 }
             }
         } else {
-            HStack(alignment: .center, spacing: theme.spacing.control) {
-                MHGlassContainer(spacing: theme.spacing.control) {
-                    HStack(spacing: theme.spacing.control) {
-                        categoryMenu
-                            .mhGlassEffectID(
-                                StallyItemQueryControlID.category,
-                                in: regularMenuNamespace
-                            )
-                        sortMenu
-                            .mhGlassEffectID(
-                                StallyItemQueryControlID.sort,
-                                in: regularMenuNamespace
-                            )
-                    }
+            HStack(alignment: .center, spacing: 12) {
+                HStack(spacing: 12) {
+                    categoryMenu
+                    sortMenu
                 }
+                .stallyPanel(.elevated, padding: 10)
 
-                Spacer(minLength: theme.spacing.control)
+                Spacer(minLength: 12)
 
                 queryStatusLabel
 
@@ -65,53 +42,27 @@ struct StallyItemQueryControls: View {
 
 private extension StallyItemQueryControls {
     var horizontalMenus: some View {
-        MHGlassContainer(spacing: theme.spacing.control) {
-            HStack(spacing: theme.spacing.control) {
-                categoryMenu
-                    .mhGlassEffectID(
-                        StallyItemQueryControlID.category,
-                        in: compactHorizontalMenuNamespace
-                    )
-                sortMenu
-                    .mhGlassEffectID(
-                        StallyItemQueryControlID.sort,
-                        in: compactHorizontalMenuNamespace
-                    )
+        HStack(spacing: 12) {
+            categoryMenu
+            sortMenu
 
-                if query.hasRefinements {
-                    clearFiltersButton
-                        .mhGlassEffectID(
-                            StallyItemQueryControlID.clear,
-                            in: compactHorizontalMenuNamespace
-                        )
-                }
+            if query.hasRefinements {
+                clearFiltersButton
             }
         }
+        .stallyPanel(.elevated, padding: 10)
     }
 
     var verticalMenus: some View {
-        MHGlassContainer(spacing: theme.spacing.control) {
-            VStack(alignment: .leading, spacing: theme.spacing.control) {
-                categoryMenu
-                    .mhGlassEffectID(
-                        StallyItemQueryControlID.category,
-                        in: compactVerticalMenuNamespace
-                    )
-                sortMenu
-                    .mhGlassEffectID(
-                        StallyItemQueryControlID.sort,
-                        in: compactVerticalMenuNamespace
-                    )
+        VStack(alignment: .leading, spacing: 12) {
+            categoryMenu
+            sortMenu
 
-                if query.hasRefinements {
-                    clearFiltersButton
-                        .mhGlassEffectID(
-                            StallyItemQueryControlID.clear,
-                            in: compactVerticalMenuNamespace
-                        )
-                }
+            if query.hasRefinements {
+                clearFiltersButton
             }
         }
+        .stallyPanel(.elevated, padding: 10)
     }
 
     var categoryMenu: some View {
@@ -134,7 +85,7 @@ private extension StallyItemQueryControls {
             )
             .lineLimit(1)
         }
-        .buttonStyle(.mhSecondary)
+        .buttonStyle(StallySecondaryButtonStyle())
         .fixedSize(horizontal: true, vertical: false)
     }
 
@@ -154,7 +105,7 @@ private extension StallyItemQueryControls {
             )
             .lineLimit(1)
         }
-        .buttonStyle(.mhSecondary)
+        .buttonStyle(StallySecondaryButtonStyle())
         .fixedSize(horizontal: true, vertical: false)
     }
 
@@ -162,14 +113,15 @@ private extension StallyItemQueryControls {
         Text(
             StallyLocalization.format("%lld shown", displayedCount)
         )
-        .mhRowSupporting()
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(StallyDesign.Palette.mutedInk)
     }
 
     var clearFiltersButton: some View {
         Button("Clear") {
             query = .init()
         }
-        .buttonStyle(.mhSecondary)
+        .buttonStyle(StallySecondaryButtonStyle())
         .fixedSize(horizontal: true, vertical: false)
     }
 

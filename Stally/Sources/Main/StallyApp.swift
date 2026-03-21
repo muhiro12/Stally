@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/03/07.
 //
 
+import Foundation
 import MHUI
 import MHAppRuntimeCore
 import MHLogging
@@ -12,19 +13,28 @@ import SwiftUI
 
 @main
 struct StallyApp: App {
-    private let sharedAssembly: StallyAppAssembly
+    private let sharedAssembly: StallyAppAssembly?
     private let startupLogger = Self.logger(category: "AppStartup")
 
     var body: some Scene {
         WindowGroup {
-            StallyRootView()
-                .stallyAppAssembly(sharedAssembly)
-                .mhAppRuntimeBootstrap(sharedAssembly.bootstrap)
+            if let sharedAssembly {
+                StallyRootView()
+                    .stallyAppAssembly(sharedAssembly)
+                    .mhAppRuntimeBootstrap(sharedAssembly.bootstrap)
+            } else {
+                Color.clear
+            }
         }
     }
 
     @MainActor
     init() {
+        guard Self.isRunningTests == false else {
+            sharedAssembly = nil
+            return
+        }
+
         startupLogger.notice("app startup began")
         sharedAssembly = StallyAppAssemblyFactory.makeLive()
 
@@ -38,5 +48,9 @@ struct StallyApp: App {
                 "tip guidance failed to configure: \(String(describing: error))"
             )
         }
+    }
+
+    private nonisolated static var isRunningTests: Bool {
+        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
     }
 }

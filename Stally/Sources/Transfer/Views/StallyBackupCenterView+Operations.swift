@@ -104,7 +104,10 @@ extension StallyBackupCenterView {
         _ preview: StallyBackupCenterState.ImportPreview
     ) {
         do {
-            let result = try onMergeImport(preview.analysis.snapshot)
+            let result = try StallyAppActionService.mergeImport(
+                context: context,
+                snapshot: preview.analysis.snapshot
+            )
             state.recordMerge(
                 preview: preview,
                 result: result
@@ -123,7 +126,10 @@ extension StallyBackupCenterView {
         _ preview: StallyBackupCenterState.ImportPreview
     ) {
         do {
-            let result = try onReplaceImport(preview.analysis.snapshot)
+            let result = try StallyAppActionService.replaceImport(
+                context: context,
+                snapshot: preview.analysis.snapshot
+            )
             state.recordReplace(
                 preview: preview,
                 result: result
@@ -140,7 +146,9 @@ extension StallyBackupCenterView {
 
     func deleteAllItems() {
         do {
-            try onDeleteAll()
+            try StallyAppActionService.deleteAllItems(
+                context: context
+            )
             state.recordDeleteAllSuccess()
         } catch {
             state.recordImportFailure(

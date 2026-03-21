@@ -2,7 +2,7 @@ import Foundation
 import StallyLibrary
 import SwiftData
 
-enum StallyRootActionService {
+enum StallyAppActionService {
     static func resetTips() throws {
         try StallyTips.reset()
     }

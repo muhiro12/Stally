@@ -1,4 +1,3 @@
-import MHUI
 import SwiftUI
 
 struct StallyMetricGrid: View {
@@ -11,9 +10,6 @@ struct StallyMetricGrid: View {
         }
     }
 
-    @Environment(\.mhTheme)
-    private var theme
-
     let metrics: [Metric]
     let usesCompactLayout: Bool
 
@@ -22,14 +18,14 @@ struct StallyMetricGrid: View {
             LazyVGrid(
                 columns: columns,
                 alignment: .leading,
-                spacing: theme.spacing.control
+                spacing: 12
             ) {
                 ForEach(metrics) { metric in
                     metricView(metric)
                 }
             }
         } else {
-            HStack(spacing: theme.spacing.group) {
+            HStack(spacing: 12) {
                 ForEach(metrics) { metric in
                     metricView(metric)
                 }
@@ -43,7 +39,7 @@ private extension StallyMetricGrid {
         Array(
             repeating: GridItem(
                 .flexible(minimum: 0, maximum: .infinity),
-                spacing: theme.spacing.group,
+                spacing: 12,
                 alignment: .leading
             ),
             count: 2
@@ -53,14 +49,19 @@ private extension StallyMetricGrid {
     func metricView(
         _ metric: Metric
     ) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 8) {
             Text(metric.title)
-                .mhRowSupporting()
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(StallyDesign.Palette.mutedInk)
                 .fixedSize(horizontal: false, vertical: true)
             Text(metric.value)
-                .mhRowValue(colorRole: .accent)
+                .font(StallyDesign.Typography.metric)
+                .monospacedDigit()
+                .foregroundStyle(StallyDesign.Palette.ink)
+                .contentTransition(.symbolEffect)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .stallyPanel(.elevated, padding: 14)
     }
 }

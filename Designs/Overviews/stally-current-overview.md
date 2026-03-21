@@ -1,17 +1,20 @@
 # Stally Current Product and Architecture Overview
 
-Current as of March 10, 2026.
+Current as of March 21, 2026.
 
 ## Purpose
 
 Stally is a SwiftUI iPhone app for quietly tracking the personal items a user
 keeps choosing over time. The product is implemented as one iOS app plus one
-shared domain library:
+shared domain library, with an app-side XCTest target covering adapter logic.
+The current deployment baseline is iOS 26 or newer:
 
 - An iPhone app for library browsing, review lanes, insights, settings, backup
   export and restore, and deep-link navigation
 - A shared library for SwiftData models, mutation services, calculations,
   backup payloads, and route definitions
+- An app test target for route mapping, editor model behavior, and screen model
+  presentation assembly
 
 The current implementation is intentionally biased toward a single source of
 truth for business logic in `StallyLibrary`, with platform adapters and UI
@@ -63,7 +66,14 @@ living in the app target.
 - Copy or share deep links to major app surfaces.
 - Reset TipKit guidance and inspect build metadata.
 
-### 6. Preview and sample data support
+### 6. App shell and navigation
+
+- Move between `Library`, `Review`, `Insights`, and `Archive` from a tab shell.
+- Open `Settings` as a secondary destination rather than a top-level tab.
+- Reach `Backup Center` from inside Settings while keeping backup actions grouped together.
+- Open item creation and editing from a sheet-driven editor flow.
+
+### 7. Preview and sample data support
 
 - Build an in-memory preview container for SwiftUI previews.
 - Seed sample data for previews and debug-style exploration.
@@ -89,5 +99,23 @@ Incomes while staying scoped to Stally's simpler single-app product surface.
 Runtime startup is currently built from `MHAppRuntimeCore` composed with
 `MHAppRuntimeDefaultsBundle`, `MHAppRuntimeAdsBundle`,
 `MHAppRuntimeLicensesBundle`, and `MHAppRuntimeBootstrap`, while Stally keeps
-app-specific route meaning, navigation state, and feature presentation in the
-app target.
+app-specific route meaning, tab and sheet state, screen snapshot builders,
+screen models, and feature presentation in the app target.
+
+The app shell is now centered on `StallyAppModel`, which owns the selected tab,
+per-tab stack paths, modal item editor state, operation alert state, and
+preference-backed review or insights UI settings. Route application is handled
+by `StallyAppRouteService`, app mutations by `StallyAppActionService`, and the
+major surfaces (`Home`, `Archive`, `Review`, `Insights`, `Settings`) each use a
+`snapshot builder -> screen model -> view` flow rather than assembling reusable
+presentation summaries directly inside the view body.
+
+The iOS 26 baseline allows the app target to prefer newer SwiftUI interaction
+and presentation APIs, including zoom-style navigation transitions,
+matched-transition sources, `scrollTargetLayout`, `safeAreaPadding`,
+`contentMargins`, and glass-prominent call-to-action styling.
+
+App adapter behavior is now verified in `StallyTests`, with coverage focused on
+route application, screen models, and `StallyItemEditorModel`. The required CI
+entrypoint remains `bash ci_scripts/tasks/run_required_builds.sh`, which now
+includes app tests when app-side files change.

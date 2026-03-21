@@ -1,131 +1,523 @@
 import MHDeepLinking
-import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
-import TipKit
+import UIKit
 
-private enum StallyHomeQuickFilterID: String, Sendable {
-    case all
-    case openToday
-    case markedToday
-    case neverMarked
-}
-
-private struct StallyHomeQuickFilterOption: Identifiable {
-    let id: StallyHomeQuickFilterID
-    let title: String
-    let filter: ItemListQuery.QuickFilter?
-}
-
-private enum StallyHomeEmptyStateActionID: String, Sendable {
-    case addFirstItem
-    case trySampleItems
-    case restoreFromBackup
-}
-
-// swiftlint:disable file_length
 struct StallyHomeView: View {
-    @Environment(\.mhTheme)
-    private var theme
+    @Environment(StallyAppModel.self)
+    private var appModel
+    @Environment(\.modelContext)
+    private var context
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
 
-    @Namespace private var quickFilterNamespace
-    @Namespace private var emptyStateActionNamespace
+    @State private var screenModel: StallyHomeScreenModel
 
-    @State private var query = ItemListQuery()
+    let snapshot: StallyLibrarySnapshot
+    let navigationNamespace: Namespace.ID
 
-    let items: [Item]
-    let reviewPreferences: StallyReviewPreferences
-    let reviewSummary: ItemReviewSummary
-    let archiveSummary: ItemInsightsCalculator.ArchiveCollectionSummary
-    let actions: StallyHomeActions
-
-    @ViewBuilder
     var body: some View {
-        if items.isEmpty {
-            screenContent
-                .mhScreen(
-                    title: Text(StallyAppConfiguration.displayName),
-                    subtitle: Text("A quiet record of the things you keep choosing.")
-                )
-                .toolbar {
-                    homeToolbar
+        content
+            .navigationTitle("Library")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    settingsButton
                 }
-        } else {
-            screenContent
-                .mhScreen(
-                    title: Text(StallyAppConfiguration.displayName),
-                    subtitle: Text("A quiet record of the things you keep choosing.")
-                )
-                .searchable(
-                    text: $query.searchText,
-                    placement: .navigationBarDrawer(displayMode: .always),
-                    prompt: "Search items"
-                )
-                .toolbar {
-                    homeToolbar
+
+                ToolbarItem(placement: .topBarTrailing) {
+                    addButton
                 }
-        }
+            }
+            .task(id: snapshot.syncKey) {
+                screenModel.update(snapshot: snapshot)
+            }
+            .stallyScreenBackground()
+    }
+
+    init(
+        snapshot: StallyLibrarySnapshot,
+        navigationNamespace: Namespace.ID
+    ) {
+        self.snapshot = snapshot
+        self.navigationNamespace = navigationNamespace
+        _screenModel = State(
+            initialValue: .init(snapshot: snapshot)
+        )
     }
 }
+
 private extension StallyHomeView {
-    // swiftlint:disable closure_body_length
-    var screenContent: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
-            if items.isEmpty {
-                emptyState
-            } else {
-                StallyItemQueryControls(
-                    query: $query,
-                    displayedCount: displayedItems.count,
+    var queryBinding: Binding<ItemListQuery> {
+        .init(
+            get: {
+                screenModel.query
+            },
+            set: { newValue in
+                screenModel.query = newValue
+            }
+        )
+    }
+
+    var querySearchTextBinding: Binding<String> {
+        .init(
+            get: {
+                screenModel.query.searchText
+            },
+            set: { newValue in
+                screenModel.query.searchText = newValue
+            }
+        )
+    }
+
+    @ViewBuilder
+    var content: some View {
+        if screenModel.snapshot.activeItems.isEmpty {
+            ScrollView {
+                VStack(alignment: .leading, spacing: StallyDesign.Layout.sectionSpacing) {
+                    emptyHero
+                    emptyState
+                }
+                .padding(.horizontal, StallyDesign.Layout.screenPadding)
+                .padding(.top, 12)
+                .safeAreaPadding(.bottom, 28)
+            }
+            .contentMargins(.bottom, 28, for: .scrollContent)
+        } else {
+            ScrollView {
+                VStack(alignment: .leading, spacing: StallyDesign.Layout.sectionSpacing) {
+                    heroCarousel
+                    browseSection
+                    utilityPanels
+                }
+                .padding(.horizontal, StallyDesign.Layout.screenPadding)
+                .padding(.top, 12)
+                .safeAreaPadding(.bottom, 28)
+            }
+            .contentMargins(.bottom, 28, for: .scrollContent)
+            .searchable(
+                text: querySearchTextBinding,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "Search items"
+            )
+        }
+    }
+
+    var browseSection: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            StallySectionHeader(
+                eyebrow: "Browse",
+                title: "A calm inventory of what still matters",
+                subtitle: "Filter the list, then jump straight into today’s action or a deeper look."
+            )
+
+            StallyItemQueryControls(
+                query: queryBinding,
+                displayedCount: screenModel.displayedItems.count,
+                usesCompactLayout: usesCompactLayout
+            )
+
+            quickFilters
+
+            VStack(alignment: .leading, spacing: 12) {
+                StallySectionHeader(
+                    eyebrow: nil,
+                    title: "Collection snapshot",
+                    subtitle: "These numbers update from the current search and filter state."
+                )
+
+                StallyMetricGrid(
+                    metrics: screenModel.homeSummaryMetrics,
                     usesCompactLayout: usesCompactLayout
                 )
-                homeQuickFilters
-                homeSummaryCard
-                reviewEntryCard
-                insightsEntryCard
-                archiveEntryCard
-                backupEntryCard
+            }
 
-                if displayedItems.isEmpty {
-                    filteredEmptyState
-                } else {
-                    ForEach(displayedItems, id: \.id) { item in
-                        StallyItemCard(
-                            item: item,
-                            summary: ItemInsightsCalculator.summary(for: item),
-                            onOpen: {
-                                actions.onOpenItem(item.id)
-                            },
-                            onToggleTodayMark: {
-                                actions.onToggleTodayMark(item)
-                            }
-                        )
+            if screenModel.displayedItems.isEmpty {
+                filteredEmptyState
+            } else {
+                LazyVStack(spacing: 16) {
+                    ForEach(screenModel.displayedItems, id: \.id) { item in
+                        itemCard(item)
                     }
                 }
             }
         }
     }
-    // swiftlint:enable closure_body_length
 
-    @ToolbarContentBuilder
-    var homeToolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarLeading) {
-            Button("Archive", systemImage: "archivebox") {
-                actions.onOpenArchive()
+    var heroCarousel: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            StallySectionHeader(
+                eyebrow: "Today",
+                title: "Recently active",
+                subtitle: "The items you touched most recently stay surfaced at the top."
+            )
+
+            TabView {
+                ForEach(screenModel.recentItems, id: \.id) { item in
+                    NavigationLink(
+                        value: StallyAppModel.StackDestination.item(item.id)
+                    ) {
+                        heroCard(item)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .frame(height: usesCompactLayout ? StallyDesign.Layout.heroCompactHeight : StallyDesign.Layout.heroHeight)
+            .tabViewStyle(.page)
+        }
+    }
+
+    func heroCard(
+        _ item: Item
+    ) -> some View {
+        let summary = ItemInsightsCalculator.summary(for: item)
+
+        return ZStack(alignment: .bottomLeading) {
+            heroArtwork(for: item)
+            .overlay {
+                RoundedRectangle(
+                    cornerRadius: StallyDesign.Radius.panel,
+                    style: .continuous
+                )
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            .clear,
+                            Color.black.opacity(0.14),
+                            Color.black.opacity(0.56)
+                        ],
+                        startPoint: .center,
+                        endPoint: .bottom
+                    )
+                )
+            }
+            .matchedTransitionSource(
+                id: item.id,
+                in: navigationNamespace
+            )
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("RECENTLY ACTIVE")
+                    .font(.caption.weight(.bold))
+                    .tracking(1.6)
+                    .foregroundStyle(StallyDesign.Palette.accentSoft)
+
+                Text(item.name)
+                    .font(StallyDesign.Typography.hero)
+                    .foregroundStyle(.white)
+                    .lineLimit(2)
+
+                HStack(spacing: 8) {
+                    StallyTag(
+                        title: item.category.title,
+                        tone: .quiet
+                    )
+
+                    Text("\(summary.totalMarks) marks")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.84))
+                }
+            }
+            .padding(22)
+        }
+        .frame(maxWidth: .infinity)
+        .clipShape(
+            RoundedRectangle(
+                cornerRadius: StallyDesign.Radius.panel,
+                style: .continuous
+            )
+        )
+    }
+
+    var quickFilters: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                ForEach(screenModel.availableQuickFilters) { option in
+                    Button(option.title) {
+                        withAnimation(StallyDesign.Motion.quick) {
+                            screenModel.selectQuickFilter(option.filter)
+                        }
+                    }
+                    .buttonStyle(
+                        StallyChipButtonStyle(
+                            isSelected: option.filter == screenModel.query.quickFilter
+                        )
+                    )
+                }
+            }
+            .scrollTargetLayout()
+        }
+        .scrollTargetBehavior(.viewAligned)
+    }
+
+    var utilityPanels: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            StallySectionHeader(
+                eyebrow: "Paths",
+                title: "Jump into the next workflow",
+                subtitle: "Review, insight reading, archive cleanup, and backups stay one tap away."
+            )
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 14) {
+                    ForEach(screenModel.utilityPanels) { panel in
+                        utilityCard(
+                            title: panel.title,
+                            value: panel.value,
+                            supporting: panel.supporting,
+                            metrics: panel.metrics
+                        ) {
+                            openUtility(panel.destination)
+                        }
+                    }
+                }
+                .padding(.bottom, 4)
+                .scrollTargetLayout()
+            }
+            .scrollTargetBehavior(.viewAligned)
+        }
+    }
+
+    func utilityCard(
+        title: String,
+        value: String,
+        supporting: String,
+        metrics: [StallyMetricGrid.Metric],
+        action: @escaping () -> Void
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(title)
+                    .font(StallyDesign.Typography.cardTitle)
+                    .foregroundStyle(StallyDesign.Palette.ink)
+
+                Spacer(minLength: 10)
+
+                Text(value)
+                    .font(.title2.weight(.semibold))
+                    .foregroundStyle(StallyDesign.Palette.accent)
+            }
+
+            Text(supporting)
+                .font(StallyDesign.Typography.caption)
+                .foregroundStyle(StallyDesign.Palette.mutedInk)
+
+            StallyMetricGrid(
+                metrics: metrics,
+                usesCompactLayout: true
+            )
+
+            Button("Open") {
+                action()
+            }
+            .buttonStyle(.glassProminent)
+            .tint(StallyDesign.Palette.accent)
+        }
+        .frame(width: 296, alignment: .leading)
+        .stallyPanel(.base)
+    }
+
+    func itemCard(
+        _ item: Item
+    ) -> some View {
+        let summary = ItemInsightsCalculator.summary(for: item)
+
+        return VStack(alignment: .leading, spacing: 14) {
+            NavigationLink(
+                value: StallyAppModel.StackDestination.item(item.id)
+            ) {
+                HStack(alignment: .top, spacing: 16) {
+                    StallyItemArtworkView(
+                        photoData: item.photoData,
+                        category: item.category,
+                        width: 88,
+                        height: 108
+                    )
+                    .matchedTransitionSource(
+                        id: item.id,
+                        in: navigationNamespace
+                    )
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(item.name)
+                            .font(StallyDesign.Typography.cardTitle)
+                            .foregroundStyle(StallyDesign.Palette.ink)
+
+                        StallyTag(
+                            title: item.category.title,
+                            tone: .elevated
+                        )
+
+                        Text(markSupportingText(for: summary))
+                            .font(StallyDesign.Typography.caption)
+                            .foregroundStyle(StallyDesign.Palette.mutedInk)
+
+                        HStack(spacing: 10) {
+                            statPill(
+                                title: "Marks",
+                                value: "\(summary.totalMarks)"
+                            )
+                            statPill(
+                                title: "Last",
+                                value: lastMarkedValue(for: summary)
+                            )
+                        }
+                    }
+
+                    Spacer(minLength: .zero)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(.rect)
+            }
+            .buttonStyle(.plain)
+            .contextMenu {
+                if let itemLinkURL = itemLinkURL(for: item) {
+                    Button("Copy Item Link", systemImage: "link") {
+                        UIPasteboard.general.url = itemLinkURL
+                    }
+                }
+            }
+
+            if summary.isMarkedToday {
+                Button {
+                    appModel.performAction {
+                        try StallyAppActionService.toggleTodayMark(
+                            context: context,
+                            item: item
+                        )
+                    }
+                } label: {
+                    Label(
+                        "Marked Today",
+                        systemImage: "checkmark.circle.fill"
+                    )
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(StallySecondaryButtonStyle())
+            } else {
+                Button {
+                    appModel.performAction {
+                        try StallyAppActionService.toggleTodayMark(
+                            context: context,
+                            item: item
+                        )
+                    }
+                } label: {
+                    Label(
+                        "Mark Today",
+                        systemImage: "circle.fill"
+                    )
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(StallyPrimaryButtonStyle())
             }
         }
-        ToolbarItem(placement: .topBarTrailing) {
-            Button("Settings", systemImage: "gearshape") {
-                actions.onOpenSettings()
-            }
+        .stallyPanel(summary.isMarkedToday ? .quiet : .base)
+    }
+
+    func statPill(
+        title: String,
+        value: String
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title.uppercased())
+                .font(.caption2.weight(.bold))
+                .tracking(1.2)
+                .foregroundStyle(StallyDesign.Palette.mutedInk)
+            Text(value)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(StallyDesign.Palette.ink)
         }
-        ToolbarItem(placement: .topBarTrailing) {
-            Button("Add", systemImage: "plus") {
-                actions.onCreateItem()
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(
+            Capsule(style: .continuous)
+                .fill(StallyDesign.Palette.elevatedSurface)
+        )
+    }
+
+    var emptyHero: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("STALLY")
+                .font(.caption.weight(.bold))
+                .tracking(2)
+                .foregroundStyle(StallyDesign.Palette.accentSoft)
+
+            Text("Build a quieter ritual around the things you keep choosing.")
+                .font(StallyDesign.Typography.hero)
+                .foregroundStyle(.white)
+
+            Text("Add the first item, seed sample data, or open backup tools to restore an older collection.")
+                .font(StallyDesign.Typography.body)
+                .foregroundStyle(.white.opacity(0.82))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .stallyPanel(.accent, padding: 22)
+    }
+
+    var emptyState: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            StallySectionHeader(
+                eyebrow: "First steps",
+                title: "Nothing is in the library yet",
+                subtitle: "Start with one item you reach for often, then mark it once when you chose it today."
+            )
+
+            Button("Add Your First Item") {
+                appModel.presentCreateEditor()
             }
+            .buttonStyle(StallyPrimaryButtonStyle())
+
+            Button("Try Sample Items") {
+                appModel.performAction {
+                    try StallyAppActionService.seedSampleData(
+                        context: context
+                    )
+                }
+            }
+            .buttonStyle(StallySecondaryButtonStyle())
+
+            Button("Open Backup Center") {
+                appModel.openBackup(in: .library)
+            }
+            .buttonStyle(StallySecondaryButtonStyle())
+        }
+        .stallyPanel(.base)
+    }
+
+    var filteredEmptyState: some View {
+        ContentUnavailableView(
+            "No Matching Items",
+            systemImage: "line.3.horizontal.decrease.circle",
+            description: Text("Try a different search term, category, or quick filter.")
+        )
+        .frame(maxWidth: .infinity)
+        .stallyPanel(.quiet)
+    }
+
+    var addButton: some View {
+        Button {
+            appModel.presentCreateEditor()
+        } label: {
+            Image(systemName: "plus")
+                .font(.headline.weight(.semibold))
+        }
+        .buttonStyle(.glassProminent)
+        .tint(StallyDesign.Palette.accent)
+        .matchedTransitionSource(
+            id: "create-item",
+            in: navigationNamespace
+        )
+    }
+
+    var settingsButton: some View {
+        Button {
+            appModel.openSettings(in: .library)
+        } label: {
+            Image(systemName: "slider.horizontal.3")
+                .font(.headline.weight(.semibold))
+                .foregroundStyle(StallyDesign.Palette.ink)
         }
     }
 
@@ -133,449 +525,121 @@ private extension StallyHomeView {
         horizontalSizeClass != .regular
     }
 
-    var displayedItems: [Item] {
-        ItemInsightsCalculator.items(
-            from: items,
-            matching: query,
-            kind: .active
-        )
-    }
-
-    var displayedSummary: ItemInsightsCalculator.ActiveCollectionSummary {
-        ItemInsightsCalculator.activeSummary(from: displayedItems)
-    }
-
-    var reviewRouteURL: URL? {
-        StallyDeepLinking.codec().preferredURL(for: .review)
-    }
-
-    var archiveRouteURL: URL? {
-        StallyDeepLinking.codec().preferredURL(for: .archive)
-    }
-
-    var insightsRouteURL: URL? {
-        StallyDeepLinking.codec().preferredURL(for: .insights)
-    }
-
-    var backupRouteURL: URL? {
-        StallyDeepLinking.codec().preferredURL(for: .backup)
-    }
-
-    var insightsActivitySummary: CollectionActivitySummary {
-        ItemInsightsCalculator.activitySummary(
-            from: items,
-            range: .last30Days
-        )
-    }
-
-    var insightsStreakSummary: CollectionStreakSummary {
-        ItemInsightsCalculator.streakSummary(
-            from: items,
-            range: .last30Days
-        )
-    }
-
-    var insightsHealthSummary: CollectionHealthSummary {
-        ItemInsightsCalculator.healthSummary(
-            from: items,
-            range: .last30Days,
-            includeArchivedItems: false
-        )
-    }
-
-    var homeSummaryMetrics: [StallyMetricGrid.Metric] {
-        [
-            .init(
-                title: StallyLocalization.string("Items"),
-                value: "\(displayedSummary.totalItems)"
-            ),
-            .init(
-                title: StallyLocalization.string("Marked Today"),
-                value: "\(displayedSummary.markedTodayCount)"
-            ),
-            .init(
-                title: StallyLocalization.string("Untouched"),
-                value: "\(displayedSummary.neverMarkedCount)"
-            ),
-            .init(
-                title: StallyLocalization.string("Total Marks"),
-                value: "\(displayedSummary.totalMarks)"
-            )
-        ]
-    }
-
-    var reviewMetrics: [StallyMetricGrid.Metric] {
-        let metrics = [
-            StallyMetricGrid.Metric(
-                title: StallyLocalization.string("First Mark"),
-                value: "\(reviewSummary.untouchedCount)"
-            ),
-            .init(
-                title: StallyLocalization.string("Dormant"),
-                value: "\(reviewSummary.dormantCount)"
-            ),
-            .init(
-                title: StallyLocalization.string("Recovery"),
-                value: "\(reviewSummary.recoveryCandidateCount)"
-            )
-        ]
-
-        guard !reviewPreferences.showCompletedSections else {
-            return metrics
-        }
-
-        return metrics.filter { $0.value != "0" }
-    }
-
-    var archiveMetrics: [StallyMetricGrid.Metric] {
-        [
-            .init(
-                title: StallyLocalization.string("Items"),
-                value: "\(archiveSummary.totalItems)"
-            ),
-            .init(
-                title: StallyLocalization.string("With History"),
-                value: "\(archiveSummary.itemsWithMarksCount)"
-            ),
-            .init(
-                title: StallyLocalization.string("Saved Marks"),
-                value: "\(archiveSummary.totalMarks)"
-            ),
-            .init(
-                title: StallyLocalization.string("Latest Archive"),
-                value: archiveLatestDateTitle
-            )
-        ]
-    }
-
-    var insightsMetrics: [StallyMetricGrid.Metric] {
-        [
-            .init(
-                title: StallyLocalization.string("Marks (30d)"),
-                value: "\(insightsActivitySummary.totalMarks)"
-            ),
-            .init(
-                title: StallyLocalization.string("Active Days"),
-                value: "\(insightsActivitySummary.activeDays)"
-            ),
-            .init(
-                title: StallyLocalization.string("Current Streak"),
-                value: "\(insightsStreakSummary.currentStreakDays)"
-            ),
-            .init(
-                title: StallyLocalization.string("With History"),
-                value: "\(insightsHealthSummary.itemsWithHistory)"
-            )
-        ]
-    }
-
-    var backupMetrics: [StallyMetricGrid.Metric] {
-        [
-            .init(
-                title: StallyLocalization.string("Library"),
-                value: "\(items.count)"
-            ),
-            .init(
-                title: StallyLocalization.string("Active"),
-                value: "\(displayedSummary.totalItems)"
-            ),
-            .init(
-                title: StallyLocalization.string("Archived"),
-                value: "\(archiveSummary.totalItems)"
-            ),
-            .init(
-                title: StallyLocalization.string("Marks"),
-                value: "\(displayedSummary.totalMarks + archiveSummary.totalMarks)"
-            )
-        ]
-    }
-
-    var homeQuickFilters: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            MHGlassContainer(spacing: theme.spacing.control) {
-                HStack(spacing: theme.spacing.control) {
-                    ForEach(availableQuickFilters) { option in
-                        Button(option.title) {
-                            query.quickFilter = option.filter
-                        }
-                        .buttonStyle(
-                            option.filter == query.quickFilter
-                                ? .mhPrimary
-                                : .mhSecondary
-                        )
-                        .mhGlassEffectID(
-                            option.id,
-                            in: quickFilterNamespace
-                        )
-                    }
-                }
-                .padding(.vertical, 2)
-            }
-        }
-    }
-
-    var homeSummaryCard: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            Text("Collection Snapshot")
-                .mhRowTitle()
-
-            Text("The current Home view balances today's choices against what still has room to accumulate.")
-                .mhRowSupporting()
-
-            StallyMetricGrid(
-                metrics: homeSummaryMetrics,
-                usesCompactLayout: usesCompactLayout
+    func lastMarkedValue(
+        for summary: ItemSummary
+    ) -> String {
+        if let lastMarkedAt = summary.lastMarkedAt {
+            return lastMarkedAt.formatted(
+                date: .abbreviated,
+                time: .omitted
             )
         }
-        .mhSurfaceInset()
-        .mhSurface(role: .muted)
+
+        return StallyLocalization.string("Not yet")
     }
 
-    var reviewEntryCard: some View {
-        StallyHomeEntryCard(
-            title: StallyLocalization.string("Needs Review"),
-            value: "\(reviewSummary.totalReviewCount)",
-            supporting: reviewCardSupportingText,
-            metrics: reviewMetrics,
-            primaryActionTitle: StallyLocalization.string("Open Review"),
-            routeURL: reviewRouteURL,
-            actionTip: openReviewTip,
-            usesCompactLayout: usesCompactLayout,
-            onOpen: actions.onOpenReview
+    func markSupportingText(
+        for summary: ItemSummary
+    ) -> String {
+        if summary.isMarkedToday {
+            return StallyLocalization.string("Tap again if today should no longer count.")
+        }
+
+        return StallyLocalization.string("One mark is enough for today.")
+    }
+
+    func itemLinkURL(
+        for item: Item
+    ) -> URL? {
+        StallyDeepLinking.codec().preferredURL(
+            for: .item(item.id)
         )
     }
 
-    var archiveEntryCard: some View {
-        StallyHomeEntryCard(
-            title: StallyLocalization.string("Archive"),
-            value: "\(archiveSummary.totalItems)",
-            supporting: archiveCardSupportingText,
-            metrics: archiveMetrics,
-            primaryActionTitle: StallyLocalization.string("Open Archive"),
-            routeURL: archiveRouteURL,
-            usesCompactLayout: usesCompactLayout,
-            onOpen: actions.onOpenArchive
-        )
-    }
-
-    var insightsEntryCard: some View {
-        StallyHomeEntryCard(
-            title: StallyLocalization.string("Insights"),
-            value: "\(insightsActivitySummary.totalMarks)",
-            supporting: insightsCardSupportingText,
-            metrics: insightsMetrics,
-            primaryActionTitle: StallyLocalization.string("Open Insights"),
-            routeURL: insightsRouteURL,
-            usesCompactLayout: usesCompactLayout,
-            onOpen: actions.onOpenInsights
-        )
-    }
-
-    var backupEntryCard: some View {
-        StallyHomeEntryCard(
-            title: StallyLocalization.string("Backup Center"),
-            value: "\(items.count)",
-            supporting: backupCardSupportingText,
-            metrics: backupMetrics,
-            primaryActionTitle: StallyLocalization.string("Open Backup Center"),
-            routeURL: backupRouteURL,
-            usesCompactLayout: usesCompactLayout,
-            onOpen: actions.onOpenBackup
-        )
-    }
-
-    var emptyState: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
-            ContentUnavailableView(
-                "Start with a few pieces you actually reach for.",
-                systemImage: "hanger",
-                description: Text(
-                    """
-                    Clothing, shoes, bags, notebooks, or one small other category are enough to begin.
-                    Add an item, mark it once when you chose it today, and let the accumulation build softly over time.
-                    """
+    @ViewBuilder
+    func heroArtwork(
+        for item: Item
+    ) -> some View {
+        if let photoData = item.photoData,
+           let image = UIImage(data: photoData) {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipShape(
+                    RoundedRectangle(
+                        cornerRadius: StallyDesign.Radius.panel,
+                        style: .continuous
+                    )
                 )
-            )
-            .mhEmptyStateLayout()
-
-            MHGlassContainer(spacing: theme.spacing.control) {
-                VStack(alignment: .leading, spacing: theme.spacing.control) {
-                    Button("Add Your First Item", systemImage: "plus.circle.fill") {
-                        actions.onCreateItem()
-                    }
-                    .buttonStyle(.mhPrimary)
-                    .mhGlassEffectID(
-                        StallyHomeEmptyStateActionID.addFirstItem,
-                        in: emptyStateActionNamespace
+        } else {
+            ZStack {
+                RoundedRectangle(
+                    cornerRadius: StallyDesign.Radius.panel,
+                    style: .continuous
+                )
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            StallyDesign.artworkCool,
+                            StallyDesign.artworkWarm,
+                            StallyDesign.Palette.accentSoft
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
-                    .popoverTip(addFirstItemTip, arrowEdge: .top)
+                )
 
-                    Button("Try Sample Items", systemImage: "sparkles.rectangle.stack") {
-                        actions.onSeedSampleData()
-                    }
-                    .buttonStyle(.mhSecondary)
-                    .mhGlassEffectID(
-                        StallyHomeEmptyStateActionID.trySampleItems,
-                        in: emptyStateActionNamespace
-                    )
-
-                    Button("Restore From Backup", systemImage: "externaldrive.badge.icloud") {
-                        actions.onOpenBackup()
-                    }
-                    .buttonStyle(.mhSecondary)
-                    .mhGlassEffectID(
-                        StallyHomeEmptyStateActionID.restoreFromBackup,
-                        in: emptyStateActionNamespace
-                    )
-                }
+                Image(systemName: item.category.symbolName)
+                    .font(.system(size: 88, weight: .semibold))
+                    .foregroundStyle(StallyDesign.Palette.tint.opacity(0.88))
             }
-
-            Text("Sample items only load when Home is empty, so you can safely try them once.")
-                .mhRowSupporting()
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .mhSurfaceInset()
-        .mhSurface()
     }
 
-    var filteredEmptyState: some View {
-        ContentUnavailableView(
-            "No Matching Items",
-            systemImage: "line.3.horizontal.decrease.circle",
-            description: Text("Try a different search, category, or sort option.")
-        )
-        .mhEmptyStateLayout()
-        .mhSurfaceInset()
-        .mhSurface(role: .muted)
-    }
-
-    var availableQuickFilters: [StallyHomeQuickFilterOption] {
-        [
-            .init(
-                id: .all,
-                title: StallyLocalization.string("All"),
-                filter: nil
-            ),
-            .init(
-                id: .openToday,
-                title: StallyLocalization.string("Open Today"),
-                filter: .unmarkedOnReferenceDay
-            ),
-            .init(
-                id: .markedToday,
-                title: StallyLocalization.string("Marked Today"),
-                filter: .markedOnReferenceDay
-            ),
-            .init(
-                id: .neverMarked,
-                title: StallyLocalization.string("Never Marked"),
-                filter: .withoutHistory
-            )
-        ]
-    }
-
-    var archiveLatestDateTitle: String {
-        archiveSummary.lastArchivedAt?.formatted(date: .abbreviated, time: .omitted)
-            ?? StallyLocalization.string("None")
-    }
-
-    var reviewCardSupportingText: String {
-        if reviewSummary.totalReviewCount == .zero,
-           reviewPreferences.showCompletedSections == false {
-            return StallyLocalization.string(
-                """
-                All review lanes are clear right now.
-                Turn on completed sections in Settings to keep zero-count lanes visible.
-                """
-            )
+    func openUtility(
+        _ destination: StallyHomeScreenModel.UtilityDestination
+    ) {
+        switch destination {
+        case .review:
+            appModel.selectedTab = .review
+        case .insights:
+            appModel.selectedTab = .insights
+        case .archive:
+            appModel.selectedTab = .archive
+        case .backup:
+            appModel.openBackup(in: .library)
         }
-
-        return StallyLocalization.string(
-            "Surface items that need a first mark, feel dormant, or may deserve a return from Archive."
-        )
-    }
-
-    var archiveCardSupportingText: String {
-        if archiveSummary.totalItems == .zero {
-            return StallyLocalization.string(
-                "Archived items will gather here once you clear space from Home."
-            )
-        }
-
-        return StallyLocalization.string(
-            "Keep preserved favorites close without letting them crowd the active list."
-        )
-    }
-
-    var insightsCardSupportingText: String {
-        if insightsActivitySummary.totalMarks == .zero {
-            return StallyLocalization.string(
-                "Once marks start to accumulate, Insights will map cadence, trends, and coverage across the collection."
-            )
-        }
-
-        return StallyLocalization.string(
-            "Read the last 30 days as a pattern: activity density, streaks, and how much of Home already has history."
-        )
-    }
-
-    var backupCardSupportingText: String {
-        if items.isEmpty {
-            return StallyLocalization.string(
-                "Restore a previous snapshot or keep an export ready before you start tracking again."
-            )
-        }
-
-        return StallyLocalization.string(
-            "Export the full library, preview imported snapshots, and keep higher-risk restore actions in one place."
-        )
-    }
-
-    var addFirstItemTip: (any Tip)? {
-        if items.isEmpty {
-            return StallyTips.AddFirstItemTip()
-        }
-
-        return nil
-    }
-
-    var openReviewTip: (any Tip)? {
-        if reviewSummary.totalReviewCount > .zero {
-            return StallyTips.OpenReviewTip()
-        }
-
-        return nil
     }
 }
-@available(iOS 18.0, *)
+
+@available(iOS 26.0, *)
 #Preview(traits: .modifier(StallySampleData())) {
     @Previewable @Query var items: [Item]
+    @Previewable @Namespace var namespace
 
     NavigationStack {
         StallyHomeView(
-            items: ItemInsightsCalculator.homeSort(
-                items: ItemInsightsCalculator.activeItems(from: items)
+            snapshot: StallyLibrarySnapshotBuilder.build(
+                items: items,
+                reviewPreferences: .init()
             ),
-            reviewPreferences: .init(),
-            reviewSummary: ItemReviewCalculator.summary(from: items),
-            archiveSummary: ItemInsightsCalculator.archiveSummary(
-                from: ItemInsightsCalculator.archivedItems(from: items)
-            ),
-            actions: .noop
+            navigationNamespace: namespace
         )
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 26.0, *)
 #Preview("Empty Home", traits: .modifier(StallyEmptySampleData())) {
+    @Previewable @Namespace var namespace
+
     NavigationStack {
         StallyHomeView(
-            items: [],
-            reviewPreferences: .init(),
-            reviewSummary: ItemReviewCalculator.summary(from: []),
-            archiveSummary: ItemInsightsCalculator.archiveSummary(from: []),
-            actions: .noop
+            snapshot: StallyLibrarySnapshotBuilder.build(
+                items: [],
+                reviewPreferences: .init()
+            ),
+            navigationNamespace: namespace
         )
     }
 }
-// swiftlint:enable file_length

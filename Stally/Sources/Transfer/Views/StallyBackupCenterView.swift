@@ -6,6 +6,8 @@ import TipKit
 import UniformTypeIdentifiers
 
 struct StallyBackupCenterView: View {
+    @Environment(\.modelContext)
+    var context
     @Environment(\.mhTheme)
     private var theme
     @Environment(\.horizontalSizeClass)
@@ -15,9 +17,6 @@ struct StallyBackupCenterView: View {
     @State var state = StallyBackupCenterState()
 
     let items: [Item]
-    let onMergeImport: (StallyBackupSnapshot) throws -> StallyBackupImportResult
-    let onReplaceImport: (StallyBackupSnapshot) throws -> StallyBackupImportResult
-    let onDeleteAll: () throws -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.group) {

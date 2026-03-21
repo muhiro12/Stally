@@ -1,126 +1,214 @@
-import MHUI
 import PhotosUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
 
 struct StallyItemEditorView: View {
-    enum Mode {
-        case create
-        case edit(Item)
-    }
+    typealias Mode = StallyItemEditorModel.Mode
 
-    @Environment(\.dismiss)
-    private var dismiss
+    @Environment(StallyAppModel.self)
+    private var appModel
     @Environment(\.modelContext)
     private var context
 
-    @State private var name: String
-    @State private var category: ItemCategory
-    @State private var note: String
-    @State private var photoData: Data?
+    @State private var model: StallyItemEditorModel
     @State private var selectedPhotoItem: PhotosPickerItem?
-    @State private var errorMessage: String?
-    @State private var isDeleteConfirmationPresented = false
 
-    private let mode: Mode
-    private let onComplete: (UUID?) -> Void
-    private let onDelete: (UUID) -> Void
+    let navigationNamespace: Namespace.ID
 
     var body: some View {
         Form {
-            itemSection
+            overviewSection
+            detailsSection
             photoSection
-            noteEditorSection
+            noteSection
 
-            if existingItem != nil {
+            if model.existingItem != nil {
                 dangerZoneSection
             }
         }
-        .mhFormChrome(
-            title: Text(navigationTitle),
-            subtitle: Text(screenSubtitle)
-        )
+        .navigationTitle(model.navigationTitle)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button("Cancel") {
-                    dismiss()
+                    attemptDismiss()
                 }
             }
+
             ToolbarItem(placement: .topBarTrailing) {
-                Button(saveButtonTitle) {
+                Button("Save") {
                     save()
                 }
                 .bold()
-                .disabled(trimmedName.isEmpty)
+                .disabled(!model.canSave)
             }
         }
+        .interactiveDismissDisabled(model.hasChanges)
         .task(id: selectedPhotoItem) {
-            await loadSelectedPhoto()
+            guard let selectedPhotoItem else {
+                return
+            }
+
+            await model.loadPhotoData {
+                try await selectedPhotoItem.loadTransferable(type: Data.self)
+            }
         }
         .alert(
             "Unable to Complete This Action",
-            isPresented: isErrorPresented
+            isPresented: errorPresentedBinding
         ) {
             Button("OK", role: .cancel) {
-                errorMessage = nil
+                model.dismissError()
             }
         } message: {
-            Text(errorMessage ?? "")
+            Text(model.errorMessage ?? "")
+        }
+        .confirmationDialog(
+            "Discard changes?",
+            isPresented: discardConfirmationBinding,
+            titleVisibility: .visible
+        ) {
+            Button("Discard", role: .destructive) {
+                model.dismissDiscardConfirmation()
+                appModel.dismissEditor()
+            }
+            Button("Keep Editing", role: .cancel) {
+                model.dismissDiscardConfirmation()
+            }
         }
         .confirmationDialog(
             "Delete Item",
-            isPresented: $isDeleteConfirmationPresented,
+            isPresented: deleteConfirmationBinding,
             titleVisibility: .visible
         ) {
             Button("Delete Item", role: .destructive) {
                 deleteItem()
             }
             Button("Cancel", role: .cancel) {
-                // no-op
+                model.dismissDeleteConfirmation()
             }
         } message: {
             Text("This permanently removes the item and all of its marks.")
         }
+        .background(StallyDesign.backgroundGradient.ignoresSafeArea())
     }
 
     init(
         mode: Mode,
-        onComplete: @escaping (UUID?) -> Void,
-        onDelete: @escaping (UUID) -> Void
+        navigationNamespace: Namespace.ID
     ) {
-        self.mode = mode
-        self.onComplete = onComplete
-        self.onDelete = onDelete
-
-        switch mode {
-        case .create:
-            _name = State(initialValue: "")
-            _category = State(initialValue: .other)
-            _note = State(initialValue: "")
-            _photoData = State(initialValue: nil)
-        case .edit(let item):
-            _name = State(initialValue: item.name)
-            _category = State(initialValue: item.category)
-            _note = State(initialValue: item.note ?? "")
-            _photoData = State(initialValue: item.photoData)
-        }
+        _model = State(
+            initialValue: .init(mode: mode)
+        )
+        self.navigationNamespace = navigationNamespace
     }
 }
 
 private extension StallyItemEditorView {
-    var itemSection: some View {
-        Section("Item") {
-            TextField("Name", text: $name)
+    var nameBinding: Binding<String> {
+        .init(
+            get: {
+                model.name
+            },
+            set: { newValue in
+                model.name = newValue
+            }
+        )
+    }
 
-            Picker("Category", selection: $category) {
+    var categoryBinding: Binding<ItemCategory> {
+        .init(
+            get: {
+                model.category
+            },
+            set: { newValue in
+                model.category = newValue
+            }
+        )
+    }
+
+    var noteBinding: Binding<String> {
+        .init(
+            get: {
+                model.note
+            },
+            set: { newValue in
+                model.note = newValue
+            }
+        )
+    }
+
+    var deleteConfirmationBinding: Binding<Bool> {
+        .init(
+            get: {
+                model.isDeleteConfirmationPresented
+            },
+            set: { newValue in
+                if newValue {
+                    model.requestDeleteConfirmation()
+                } else {
+                    model.dismissDeleteConfirmation()
+                }
+            }
+        )
+    }
+
+    var discardConfirmationBinding: Binding<Bool> {
+        .init(
+            get: {
+                model.isDiscardConfirmationPresented
+            },
+            set: { newValue in
+                if newValue {
+                    _ = model.requestDiscardConfirmationIfNeeded()
+                } else {
+                    model.dismissDiscardConfirmation()
+                }
+            }
+        )
+    }
+
+    var errorPresentedBinding: Binding<Bool> {
+        .init(
+            get: {
+                model.errorMessage != nil
+            },
+            set: { isPresented in
+                if !isPresented {
+                    model.dismissError()
+                }
+            }
+        )
+    }
+
+    var overviewSection: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(model.navigationTitle)
+                    .font(StallyDesign.Typography.hero)
+                    .foregroundStyle(StallyDesign.Palette.ink)
+
+                Text(model.screenSubtitle)
+                    .font(StallyDesign.Typography.body)
+                    .foregroundStyle(StallyDesign.Palette.mutedInk)
+            }
+            .padding(.vertical, 8)
+        }
+    }
+
+    var detailsSection: some View {
+        Section("Item") {
+            TextField("Name", text: nameBinding)
+
+            Picker("Category", selection: categoryBinding) {
                 ForEach(ItemCategory.allCases, id: \.self) { category in
                     Text(category.title)
                         .tag(category)
                 }
             }
 
-            if trimmedName.isEmpty {
+            if model.trimmedName.isEmpty {
                 Text("Name is required.")
                     .font(.footnote)
                     .foregroundStyle(.red)
@@ -129,15 +217,15 @@ private extension StallyItemEditorView {
     }
 
     var photoSection: some View {
-        let currentPhotoButtonTitle = photoButtonTitle
+        let photoButtonTitle = model.photoButtonTitle
 
         return Section("Photo") {
             HStack(spacing: 16) {
                 StallyItemArtworkView(
-                    photoData: photoData,
-                    category: category,
-                    width: 92,
-                    height: 112
+                    photoData: model.photoData,
+                    category: model.category,
+                    width: 96,
+                    height: 118
                 )
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -147,15 +235,15 @@ private extension StallyItemEditorView {
                         preferredItemEncoding: .compatible
                     ) {
                         Label(
-                            currentPhotoButtonTitle,
+                            photoButtonTitle,
                             systemImage: "photo.on.rectangle"
                         )
                     }
-                    .buttonStyle(.mhSecondary)
+                    .buttonStyle(StallySecondaryButtonStyle())
 
-                    if photoData != nil {
+                    if model.photoData != nil {
                         Button("Remove Photo", role: .destructive) {
-                            photoData = nil
+                            model.removePhoto()
                             selectedPhotoItem = nil
                         }
                     }
@@ -165,172 +253,87 @@ private extension StallyItemEditorView {
         }
     }
 
-    var noteEditorSection: some View {
+    var noteSection: some View {
         Section("Note") {
-            TextEditor(text: $note)
-                .frame(minHeight: 160)
+            TextEditor(text: noteBinding)
+                .frame(minHeight: 180)
         }
     }
 
     var dangerZoneSection: some View {
         Section("Danger Zone") {
             Button("Delete Item", role: .destructive) {
-                isDeleteConfirmationPresented = true
+                model.requestDeleteConfirmation()
             }
         }
     }
 
-    var existingItem: Item? {
-        switch mode {
-        case .create:
-            nil
-        case .edit(let item):
-            item
-        }
-    }
-
-    var navigationTitle: String {
-        switch mode {
-        case .create:
-            StallyLocalization.string("Add Item")
-        case .edit:
-            StallyLocalization.string("Edit Item")
-        }
-    }
-
-    var saveButtonTitle: String {
-        switch mode {
-        case .create:
-            StallyLocalization.string("Save")
-        case .edit:
-            StallyLocalization.string("Save")
-        }
-    }
-
-    var trimmedName: String {
-        name.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    var photoButtonTitle: String {
-        photoData == nil
-            ? StallyLocalization.string("Choose Photo")
-            : StallyLocalization.string("Replace Photo")
-    }
-
-    var screenSubtitle: String {
-        switch mode {
-        case .create:
-            StallyLocalization.string(
-                "Create an item you can mark once when you chose it today."
-            )
-        case .edit:
-            StallyLocalization.string(
-                "Adjust the basics without changing the marks you already kept."
-            )
-        }
-    }
-
-    var isErrorPresented: Binding<Bool> {
-        .init(
-            get: {
-                errorMessage != nil
-            },
-            set: { isPresented in
-                if !isPresented {
-                    errorMessage = nil
-                }
-            }
-        )
-    }
-
-    var formInput: ItemFormInput {
-        .init(
-            name: name,
-            category: category,
-            photoData: photoData,
-            note: note
-        )
-    }
-
-    func loadSelectedPhoto() async {
-        guard let selectedPhotoItem else {
-            return
-        }
-
-        do {
-            photoData = try await selectedPhotoItem.loadTransferable(type: Data.self)
-        } catch {
-            errorMessage = StallyLocalization.string("Failed to load the selected photo.")
+    func attemptDismiss() {
+        if model.requestDiscardConfirmationIfNeeded() {
+            appModel.dismissEditor()
         }
     }
 
     func save() {
         do {
-            switch mode {
-            case .create:
-                let item = try ItemService.create(
-                    context: context,
-                    input: formInput
-                )
-                onComplete(item.id)
-            case .edit(let item):
-                try ItemService.update(
-                    context: context,
-                    item: item,
-                    input: formInput
-                )
-                onComplete(item.id)
-            }
+            let itemID = try model.save(
+                context: context
+            )
 
-            dismiss()
+            appModel.dismissEditor()
+
+            switch model.mode {
+            case .create:
+                appModel.openItem(
+                    itemID,
+                    in: .library
+                )
+            case .edit:
+                break
+            }
         } catch {
-            errorMessage = (error as? LocalizedError)?.errorDescription
-                ?? StallyLocalization.string("Failed to save this item.")
+            model.presentSaveError(error)
         }
     }
 
     func deleteItem() {
-        guard let existingItem else {
-            return
-        }
-
         do {
-            try ItemService.delete(
-                context: context,
-                item: existingItem
+            let deletedItemID = try model.delete(
+                context: context
             )
-            onDelete(existingItem.id)
-            dismiss()
+
+            appModel.dismissEditor()
+            appModel.removeItemDestination(deletedItemID)
         } catch {
-            errorMessage = StallyLocalization.string("Failed to delete this item.")
+            model.presentDeleteError(error)
         }
     }
+
 }
 
-@available(iOS 18.0, *)
+@available(iOS 26.0, *)
 #Preview("Create Item", traits: .modifier(StallySampleData())) {
+    @Previewable @Namespace var namespace
+
     NavigationStack {
-        StallyItemEditorView(mode: .create) { _ in
-            // no-op
-        } onDelete: { _ in
-            // no-op
-        }
+        StallyItemEditorView(
+            mode: .create,
+            navigationNamespace: namespace
+        )
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 26.0, *)
 #Preview("Edit Item", traits: .modifier(StallySampleData())) {
     @Previewable @Query var items: [Item]
+    @Previewable @Namespace var namespace
 
     NavigationStack {
         if let item = items.first {
-            StallyItemEditorView(mode: .edit(item)) { _ in
-                // no-op
-            } onDelete: { _ in
-                // no-op
-            }
-        } else {
-            EmptyView()
+            StallyItemEditorView(
+                mode: .edit(item),
+                navigationNamespace: namespace
+            )
         }
     }
 }

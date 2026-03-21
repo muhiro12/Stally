@@ -15,7 +15,7 @@ import SwiftUI
 @Observable
 final class StallyAppAssembly {
     let modelContainer: ModelContainer
-    let navigationState: StallyRootNavigationState
+    let appModel: StallyAppModel
     let routeInbox: MHObservableRouteInbox<StallyRoute>
     let routePipeline: MHAppRoutePipeline<StallyRoute>
     let bootstrap: MHAppRuntimeBootstrap
@@ -24,7 +24,7 @@ final class StallyAppAssembly {
         modelContainer: ModelContainer,
         lifecyclePlanStyle: LifecyclePlanStyle
     ) {
-        let navigationState = StallyRootNavigationState()
+        let appModel = StallyAppModel()
         let routeInbox = MHObservableRouteInbox<StallyRoute>()
         let configuration = StallyAppConfiguration.runtimeConfiguration
         let defaultsBundle = MHAppRuntimeDefaultsBundle(
@@ -58,13 +58,13 @@ final class StallyAppAssembly {
         )
 
         self.modelContainer = modelContainer
-        self.navigationState = navigationState
+        self.appModel = appModel
         self.routeInbox = routeInbox
         self.routePipeline = routePipeline
         self.bootstrap = .init(
             runtime: runtime,
             lifecyclePlan: lifecyclePlanStyle.makePlan(
-                navigationState: navigationState,
+                appModel: appModel,
                 preferenceStore: runtime.preferenceStore,
                 routePipeline: routePipeline
             ),
@@ -146,17 +146,17 @@ extension StallyAppAssembly {
         case preview
 
         func makePlan(
-            navigationState: StallyRootNavigationState,
+            appModel: StallyAppModel,
             preferenceStore: MHPreferenceStore,
             routePipeline: MHAppRoutePipeline<StallyRoute>
         ) -> MHAppRuntimeLifecyclePlan {
             let loadPreferencesTask = MHAppRuntimeTask(
                 name: "loadPreferences"
             ) {
-                navigationState.loadReviewPreferencesIfNeeded(
+                appModel.loadReviewPreferencesIfNeeded(
                     from: preferenceStore
                 )
-                navigationState.loadInsightsPreferencesIfNeeded(
+                appModel.loadInsightsPreferencesIfNeeded(
                     from: preferenceStore
                 )
             }
@@ -193,6 +193,7 @@ extension View {
             .tint(StallyDesign.tint)
             .mhTheme(MHTheme.standard())
             .mhGlassPolicy(.automatic)
+            .environment(assembly.appModel)
             .environment(assembly)
     }
 }

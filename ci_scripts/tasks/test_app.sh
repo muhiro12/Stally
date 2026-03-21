@@ -75,7 +75,7 @@ else
 fi
 
 timestamp=$(date +%s)
-result_bundle_path="$results_directory/BuildResults_Stally_${timestamp}.xcresult"
+result_bundle_path="$results_directory/TestResults_Stally_${timestamp}.xcresult"
 
 HOME="$local_home_directory" \
 CFFIXED_USER_HOME="$local_home_directory" \
@@ -91,11 +91,12 @@ xcodebuild \
   -scheme "$scheme_name" \
   "${destination[@]}" \
   -skipPackagePluginValidation \
+  -parallel-testing-enabled NO \
   -derivedDataPath "$derived_data_path" \
   -resultBundlePath "$result_bundle_path" \
   -clonedSourcePackagesDirPath "$cloned_source_packages_directory" \
   -packageCachePath "$package_cache_directory" \
   "CLANG_MODULE_CACHE_PATH=$clang_module_cache_directory" \
-  build
+  test
 
-echo "Finished ${scheme_name} build. Result bundle: $result_bundle_path"
+echo "Finished ${scheme_name} tests. Result bundle: $result_bundle_path"

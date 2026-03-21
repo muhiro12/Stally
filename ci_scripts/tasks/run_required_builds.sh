@@ -232,6 +232,11 @@ if $needs_stally_build; then
     "build_app" \
     "Build Stally scheme" \
     bash "$repository_root/ci_scripts/tasks/build_app.sh"
+
+  run_logged_step \
+    "test_app" \
+    "Test Stally scheme" \
+    bash "$repository_root/ci_scripts/tasks/test_app.sh"
 fi
 
 if $needs_stally_library_tests; then

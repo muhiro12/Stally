@@ -17,11 +17,24 @@
 		B0A1C0122F5D000100000001 /* MHAppRuntimeAds in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C0132F5D000100000001 /* MHAppRuntimeAds */; };
 		B0A1C0142F5D000100000001 /* MHAppRuntimeLicenses in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C0152F5D000100000001 /* MHAppRuntimeLicenses */; };
 		C1F0A0012F5F100100000001 /* MHUI in Frameworks */ = {isa = PBXBuildFile; productRef = C1F0A0032F5F100100000001 /* MHUI */; };
+		D2A100022F6A000100000001 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A100052F6A000100000001 /* XCTest.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D2A100032F6A000100000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AD91A0E92F5C543E00BC027C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AD91A0F02F5C543E00BC027C;
+			remoteInfo = Stally;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		AD91A1052F5C544100BC027C /* StallyLibrary */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = StallyLibrary; sourceTree = "<group>"; };
 		AD91A0F12F5C543E00BC027C /* Stally.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stally.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2A100042F6A000100000001 /* StallyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StallyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2A100052F6A000100000001 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -41,6 +54,15 @@
 				AD91A0FE2F5C543F00BC027C /* Exceptions for "Stally" folder in "Stally" target */,
 			);
 			path = Stally;
+			sourceTree = "<group>";
+		};
+		D2A100062F6A000100000001 /* StallyTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = StallyTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -63,6 +85,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D2A100072F6A000100000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2A100022F6A000100000001 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -71,6 +101,7 @@
 			children = (
 				AD91A0F32F5C543E00BC027C /* Stally */,
 				AD91A1052F5C544100BC027C /* StallyLibrary */,
+				D2A100062F6A000100000001 /* StallyTests */,
 				AD91A0F22F5C543E00BC027C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -79,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				AD91A0F12F5C543E00BC027C /* Stally.app */,
+				D2A100042F6A000100000001 /* StallyTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -118,6 +150,27 @@
 			productReference = AD91A0F12F5C543E00BC027C /* Stally.app */;
 			productType = "com.apple.product-type.application";
 		};
+		D2A100082F6A000100000001 /* StallyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2A1000E2F6A000100000001 /* Build configuration list for PBXNativeTarget "StallyTests" */;
+			buildPhases = (
+				D2A1000A2F6A000100000001 /* Sources */,
+				D2A100072F6A000100000001 /* Frameworks */,
+				D2A100092F6A000100000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D2A1000B2F6A000100000001 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D2A100062F6A000100000001 /* StallyTests */,
+			);
+			name = StallyTests;
+			productName = StallyTests;
+			productReference = D2A100042F6A000100000001 /* StallyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -130,6 +183,10 @@
 				TargetAttributes = {
 					AD91A0F02F5C543E00BC027C = {
 						CreatedOnToolsVersion = 26.3;
+					};
+					D2A100082F6A000100000001 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = AD91A0F02F5C543E00BC027C;
 					};
 				};
 			};
@@ -157,12 +214,20 @@
 			projectRoot = "";
 			targets = (
 				AD91A0F02F5C543E00BC027C /* Stally */,
+				D2A100082F6A000100000001 /* StallyTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		AD91A0EF2F5C543E00BC027C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2A100092F6A000100000001 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -179,7 +244,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D2A1000A2F6A000100000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D2A1000B2F6A000100000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AD91A0F02F5C543E00BC027C /* Stally */;
+			targetProxy = D2A100032F6A000100000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		AD91A1002F5C543F00BC027C /* Debug */ = {
@@ -206,7 +286,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MARKETING_VERSION = 1.0;
@@ -252,7 +332,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MARKETING_VERSION = 1.0;
@@ -390,6 +470,62 @@
 			};
 			name = Release;
 		};
+		D2A1000C2F6A000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 66PKF55HK5;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.muhiro12.StallyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Stally.app/Stally";
+			};
+			name = Debug;
+		};
+		D2A1000D2F6A000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 66PKF55HK5;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.muhiro12.StallyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = nonisolated;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Stally.app/Stally";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -407,6 +543,15 @@
 			buildConfigurations = (
 				AD91A1002F5C543F00BC027C /* Debug */,
 				AD91A1012F5C543F00BC027C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D2A1000E2F6A000100000001 /* Build configuration list for PBXNativeTarget "StallyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2A1000C2F6A000100000001 /* Debug */,
+				D2A1000D2F6A000100000001 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

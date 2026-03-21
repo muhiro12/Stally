@@ -1,194 +1,147 @@
-import MHDeepLinking
 import MHAppRuntimeCore
-import MHUI
+import MHDeepLinking
 import StallyLibrary
 import SwiftUI
 import UIKit
 
-private enum StallySettingsDeepLinkRowID: String, Sendable {
-    case home
-    case archive
-    case backup
-    case insights
-    case review
-    case createItem
-    case settings
-}
-
 struct StallySettingsView: View {
-    private struct DeepLinkRow: Identifiable {
-        let id: StallySettingsDeepLinkRowID
-        let title: String
-        let route: StallyRoute
-        let supporting: String
-    }
-
     @Environment(MHAppRuntime.self)
     private var appRuntime
+    @Environment(StallyAppModel.self)
+    private var appModel
 
-    @Namespace private var deepLinkActionNamespace
+    @State private var screenModel: StallySettingsScreenModel
 
-    @Binding var reviewPreferences: StallyReviewPreferences
-    @Binding var insightsPreferences: StallyInsightsPreferences
-    let onOpenBackup: () -> Void
-    let onResetTips: () -> Void
+    let snapshot: StallySettingsSnapshot
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            aboutSection
-            backupSection
-            reviewPreferencesSection
-            insightsPreferencesSection
-            guidanceSection
-            deepLinkUtilitiesSection
-            buildSection
-            resourcesSection
+        @Bindable var appModel = appModel
+
+        ScrollView {
+            VStack(alignment: .leading, spacing: StallyDesign.Layout.sectionSpacing) {
+                aboutSection
+                backupSection
+                reviewPreferencesSection(
+                    reviewPreferences: $appModel.reviewPreferences
+                )
+                insightsPreferencesSection(
+                    insightsPreferences: $appModel.insightsPreferences
+                )
+                guidanceSection
+                deepLinksSection
+                buildSection
+                resourcesSection
+            }
+            .padding(.horizontal, StallyDesign.Layout.screenPadding)
+            .padding(.top, 12)
+            .safeAreaPadding(.bottom, 28)
         }
-        .mhScreen(
-            title: Text("Settings"),
-            subtitle: Text("A few quiet details about the app and its build.")
-        )
+        .contentMargins(.bottom, 28, for: .scrollContent)
         .navigationTitle("Settings")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
+        .task(id: snapshot.syncKey) {
+            screenModel.update(snapshot: snapshot)
+        }
+        .stallyScreenBackground()
+    }
+
+    init(
+        snapshot: StallySettingsSnapshot
+    ) {
+        self.snapshot = snapshot
+        _screenModel = State(
+            initialValue: .init(snapshot: snapshot)
+        )
     }
 }
 
 private extension StallySettingsView {
     var aboutSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(StallyAppConfiguration.displayName)
-                .font(.system(size: 28, weight: .semibold, design: .serif))
-
-            Text(StallyAppConfiguration.conceptLine)
-                .mhRowTitle()
+        VStack(alignment: .leading, spacing: 14) {
+            StallySectionHeader(
+                eyebrow: "About",
+                title: StallyAppConfiguration.displayName,
+                subtitle: StallyAppConfiguration.conceptLine
+            )
 
             Text(StallyAppConfiguration.baselineNote)
-                .mhRowSupporting()
+                .font(StallyDesign.Typography.body)
+                .foregroundStyle(StallyDesign.Palette.mutedInk)
         }
-        .mhSection(title: Text("About"))
-    }
-
-    var buildSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            LabeledContent("Version", value: appVersion)
-                .labeledContentStyle(.mhKeyValue)
-            LabeledContent("Build", value: buildNumber)
-                .labeledContentStyle(.mhKeyValue)
-        }
-        .mhSection(title: Text("Build"))
+        .stallyPanel(.accent)
     }
 
     var backupSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Open the dedicated backup workspace before you export or restore anything.")
-                .mhRowSupporting()
-
-            Button("Open Backup Center", systemImage: "externaldrive.badge.icloud") {
-                onOpenBackup()
-            }
-            .buttonStyle(.mhSecondary)
-        }
-        .mhSection(
-            title: Text("Backup"),
-            supporting: Text(
-                "Export and restore tools live in a separate workspace so higher-risk actions stay grouped together."
+        VStack(alignment: .leading, spacing: 14) {
+            StallySectionHeader(
+                eyebrow: "Backup",
+                title: "Open the dedicated backup workspace",
+                subtitle: "Export and restore actions stay grouped so higher-risk operations remain deliberate."
             )
-        )
+
+            Button("Open Backup Center") {
+                appModel.openBackup()
+            }
+            .buttonStyle(StallyPrimaryButtonStyle())
+        }
+        .stallyPanel(.base)
     }
 
-    var deepLinkUtilitiesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            ForEach(deepLinkRows) { row in
-                if let routeURL = routeURL(for: row.route) {
-                    HStack(alignment: .center, spacing: 12) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(row.title)
-                                .mhRowTitle()
-
-                            Text(row.supporting)
-                                .mhRowSupporting()
-                        }
-
-                        Spacer(minLength: 12)
-
-                        MHGlassContainer(spacing: 12) {
-                            HStack(spacing: 12) {
-                                Button("Copy") {
-                                    UIPasteboard.general.url = routeURL
-                                }
-                                .buttonStyle(.mhSecondary)
-                                .mhGlassEffectID(
-                                    "\(row.id.rawValue)-copy",
-                                    in: deepLinkActionNamespace
-                                )
-
-                                ShareLink(item: routeURL) {
-                                    Label("Share", systemImage: "square.and.arrow.up")
-                                }
-                                .buttonStyle(.mhSecondary)
-                                .mhGlassEffectID(
-                                    "\(row.id.rawValue)-share",
-                                    in: deepLinkActionNamespace
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            Text("Unsupported links now show an alert when Stally cannot parse them.")
-                .mhRowSupporting()
-        }
-        .mhSection(
-            title: Text("Deep Links"),
-            supporting: Text(
-                """
-                Share the app's main routes directly from Settings.
-                Item-specific links remain available from item cards and detail.
-                """
+    func reviewPreferencesSection(
+        reviewPreferences: Binding<StallyReviewPreferences>
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            StallySectionHeader(
+                eyebrow: "Review",
+                title: "Tune when items need attention",
+                subtitle: "These settings update the Review tab and home snapshot immediately."
             )
-        )
-    }
 
-    var reviewPreferencesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Stepper(value: $reviewPreferences.untouchedGraceDays, in: 1...90) {
+            Stepper(
+                value: reviewPreferences.untouchedGraceDays,
+                in: 1...90
+            ) {
                 Text(
                     StallyLocalization.format(
                         "Needs First Mark after %lld days",
-                        reviewPreferences.untouchedGraceDays
+                        reviewPreferences.wrappedValue.untouchedGraceDays
                     )
                 )
             }
 
-            Stepper(value: $reviewPreferences.dormantAfterDays, in: 1...180) {
+            Stepper(
+                value: reviewPreferences.dormantAfterDays,
+                in: 1...180
+            ) {
                 Text(
                     StallyLocalization.format(
                         "Dormant after %lld days",
-                        reviewPreferences.dormantAfterDays
+                        reviewPreferences.wrappedValue.dormantAfterDays
                     )
                 )
             }
 
             Toggle(
                 "Show completed review sections",
-                isOn: $reviewPreferences.showCompletedSections
+                isOn: reviewPreferences.showCompletedSections
             )
-
-            Text("These settings update Home and Review immediately.")
-                .mhRowSupporting()
         }
-        .mhSection(
-            title: Text("Review Preferences"),
-            supporting: Text("Tune when items become review candidates and whether empty lanes stay visible.")
-        )
+        .stallyPanel(.base)
     }
 
-    var insightsPreferencesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+    func insightsPreferencesSection(
+        insightsPreferences: Binding<StallyInsightsPreferences>
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            StallySectionHeader(
+                eyebrow: "Insights",
+                title: "Choose the default lens",
+                subtitle: "These defaults apply whenever you return to the Insights dashboard."
+            )
+
             Picker(
                 "Default range",
-                selection: $insightsPreferences.defaultRange
+                selection: insightsPreferences.defaultRange
             ) {
                 ForEach(ItemInsightsRange.allCases, id: \.self) { range in
                     Text(range.title)
@@ -199,37 +152,113 @@ private extension StallySettingsView {
 
             Toggle(
                 "Include archived items by default",
-                isOn: $insightsPreferences.includesArchivedItems
+                isOn: insightsPreferences.includesArchivedItems
             )
-
-            Text("These defaults apply each time you open Insights.")
-                .mhRowSupporting()
         }
-        .mhSection(
-            title: Text("Insights Preferences"),
-            supporting: Text("Choose the default time window and scope for Insights.")
-        )
+        .stallyPanel(.base)
     }
 
     var guidanceSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Tips appear again when the related screen and state become relevant.")
-                .mhRowSupporting()
+        VStack(alignment: .leading, spacing: 14) {
+            StallySectionHeader(
+                eyebrow: "Guidance",
+                title: "Replay first-use tips",
+                subtitle: "Use this when you want another quiet walkthrough of the main flows."
+            )
 
-            Button("Show Tips Again", systemImage: "lightbulb") {
-                onResetTips()
+            Button("Show Tips Again") {
+                appModel.performAction {
+                    try StallyAppActionService.resetTips()
+                }
             }
-            .buttonStyle(.mhSecondary)
+            .buttonStyle(StallySecondaryButtonStyle())
         }
-        .mhSection(
-            title: Text("Guidance"),
-            supporting: Text("Replay the first-use tips if you want another quiet walkthrough of the main flows.")
-        )
+        .stallyPanel(.base)
+    }
+
+    var deepLinksSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            StallySectionHeader(
+                eyebrow: "Links",
+                title: "Share or copy app routes",
+                subtitle: "Item-specific links still live on item cards and detail screens."
+            )
+
+            ForEach(screenModel.deepLinkRows) { row in
+                if let routeURL = routeURL(for: row.route) {
+                    HStack(alignment: .center, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(row.title)
+                                .font(StallyDesign.Typography.emphasis)
+                                .foregroundStyle(StallyDesign.Palette.ink)
+
+                            Text(row.supporting)
+                                .font(StallyDesign.Typography.caption)
+                                .foregroundStyle(StallyDesign.Palette.mutedInk)
+                        }
+
+                        Spacer(minLength: 12)
+
+                        Button("Copy") {
+                            UIPasteboard.general.url = routeURL
+                        }
+                        .buttonStyle(StallySecondaryButtonStyle())
+
+                        ShareLink(item: routeURL) {
+                            Label("Share", systemImage: "square.and.arrow.up")
+                        }
+                        .buttonStyle(StallySecondaryButtonStyle())
+                    }
+                    .stallyPanel(.elevated, padding: 14)
+                }
+            }
+        }
+        .stallyPanel(.base)
+    }
+
+    var buildSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            StallySectionHeader(
+                eyebrow: "Build",
+                title: "Version details",
+                subtitle: "Useful when sharing feedback or checking a specific build."
+            )
+
+            HStack(spacing: 12) {
+                ForEach(screenModel.buildCards) { card in
+                    buildValueCard(title: card.title, value: card.value)
+                }
+            }
+        }
+        .stallyPanel(.base)
+    }
+
+    func buildValueCard(
+        title: String,
+        value: String
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(StallyDesign.Palette.mutedInk)
+
+            Text(value)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(StallyDesign.Palette.ink)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .stallyPanel(.elevated, padding: 14)
     }
 
     @ViewBuilder
     var resourcesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
+            StallySectionHeader(
+                eyebrow: "Resources",
+                title: "Open-source licenses",
+                subtitle: "License information is available when the current runtime exposes it."
+            )
+
             if appRuntime.configuration.showsLicenses {
                 NavigationLink {
                     appRuntime.licensesView()
@@ -237,70 +266,14 @@ private extension StallySettingsView {
                 } label: {
                     Label("Open Source Licenses", systemImage: "doc.text.magnifyingglass")
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(StallySecondaryButtonStyle())
             } else {
                 Text("License information is unavailable for this app configuration.")
-                    .mhRowSupporting()
+                    .font(StallyDesign.Typography.caption)
+                    .foregroundStyle(StallyDesign.Palette.mutedInk)
             }
         }
-        .mhSection(title: Text("Resources"))
-    }
-
-    var appVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-            ?? StallyLocalization.string("Unknown")
-    }
-
-    var buildNumber: String {
-        Bundle.main.object(forInfoDictionaryKey: kCFBundleVersionKey as String) as? String
-            ?? StallyLocalization.string("Unknown")
-    }
-
-    private var deepLinkRows: [DeepLinkRow] {
-        [
-            .init(
-                id: .home,
-                title: StallyLocalization.string("Home"),
-                route: .home,
-                supporting: StallyLocalization.string("Open the main collection view.")
-            ),
-            .init(
-                id: .archive,
-                title: StallyLocalization.string("Archive"),
-                route: .archive,
-                supporting: StallyLocalization.string("Jump straight to archived items.")
-            ),
-            .init(
-                id: .backup,
-                title: StallyLocalization.string("Backup Center"),
-                route: .backup,
-                supporting: StallyLocalization.string("Open backup and restore tools.")
-            ),
-            .init(
-                id: .insights,
-                title: StallyLocalization.string("Insights"),
-                route: .insights,
-                supporting: StallyLocalization.string("Open collection analytics and reports.")
-            ),
-            .init(
-                id: .review,
-                title: StallyLocalization.string("Review"),
-                route: .review,
-                supporting: StallyLocalization.string("Open the review workflow.")
-            ),
-            .init(
-                id: .createItem,
-                title: StallyLocalization.string("Create Item"),
-                route: .createItem,
-                supporting: StallyLocalization.string("Start a new item from a link.")
-            ),
-            .init(
-                id: .settings,
-                title: StallyLocalization.string("Settings"),
-                route: .settings,
-                supporting: StallyLocalization.string("Open Settings directly.")
-            )
-        ]
+        .stallyPanel(.base)
     }
 
     func routeURL(
@@ -310,19 +283,11 @@ private extension StallySettingsView {
     }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 26.0, *)
 #Preview(traits: .modifier(StallySampleData())) {
-    @Previewable @State var reviewPreferences = StallyReviewPreferences()
-    @Previewable @State var insightsPreferences = StallyInsightsPreferences()
-
     NavigationStack {
         StallySettingsView(
-            reviewPreferences: $reviewPreferences,
-            insightsPreferences: $insightsPreferences
-        ) {
-            // no-op
-        } onResetTips: {
-            // no-op
-        }
+            snapshot: StallySettingsSnapshotBuilder.build()
+        )
     }
 }
