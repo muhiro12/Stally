@@ -40,11 +40,11 @@ final class StallyAppAssembly {
             configuration: configuration,
             preferenceStore: defaultsBundle.preferenceStore,
             startStore: defaultsBundle.startStore,
-            subscriptionSectionViewBuilder:
-                defaultsBundle.subscriptionSectionViewBuilder,
+            subscriptionSectionFactory:
+                defaultsBundle.subscriptionSectionFactory,
             startAds: adsBundle.startAds,
-            nativeAdViewBuilder: adsBundle.nativeAdViewBuilder,
-            licensesViewBuilder: licensesBundle.licensesViewBuilder
+            nativeAdFactory: adsBundle.nativeAdFactory,
+            licensesFactory: licensesBundle.licensesFactory
         )
         let routePipeline = MHAppRoutePipeline(
             routeLifecycle: .init(
