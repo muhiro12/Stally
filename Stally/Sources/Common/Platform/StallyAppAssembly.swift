@@ -192,6 +192,7 @@ extension View {
             .modelContainer(assembly.modelContainer)
             .tint(StallyDesign.tint)
             .mhTheme(MHTheme.standard())
+            .mhGlassPolicy(.automatic)
             .environment(assembly)
     }
 }

@@ -2,9 +2,16 @@ import MHUI
 import StallyLibrary
 import SwiftUI
 
+private enum StallyBackupImportActionID: String, Sendable {
+    case merge
+    case replace
+}
+
 struct StallyBackupImportPreviewCard: View {
     @Environment(\.mhTheme)
     private var theme
+
+    @Namespace private var actionNamespace
 
     let preview: StallyBackupCenterState.ImportPreview
     let usesCompactLayout: Bool
@@ -42,20 +49,32 @@ struct StallyBackupImportPreviewCard: View {
                 }
             }
 
-            Button("Merge Into Library", systemImage: "square.stack.3d.up") {
-                onMerge()
-            }
-            .buttonStyle(.mhSecondary)
-            .disabled(!preview.analysis.canImport)
+            MHGlassContainer(spacing: theme.spacing.control) {
+                VStack(alignment: .leading, spacing: theme.spacing.control) {
+                    Button("Merge Into Library", systemImage: "square.stack.3d.up") {
+                        onMerge()
+                    }
+                    .buttonStyle(.mhSecondary)
+                    .mhGlassEffectID(
+                        StallyBackupImportActionID.merge,
+                        in: actionNamespace
+                    )
+                    .disabled(!preview.analysis.canImport)
 
-            Button(
-                "Replace Library",
-                systemImage: "arrow.trianglehead.2.clockwise.rotate.90"
-            ) {
-                onReplace()
+                    Button(
+                        "Replace Library",
+                        systemImage: "arrow.trianglehead.2.clockwise.rotate.90"
+                    ) {
+                        onReplace()
+                    }
+                    .buttonStyle(.mhSecondary)
+                    .mhGlassEffectID(
+                        StallyBackupImportActionID.replace,
+                        in: actionNamespace
+                    )
+                    .disabled(!preview.analysis.canImport)
+                }
             }
-            .buttonStyle(.mhSecondary)
-            .disabled(!preview.analysis.canImport)
 
             Text(
                 StallyLocalization.string(

@@ -4,6 +4,11 @@ import SwiftUI
 import TipKit
 import UIKit
 
+private enum StallyReviewSelectionControlID: String, Sendable {
+    case selectionMode
+    case bulkAction
+}
+
 struct StallyReviewLaneSection: View {
     struct Configuration {
         let title: String
@@ -19,6 +24,8 @@ struct StallyReviewLaneSection: View {
 
     @Environment(\.mhTheme)
     private var theme
+
+    @Namespace private var selectionControlNamespace
 
     @Binding var selection: StallyReviewSelectionState.LaneSelection
 
@@ -94,33 +101,43 @@ private extension StallyReviewLaneSection {
     }
 
     var selectionControls: some View {
-        HStack(spacing: theme.spacing.control) {
-            Button(
-                selection.isSelectionModeEnabled
-                    ? StallyLocalization.string("Done")
-                    : StallyLocalization.string("Select")
-            ) {
-                selection.toggleSelectionMode()
-            }
-            .buttonStyle(.mhSecondary)
-            .popoverTip(selectionTip, arrowEdge: .bottom)
-
-            if selection.isSelectionModeEnabled {
-                Text(
-                    StallyLocalization.format(
-                        "%lld selected",
-                        selectedItems.count
-                    )
-                )
-                .mhRowSupporting()
-
-                Spacer(minLength: .zero)
-
-                Button(configuration.bulkActionTitle) {
-                    selection.requestBulkAction()
+        MHGlassContainer(spacing: theme.spacing.control) {
+            HStack(spacing: theme.spacing.control) {
+                Button(
+                    selection.isSelectionModeEnabled
+                        ? StallyLocalization.string("Done")
+                        : StallyLocalization.string("Select")
+                ) {
+                    selection.toggleSelectionMode()
                 }
-                .buttonStyle(.mhPrimary)
-                .disabled(selectedItems.isEmpty)
+                .buttonStyle(.mhSecondary)
+                .mhGlassEffectID(
+                    StallyReviewSelectionControlID.selectionMode,
+                    in: selectionControlNamespace
+                )
+                .popoverTip(selectionTip, arrowEdge: .bottom)
+
+                if selection.isSelectionModeEnabled {
+                    Text(
+                        StallyLocalization.format(
+                            "%lld selected",
+                            selectedItems.count
+                        )
+                    )
+                    .mhRowSupporting()
+
+                    Spacer(minLength: .zero)
+
+                    Button(configuration.bulkActionTitle) {
+                        selection.requestBulkAction()
+                    }
+                    .buttonStyle(.mhPrimary)
+                    .mhGlassEffectID(
+                        StallyReviewSelectionControlID.bulkAction,
+                        in: selectionControlNamespace
+                    )
+                    .disabled(selectedItems.isEmpty)
+                }
             }
         }
     }

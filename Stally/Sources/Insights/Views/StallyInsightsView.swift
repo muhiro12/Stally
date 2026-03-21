@@ -12,6 +12,8 @@ struct StallyInsightsView: View {
     @Environment(\.mhTheme)
     private var theme
 
+    @Namespace private var rangeNamespace
+
     let items: [Item]
     @Binding var preferences: StallyInsightsPreferences
     let onOpenItem: (UUID) -> Void
@@ -247,19 +249,25 @@ private extension StallyInsightsView {
                 .mhRowTitle()
 
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: theme.spacing.control) {
-                    ForEach(ItemInsightsRange.allCases, id: \.self) { range in
-                        Button(range.title) {
-                            preferences.defaultRange = range
+                MHGlassContainer(spacing: theme.spacing.control) {
+                    HStack(spacing: theme.spacing.control) {
+                        ForEach(ItemInsightsRange.allCases, id: \.self) { range in
+                            Button(range.title) {
+                                preferences.defaultRange = range
+                            }
+                            .buttonStyle(
+                                selectedRange == range
+                                    ? .mhPrimary
+                                    : .mhSecondary
+                            )
+                            .mhGlassEffectID(
+                                range,
+                                in: rangeNamespace
+                            )
                         }
-                        .buttonStyle(
-                            selectedRange == range
-                                ? .mhPrimary
-                                : .mhSecondary
-                        )
                     }
+                    .padding(.vertical, 2)
                 }
-                .padding(.vertical, 2)
             }
             .popoverTip(insightsRangeTip, arrowEdge: .top)
 

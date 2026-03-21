@@ -2,9 +2,16 @@ import MHUI
 import SwiftUI
 import TipKit
 
+private enum StallyHomeEntryActionID: String, Sendable {
+    case open
+    case share
+}
+
 struct StallyHomeEntryCard: View {
     @Environment(\.mhTheme)
     private var theme
+
+    @Namespace private var actionNamespace
 
     let title: String
     let value: String
@@ -95,14 +102,18 @@ private extension StallyHomeEntryCard {
     @ViewBuilder
     var actions: some View {
         if usesCompactLayout {
-            VStack(alignment: .leading, spacing: theme.spacing.control) {
-                primaryActionButton
-                shareButton
+            MHGlassContainer(spacing: theme.spacing.control) {
+                VStack(alignment: .leading, spacing: theme.spacing.control) {
+                    primaryActionButton
+                    shareButton
+                }
             }
         } else {
-            HStack(spacing: theme.spacing.control) {
-                primaryActionButton
-                shareButton
+            MHGlassContainer(spacing: theme.spacing.control) {
+                HStack(spacing: theme.spacing.control) {
+                    primaryActionButton
+                    shareButton
+                }
             }
         }
     }
@@ -112,6 +123,10 @@ private extension StallyHomeEntryCard {
             onOpen()
         }
         .buttonStyle(.mhSecondary)
+        .mhGlassEffectID(
+            StallyHomeEntryActionID.open,
+            in: actionNamespace
+        )
         .fixedSize(horizontal: true, vertical: false)
         .popoverTip(primaryActionTip, arrowEdge: .top)
     }
@@ -123,6 +138,10 @@ private extension StallyHomeEntryCard {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             .buttonStyle(.mhSecondary)
+            .mhGlassEffectID(
+                StallyHomeEntryActionID.share,
+                in: actionNamespace
+            )
             .fixedSize(horizontal: true, vertical: false)
         }
     }

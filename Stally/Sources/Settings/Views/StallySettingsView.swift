@@ -5,19 +5,28 @@ import StallyLibrary
 import SwiftUI
 import UIKit
 
+private enum StallySettingsDeepLinkRowID: String, Sendable {
+    case home
+    case archive
+    case backup
+    case insights
+    case review
+    case createItem
+    case settings
+}
+
 struct StallySettingsView: View {
     private struct DeepLinkRow: Identifiable {
+        let id: StallySettingsDeepLinkRowID
         let title: String
         let route: StallyRoute
         let supporting: String
-
-        var id: String {
-            title
-        }
     }
 
     @Environment(MHAppRuntime.self)
     private var appRuntime
+
+    @Namespace private var deepLinkActionNamespace
 
     @Binding var reviewPreferences: StallyReviewPreferences
     @Binding var insightsPreferences: StallyInsightsPreferences
@@ -102,15 +111,27 @@ private extension StallySettingsView {
 
                         Spacer(minLength: 12)
 
-                        Button("Copy") {
-                            UIPasteboard.general.url = routeURL
-                        }
-                        .buttonStyle(.mhSecondary)
+                        MHGlassContainer(spacing: 12) {
+                            HStack(spacing: 12) {
+                                Button("Copy") {
+                                    UIPasteboard.general.url = routeURL
+                                }
+                                .buttonStyle(.mhSecondary)
+                                .mhGlassEffectID(
+                                    "\(row.id.rawValue)-copy",
+                                    in: deepLinkActionNamespace
+                                )
 
-                        ShareLink(item: routeURL) {
-                            Label("Share", systemImage: "square.and.arrow.up")
+                                ShareLink(item: routeURL) {
+                                    Label("Share", systemImage: "square.and.arrow.up")
+                                }
+                                .buttonStyle(.mhSecondary)
+                                .mhGlassEffectID(
+                                    "\(row.id.rawValue)-share",
+                                    in: deepLinkActionNamespace
+                                )
+                            }
                         }
-                        .buttonStyle(.mhSecondary)
                     }
                 }
             }
@@ -238,36 +259,43 @@ private extension StallySettingsView {
     private var deepLinkRows: [DeepLinkRow] {
         [
             .init(
+                id: .home,
                 title: StallyLocalization.string("Home"),
                 route: .home,
                 supporting: StallyLocalization.string("Open the main collection view.")
             ),
             .init(
+                id: .archive,
                 title: StallyLocalization.string("Archive"),
                 route: .archive,
                 supporting: StallyLocalization.string("Jump straight to archived items.")
             ),
             .init(
+                id: .backup,
                 title: StallyLocalization.string("Backup Center"),
                 route: .backup,
                 supporting: StallyLocalization.string("Open backup and restore tools.")
             ),
             .init(
+                id: .insights,
                 title: StallyLocalization.string("Insights"),
                 route: .insights,
                 supporting: StallyLocalization.string("Open collection analytics and reports.")
             ),
             .init(
+                id: .review,
                 title: StallyLocalization.string("Review"),
                 route: .review,
                 supporting: StallyLocalization.string("Open the review workflow.")
             ),
             .init(
+                id: .createItem,
                 title: StallyLocalization.string("Create Item"),
                 route: .createItem,
                 supporting: StallyLocalization.string("Start a new item from a link.")
             ),
             .init(
+                id: .settings,
                 title: StallyLocalization.string("Settings"),
                 route: .settings,
                 supporting: StallyLocalization.string("Open Settings directly.")

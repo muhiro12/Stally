@@ -5,11 +5,25 @@ import SwiftData
 import SwiftUI
 import UIKit
 
+private enum StallyArchiveQuickFilterID: String, Sendable {
+    case all
+    case withHistory
+    case withoutHistory
+}
+
+private struct StallyArchiveQuickFilterOption: Identifiable {
+    let id: StallyArchiveQuickFilterID
+    let title: String
+    let filter: ItemListQuery.QuickFilter?
+}
+
 struct StallyArchiveView: View {
     @Environment(\.mhTheme)
     private var theme
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
+
+    @Namespace private var quickFilterNamespace
 
     @State private var query = ItemListQuery()
 
@@ -103,19 +117,25 @@ private extension StallyArchiveView {
 
     var archiveQuickFilters: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: theme.spacing.control) {
-                ForEach(availableQuickFilters, id: \.title) { option in
-                    Button(option.title) {
-                        query.quickFilter = option.filter
+            MHGlassContainer(spacing: theme.spacing.control) {
+                HStack(spacing: theme.spacing.control) {
+                    ForEach(availableQuickFilters) { option in
+                        Button(option.title) {
+                            query.quickFilter = option.filter
+                        }
+                        .buttonStyle(
+                            option.filter == query.quickFilter
+                                ? .mhPrimary
+                                : .mhSecondary
+                        )
+                        .mhGlassEffectID(
+                            option.id,
+                            in: quickFilterNamespace
+                        )
                     }
-                    .buttonStyle(
-                        option.filter == query.quickFilter
-                            ? .mhPrimary
-                            : .mhSecondary
-                    )
                 }
+                .padding(.vertical, 2)
             }
-            .padding(.vertical, 2)
         }
     }
 
@@ -163,11 +183,23 @@ private extension StallyArchiveView {
         .mhSurface(role: .muted)
     }
 
-    var availableQuickFilters: [(title: String, filter: ItemListQuery.QuickFilter?)] {
+    var availableQuickFilters: [StallyArchiveQuickFilterOption] {
         [
-            (StallyLocalization.string("All"), nil),
-            (StallyLocalization.string("With History"), .withHistory),
-            (StallyLocalization.string("Without History"), .withoutHistory)
+            .init(
+                id: .all,
+                title: StallyLocalization.string("All"),
+                filter: nil
+            ),
+            .init(
+                id: .withHistory,
+                title: StallyLocalization.string("With History"),
+                filter: .withHistory
+            ),
+            .init(
+                id: .withoutHistory,
+                title: StallyLocalization.string("Without History"),
+                filter: .withoutHistory
+            )
         ]
     }
 

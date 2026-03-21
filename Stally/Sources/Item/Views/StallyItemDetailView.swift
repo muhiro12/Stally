@@ -5,12 +5,21 @@ import SwiftData
 import SwiftUI
 import TipKit
 
+private enum StallyItemDetailActionID: String, Sendable {
+    case toggleTodayMark
+    case toggleArchiveState
+    case share
+    case openHistoryEditor
+}
+
 // swiftlint:disable file_length type_contents_order
 struct StallyItemDetailView: View {
     @Environment(\.mhTheme)
     private var theme
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
+
+    @Namespace private var actionNamespace
 
     @State private var isHistoryEditorPresented = false
     @State private var selectedHistoryDate = Date.now
@@ -171,14 +180,34 @@ private extension StallyItemDetailView {
 
     var actionSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.control) {
-            toggleTodayMarkButton
-            toggleArchiveStateButton
+            MHGlassContainer(spacing: theme.spacing.control) {
+                VStack(alignment: .leading, spacing: theme.spacing.control) {
+                    toggleTodayMarkButton
+                        .mhGlassEffectID(
+                            StallyItemDetailActionID.toggleTodayMark,
+                            in: actionNamespace
+                        )
+                    toggleArchiveStateButton
+                        .mhGlassEffectID(
+                            StallyItemDetailActionID.toggleArchiveState,
+                            in: actionNamespace
+                        )
 
-            if let itemShareURL {
-                shareButton(url: itemShareURL)
+                    if let itemShareURL {
+                        shareButton(url: itemShareURL)
+                            .mhGlassEffectID(
+                                StallyItemDetailActionID.share,
+                                in: actionNamespace
+                            )
+                    }
+
+                    historyEditorButton
+                        .mhGlassEffectID(
+                            StallyItemDetailActionID.openHistoryEditor,
+                            in: actionNamespace
+                        )
+                }
             }
-
-            historyEditorButton
         }
         .mhSection(
             title: Text("Actions"),

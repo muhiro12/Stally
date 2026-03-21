@@ -5,12 +5,34 @@ import SwiftData
 import SwiftUI
 import TipKit
 
+private enum StallyHomeQuickFilterID: String, Sendable {
+    case all
+    case openToday
+    case markedToday
+    case neverMarked
+}
+
+private struct StallyHomeQuickFilterOption: Identifiable {
+    let id: StallyHomeQuickFilterID
+    let title: String
+    let filter: ItemListQuery.QuickFilter?
+}
+
+private enum StallyHomeEmptyStateActionID: String, Sendable {
+    case addFirstItem
+    case trySampleItems
+    case restoreFromBackup
+}
+
 // swiftlint:disable file_length
 struct StallyHomeView: View {
     @Environment(\.mhTheme)
     private var theme
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
+
+    @Namespace private var quickFilterNamespace
+    @Namespace private var emptyStateActionNamespace
 
     @State private var query = ItemListQuery()
 
@@ -270,19 +292,25 @@ private extension StallyHomeView {
 
     var homeQuickFilters: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: theme.spacing.control) {
-                ForEach(availableQuickFilters, id: \.title) { option in
-                    Button(option.title) {
-                        query.quickFilter = option.filter
+            MHGlassContainer(spacing: theme.spacing.control) {
+                HStack(spacing: theme.spacing.control) {
+                    ForEach(availableQuickFilters) { option in
+                        Button(option.title) {
+                            query.quickFilter = option.filter
+                        }
+                        .buttonStyle(
+                            option.filter == query.quickFilter
+                                ? .mhPrimary
+                                : .mhSecondary
+                        )
+                        .mhGlassEffectID(
+                            option.id,
+                            in: quickFilterNamespace
+                        )
                     }
-                    .buttonStyle(
-                        option.filter == query.quickFilter
-                            ? .mhPrimary
-                            : .mhSecondary
-                    )
                 }
+                .padding(.vertical, 2)
             }
-            .padding(.vertical, 2)
         }
     }
 
@@ -370,21 +398,37 @@ private extension StallyHomeView {
             )
             .mhEmptyStateLayout()
 
-            Button("Add Your First Item", systemImage: "plus.circle.fill") {
-                actions.onCreateItem()
-            }
-            .buttonStyle(.mhPrimary)
-            .popoverTip(addFirstItemTip, arrowEdge: .top)
+            MHGlassContainer(spacing: theme.spacing.control) {
+                VStack(alignment: .leading, spacing: theme.spacing.control) {
+                    Button("Add Your First Item", systemImage: "plus.circle.fill") {
+                        actions.onCreateItem()
+                    }
+                    .buttonStyle(.mhPrimary)
+                    .mhGlassEffectID(
+                        StallyHomeEmptyStateActionID.addFirstItem,
+                        in: emptyStateActionNamespace
+                    )
+                    .popoverTip(addFirstItemTip, arrowEdge: .top)
 
-            Button("Try Sample Items", systemImage: "sparkles.rectangle.stack") {
-                actions.onSeedSampleData()
-            }
-            .buttonStyle(.mhSecondary)
+                    Button("Try Sample Items", systemImage: "sparkles.rectangle.stack") {
+                        actions.onSeedSampleData()
+                    }
+                    .buttonStyle(.mhSecondary)
+                    .mhGlassEffectID(
+                        StallyHomeEmptyStateActionID.trySampleItems,
+                        in: emptyStateActionNamespace
+                    )
 
-            Button("Restore From Backup", systemImage: "externaldrive.badge.icloud") {
-                actions.onOpenBackup()
+                    Button("Restore From Backup", systemImage: "externaldrive.badge.icloud") {
+                        actions.onOpenBackup()
+                    }
+                    .buttonStyle(.mhSecondary)
+                    .mhGlassEffectID(
+                        StallyHomeEmptyStateActionID.restoreFromBackup,
+                        in: emptyStateActionNamespace
+                    )
+                }
             }
-            .buttonStyle(.mhSecondary)
 
             Text("Sample items only load when Home is empty, so you can safely try them once.")
                 .mhRowSupporting()
@@ -405,12 +449,28 @@ private extension StallyHomeView {
         .mhSurface(role: .muted)
     }
 
-    var availableQuickFilters: [(title: String, filter: ItemListQuery.QuickFilter?)] {
+    var availableQuickFilters: [StallyHomeQuickFilterOption] {
         [
-            (StallyLocalization.string("All"), nil),
-            (StallyLocalization.string("Open Today"), .unmarkedOnReferenceDay),
-            (StallyLocalization.string("Marked Today"), .markedOnReferenceDay),
-            (StallyLocalization.string("Never Marked"), .withoutHistory)
+            .init(
+                id: .all,
+                title: StallyLocalization.string("All"),
+                filter: nil
+            ),
+            .init(
+                id: .openToday,
+                title: StallyLocalization.string("Open Today"),
+                filter: .unmarkedOnReferenceDay
+            ),
+            .init(
+                id: .markedToday,
+                title: StallyLocalization.string("Marked Today"),
+                filter: .markedOnReferenceDay
+            ),
+            .init(
+                id: .neverMarked,
+                title: StallyLocalization.string("Never Marked"),
+                filter: .withoutHistory
+            )
         ]
     }
 

@@ -2,9 +2,19 @@ import MHUI
 import StallyLibrary
 import SwiftUI
 
+private enum StallyItemQueryControlID: String, Sendable {
+    case category
+    case sort
+    case clear
+}
+
 struct StallyItemQueryControls: View {
     @Environment(\.mhTheme)
     private var theme
+
+    @Namespace private var compactHorizontalMenuNamespace
+    @Namespace private var compactVerticalMenuNamespace
+    @Namespace private var regularMenuNamespace
 
     @Binding var query: ItemListQuery
 
@@ -26,8 +36,20 @@ struct StallyItemQueryControls: View {
             }
         } else {
             HStack(alignment: .center, spacing: theme.spacing.control) {
-                categoryMenu
-                sortMenu
+                MHGlassContainer(spacing: theme.spacing.control) {
+                    HStack(spacing: theme.spacing.control) {
+                        categoryMenu
+                            .mhGlassEffectID(
+                                StallyItemQueryControlID.category,
+                                in: regularMenuNamespace
+                            )
+                        sortMenu
+                            .mhGlassEffectID(
+                                StallyItemQueryControlID.sort,
+                                in: regularMenuNamespace
+                            )
+                    }
+                }
 
                 Spacer(minLength: theme.spacing.control)
 
@@ -43,23 +65,51 @@ struct StallyItemQueryControls: View {
 
 private extension StallyItemQueryControls {
     var horizontalMenus: some View {
-        HStack(spacing: theme.spacing.control) {
-            categoryMenu
-            sortMenu
+        MHGlassContainer(spacing: theme.spacing.control) {
+            HStack(spacing: theme.spacing.control) {
+                categoryMenu
+                    .mhGlassEffectID(
+                        StallyItemQueryControlID.category,
+                        in: compactHorizontalMenuNamespace
+                    )
+                sortMenu
+                    .mhGlassEffectID(
+                        StallyItemQueryControlID.sort,
+                        in: compactHorizontalMenuNamespace
+                    )
 
-            if query.hasRefinements {
-                clearFiltersButton
+                if query.hasRefinements {
+                    clearFiltersButton
+                        .mhGlassEffectID(
+                            StallyItemQueryControlID.clear,
+                            in: compactHorizontalMenuNamespace
+                        )
+                }
             }
         }
     }
 
     var verticalMenus: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            categoryMenu
-            sortMenu
+        MHGlassContainer(spacing: theme.spacing.control) {
+            VStack(alignment: .leading, spacing: theme.spacing.control) {
+                categoryMenu
+                    .mhGlassEffectID(
+                        StallyItemQueryControlID.category,
+                        in: compactVerticalMenuNamespace
+                    )
+                sortMenu
+                    .mhGlassEffectID(
+                        StallyItemQueryControlID.sort,
+                        in: compactVerticalMenuNamespace
+                    )
 
-            if query.hasRefinements {
-                clearFiltersButton
+                if query.hasRefinements {
+                    clearFiltersButton
+                        .mhGlassEffectID(
+                            StallyItemQueryControlID.clear,
+                            in: compactVerticalMenuNamespace
+                        )
+                }
             }
         }
     }
