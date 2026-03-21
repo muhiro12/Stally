@@ -2,12 +2,12 @@ import MHUI
 import SwiftUI
 import TipKit
 
-private enum StallyHomeEntryActionID: String, Sendable {
-    case open
-    case share
-}
-
 struct StallyHomeEntryCard: View {
+    private enum ActionID: String, Sendable {
+        case open
+        case share
+    }
+
     @Environment(\.mhTheme)
     private var theme
 
@@ -124,7 +124,7 @@ private extension StallyHomeEntryCard {
         }
         .buttonStyle(.mhSecondary)
         .mhGlassEffectID(
-            StallyHomeEntryActionID.open,
+            ActionID.open,
             in: actionNamespace
         )
         .fixedSize(horizontal: true, vertical: false)
@@ -139,7 +139,7 @@ private extension StallyHomeEntryCard {
             }
             .buttonStyle(.mhSecondary)
             .mhGlassEffectID(
-                StallyHomeEntryActionID.share,
+                ActionID.share,
                 in: actionNamespace
             )
             .fixedSize(horizontal: true, vertical: false)

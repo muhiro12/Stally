@@ -14,6 +14,17 @@ final class StallySettingsScreenModel {
 
     private(set) var snapshot: StallySettingsSnapshot
 
+    var buildCards: [BuildCard] {
+        [
+            .init(title: "Version", value: snapshot.appVersion),
+            .init(title: "Build", value: snapshot.buildNumber),
+        ]
+    }
+
+    var deepLinkRows: [StallySettingsSnapshot.DeepLinkRow] {
+        snapshot.deepLinkRows
+    }
+
     init(
         snapshot: StallySettingsSnapshot
     ) {
@@ -24,16 +35,5 @@ final class StallySettingsScreenModel {
         snapshot: StallySettingsSnapshot
     ) {
         self.snapshot = snapshot
-    }
-
-    var buildCards: [BuildCard] {
-        [
-            .init(title: "Version", value: snapshot.appVersion),
-            .init(title: "Build", value: snapshot.buildNumber),
-        ]
-    }
-
-    var deepLinkRows: [StallySettingsSnapshot.DeepLinkRow] {
-        snapshot.deepLinkRows
     }
 }

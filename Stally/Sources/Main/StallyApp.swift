@@ -50,7 +50,7 @@ struct StallyApp: App {
         }
     }
 
-    private nonisolated static var isRunningTests: Bool {
+    nonisolated private static var isRunningTests: Bool {
         ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
     }
 }

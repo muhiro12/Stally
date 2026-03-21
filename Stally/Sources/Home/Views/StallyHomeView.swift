@@ -175,27 +175,27 @@ private extension StallyHomeView {
 
         return ZStack(alignment: .bottomLeading) {
             heroArtwork(for: item)
-            .overlay {
-                RoundedRectangle(
-                    cornerRadius: StallyDesign.Radius.panel,
-                    style: .continuous
-                )
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            .clear,
-                            Color.black.opacity(0.14),
-                            Color.black.opacity(0.56)
-                        ],
-                        startPoint: .center,
-                        endPoint: .bottom
+                .overlay {
+                    RoundedRectangle(
+                        cornerRadius: StallyDesign.Radius.panel,
+                        style: .continuous
                     )
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                .clear,
+                                Color.black.opacity(0.14),
+                                Color.black.opacity(0.56)
+                            ],
+                            startPoint: .center,
+                            endPoint: .bottom
+                        )
+                    )
+                }
+                .matchedTransitionSource(
+                    id: item.id,
+                    in: navigationNamespace
                 )
-            }
-            .matchedTransitionSource(
-                id: item.id,
-                in: navigationNamespace
-            )
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("RECENTLY ACTIVE")

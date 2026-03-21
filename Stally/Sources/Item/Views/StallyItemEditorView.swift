@@ -308,7 +308,6 @@ private extension StallyItemEditorView {
             model.presentDeleteError(error)
         }
     }
-
 }
 
 @available(iOS 26.0, *)

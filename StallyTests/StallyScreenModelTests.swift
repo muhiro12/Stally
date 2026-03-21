@@ -11,18 +11,18 @@ final class StallyScreenModelTests: XCTestCase {
                 context: context,
                 name: "Daily Tote",
                 category: .bags,
-                createdAt: localDate(year: 2026, month: 3, day: 1)
+                createdAt: localDate(year: 2_026, month: 3, day: 1)
             )
             let secondItem = try createTestItem(
                 context: context,
                 name: "Notebook",
                 category: .notebooks,
-                createdAt: localDate(year: 2026, month: 3, day: 2)
+                createdAt: localDate(year: 2_026, month: 3, day: 2)
             )
             try markTestItem(
                 context: context,
                 item: firstItem,
-                on: localDate(year: 2026, month: 3, day: 20)
+                on: localDate(year: 2_026, month: 3, day: 20)
             )
 
             let snapshot = StallyLibrarySnapshotBuilder.build(
@@ -55,17 +55,17 @@ final class StallyScreenModelTests: XCTestCase {
             try markTestItem(
                 context: context,
                 item: archivedWithHistory,
-                on: localDate(year: 2026, month: 3, day: 10)
+                on: localDate(year: 2_026, month: 3, day: 10)
             )
             try archiveTestItem(
                 context: context,
                 item: archivedWithHistory,
-                at: localDate(year: 2026, month: 3, day: 11)
+                at: localDate(year: 2_026, month: 3, day: 11)
             )
             try archiveTestItem(
                 context: context,
                 item: archivedWithoutHistory,
-                at: localDate(year: 2026, month: 3, day: 12)
+                at: localDate(year: 2_026, month: 3, day: 12)
             )
 
             let snapshot = StallyArchiveSnapshotBuilder.build(
@@ -87,13 +87,13 @@ final class StallyScreenModelTests: XCTestCase {
                 context: context,
                 name: "Item One",
                 category: .other,
-                createdAt: localDate(year: 2026, month: 2, day: 1)
+                createdAt: localDate(year: 2_026, month: 2, day: 1)
             )
             _ = try createTestItem(
                 context: context,
                 name: "Item Two",
                 category: .other,
-                createdAt: localDate(year: 2026, month: 2, day: 2)
+                createdAt: localDate(year: 2_026, month: 2, day: 2)
             )
 
             let snapshot = StallyReviewSnapshotBuilder.build(
@@ -122,12 +122,12 @@ final class StallyScreenModelTests: XCTestCase {
             try markTestItem(
                 context: context,
                 item: item,
-                on: localDate(year: 2026, month: 3, day: 18)
+                on: localDate(year: 2_026, month: 3, day: 18)
             )
             try markTestItem(
                 context: context,
                 item: item,
-                on: localDate(year: 2026, month: 3, day: 19)
+                on: localDate(year: 2_026, month: 3, day: 19)
             )
 
             let snapshot = StallyInsightsSnapshotBuilder.build(
@@ -149,7 +149,7 @@ final class StallyScreenModelTests: XCTestCase {
             )
 
             XCTAssertEqual(model.buildCards.map(\.title), ["Version", "Build"])
-            XCTAssertTrue(model.deepLinkRows.contains(where: { $0.route == .backup }))
+            XCTAssertTrue(model.deepLinkRows.contains { $0.route == .backup })
         }
     }
 }

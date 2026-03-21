@@ -36,24 +36,6 @@ final class StallyHomeScreenModel {
     var query = ItemListQuery()
     private(set) var snapshot: StallyLibrarySnapshot
 
-    init(
-        snapshot: StallyLibrarySnapshot
-    ) {
-        self.snapshot = snapshot
-    }
-
-    func update(
-        snapshot: StallyLibrarySnapshot
-    ) {
-        self.snapshot = snapshot
-    }
-
-    func selectQuickFilter(
-        _ filter: ItemListQuery.QuickFilter?
-    ) {
-        query.quickFilter = filter
-    }
-
     var displayedItems: [Item] {
         ItemInsightsCalculator.items(
             from: snapshot.activeItems,
@@ -197,5 +179,23 @@ final class StallyHomeScreenModel {
                 ]
             ),
         ]
+    }
+
+    init(
+        snapshot: StallyLibrarySnapshot
+    ) {
+        self.snapshot = snapshot
+    }
+
+    func update(
+        snapshot: StallyLibrarySnapshot
+    ) {
+        self.snapshot = snapshot
+    }
+
+    func selectQuickFilter(
+        _ filter: ItemListQuery.QuickFilter?
+    ) {
+        query.quickFilter = filter
     }
 }

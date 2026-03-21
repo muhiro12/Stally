@@ -111,7 +111,7 @@ final class StallyAppRouteServiceTests: XCTestCase {
                 context: context,
                 name: "Notebook",
                 category: .notebooks,
-            )
+                )
 
             StallyAppRouteService.apply(
                 route: .item(item.id),
@@ -132,12 +132,12 @@ final class StallyAppRouteServiceTests: XCTestCase {
                 context: context,
                 name: "Camera",
                 category: .bags,
-                createdAt: localDate(year: 2026, month: 3, day: 1),
-            )
+                createdAt: localDate(year: 2_026, month: 3, day: 1),
+                )
             try archiveTestItem(
                 context: context,
                 item: item,
-                at: localDate(year: 2026, month: 3, day: 10)
+                at: localDate(year: 2_026, month: 3, day: 10)
             )
 
             StallyAppRouteService.apply(

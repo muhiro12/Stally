@@ -9,42 +9,15 @@ enum StallyAppRouteService {
     ) {
         appModel.dismissEditor()
 
+        if let destination = staticDestination(for: route) {
+            appModel.show(
+                tab: destination.tab,
+                path: destination.path
+            )
+            return
+        }
+
         switch route {
-        case .home:
-            appModel.show(
-                tab: .library,
-                path: []
-            )
-        case .archive:
-            appModel.show(
-                tab: .archive,
-                path: []
-            )
-        case .backup:
-            appModel.show(
-                tab: .library,
-                path: [
-                    .settings,
-                    .backup
-                ]
-            )
-        case .insights:
-            appModel.show(
-                tab: .insights,
-                path: []
-            )
-        case .review:
-            appModel.show(
-                tab: .review,
-                path: []
-            )
-        case .settings:
-            appModel.show(
-                tab: .library,
-                path: [
-                    .settings
-                ]
-            )
         case .item(let itemID):
             appModel.show(
                 tab: hostTab(
@@ -58,11 +31,48 @@ enum StallyAppRouteService {
         case .createItem:
             appModel.resetNavigation(selecting: .library)
             appModel.presentCreateEditor()
+        case .home, .archive, .backup, .insights, .review, .settings:
+            break
         }
     }
 }
 
 private extension StallyAppRouteService {
+    static func staticDestination(
+        for route: StallyRoute
+    ) -> (
+        tab: StallyAppModel.Tab,
+        path: [StallyAppModel.StackDestination]
+    )? {
+        switch route {
+        case .home:
+            (.library, [])
+        case .archive:
+            (.archive, [])
+        case .backup:
+            (
+                .library,
+                [
+                    .settings,
+                    .backup
+                ]
+            )
+        case .insights:
+            (.insights, [])
+        case .review:
+            (.review, [])
+        case .settings:
+            (
+                .library,
+                [
+                    .settings
+                ]
+            )
+        case .item, .createItem:
+            nil
+        }
+    }
+
     static func hostTab(
         for itemID: UUID,
         items: [Item]
