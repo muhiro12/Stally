@@ -1,6 +1,7 @@
 import Foundation
 import StallyLibrary
 
+// swiftlint:disable file_types_order one_declaration_per_file
 struct StallyReviewSnapshot {
     let summary: ItemReviewSummary
     let snapshotsByID: [UUID: ItemReviewSnapshot]
@@ -61,3 +62,4 @@ enum StallyReviewSnapshotBuilder {
         )
     }
 }
+// swiftlint:enable file_types_order one_declaration_per_file

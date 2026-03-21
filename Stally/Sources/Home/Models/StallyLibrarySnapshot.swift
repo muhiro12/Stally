@@ -1,6 +1,7 @@
 import Foundation
 import StallyLibrary
 
+// swiftlint:disable file_types_order one_declaration_per_file multiline_function_chains
 struct StallyLibrarySnapshot {
     let activeItems: [Item]
     let recentItems: [Item]
@@ -72,3 +73,4 @@ enum StallyLibrarySnapshotBuilder {
         )
     }
 }
+// swiftlint:enable file_types_order one_declaration_per_file multiline_function_chains

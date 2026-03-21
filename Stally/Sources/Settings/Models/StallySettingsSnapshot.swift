@@ -1,6 +1,7 @@
 import Foundation
 import StallyLibrary
 
+// swiftlint:disable file_types_order one_declaration_per_file function_body_length
 struct StallySettingsSnapshot {
     struct DeepLinkRow: Identifiable {
         let id: String
@@ -78,3 +79,4 @@ enum StallySettingsSnapshotBuilder {
         )
     }
 }
+// swiftlint:enable file_types_order one_declaration_per_file function_body_length

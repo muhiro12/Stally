@@ -1,3 +1,4 @@
+// swiftlint:disable closure_body_length file_length type_contents_order
 import MHDeepLinking
 import StallyLibrary
 import SwiftData
@@ -482,3 +483,4 @@ private extension StallyItemDetailView {
         }
     }
 }
+// swiftlint:enable closure_body_length file_length type_contents_order

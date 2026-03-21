@@ -13,6 +13,10 @@ import SwiftUI
 
 @main
 struct StallyApp: App {
+    nonisolated private static var isRunningTests: Bool {
+        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+    }
+
     private let sharedAssembly: StallyAppAssembly?
     private let startupLogger = Self.logger(category: "AppStartup")
 
@@ -48,9 +52,5 @@ struct StallyApp: App {
                 "tip guidance failed to configure: \(String(describing: error))"
             )
         }
-    }
-
-    nonisolated private static var isRunningTests: Bool {
-        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
     }
 }

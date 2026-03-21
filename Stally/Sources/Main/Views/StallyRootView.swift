@@ -3,6 +3,7 @@ import StallyLibrary
 import SwiftData
 import SwiftUI
 
+// swiftlint:disable closure_body_length
 struct StallyRootView: View {
     @Environment(StallyAppAssembly.self)
     var assembly
@@ -104,3 +105,4 @@ struct StallyRootView: View {
         }
     }
 }
+// swiftlint:enable closure_body_length

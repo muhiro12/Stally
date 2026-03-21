@@ -46,7 +46,8 @@ struct StallyReviewView: View {
                 Button {
                     appModel.openSettings(in: .review)
                 } label: {
-                    Image(systemName: "slider.horizontal.3")
+                    Label("Open Settings", systemImage: "slider.horizontal.3")
+                        .labelStyle(.iconOnly)
                         .font(.headline.weight(.semibold))
                         .foregroundStyle(StallyDesign.Palette.ink)
                 }

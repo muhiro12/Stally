@@ -32,42 +32,6 @@ final class StallyItemEditorModel {
     var isSaving = false
     var isDeleting = false
 
-    init(
-        mode: Mode
-    ) {
-        self.mode = mode
-
-        let initialName: String
-        let initialCategory: ItemCategory
-        let initialNote: String
-        let initialPhotoData: Data?
-
-        switch mode {
-        case .create:
-            initialName = ""
-            initialCategory = .other
-            initialNote = ""
-            initialPhotoData = nil
-        case .edit(let item):
-            initialName = item.name
-            initialCategory = item.category
-            initialNote = item.note ?? ""
-            initialPhotoData = item.photoData
-        }
-
-        self.name = initialName
-        self.category = initialCategory
-        self.note = initialNote
-        self.photoData = initialPhotoData
-
-        self.originalState = .init(
-            name: initialName,
-            category: initialCategory,
-            note: initialNote,
-            photoData: initialPhotoData
-        )
-    }
-
     var existingItem: Item? {
         switch mode {
         case .create:
@@ -132,6 +96,42 @@ final class StallyItemEditorModel {
             category: category,
             photoData: photoData,
             note: note
+        )
+    }
+
+    init(
+        mode: Mode
+    ) {
+        self.mode = mode
+
+        let initialName: String
+        let initialCategory: ItemCategory
+        let initialNote: String
+        let initialPhotoData: Data?
+
+        switch mode {
+        case .create:
+            initialName = ""
+            initialCategory = .other
+            initialNote = ""
+            initialPhotoData = nil
+        case .edit(let item):
+            initialName = item.name
+            initialCategory = item.category
+            initialNote = item.note ?? ""
+            initialPhotoData = item.photoData
+        }
+
+        self.name = initialName
+        self.category = initialCategory
+        self.note = initialNote
+        self.photoData = initialPhotoData
+
+        self.originalState = .init(
+            name: initialName,
+            category: initialCategory,
+            note: initialNote,
+            photoData: initialPhotoData
         )
     }
 

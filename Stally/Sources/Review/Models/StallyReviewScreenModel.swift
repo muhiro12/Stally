@@ -14,23 +14,6 @@ final class StallyReviewScreenModel {
     private(set) var snapshot: StallyReviewSnapshot
     private(set) var showsCompletedSections: Bool
 
-    init(
-        snapshot: StallyReviewSnapshot,
-        showsCompletedSections: Bool
-    ) {
-        self.snapshot = snapshot
-        self.showsCompletedSections = showsCompletedSections
-    }
-
-    func update(
-        snapshot: StallyReviewSnapshot,
-        showsCompletedSections: Bool
-    ) {
-        self.snapshot = snapshot
-        self.showsCompletedSections = showsCompletedSections
-        trimSelection()
-    }
-
     var shouldShowUntouchedSection: Bool {
         showsCompletedSections || !snapshot.untouchedItems.isEmpty
     }
@@ -90,6 +73,23 @@ final class StallyReviewScreenModel {
 
     var recoveryCandidateItems: [Item] {
         snapshot.recoveryCandidateItems
+    }
+
+    init(
+        snapshot: StallyReviewSnapshot,
+        showsCompletedSections: Bool
+    ) {
+        self.snapshot = snapshot
+        self.showsCompletedSections = showsCompletedSections
+    }
+
+    func update(
+        snapshot: StallyReviewSnapshot,
+        showsCompletedSections: Bool
+    ) {
+        self.snapshot = snapshot
+        self.showsCompletedSections = showsCompletedSections
+        trimSelection()
     }
 }
 

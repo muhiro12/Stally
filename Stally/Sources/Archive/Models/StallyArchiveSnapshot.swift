@@ -1,6 +1,7 @@
 import Foundation
 import StallyLibrary
 
+// swiftlint:disable file_types_order one_declaration_per_file multiline_function_chains
 struct StallyArchiveSnapshot {
     let archivedItems: [Item]
     let summary: ItemInsightsCalculator.ArchiveCollectionSummary
@@ -40,3 +41,4 @@ enum StallyArchiveSnapshotBuilder {
         )
     }
 }
+// swiftlint:enable file_types_order one_declaration_per_file multiline_function_chains

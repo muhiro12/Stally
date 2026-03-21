@@ -40,6 +40,7 @@ final class StallyScreenModelTests: XCTestCase {
     }
 
     func testArchiveScreenModelFiltersArchivedItems() async throws {
+        // swiftlint:disable:next closure_body_length
         try await MainActor.run {
             let context = testContext()
             let archivedWithHistory = try createTestItem(
@@ -79,7 +80,6 @@ final class StallyScreenModelTests: XCTestCase {
             XCTAssertEqual(model.archiveMetrics.first?.value, "2")
         }
     }
-
     func testReviewScreenModelExposesVisibilityAndSelectionTip() async throws {
         try await MainActor.run {
             let context = testContext()

@@ -13,24 +13,6 @@ final class StallyArchiveScreenModel {
     var query = ItemListQuery()
     private(set) var snapshot: StallyArchiveSnapshot
 
-    init(
-        snapshot: StallyArchiveSnapshot
-    ) {
-        self.snapshot = snapshot
-    }
-
-    func update(
-        snapshot: StallyArchiveSnapshot
-    ) {
-        self.snapshot = snapshot
-    }
-
-    func selectQuickFilter(
-        _ filter: ItemListQuery.QuickFilter?
-    ) {
-        query.quickFilter = filter
-    }
-
     var displayedItems: [Item] {
         ItemInsightsCalculator.items(
             from: snapshot.archivedItems,
@@ -81,5 +63,23 @@ final class StallyArchiveScreenModel {
                 ) ?? StallyLocalization.string("None")
             ),
         ]
+    }
+
+    init(
+        snapshot: StallyArchiveSnapshot
+    ) {
+        self.snapshot = snapshot
+    }
+
+    func update(
+        snapshot: StallyArchiveSnapshot
+    ) {
+        self.snapshot = snapshot
+    }
+
+    func selectQuickFilter(
+        _ filter: ItemListQuery.QuickFilter?
+    ) {
+        query.quickFilter = filter
     }
 }

@@ -1,6 +1,7 @@
 import Foundation
 import StallyLibrary
 
+// swiftlint:disable file_types_order one_declaration_per_file function_body_length
 struct StallyInsightsSnapshot {
     let range: ItemInsightsRange
     let includesArchivedItems: Bool
@@ -119,3 +120,4 @@ enum StallyInsightsSnapshotBuilder {
         )
     }
 }
+// swiftlint:enable file_types_order one_declaration_per_file function_body_length

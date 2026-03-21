@@ -2,12 +2,12 @@ import MHUI
 import StallyLibrary
 import SwiftUI
 
-private enum StallyBackupImportActionID: String, Sendable {
-    case merge
-    case replace
-}
-
 struct StallyBackupImportPreviewCard: View {
+    private enum ActionID: String, Sendable {
+        case merge
+        case replace
+    }
+
     @Environment(\.mhTheme)
     private var theme
 
@@ -56,7 +56,7 @@ struct StallyBackupImportPreviewCard: View {
                     }
                     .buttonStyle(.mhSecondary)
                     .mhGlassEffectID(
-                        StallyBackupImportActionID.merge,
+                        ActionID.merge,
                         in: actionNamespace
                     )
                     .disabled(!preview.analysis.canImport)
@@ -69,7 +69,7 @@ struct StallyBackupImportPreviewCard: View {
                     }
                     .buttonStyle(.mhSecondary)
                     .mhGlassEffectID(
-                        StallyBackupImportActionID.replace,
+                        ActionID.replace,
                         in: actionNamespace
                     )
                     .disabled(!preview.analysis.canImport)

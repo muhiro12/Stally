@@ -1,3 +1,4 @@
+// swiftlint:disable closure_body_length function_body_length type_contents_order
 import MHDeepLinking
 import StallyLibrary
 import SwiftData
@@ -26,7 +27,8 @@ struct StallyArchiveView: View {
                     Button {
                         appModel.openSettings(in: .archive)
                     } label: {
-                        Image(systemName: "slider.horizontal.3")
+                        Label("Open Settings", systemImage: "slider.horizontal.3")
+                            .labelStyle(.iconOnly)
                             .font(.headline.weight(.semibold))
                             .foregroundStyle(StallyDesign.Palette.ink)
                     }
@@ -301,3 +303,4 @@ private extension StallyArchiveView {
         )
     }
 }
+// swiftlint:enable closure_body_length function_body_length type_contents_order

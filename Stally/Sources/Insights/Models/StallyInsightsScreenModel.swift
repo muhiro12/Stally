@@ -7,18 +7,6 @@ import SwiftUI
 final class StallyInsightsScreenModel {
     private(set) var snapshot: StallyInsightsSnapshot
 
-    init(
-        snapshot: StallyInsightsSnapshot
-    ) {
-        self.snapshot = snapshot
-    }
-
-    func update(
-        snapshot: StallyInsightsSnapshot
-    ) {
-        self.snapshot = snapshot
-    }
-
     var overviewMetrics: [StallyMetricGrid.Metric] {
         [
             .init(
@@ -108,6 +96,12 @@ final class StallyInsightsScreenModel {
         )
     }
 
+    init(
+        snapshot: StallyInsightsSnapshot
+    ) {
+        self.snapshot = snapshot
+    }
+
     func barHeight(
         for day: CollectionActivityDay
     ) -> CGFloat {
@@ -130,5 +124,11 @@ final class StallyInsightsScreenModel {
 
         let divisor = max(snapshot.activityDays.count / 4, 1)
         return index.isMultiple(of: divisor)
+    }
+
+    func update(
+        snapshot: StallyInsightsSnapshot
+    ) {
+        self.snapshot = snapshot
     }
 }

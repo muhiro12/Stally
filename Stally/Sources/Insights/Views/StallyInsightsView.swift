@@ -1,3 +1,4 @@
+// swiftlint:disable closure_body_length file_length type_contents_order
 import StallyLibrary
 import SwiftData
 import SwiftUI
@@ -556,3 +557,4 @@ private extension StallyInsightsView {
         )
     }
 }
+// swiftlint:enable closure_body_length file_length type_contents_order

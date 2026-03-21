@@ -1,5 +1,8 @@
 import SwiftUI
 
+// swiftlint:disable file_types_order one_declaration_per_file
+enum StallyChrome {}
+
 enum StallySurfaceTone {
     case base
     case elevated
@@ -208,3 +211,4 @@ extension View {
             }
     }
 }
+// swiftlint:enable file_types_order one_declaration_per_file

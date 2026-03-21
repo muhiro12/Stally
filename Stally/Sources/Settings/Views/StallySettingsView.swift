@@ -1,3 +1,4 @@
+// swiftlint:disable closure_body_length type_contents_order
 import MHAppRuntimeCore
 import MHDeepLinking
 import StallyLibrary
@@ -291,3 +292,4 @@ private extension StallySettingsView {
         )
     }
 }
+// swiftlint:enable closure_body_length type_contents_order

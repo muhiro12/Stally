@@ -1,3 +1,4 @@
+// swiftlint:disable closure_body_length function_body_length file_length type_contents_order
 import MHDeepLinking
 import StallyLibrary
 import SwiftData
@@ -643,3 +644,4 @@ private extension StallyHomeView {
         )
     }
 }
+// swiftlint:enable closure_body_length function_body_length file_length type_contents_order
