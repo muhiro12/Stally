@@ -8,7 +8,7 @@ struct StallyBackupImportPreviewCard: View {
         case replace
     }
 
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
 
     @Namespace private var actionNamespace
@@ -49,13 +49,13 @@ struct StallyBackupImportPreviewCard: View {
                 }
             }
 
-            MHGlassContainer(spacing: theme.spacing.control) {
+            StallyGlassContainer(spacing: theme.spacing.control) {
                 VStack(alignment: .leading, spacing: theme.spacing.control) {
                     Button("Merge Into Library", systemImage: "square.stack.3d.up") {
                         onMerge()
                     }
                     .buttonStyle(.mhSecondary)
-                    .mhGlassEffectID(
+                    .stallyGlassEffectID(
                         ActionID.merge,
                         in: actionNamespace
                     )
@@ -68,7 +68,7 @@ struct StallyBackupImportPreviewCard: View {
                         onReplace()
                     }
                     .buttonStyle(.mhSecondary)
-                    .mhGlassEffectID(
+                    .stallyGlassEffectID(
                         ActionID.replace,
                         in: actionNamespace
                     )

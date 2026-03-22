@@ -9,7 +9,7 @@ struct StallyReviewView: View {
     private var appModel
     @Environment(\.modelContext)
     private var context
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass

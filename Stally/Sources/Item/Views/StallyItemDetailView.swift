@@ -18,7 +18,7 @@ struct StallyItemDetailView: View {
     private var appModel
     @Environment(\.modelContext)
     private var context
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
@@ -188,29 +188,29 @@ private extension StallyItemDetailView {
 
     var actionSection: some View {
         VStack(alignment: .leading, spacing: theme.spacing.control) {
-            MHGlassContainer(spacing: theme.spacing.control) {
+            StallyGlassContainer(spacing: theme.spacing.control) {
                 VStack(alignment: .leading, spacing: theme.spacing.control) {
                     toggleTodayMarkButton
-                        .mhGlassEffectID(
+                        .stallyGlassEffectID(
                             ActionID.toggleTodayMark,
                             in: actionNamespace
                         )
                     toggleArchiveStateButton
-                        .mhGlassEffectID(
+                        .stallyGlassEffectID(
                             ActionID.toggleArchiveState,
                             in: actionNamespace
                         )
 
                     if let itemShareURL {
                         shareButton(url: itemShareURL)
-                            .mhGlassEffectID(
+                            .stallyGlassEffectID(
                                 ActionID.share,
                                 in: actionNamespace
                             )
                     }
 
                     historyEditorButton
-                        .mhGlassEffectID(
+                        .stallyGlassEffectID(
                             ActionID.openHistoryEditor,
                             in: actionNamespace
                         )

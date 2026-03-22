@@ -8,7 +8,7 @@ struct StallyHomeEntryCard: View {
         case share
     }
 
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
 
     @Namespace private var actionNamespace
@@ -102,14 +102,14 @@ private extension StallyHomeEntryCard {
     @ViewBuilder
     var actions: some View {
         if usesCompactLayout {
-            MHGlassContainer(spacing: theme.spacing.control) {
+            StallyGlassContainer(spacing: theme.spacing.control) {
                 VStack(alignment: .leading, spacing: theme.spacing.control) {
                     primaryActionButton
                     shareButton
                 }
             }
         } else {
-            MHGlassContainer(spacing: theme.spacing.control) {
+            StallyGlassContainer(spacing: theme.spacing.control) {
                 HStack(spacing: theme.spacing.control) {
                     primaryActionButton
                     shareButton
@@ -123,7 +123,7 @@ private extension StallyHomeEntryCard {
             onOpen()
         }
         .buttonStyle(.mhSecondary)
-        .mhGlassEffectID(
+        .stallyGlassEffectID(
             ActionID.open,
             in: actionNamespace
         )
@@ -138,7 +138,7 @@ private extension StallyHomeEntryCard {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
             .buttonStyle(.mhSecondary)
-            .mhGlassEffectID(
+            .stallyGlassEffectID(
                 ActionID.share,
                 in: actionNamespace
             )

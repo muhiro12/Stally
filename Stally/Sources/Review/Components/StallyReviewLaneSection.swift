@@ -22,7 +22,7 @@ struct StallyReviewLaneSection: View {
         case bulkAction
     }
 
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
 
     @Namespace private var selectionControlNamespace
@@ -101,7 +101,7 @@ private extension StallyReviewLaneSection {
     }
 
     var selectionControls: some View {
-        MHGlassContainer(spacing: theme.spacing.control) {
+        StallyGlassContainer(spacing: theme.spacing.control) {
             selectionControlsContent
         }
     }
@@ -123,7 +123,7 @@ private extension StallyReviewLaneSection {
             selection.toggleSelectionMode()
         }
         .buttonStyle(.mhSecondary)
-        .mhGlassEffectID(
+        .stallyGlassEffectID(
             SelectionControlID.selectionMode,
             in: selectionControlNamespace
         )
@@ -145,7 +145,7 @@ private extension StallyReviewLaneSection {
             selection.requestBulkAction()
         }
         .buttonStyle(.mhPrimary)
-        .mhGlassEffectID(
+        .stallyGlassEffectID(
             SelectionControlID.bulkAction,
             in: selectionControlNamespace
         )

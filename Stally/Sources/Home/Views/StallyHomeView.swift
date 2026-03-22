@@ -17,7 +17,7 @@ struct StallyHomeView: View {
     private var appModel
     @Environment(\.modelContext)
     private var context
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
@@ -299,7 +299,7 @@ private extension StallyHomeView {
 
     var homeQuickFilters: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            MHGlassContainer(spacing: theme.spacing.control) {
+            StallyGlassContainer(spacing: theme.spacing.control) {
                 HStack(spacing: theme.spacing.control) {
                     ForEach(screenModel.availableQuickFilters) { option in
                         Button(option.title) {
@@ -310,7 +310,7 @@ private extension StallyHomeView {
                                 ? .mhPrimary
                                 : .mhSecondary
                         )
-                        .mhGlassEffectID(
+                        .stallyGlassEffectID(
                             option.id,
                             in: quickFilterNamespace
                         )
@@ -409,13 +409,13 @@ private extension StallyHomeView {
             )
             .mhEmptyStateLayout()
 
-            MHGlassContainer(spacing: theme.spacing.control) {
+            StallyGlassContainer(spacing: theme.spacing.control) {
                 VStack(alignment: .leading, spacing: theme.spacing.control) {
                     Button("Add Your First Item", systemImage: "plus.circle.fill") {
                         appModel.presentCreateEditor()
                     }
                     .buttonStyle(.mhPrimary)
-                    .mhGlassEffectID(
+                    .stallyGlassEffectID(
                         EmptyStateActionID.addFirstItem,
                         in: emptyStateActionNamespace
                     )
@@ -429,7 +429,7 @@ private extension StallyHomeView {
                         }
                     }
                     .buttonStyle(.mhSecondary)
-                    .mhGlassEffectID(
+                    .stallyGlassEffectID(
                         EmptyStateActionID.trySampleItems,
                         in: emptyStateActionNamespace
                     )
@@ -438,7 +438,7 @@ private extension StallyHomeView {
                         appModel.openBackup(in: .library)
                     }
                     .buttonStyle(.mhSecondary)
-                    .mhGlassEffectID(
+                    .stallyGlassEffectID(
                         EmptyStateActionID.restoreFromBackup,
                         in: emptyStateActionNamespace
                     )

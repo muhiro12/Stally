@@ -191,6 +191,11 @@ run_logged_step \
   "Check MHPlatform adoption guardrails" \
   bash "$repository_root/ci_scripts/tasks/check_mhplatform_adoption.sh"
 
+run_logged_step \
+  "check_mhui_adoption" \
+  "Check MHUI adoption guardrails" \
+  bash "$repository_root/ci_scripts/tasks/check_mhui_adoption.sh"
+
 changed_files=$(
   {
     git diff --name-only --cached

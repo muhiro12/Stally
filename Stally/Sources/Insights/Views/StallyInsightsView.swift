@@ -12,7 +12,7 @@ struct StallyInsightsView: View {
     private var appModel
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
 
     @Namespace private var rangeNamespace
@@ -142,7 +142,7 @@ private extension StallyInsightsView {
                 .mhRowTitle()
 
             ScrollView(.horizontal, showsIndicators: false) {
-                MHGlassContainer(spacing: theme.spacing.control) {
+                StallyGlassContainer(spacing: theme.spacing.control) {
                     HStack(spacing: theme.spacing.control) {
                         ForEach(ItemInsightsRange.allCases, id: \.self) { range in
                             Button(range.title) {
@@ -155,7 +155,7 @@ private extension StallyInsightsView {
                                     ? .mhPrimary
                                     : .mhSecondary
                             )
-                            .mhGlassEffectID(
+                            .stallyGlassEffectID(
                                 range,
                                 in: rangeNamespace
                             )

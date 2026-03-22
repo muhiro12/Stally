@@ -197,13 +197,13 @@ private extension StallySettingsView {
 
                         Spacer(minLength: 12)
 
-                        MHGlassContainer(spacing: 12) {
+                        StallyGlassContainer(spacing: 12) {
                             HStack(spacing: 12) {
                                 Button("Copy") {
                                     UIPasteboard.general.url = routeURL
                                 }
                                 .buttonStyle(.mhSecondary)
-                                .mhGlassEffectID(
+                                .stallyGlassEffectID(
                                     "\(row.id)-copy",
                                     in: deepLinkActionNamespace
                                 )
@@ -212,7 +212,7 @@ private extension StallySettingsView {
                                     Label("Share", systemImage: "square.and.arrow.up")
                                 }
                                 .buttonStyle(.mhSecondary)
-                                .mhGlassEffectID(
+                                .stallyGlassEffectID(
                                     "\(row.id)-share",
                                     in: deepLinkActionNamespace
                                 )

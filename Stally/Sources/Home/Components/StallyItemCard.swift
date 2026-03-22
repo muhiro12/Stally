@@ -5,7 +5,7 @@ import SwiftUI
 import UIKit
 
 struct StallyItemCard: View {
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
 
     let item: Item

@@ -3,7 +3,7 @@ import StallyLibrary
 import SwiftUI
 
 struct StallyBackupImportExecutionSummaryCard: View {
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
 
     let summary: StallyBackupCenterState.ImportExecutionSummary

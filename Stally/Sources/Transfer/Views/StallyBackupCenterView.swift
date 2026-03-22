@@ -8,7 +8,7 @@ import UniformTypeIdentifiers
 struct StallyBackupCenterView: View {
     @Environment(\.modelContext)
     var context
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass

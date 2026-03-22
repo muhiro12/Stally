@@ -9,7 +9,7 @@ struct StallyItemQueryControls: View {
         case clear
     }
 
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
 
     @Namespace private var compactHorizontalMenuNamespace
@@ -36,15 +36,15 @@ struct StallyItemQueryControls: View {
             }
         } else {
             HStack(alignment: .center, spacing: theme.spacing.control) {
-                MHGlassContainer(spacing: theme.spacing.control) {
+                StallyGlassContainer(spacing: theme.spacing.control) {
                     HStack(spacing: theme.spacing.control) {
                         categoryMenu
-                            .mhGlassEffectID(
+                            .stallyGlassEffectID(
                                 ControlID.category,
                                 in: regularMenuNamespace
                             )
                         sortMenu
-                            .mhGlassEffectID(
+                            .stallyGlassEffectID(
                                 ControlID.sort,
                                 in: regularMenuNamespace
                             )
@@ -65,22 +65,22 @@ struct StallyItemQueryControls: View {
 
 private extension StallyItemQueryControls {
     var horizontalMenus: some View {
-        MHGlassContainer(spacing: theme.spacing.control) {
+        StallyGlassContainer(spacing: theme.spacing.control) {
             HStack(spacing: theme.spacing.control) {
                 categoryMenu
-                    .mhGlassEffectID(
+                    .stallyGlassEffectID(
                         ControlID.category,
                         in: compactHorizontalMenuNamespace
                     )
                 sortMenu
-                    .mhGlassEffectID(
+                    .stallyGlassEffectID(
                         ControlID.sort,
                         in: compactHorizontalMenuNamespace
                     )
 
                 if query.hasRefinements {
                     clearFiltersButton
-                        .mhGlassEffectID(
+                        .stallyGlassEffectID(
                             ControlID.clear,
                             in: compactHorizontalMenuNamespace
                         )
@@ -90,22 +90,22 @@ private extension StallyItemQueryControls {
     }
 
     var verticalMenus: some View {
-        MHGlassContainer(spacing: theme.spacing.control) {
+        StallyGlassContainer(spacing: theme.spacing.control) {
             VStack(alignment: .leading, spacing: theme.spacing.control) {
                 categoryMenu
-                    .mhGlassEffectID(
+                    .stallyGlassEffectID(
                         ControlID.category,
                         in: compactVerticalMenuNamespace
                     )
                 sortMenu
-                    .mhGlassEffectID(
+                    .stallyGlassEffectID(
                         ControlID.sort,
                         in: compactVerticalMenuNamespace
                     )
 
                 if query.hasRefinements {
                     clearFiltersButton
-                        .mhGlassEffectID(
+                        .stallyGlassEffectID(
                             ControlID.clear,
                             in: compactVerticalMenuNamespace
                         )

@@ -47,7 +47,8 @@ and supports portable backup export and restore flows.
   composition and UI, while reusable domain and persistence logic lives in
   `StallyLibrary/`.
 - **MHUI presentation layer** – shared screen chrome, row styles, and
-  glass-first controls come from the sibling `../MHUI` package, while
+  glass-first controls come from the public
+  `https://github.com/muhiro12/MHUI.git` package, while
   `StallyDesign` still owns app-local color and tint tokens.
 - **SwiftData storage** – `ModelContainerFactory.shared()` creates the
   persistent container for `Item` and `Mark`.
@@ -83,8 +84,8 @@ and supports portable backup export and restore flows.
 
 1. Open the repository root.
 2. Install hooks with `pre-commit install`.
-3. Ensure the sibling `../MHUI` package is available, then open
-   `Stally.xcodeproj` in Xcode.
+3. Open `Stally.xcodeproj` in Xcode and allow Swift Package Manager to resolve
+   the public `MHUI` dependency from GitHub.
 4. Run the **Stally** scheme on an iOS 18 simulator or device, or use the
    **StallyLibrary** scheme when iterating on shared logic and tests.
 

@@ -3,7 +3,7 @@ import StallyLibrary
 import SwiftUI
 
 struct StallyHistorySection: View {
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
 
     let months: [MarkHistoryMonth]

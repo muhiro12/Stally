@@ -11,7 +11,7 @@ struct StallyMetricGrid: View {
         }
     }
 
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
 
     let metrics: [Metric]

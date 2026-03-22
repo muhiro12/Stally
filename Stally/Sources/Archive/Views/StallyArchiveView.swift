@@ -10,7 +10,7 @@ struct StallyArchiveView: View {
     private var appModel
     @Environment(\.modelContext)
     private var context
-    @Environment(\.mhTheme)
+    @Environment(\.stallyMHUIThemeMetrics)
     private var theme
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
@@ -133,7 +133,7 @@ private extension StallyArchiveView {
 
     var archiveQuickFilters: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            MHGlassContainer(spacing: theme.spacing.control) {
+            StallyGlassContainer(spacing: theme.spacing.control) {
                 HStack(spacing: theme.spacing.control) {
                     ForEach(screenModel.availableQuickFilters) { option in
                         Button(option.title) {
@@ -144,7 +144,7 @@ private extension StallyArchiveView {
                                 ? .mhPrimary
                                 : .mhSecondary
                         )
-                        .mhGlassEffectID(
+                        .stallyGlassEffectID(
                             option.id,
                             in: quickFilterNamespace
                         )
