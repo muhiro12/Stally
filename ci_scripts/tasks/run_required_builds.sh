@@ -48,7 +48,7 @@ start_time_display=$(date +"%Y-%m-%d %H:%M:%S %z")
 start_time_iso=$(date +"%Y-%m-%dT%H:%M:%S%z")
 
 overall_result="success"
-run_note="Evaluating local changes to determine required build/test steps."
+run_note="Evaluating local changes to determine required verification steps."
 failed_step=""
 failed_log=""
 executed_steps=()
@@ -70,7 +70,7 @@ finalize_run_artifacts() {
 
   if [[ $exit_code -ne 0 ]]; then
     overall_result="failure"
-    if [[ -z "$run_note" || "$run_note" == "Executed required CI steps based on local changes." ]]; then
+    if [[ -z "$run_note" || "$run_note" == "Executed required verification steps based on local changes." ]]; then
       run_note="A required step failed. Review failure details and logs."
     fi
   fi
@@ -181,6 +181,11 @@ if $should_run_pre_commit; then
     bash "$repository_root/ci_scripts/tasks/pre_commit.sh"
 fi
 
+run_logged_step \
+  "check_no_secrets" \
+  "Scan repository for committed secrets" \
+  bash "$repository_root/ci_scripts/tasks/check_no_secrets.sh"
+
 changed_files=$(
   {
     git diff --name-only --cached
@@ -192,9 +197,9 @@ changed_files=$(
 if [[ -z "$changed_files" ]]; then
   echo "No local changes detected."
   if $should_run_pre_commit; then
-    run_note="pre-commit completed. No local changes detected. Build/test steps were skipped."
+    run_note="pre-commit and repository safety checks completed. No local changes detected. Build/test steps were skipped."
   else
-    run_note="No local changes detected. Build/test steps were skipped."
+    run_note="Repository safety checks completed. No local changes detected. Build/test steps were skipped."
   fi
   exit 0
 fi
@@ -213,14 +218,14 @@ fi
 if ! $needs_stally_build && ! $needs_stally_library_tests; then
   echo "No changes under Stally/, Stally.xcodeproj/, or StallyLibrary/."
   if $should_run_pre_commit; then
-    run_note="pre-commit completed. No changes under Stally/, Stally.xcodeproj/, or StallyLibrary/. Build/test steps were skipped."
+    run_note="pre-commit and repository safety checks completed. No changes under Stally/, Stally.xcodeproj/, or StallyLibrary/. Build/test steps were skipped."
   else
-    run_note="No changes under Stally/, Stally.xcodeproj/, or StallyLibrary/. Build/test steps were skipped."
+    run_note="Repository safety checks completed. No changes under Stally/, Stally.xcodeproj/, or StallyLibrary/. Build/test steps were skipped."
   fi
   exit 0
 fi
 
-run_note="Executed required CI steps based on local changes."
+run_note="Executed required verification steps based on local changes."
 
 if $needs_stally_build; then
   run_logged_step \
