@@ -24,8 +24,8 @@ Allowed in views:
 - Sheet, dialog, and navigation behavior
 - Display-only formatting
 - Layout and composition
-- Product-specific visual styling through app-local helpers such as
-  `StallyDesign`, `StallyChrome`, and selective Liquid Glass composition
+- Product-specific visual styling through `MHUI` primitives and app-local
+  tokens exposed by `StallyDesign`
 
 Not allowed in views:
 

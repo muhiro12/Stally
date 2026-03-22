@@ -1,3 +1,4 @@
+import MHUI
 import SwiftUI
 
 struct StallyMetricGrid: View {
@@ -10,6 +11,9 @@ struct StallyMetricGrid: View {
         }
     }
 
+    @Environment(\.mhTheme)
+    private var theme
+
     let metrics: [Metric]
     let usesCompactLayout: Bool
 
@@ -18,14 +22,14 @@ struct StallyMetricGrid: View {
             LazyVGrid(
                 columns: columns,
                 alignment: .leading,
-                spacing: 12
+                spacing: theme.spacing.control
             ) {
                 ForEach(metrics) { metric in
                     metricView(metric)
                 }
             }
         } else {
-            HStack(spacing: 12) {
+            HStack(spacing: theme.spacing.group) {
                 ForEach(metrics) { metric in
                     metricView(metric)
                 }
@@ -39,7 +43,7 @@ private extension StallyMetricGrid {
         Array(
             repeating: GridItem(
                 .flexible(minimum: 0, maximum: .infinity),
-                spacing: 12,
+                spacing: theme.spacing.group,
                 alignment: .leading
             ),
             count: 2
@@ -51,17 +55,12 @@ private extension StallyMetricGrid {
     ) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(metric.title)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(StallyDesign.Palette.mutedInk)
+                .mhRowSupporting()
                 .fixedSize(horizontal: false, vertical: true)
             Text(metric.value)
-                .font(StallyDesign.Typography.metric)
-                .monospacedDigit()
-                .foregroundStyle(StallyDesign.Palette.ink)
-                .contentTransition(.symbolEffect)
+                .mhRowValue(colorRole: .accent)
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .stallyPanel(.elevated, padding: 14)
     }
 }

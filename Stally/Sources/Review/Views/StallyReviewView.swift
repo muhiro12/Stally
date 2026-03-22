@@ -1,4 +1,5 @@
 import MHDeepLinking
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
@@ -8,48 +9,45 @@ struct StallyReviewView: View {
     private var appModel
     @Environment(\.modelContext)
     private var context
+    @Environment(\.mhTheme)
+    private var theme
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
 
     @State private var screenModel: StallyReviewScreenModel
 
     let snapshot: StallyReviewSnapshot
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: StallyDesign.Layout.sectionSpacing) {
-                summaryCard
+        VStack(alignment: .leading, spacing: theme.spacing.group) {
+            summaryCard
 
-                if snapshot.summary.totalReviewCount == .zero, !screenModel.showsCompletedSections {
-                    emptyState
-                } else {
-                    if screenModel.shouldShowUntouchedSection {
-                        untouchedSection
-                    }
+            if snapshot.summary.totalReviewCount == .zero, !screenModel.showsCompletedSections {
+                emptyState
+            } else {
+                if screenModel.shouldShowUntouchedSection {
+                    untouchedSection
+                }
 
-                    if screenModel.shouldShowDormantSection {
-                        dormantSection
-                    }
+                if screenModel.shouldShowDormantSection {
+                    dormantSection
+                }
 
-                    if screenModel.shouldShowRecoverySection {
-                        recoverySection
-                    }
+                if screenModel.shouldShowRecoverySection {
+                    recoverySection
                 }
             }
-            .padding(.horizontal, StallyDesign.Layout.screenPadding)
-            .padding(.top, 12)
-            .safeAreaPadding(.bottom, 28)
         }
-        .contentMargins(.bottom, 28, for: .scrollContent)
+        .mhScreen(
+            title: Text("Review"),
+            subtitle: Text("Find the items that deserve attention before they drift too far out of mind.")
+        )
         .navigationTitle("Review")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
+                Button("Settings", systemImage: "gearshape") {
                     appModel.openSettings(in: .review)
-                } label: {
-                    Label("Open Settings", systemImage: "slider.horizontal.3")
-                        .labelStyle(.iconOnly)
-                        .font(.headline.weight(.semibold))
-                        .foregroundStyle(StallyDesign.Palette.ink)
                 }
             }
         }
@@ -64,7 +62,6 @@ struct StallyReviewView: View {
                 showsCompletedSections: appModel.reviewPreferences.showCompletedSections
             )
         }
-        .stallyScreenBackground()
     }
 
     init(
@@ -81,6 +78,10 @@ struct StallyReviewView: View {
 }
 
 private extension StallyReviewView {
+    var usesCompactLayout: Bool {
+        horizontalSizeClass != .regular
+    }
+
     var untouchedSelectionBinding: Binding<StallyReviewSelectionState.LaneSelection> {
         .init(
             get: {
@@ -115,32 +116,27 @@ private extension StallyReviewView {
     }
 
     var summaryCard: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Snapshot",
-                title: "What needs attention next",
-                subtitle: "This combines first-use lag, inactivity, and possible returns from archive."
-            )
-
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             HStack(alignment: .firstTextBaseline) {
-                Text("Pending")
-                    .font(StallyDesign.Typography.caption)
-                    .foregroundStyle(StallyDesign.Palette.mutedInk)
+                Text("Review Snapshot")
+                    .mhRowTitle()
 
-                Spacer(minLength: .zero)
+                Spacer(minLength: theme.spacing.control)
 
                 Text("\(snapshot.summary.totalReviewCount)")
-                    .font(.largeTitle.weight(.semibold))
-                    .foregroundStyle(StallyDesign.Palette.accent)
-                    .contentTransition(.symbolEffect)
+                    .mhRowValue(colorRole: .accent)
             }
+
+            Text("This brings together first-use lag, inactivity, and archive recovery into one review lane.")
+                .mhRowSupporting()
 
             StallyMetricGrid(
                 metrics: screenModel.summaryMetrics,
-                usesCompactLayout: true
+                usesCompactLayout: usesCompactLayout
             )
         }
-        .stallyPanel(.base)
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
     }
 
     var emptyState: some View {
@@ -151,8 +147,9 @@ private extension StallyReviewView {
                 "Items that need a first mark, feel dormant, or look ready to return from Archive will appear here."
             )
         )
-        .frame(maxWidth: .infinity)
-        .stallyPanel(.quiet)
+        .mhEmptyStateLayout()
+        .mhSurfaceInset()
+        .mhSurface()
     }
 
     var untouchedSection: some View {

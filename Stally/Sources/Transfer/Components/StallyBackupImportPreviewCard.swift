@@ -1,3 +1,4 @@
+import MHUI
 import StallyLibrary
 import SwiftUI
 
@@ -6,6 +7,9 @@ struct StallyBackupImportPreviewCard: View {
         case merge
         case replace
     }
+
+    @Environment(\.mhTheme)
+    private var theme
 
     @Namespace private var actionNamespace
 
@@ -16,12 +20,12 @@ struct StallyBackupImportPreviewCard: View {
 
     // swiftlint:disable closure_body_length
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Preview",
-                title: preview.sourceName,
-                subtitle: supportingText
-            )
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Text(preview.sourceName)
+                .mhRowTitle()
+
+            Text(supportingText)
+                .mhRowSupporting()
 
             StallyMetricGrid(
                 metrics: metrics,
@@ -30,62 +34,47 @@ struct StallyBackupImportPreviewCard: View {
 
             if preview.analysis.issues.isEmpty {
                 Text("No validation issues were found in this backup.")
-                    .stallySupportingText()
+                    .mhRowSupporting()
             } else {
                 ForEach(preview.analysis.issues) { issue in
                     VStack(alignment: .leading, spacing: 4) {
                         Text(issueTitle(issue))
-                            .stallyCardTitle()
+                            .mhRowTitle()
 
                         Text(issue.message)
-                            .stallySupportingText()
+                            .mhRowSupporting()
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.vertical, 2)
                 }
             }
 
-            GlassEffectContainer(
-                spacing: StallyDesign.Layout.compactSpacing
-            ) {
-                VStack(
-                    alignment: .leading,
-                    spacing: StallyDesign.Layout.compactSpacing
-                ) {
-                    Button {
+            MHGlassContainer(spacing: theme.spacing.control) {
+                VStack(alignment: .leading, spacing: theme.spacing.control) {
+                    Button("Merge Into Library", systemImage: "square.stack.3d.up") {
                         onMerge()
-                    } label: {
-                        Label(
-                            "Merge Into Library",
-                            systemImage: "square.stack.3d.up"
-                        )
-                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .buttonStyle(.glass)
-                    .glassEffectID(
+                    .buttonStyle(.mhSecondary)
+                    .mhGlassEffectID(
                         ActionID.merge,
                         in: actionNamespace
                     )
                     .disabled(!preview.analysis.canImport)
 
-                    Button {
+                    Button(
+                        "Replace Library",
+                        systemImage: "arrow.trianglehead.2.clockwise.rotate.90"
+                    ) {
                         onReplace()
-                    } label: {
-                        Label(
-                            "Replace Library",
-                            systemImage: "arrow.trianglehead.2.clockwise.rotate.90"
-                        )
-                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .buttonStyle(.glass)
-                    .glassEffectID(
+                    .buttonStyle(.mhSecondary)
+                    .mhGlassEffectID(
                         ActionID.replace,
                         in: actionNamespace
                     )
                     .disabled(!preview.analysis.canImport)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(
                 StallyLocalization.string(
@@ -93,16 +82,17 @@ struct StallyBackupImportPreviewCard: View {
                         + "local metadata when conflicts exist."
                 )
             )
-            .stallySupportingText()
+            .mhRowSupporting()
 
             Text(
                 StallyLocalization.string(
                     "Replace import deletes the current library first, then restores exactly what is in the backup."
                 )
             )
-            .stallySupportingText()
+            .mhRowSupporting()
         }
-        .stallyPanel(.elevated, padding: 16)
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
     }
     // swiftlint:enable closure_body_length
 }

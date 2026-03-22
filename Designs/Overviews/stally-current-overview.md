@@ -102,10 +102,9 @@ Runtime startup is currently built from `MHAppRuntimeCore` composed with
 app-specific route meaning, tab and sheet state, screen snapshot builders,
 screen models, and feature presentation in the app target.
 
-Shared presentation chrome is now app-local inside `Stally/Sources/Common/Components/`.
-`StallyDesign` owns the visual tokens, `StallyChrome` owns reusable text and
-panel styling, and Liquid Glass is used selectively inside app-defined action
-clusters rather than through a sibling presentation package.
+Shared presentation chrome comes from the sibling `../MHUI` package, while
+`StallyDesign` keeps app-local tint and visual token choices inside the app
+target.
 
 The app shell is now centered on `StallyAppModel`, which owns the selected tab,
 per-tab stack paths, modal item editor state, operation alert state, and

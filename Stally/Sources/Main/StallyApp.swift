@@ -8,6 +8,7 @@
 import Foundation
 import MHAppRuntimeCore
 import MHLogging
+import MHUI
 import SwiftUI
 
 @main

@@ -1,17 +1,29 @@
-// swiftlint:disable closure_body_length file_length type_contents_order
+// swiftlint:disable file_length type_contents_order
 import MHDeepLinking
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
 import TipKit
 
 struct StallyItemDetailView: View {
+    private enum ActionID: String, Sendable {
+        case toggleTodayMark
+        case toggleArchiveState
+        case share
+        case openHistoryEditor
+    }
+
     @Environment(StallyAppModel.self)
     private var appModel
     @Environment(\.modelContext)
     private var context
+    @Environment(\.mhTheme)
+    private var theme
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
+
+    @Namespace private var actionNamespace
 
     @State private var isHistoryEditorPresented = false
     @State private var selectedHistoryDate = Date.now
@@ -20,23 +32,27 @@ struct StallyItemDetailView: View {
     let navigationNamespace: Namespace.ID
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: StallyDesign.Layout.sectionSpacing) {
-                heroSection
-                actionsSection
-                insightsSection
+        VStack(alignment: .leading, spacing: theme.spacing.section) {
+            heroSection
+            insightsSection
+            actionSection
 
-                if let note = item.note {
-                    noteSection(note)
-                }
-
-                historySection
+            if let note = item.note {
+                noteSection(note: note)
             }
-            .padding(.horizontal, StallyDesign.Layout.screenPadding)
-            .padding(.top, 12)
-            .safeAreaPadding(.bottom, 28)
+
+            StallyHistorySection(
+                months: MarkHistoryCalculator.months(for: item)
+            )
+            .mhSection(
+                title: Text("Quiet History"),
+                supporting: Text("One filled day means you chose this item on that date.")
+            )
         }
-        .contentMargins(.bottom, 28, for: .scrollContent)
+        .mhScreen(
+            title: nil as Text?,
+            subtitle: nil as Text?
+        )
         .navigationTitle(item.name)
         .navigationBarTitleDisplayMode(.inline)
         .navigationTransition(
@@ -45,6 +61,9 @@ struct StallyItemDetailView: View {
                 in: navigationNamespace
             )
         )
+        .sheet(isPresented: $isHistoryEditorPresented) {
+            historyEditorSheet
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Edit") {
@@ -52,10 +71,6 @@ struct StallyItemDetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $isHistoryEditorPresented) {
-            historyEditorSheet
-        }
-        .stallyScreenBackground()
     }
 }
 
@@ -71,299 +86,18 @@ private extension StallyItemDetailView {
         )
     }
 
-    var usesCompactLayout: Bool {
-        horizontalSizeClass != .regular
-    }
-
     var historyDateRange: ClosedRange<Date> {
         item.createdAt...Date.now
+    }
+
+    var usesCompactLayout: Bool {
+        horizontalSizeClass != .regular
     }
 
     var itemShareURL: URL? {
         StallyDeepLinking.codec().preferredURL(
             for: .item(item.id)
         )
-    }
-
-    var heroSection: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            if usesCompactLayout {
-                VStack(alignment: .leading, spacing: 18) {
-                    artwork
-                    heroText
-                }
-            } else {
-                HStack(alignment: .top, spacing: 18) {
-                    artwork
-                    heroText
-                    Spacer(minLength: .zero)
-                }
-            }
-
-            if item.isArchived {
-                Label(
-                    "Archived items stay out of the active library until you move them back.",
-                    systemImage: "archivebox.fill"
-                )
-                .font(StallyDesign.Typography.caption)
-                .foregroundStyle(StallyDesign.Palette.mutedInk)
-            }
-        }
-        .stallyPanel(.base)
-    }
-
-    var artwork: some View {
-        StallyItemArtworkView(
-            photoData: item.photoData,
-            category: item.category,
-            width: 148,
-            height: 182
-        )
-    }
-
-    var heroText: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(item.name)
-                .font(StallyDesign.Typography.hero)
-                .foregroundStyle(StallyDesign.Palette.ink)
-
-            StallyTag(
-                title: item.category.title,
-                tone: .elevated
-            )
-
-            VStack(alignment: .leading, spacing: 10) {
-                detailRow(
-                    title: "Total marks",
-                    value: "\(summary.totalMarks)"
-                )
-                detailRow(
-                    title: "Last marked",
-                    value: summary.lastMarkedAt?.formatted(
-                        date: .abbreviated,
-                        time: .omitted
-                    ) ?? StallyLocalization.string("Not yet")
-                )
-                detailRow(
-                    title: "Days since last",
-                    value: daysSinceLastMarkTitle
-                )
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    func detailRow(
-        title: String,
-        value: String
-    ) -> some View {
-        HStack(alignment: .firstTextBaseline) {
-            Text(title)
-                .font(StallyDesign.Typography.caption)
-                .foregroundStyle(StallyDesign.Palette.mutedInk)
-
-            Spacer(minLength: 12)
-
-            Text(value)
-                .font(.headline.weight(.semibold))
-                .foregroundStyle(StallyDesign.Palette.ink)
-        }
-    }
-
-    var actionsSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Actions",
-                title: "Act on the item without leaving detail",
-                subtitle: "Today’s mark, archive state, sharing, and history adjustment all live here."
-            )
-
-            if summary.isMarkedToday {
-                Button {
-                    appModel.performAction {
-                        try StallyAppActionService.toggleTodayMark(
-                            context: context,
-                            item: item
-                        )
-                    }
-                } label: {
-                    Label(
-                        "Undo Today's Mark",
-                        systemImage: "checkmark.circle.fill"
-                    )
-                    .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(StallySecondaryButtonStyle())
-                .disabled(item.isArchived)
-            } else {
-                Button {
-                    appModel.performAction {
-                        try StallyAppActionService.toggleTodayMark(
-                            context: context,
-                            item: item
-                        )
-                    }
-                } label: {
-                    Label(
-                        "Mark Today",
-                        systemImage: "circle.fill"
-                    )
-                    .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(StallyPrimaryButtonStyle())
-                .disabled(item.isArchived)
-            }
-
-            Button {
-                appModel.performAction {
-                    try StallyAppActionService.toggleArchiveState(
-                        context: context,
-                        item: item
-                    )
-                }
-            } label: {
-                Label(
-                    item.isArchived
-                        ? "Move Back to Library"
-                        : "Archive Item",
-                    systemImage: item.isArchived
-                        ? "tray.and.arrow.up.fill"
-                        : "archivebox.fill"
-                )
-                .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(StallySecondaryButtonStyle())
-
-            if let itemShareURL {
-                ShareLink(item: itemShareURL) {
-                    Label("Share Item Link", systemImage: "square.and.arrow.up")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(StallySecondaryButtonStyle())
-            }
-
-            Button {
-                openHistoryEditor()
-            } label: {
-                Label(
-                    item.isArchived
-                        ? "Review Another Day"
-                        : "Adjust Another Day",
-                    systemImage: "calendar.badge.clock"
-                )
-                .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(StallySecondaryButtonStyle())
-            .popoverTip(adjustHistoryTip, arrowEdge: .top)
-        }
-        .stallyPanel(.base)
-    }
-
-    var insightsSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Insights",
-                title: "A tighter read on this one item",
-                subtitle: "Use the recent windows to judge whether the item is current, fading, or mostly historical."
-            )
-
-            StallyMetricGrid(
-                metrics: insightMetrics,
-                usesCompactLayout: usesCompactLayout
-            )
-        }
-        .stallyPanel(.base)
-    }
-
-    func noteSection(
-        _ note: String
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Note",
-                title: "Saved context",
-                subtitle: nil
-            )
-
-            Text(note)
-                .font(StallyDesign.Typography.body)
-                .foregroundStyle(StallyDesign.Palette.ink)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .stallyPanel(.base)
-    }
-
-    var historySection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "History",
-                title: "Quiet history",
-                subtitle: "One filled day means you chose this item on that date."
-            )
-
-            StallyHistorySection(
-                months: MarkHistoryCalculator.months(for: item)
-            )
-        }
-        .stallyPanel(.base)
-    }
-
-    var historyEditorSheet: some View {
-        NavigationStack {
-            Form {
-                Section("Day") {
-                    DatePicker(
-                        "Date",
-                        selection: $selectedHistoryDate,
-                        in: historyDateRange,
-                        displayedComponents: .date
-                    )
-                    .datePickerStyle(.graphical)
-                }
-
-                Section("Selected Day") {
-                    LabeledContent(
-                        "Date",
-                        value: selectedHistoryDate.formatted(
-                            date: .abbreviated,
-                            time: .omitted
-                        )
-                    )
-                    LabeledContent(
-                        "Current State",
-                        value: selectedDateSummary.isMarkedToday
-                            ? StallyLocalization.string("Marked")
-                            : StallyLocalization.string("Not marked")
-                    )
-
-                    if item.isArchived {
-                        Text("Archived items are read-only. Move this item back to Library to change history.")
-                            .font(StallyDesign.Typography.caption)
-                            .foregroundStyle(StallyDesign.Palette.mutedInk)
-                    }
-                }
-
-                Section {
-                    Button(
-                        selectedDateSummary.isMarkedToday
-                            ? StallyLocalization.string("Remove Mark")
-                            : StallyLocalization.string("Add Mark")
-                    ) {
-                        applyHistoryChange()
-                    }
-                    .disabled(item.isArchived)
-                }
-            }
-            .navigationTitle("Adjust History")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Close") {
-                        isHistoryEditorPresented = false
-                    }
-                }
-            }
-        }
     }
 
     var insightMetrics: [StallyMetricGrid.Metric] {
@@ -385,6 +119,276 @@ private extension StallyItemDetailView {
                 value: daysSinceLastMarkTitle
             )
         ]
+    }
+
+    var heroSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.group) {
+            heroContent
+
+            if item.isArchived {
+                Label(
+                    "Archived items stay out of the Library until you move them back.",
+                    systemImage: "archivebox.fill"
+                )
+                .mhRowSupporting()
+            }
+        }
+        .mhSection(
+            title: Text("Overview"),
+            supporting: Text("Marks accumulate one day at a time.")
+        )
+    }
+
+    @ViewBuilder
+    var heroContent: some View {
+        if usesCompactLayout {
+            VStack(alignment: .leading, spacing: theme.spacing.group) {
+                heroArtwork
+                heroTextBlock
+            }
+        } else {
+            HStack(alignment: .top, spacing: theme.spacing.group) {
+                heroArtwork
+                heroTextBlock
+                Spacer(minLength: .zero)
+            }
+        }
+    }
+
+    var heroArtwork: some View {
+        StallyItemArtworkView(
+            photoData: item.photoData,
+            category: item.category,
+            width: 132,
+            height: 164
+        )
+    }
+
+    var heroTextBlock: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.group) {
+            Text(item.name)
+                .font(.system(size: 28, weight: .semibold, design: .serif))
+
+            Text(item.category.title)
+                .mhBadge(style: .accent)
+
+            VStack(alignment: .leading, spacing: theme.spacing.control) {
+                LabeledContent("Total marks", value: "\(summary.totalMarks)")
+                    .labeledContentStyle(.mhKeyValue)
+                LabeledContent(
+                    "Last marked",
+                    value: summary.lastMarkedAt?.formatted(date: .abbreviated, time: .omitted)
+                        ?? StallyLocalization.string("Not yet")
+                )
+                .labeledContentStyle(.mhKeyValue)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    var actionSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            MHGlassContainer(spacing: theme.spacing.control) {
+                VStack(alignment: .leading, spacing: theme.spacing.control) {
+                    toggleTodayMarkButton
+                        .mhGlassEffectID(
+                            ActionID.toggleTodayMark,
+                            in: actionNamespace
+                        )
+                    toggleArchiveStateButton
+                        .mhGlassEffectID(
+                            ActionID.toggleArchiveState,
+                            in: actionNamespace
+                        )
+
+                    if let itemShareURL {
+                        shareButton(url: itemShareURL)
+                            .mhGlassEffectID(
+                                ActionID.share,
+                                in: actionNamespace
+                            )
+                    }
+
+                    historyEditorButton
+                        .mhGlassEffectID(
+                            ActionID.openHistoryEditor,
+                            in: actionNamespace
+                        )
+                }
+            }
+        }
+        .mhSection(
+            title: Text("Actions"),
+            supporting: Text("Mark the item for today or move it in and out of Archive without affecting past marks.")
+        )
+    }
+
+    var insightsSection: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Text("A tighter read on this one item across the last 30 and 90 days.")
+                .mhRowSupporting()
+
+            StallyMetricGrid(
+                metrics: insightMetrics,
+                usesCompactLayout: usesCompactLayout
+            )
+        }
+        .mhSection(
+            title: Text("Insights"),
+            supporting: Text("This helps you judge whether the item is current, fading, or still mostly historical.")
+        )
+    }
+
+    var toggleTodayMarkButton: some View {
+        Button {
+            appModel.performAction {
+                try StallyAppActionService.toggleTodayMark(
+                    context: context,
+                    item: item
+                )
+            }
+        } label: {
+            Label(
+                summary.isMarkedToday
+                    ? StallyLocalization.string("Undo Today's Mark")
+                    : StallyLocalization.string("Mark Today"),
+                systemImage: summary.isMarkedToday ? "checkmark.circle.fill" : "circle.fill"
+            )
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(
+            .mhAction(summary.isMarkedToday ? .secondary : .primary)
+        )
+        .disabled(item.isArchived)
+    }
+
+    var toggleArchiveStateButton: some View {
+        Button {
+            appModel.performAction {
+                try StallyAppActionService.toggleArchiveState(
+                    context: context,
+                    item: item
+                )
+            }
+        } label: {
+            Label(
+                item.isArchived
+                    ? StallyLocalization.string("Move Back to Library")
+                    : StallyLocalization.string("Archive Item"),
+                systemImage: item.isArchived ? "tray.and.arrow.up.fill" : "archivebox.fill"
+            )
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.mhSecondary)
+    }
+
+    var historyEditorButton: some View {
+        Button(action: openHistoryEditor) {
+            Label(
+                item.isArchived
+                    ? StallyLocalization.string("Review Another Day")
+                    : StallyLocalization.string("Adjust Another Day"),
+                systemImage: "calendar.badge.clock"
+            )
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.mhSecondary)
+        .popoverTip(adjustHistoryTip, arrowEdge: .top)
+    }
+
+    var historyEditorSheet: some View {
+        NavigationStack {
+            Form {
+                historyDateSection
+                selectedDaySection
+                historyActionSection
+            }
+            .navigationTitle("Adjust History")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Close") {
+                        isHistoryEditorPresented = false
+                    }
+                }
+            }
+        }
+    }
+
+    var historyDateSection: some View {
+        Section("Day") {
+            DatePicker(
+                "Date",
+                selection: $selectedHistoryDate,
+                in: historyDateRange,
+                displayedComponents: .date
+            )
+            .datePickerStyle(.graphical)
+        }
+    }
+
+    @ViewBuilder
+    var selectedDaySection: some View {
+        Section("Selected Day") {
+            LabeledContent(
+                "Date",
+                value: selectedHistoryDate.formatted(
+                    date: .abbreviated,
+                    time: .omitted
+                )
+            )
+            LabeledContent(
+                "Current State",
+                value: selectedDateSummary.isMarkedToday
+                    ? StallyLocalization.string("Marked")
+                    : StallyLocalization.string("Not marked")
+            )
+            .foregroundStyle(
+                selectedDateSummary.isMarkedToday ? StallyDesign.tint : .secondary
+            )
+
+            if item.isArchived {
+                Text("Archived items are read-only. Move this item back to the Library to change history.")
+                    .mhRowSupporting()
+            }
+        }
+    }
+
+    var historyActionSection: some View {
+        Section {
+            Button {
+                applyHistoryChange()
+            } label: {
+                Text(
+                    selectedDateSummary.isMarkedToday
+                        ? StallyLocalization.string("Remove Mark")
+                        : StallyLocalization.string("Add Mark")
+                )
+                .frame(maxWidth: .infinity)
+            }
+            .disabled(item.isArchived)
+        }
+    }
+
+    func shareButton(
+        url: URL
+    ) -> some View {
+        ShareLink(item: url) {
+            Label(
+                "Share Item Link",
+                systemImage: "square.and.arrow.up"
+            )
+            .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(.mhSecondary)
+    }
+
+    func noteSection(
+        note: String
+    ) -> some View {
+        Text(note)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .mhSection(title: Text("Note"))
     }
 
     func openHistoryEditor() {
@@ -483,4 +487,4 @@ private extension StallyItemDetailView {
         }
     }
 }
-// swiftlint:enable closure_body_length file_length type_contents_order
+// swiftlint:enable file_length type_contents_order

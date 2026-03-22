@@ -1,26 +1,24 @@
+import MHUI
 import StallyLibrary
 import SwiftUI
 
 struct StallyHistorySection: View {
+    @Environment(\.mhTheme)
+    private var theme
+
     let months: [MarkHistoryMonth]
 
     var body: some View {
-        VStack(
-            alignment: .leading,
-            spacing: StallyDesign.Layout.blockSpacing
-        ) {
+        VStack(alignment: .leading, spacing: theme.spacing.group) {
             ForEach(months) { month in
-                VStack(
-                    alignment: .leading,
-                    spacing: StallyDesign.Layout.compactSpacing
-                ) {
+                VStack(alignment: .leading, spacing: theme.spacing.control) {
                     Text(month.monthStart.formatted(.dateTime.year().month(.wide)))
-                        .stallyCardTitle()
+                        .mhRowTitle()
 
                     LazyVGrid(columns: columns, spacing: 8) {
                         ForEach(weekdaySymbols, id: \.self) { symbol in
                             Text(symbol)
-                                .stallyOverlineText()
+                                .mhRowOverline()
                                 .frame(maxWidth: .infinity)
                         }
 
@@ -36,7 +34,8 @@ struct StallyHistorySection: View {
                         }
                     }
                 }
-                .stallyPanel(.quiet, padding: 16)
+                .mhSurfaceInset()
+                .mhSurface(role: .muted)
             }
         }
     }
@@ -47,7 +46,7 @@ private extension StallyHistorySection {
         Array(
             repeating: .init(
                 .flexible(),
-                spacing: StallyDesign.Layout.compactSpacing
+                spacing: theme.spacing.inline * 2
             ),
             count: 7
         )
@@ -56,23 +55,22 @@ private extension StallyHistorySection {
     var weekdaySymbols: [String] {
         let calendar: Calendar = .current
         let symbols = calendar.shortStandaloneWeekdaySymbols
-        let firstWeekdayIndex = calendar.firstWeekday - 1
-
-        return Array(symbols[firstWeekdayIndex...]) + Array(symbols[..<firstWeekdayIndex])
+        let firstWeekdayIndex = max(calendar.firstWeekday - 1, 0)
+        return Array(symbols[firstWeekdayIndex...] + symbols[..<firstWeekdayIndex])
     }
 
     func backgroundColor(
         for cell: MarkHistoryDayCell
     ) -> Color {
+        guard cell.isInDisplayedMonth else {
+            return Color.secondary.opacity(0.08)
+        }
+
         if cell.isMarked {
             return StallyDesign.tint
         }
 
-        if cell.isInDisplayedMonth {
-            return Color.secondary.opacity(0.14)
-        }
-
-        return Color.secondary.opacity(0.08)
+        return Color.secondary.opacity(0.14)
     }
 
     func foregroundStyle(
@@ -82,10 +80,6 @@ private extension StallyHistorySection {
             return .white
         }
 
-        if cell.isInDisplayedMonth {
-            return StallyDesign.Palette.ink
-        }
-
-        return StallyDesign.Palette.mutedInk
+        return cell.isInDisplayedMonth ? .primary : .secondary
     }
 }

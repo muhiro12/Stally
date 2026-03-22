@@ -1,3 +1,4 @@
+import MHUI
 import PhotosUI
 import StallyLibrary
 import SwiftData
@@ -18,7 +19,6 @@ struct StallyItemEditorView: View {
 
     var body: some View {
         Form {
-            overviewSection
             detailsSection
             photoSection
             noteSection
@@ -27,6 +27,10 @@ struct StallyItemEditorView: View {
                 dangerZoneSection
             }
         }
+        .mhFormChrome(
+            title: Text(model.navigationTitle),
+            subtitle: Text(model.screenSubtitle)
+        )
         .navigationTitle(model.navigationTitle)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -91,7 +95,6 @@ struct StallyItemEditorView: View {
         } message: {
             Text("This permanently removes the item and all of its marks.")
         }
-        .background(StallyDesign.backgroundGradient.ignoresSafeArea())
     }
 
     init(
@@ -182,21 +185,6 @@ private extension StallyItemEditorView {
         )
     }
 
-    var overviewSection: some View {
-        Section {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(model.navigationTitle)
-                    .font(StallyDesign.Typography.hero)
-                    .foregroundStyle(StallyDesign.Palette.ink)
-
-                Text(model.screenSubtitle)
-                    .font(StallyDesign.Typography.body)
-                    .foregroundStyle(StallyDesign.Palette.mutedInk)
-            }
-            .padding(.vertical, 8)
-        }
-    }
-
     var detailsSection: some View {
         Section("Item") {
             TextField("Name", text: nameBinding)
@@ -239,7 +227,7 @@ private extension StallyItemEditorView {
                             systemImage: "photo.on.rectangle"
                         )
                     }
-                    .buttonStyle(StallySecondaryButtonStyle())
+                    .buttonStyle(.mhSecondary)
 
                     if model.photoData != nil {
                         Button("Remove Photo", role: .destructive) {

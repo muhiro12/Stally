@@ -4,6 +4,7 @@ import MHAppRuntimeDefaults
 import MHAppRuntimeLicenses
 import MHPreferences
 import MHRouteExecution
+import MHUI
 import Observation
 import StallyLibrary
 import SwiftData
@@ -190,6 +191,8 @@ extension View {
         self
             .modelContainer(assembly.modelContainer)
             .tint(StallyDesign.tint)
+            .mhTheme(MHTheme.standard())
+            .mhGlassPolicy(.automatic)
             .environment(assembly.appModel)
             .environment(assembly)
     }

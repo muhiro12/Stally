@@ -1,7 +1,10 @@
-// swiftlint:disable closure_body_length file_length type_contents_order
+// swiftlint:disable closure_body_length type_contents_order
+import MHDeepLinking
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
+import TipKit
 import UIKit
 
 struct StallyInsightsView: View {
@@ -9,6 +12,10 @@ struct StallyInsightsView: View {
     private var appModel
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
+    @Environment(\.mhTheme)
+    private var theme
+
+    @Namespace private var rangeNamespace
 
     @State private var screenModel: StallyInsightsScreenModel
 
@@ -17,39 +24,27 @@ struct StallyInsightsView: View {
     var body: some View {
         @Bindable var appModel = appModel
 
-        ScrollView {
-            VStack(alignment: .leading, spacing: StallyDesign.Layout.sectionSpacing) {
-                overviewHero
-                controlsSection(
-                    includeArchivedItems: $appModel.insightsPreferences.includesArchivedItems
-                ) { range in
-                    withAnimation(StallyDesign.Motion.quick) {
-                        appModel.insightsPreferences.defaultRange = range
-                    }
-                }
-                activitySection
-                consistencySection
-                categorySection
-                rankingSection
-                rhythmSection
-                recommendationsSection
-            }
-            .padding(.horizontal, StallyDesign.Layout.screenPadding)
-            .padding(.top, 12)
-            .safeAreaPadding(.bottom, 28)
+        VStack(alignment: .leading, spacing: theme.spacing.group) {
+            overviewCard
+            controlsSection(
+                includeArchivedItems: $appModel.insightsPreferences.includesArchivedItems
+            )
+            activitySection
+            cadenceSection
+            categorySection
+            rankingSection
+            rhythmSection
+            recommendationsSection
+            pendingSectionsCard
         }
-        .contentMargins(.bottom, 28, for: .scrollContent)
-        .navigationTitle("Insights")
-        .navigationBarTitleDisplayMode(.large)
+        .mhScreen(
+            title: Text("Insights"),
+            subtitle: Text("Read the collection as a pattern, not just a list.")
+        )
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
+                Button("Settings", systemImage: "gearshape") {
                     appModel.openSettings(in: .insights)
-                } label: {
-                    toolbarIconLabel(
-                        "Open Settings",
-                        systemImage: "slider.horizontal.3"
-                    )
                 }
             }
 
@@ -58,11 +53,9 @@ struct StallyInsightsView: View {
                     item: snapshot.reportText,
                     subject: Text("Stally Insights")
                 ) {
-                    toolbarIconLabel(
-                        "Share Report",
-                        systemImage: "square.and.arrow.up"
-                    )
+                    Image(systemName: "square.and.arrow.up")
                 }
+                .accessibilityLabel(Text("Share"))
             }
 
             ToolbarItem(placement: .topBarTrailing) {
@@ -70,18 +63,23 @@ struct StallyInsightsView: View {
                     Button("Copy Report") {
                         UIPasteboard.general.string = snapshot.reportText
                     }
+
+                    if let insightsURL {
+                        Button("Copy Link") {
+                            UIPasteboard.general.url = insightsURL
+                        }
+                    }
                 } label: {
-                    toolbarIconLabel(
-                        "More Actions",
-                        systemImage: "ellipsis.circle"
-                    )
+                    Image(systemName: "ellipsis.circle")
                 }
+                .accessibilityLabel(Text("Actions"))
             }
         }
+        .navigationTitle("Insights")
+        .navigationBarTitleDisplayMode(.inline)
         .task(id: snapshot.syncKey) {
             screenModel.update(snapshot: snapshot)
         }
-        .stallyScreenBackground()
     }
 
     init(
@@ -95,452 +93,164 @@ struct StallyInsightsView: View {
 }
 
 private extension StallyInsightsView {
-    func toolbarIconLabel(
-        _ title: String,
-        systemImage: String
-    ) -> some View {
-        Label(title, systemImage: systemImage)
-            .labelStyle(.iconOnly)
-            .font(.headline.weight(.semibold))
-            .foregroundStyle(StallyDesign.Palette.ink)
-    }
-
     var usesCompactLayout: Bool {
         horizontalSizeClass != .regular
     }
 
-    var overviewHero: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Range",
-                title: snapshot.range.title,
-                subtitle: "Read the collection as momentum, consistency, and possible next moves."
+    var selectedRange: ItemInsightsRange {
+        snapshot.range
+    }
+
+    var insightsURL: URL? {
+        StallyDeepLinking.codec().preferredURL(for: .insights)
+    }
+
+    var overviewCard: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Overview")
+                    .mhRowTitle()
+
+                Spacer(minLength: theme.spacing.control)
+
+                Text(selectedRange.title)
+                    .mhRowSupporting()
+            }
+
+            Text(
+                """
+                This foundation combines collection-wide activity, streaks, and health metrics.
+                The next sections expand this into trends, rankings, and category views.
+                """
             )
+            .mhRowSupporting()
 
             StallyMetricGrid(
                 metrics: screenModel.overviewMetrics,
                 usesCompactLayout: usesCompactLayout
             )
         }
-        .stallyPanel(.accent)
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
     }
 
     func controlsSection(
-        includeArchivedItems: Binding<Bool>,
-        onSelectRange: @escaping (ItemInsightsRange) -> Void
+        includeArchivedItems: Binding<Bool>
     ) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Controls",
-                title: "Tune the lens",
-                subtitle: "Every panel below follows this window and archive scope."
-            )
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Text("Range")
+                .mhRowTitle()
 
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 10) {
-                    ForEach(ItemInsightsRange.allCases, id: \.self) { range in
-                        Button(range.title) {
-                            onSelectRange(range)
-                        }
-                        .buttonStyle(
-                            StallyChipButtonStyle(
-                                isSelected: snapshot.range == range
+                MHGlassContainer(spacing: theme.spacing.control) {
+                    HStack(spacing: theme.spacing.control) {
+                        ForEach(ItemInsightsRange.allCases, id: \.self) { range in
+                            Button(range.title) {
+                                withAnimation {
+                                    appModel.insightsPreferences.defaultRange = range
+                                }
+                            }
+                            .buttonStyle(
+                                selectedRange == range
+                                    ? .mhPrimary
+                                    : .mhSecondary
                             )
-                        )
+                            .mhGlassEffectID(
+                                range,
+                                in: rangeNamespace
+                            )
+                        }
                     }
+                    .padding(.vertical, 2)
                 }
-                .scrollTargetLayout()
             }
-            .scrollTargetBehavior(.viewAligned)
+            .popoverTip(insightsRangeTip, arrowEdge: .top)
+
+            Text("All metrics on this screen follow the selected window.")
+                .mhRowSupporting()
 
             Toggle(
                 "Include archived items",
                 isOn: includeArchivedItems
             )
-            .toggleStyle(.switch)
         }
-        .stallyPanel(.base)
+        .mhSection(title: Text("Controls"))
     }
 
     var activitySection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Activity",
-                title: "Daily marks across the selected window",
-                subtitle: "The tallest bars show the busiest pockets of usage."
-            )
-
-            activityContent
-        }
-        .stallyPanel(.base)
+        StallyInsightsActivitySection(
+            days: snapshot.activityDays,
+            summary: snapshot.activitySummary,
+            usesCompactLayout: usesCompactLayout
+        )
     }
 
-    @ViewBuilder
-    var activityContent: some View {
-        if snapshot.activityDays.isEmpty {
-            Text("No activity in this window yet.")
-                .font(StallyDesign.Typography.caption)
-                .foregroundStyle(StallyDesign.Palette.mutedInk)
-        } else {
-            activityChart
-
-            StallyMetricGrid(
-                metrics: screenModel.activityMetrics,
-                usesCompactLayout: usesCompactLayout
-            )
-        }
-    }
-
-    var activityChart: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(alignment: .bottom, spacing: 6) {
-                ForEach(snapshot.activityDays, id: \.date, content: activityBar)
-            }
-            .frame(height: 170, alignment: .bottomLeading)
-            .scrollTargetLayout()
-        }
-        .scrollTargetBehavior(.viewAligned)
-    }
-
-    func activityBar(
-        _ day: CollectionActivityDay
-    ) -> some View {
-        VStack(spacing: 8) {
-            Capsule()
-                .fill(activityBarStyle(for: day))
-                .frame(
-                    width: 10,
-                    height: screenModel.barHeight(for: day)
-                )
-
-            if screenModel.shouldShowLabel(for: day) {
-                Text(day.date, format: .dateTime.month(.abbreviated).day())
-                    .font(.caption2)
-                    .foregroundStyle(StallyDesign.Palette.mutedInk)
-                    .rotationEffect(.degrees(-45))
-                    .frame(height: 34)
-            } else {
-                Color.clear.frame(height: 34)
-            }
-        }
-        .frame(width: 16)
-    }
-
-    func activityBarStyle(
-        for day: CollectionActivityDay
-    ) -> AnyShapeStyle {
-        if day.isActive {
-            AnyShapeStyle(StallyDesign.heroGradient)
-        } else {
-            AnyShapeStyle(StallyDesign.Palette.quietSurface)
-        }
-    }
-
-    var consistencySection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Consistency",
-                title: "How steady the rhythm feels",
-                subtitle: "Streaks, idle gaps, and weekly density describe how dependable this collection feels."
-            )
-
-            StallyMetricGrid(
-                metrics: screenModel.consistencyMetrics,
-                usesCompactLayout: usesCompactLayout
-            )
-        }
-        .stallyPanel(.base)
+    var cadenceSection: some View {
+        StallyInsightsCadenceSection(
+            streakSummary: snapshot.streakSummary,
+            cadenceSummary: snapshot.cadenceSummary,
+            usesCompactLayout: usesCompactLayout
+        )
     }
 
     var categorySection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Categories",
-                title: "Where the marks concentrate",
-                subtitle: "The share bar shows how much of the range belongs to each category."
-            )
-
-            categoryContent
-        }
-        .stallyPanel(.base)
-    }
-
-    @ViewBuilder
-    var categoryContent: some View {
-        if snapshot.categorySummaries.isEmpty {
-            Text("No category activity in this window.")
-                .font(StallyDesign.Typography.caption)
-                .foregroundStyle(StallyDesign.Palette.mutedInk)
-        } else {
-            ForEach(snapshot.categorySummaries, id: \.id, content: categoryCard)
-        }
-    }
-
-    func categoryCard(
-        _ summary: CollectionCategorySummary
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(summary.category.title)
-                    .font(.headline.weight(.semibold))
-                    .foregroundStyle(StallyDesign.Palette.ink)
-
-                Spacer(minLength: 12)
-
-                Text(
-                    summary.shareOfMarks.formatted(
-                        .percent.precision(.fractionLength(0))
-                    )
-                )
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(StallyDesign.Palette.accent)
-            }
-
-            Capsule(style: .continuous)
-                .fill(StallyDesign.Palette.quietSurface)
-                .overlay(alignment: .leading) {
-                    Capsule(style: .continuous)
-                        .fill(StallyDesign.heroGradient)
-                        .frame(width: categoryBarWidth(for: summary))
-                }
-                .frame(height: 12)
-
-            Text(
-                StallyLocalization.format(
-                    "%1$lld marks across %2$lld items",
-                    summary.totalMarks,
-                    summary.uniqueItems
-                )
-            )
-            .font(StallyDesign.Typography.caption)
-            .foregroundStyle(StallyDesign.Palette.mutedInk)
-        }
-        .stallyPanel(.elevated, padding: 14)
-    }
-
-    func categoryBarWidth(
-        for summary: CollectionCategorySummary
-    ) -> CGFloat {
-        max(
-            CGFloat(summary.shareOfMarks) * 240,
-            24
+        StallyInsightsCategorySection(
+            summaries: snapshot.categorySummaries
         )
     }
 
     var rankingSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Rankings",
-                title: "What is loudest and quietest right now",
-                subtitle: "Top items show repeated use; quiet items point to candidates that may need a decision."
-            )
-
-            if usesCompactLayout {
-                VStack(spacing: 14) {
-                    rankingColumn(
-                        title: "Most active",
-                        rankings: snapshot.topRankings
-                    )
-                    rankingColumn(
-                        title: "Quietest",
-                        rankings: snapshot.quietRankings
-                    )
-                }
-            } else {
-                HStack(alignment: .top, spacing: 14) {
-                    rankingColumn(
-                        title: "Most active",
-                        rankings: snapshot.topRankings
-                    )
-                    rankingColumn(
-                        title: "Quietest",
-                        rankings: snapshot.quietRankings
-                    )
-                }
-            }
-        }
-        .stallyPanel(.base)
-    }
-
-    func rankingColumn(
-        title: String,
-        rankings: [CollectionItemRanking]
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(title)
-                .font(StallyDesign.Typography.emphasis)
-                .foregroundStyle(StallyDesign.Palette.ink)
-
-            rankingContent(rankings: rankings)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    @ViewBuilder
-    func rankingContent(
-        rankings: [CollectionItemRanking]
-    ) -> some View {
-        if rankings.isEmpty {
-            Text("Nothing to show here yet.")
-                .font(StallyDesign.Typography.caption)
-                .foregroundStyle(StallyDesign.Palette.mutedInk)
-        } else {
-            ForEach(rankings, id: \.id, content: rankingCard)
-        }
-    }
-
-    @ViewBuilder
-    func rankingCard(
-        _ ranking: CollectionItemRanking
-    ) -> some View {
-        if let item = snapshot.itemsByID[ranking.itemID] {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(item.name)
-                            .font(.headline.weight(.semibold))
-                            .foregroundStyle(StallyDesign.Palette.ink)
-
-                        Text(
-                            StallyLocalization.format(
-                                "%1$lld marks | %2$lld active days",
-                                ranking.totalMarksInRange,
-                                ranking.activeDaysInRange
-                            )
-                        )
-                        .font(StallyDesign.Typography.caption)
-                        .foregroundStyle(StallyDesign.Palette.mutedInk)
-                    }
-
-                    Spacer(minLength: 12)
-
-                    Button("Open") {
-                        appModel.openItem(
-                            ranking.itemID,
-                            in: .insights
-                        )
-                    }
-                    .buttonStyle(StallySecondaryButtonStyle())
-                }
-            }
-            .stallyPanel(.elevated, padding: 14)
-        }
+        StallyInsightsRankingSection(
+            itemsByID: snapshot.itemsByID,
+            topRankings: snapshot.topRankings,
+            quietRankings: snapshot.quietRankings,
+            usesCompactLayout: usesCompactLayout
+        )
     }
 
     var rhythmSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Rhythm",
-                title: "Weekday and monthly texture",
-                subtitle: "These tiles show whether the collection clusters on certain days or months."
-            )
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(snapshot.weekdaySummaries, id: \.weekday) { summary in
-                        rhythmTile(
-                            title: summary.shortTitle,
-                            value: "\(summary.markCount)",
-                            supporting: summary.shareOfMarks.formatted(
-                                .percent.precision(.fractionLength(0))
-                            )
-                        )
-                    }
-                }
-                .scrollTargetLayout()
-            }
-            .scrollTargetBehavior(.viewAligned)
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(snapshot.monthlySummaries, id: \.monthStart) { summary in
-                        rhythmTile(
-                            title: summary.monthTitle,
-                            value: "\(summary.markCount)",
-                            supporting: "\(summary.activeDays) active days"
-                        )
-                    }
-                }
-                .scrollTargetLayout()
-            }
-            .scrollTargetBehavior(.viewAligned)
-        }
-        .stallyPanel(.base)
-    }
-
-    func rhythmTile(
-        title: String,
-        value: String,
-        supporting: String
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.headline.weight(.semibold))
-                .foregroundStyle(StallyDesign.Palette.ink)
-
-            Text(value)
-                .font(.title.weight(.semibold))
-                .foregroundStyle(StallyDesign.Palette.accent)
-
-            Text(supporting)
-                .font(StallyDesign.Typography.caption)
-                .foregroundStyle(StallyDesign.Palette.mutedInk)
-        }
-        .frame(width: 140, alignment: .leading)
-        .stallyPanel(.elevated, padding: 14)
+        StallyInsightsRhythmSection(
+            weekdaySummaries: snapshot.weekdaySummaries,
+            monthlySummaries: snapshot.monthlySummaries,
+            usesCompactLayout: usesCompactLayout
+        )
     }
 
     var recommendationsSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Next moves",
-                title: "Suggested follow-ups from the current range",
-                subtitle: "Recommendations stay lightweight so you can act without leaving the flow."
-            )
-
-            recommendationsContent
-        }
-        .stallyPanel(.base)
-    }
-
-    @ViewBuilder
-    var recommendationsContent: some View {
-        if snapshot.recommendations.isEmpty {
-            Text("No follow-up suggestions right now.")
-                .font(StallyDesign.Typography.caption)
-                .foregroundStyle(StallyDesign.Palette.mutedInk)
-        } else {
-            ForEach(
-                snapshot.recommendations,
-                id: \.title,
-                content: recommendationCard
+        StallyInsightsRecommendationsSection(
+            recommendations: snapshot.recommendations,
+            itemsByID: snapshot.itemsByID
+        ) { itemID in
+            appModel.openItem(
+                itemID,
+                in: .insights
             )
         }
     }
 
-    func recommendationCard(
-        _ recommendation: CollectionRecommendation
-    ) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(recommendation.title)
-                .font(StallyDesign.Typography.cardTitle)
-                .foregroundStyle(StallyDesign.Palette.ink)
+    var pendingSectionsCard: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Text("More Comparisons Are Coming")
+                .mhRowTitle()
 
-            Text(recommendation.message)
-                .font(StallyDesign.Typography.caption)
-                .foregroundStyle(StallyDesign.Palette.mutedInk)
-
-            if let itemID = recommendation.itemIDs.first {
-                Button("Open Suggested Item") {
-                    appModel.openItem(
-                        itemID,
-                        in: .insights
-                    )
-                }
-                .buttonStyle(StallySecondaryButtonStyle())
-            }
+            Text(
+                StallyLocalization.string(
+                    "This space can expand into longer-range comparisons, saved reports, and trend views "
+                        + "that look beyond one selected window."
+                )
+            )
+            .mhRowSupporting()
         }
-        .stallyPanel(.elevated, padding: 14)
+        .mhSurfaceInset()
+        .mhSurface()
+    }
+
+    var insightsRangeTip: (any Tip)? {
+        guard snapshot.itemsByID.isEmpty == false else {
+            return nil
+        }
+
+        return StallyTips.InsightsRangeTip()
     }
 }
 
@@ -557,4 +267,4 @@ private extension StallyInsightsView {
         )
     }
 }
-// swiftlint:enable closure_body_length file_length type_contents_order
+// swiftlint:enable closure_body_length type_contents_order

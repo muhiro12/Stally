@@ -1,5 +1,5 @@
-// swiftlint:disable closure_body_length function_body_length type_contents_order
 import MHDeepLinking
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
@@ -10,8 +10,12 @@ struct StallyArchiveView: View {
     private var appModel
     @Environment(\.modelContext)
     private var context
+    @Environment(\.mhTheme)
+    private var theme
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
+
+    @Namespace private var quickFilterNamespace
 
     @State private var screenModel: StallyArchiveScreenModel
 
@@ -19,25 +23,40 @@ struct StallyArchiveView: View {
     let navigationNamespace: Namespace.ID
 
     var body: some View {
-        content
-            .navigationTitle("Archive")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        appModel.openSettings(in: .archive)
-                    } label: {
-                        Label("Open Settings", systemImage: "slider.horizontal.3")
-                            .labelStyle(.iconOnly)
-                            .font(.headline.weight(.semibold))
-                            .foregroundStyle(StallyDesign.Palette.ink)
-                    }
+        if snapshot.archivedItems.isEmpty {
+            screenContent
+                .mhScreen(
+                    title: Text("Archive"),
+                    subtitle: Text("Past favorites can stay nearby without crowding the main list.")
+                )
+                .navigationTitle("Archive")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    toolbarContent
                 }
-            }
-            .task(id: snapshot.syncKey) {
-                screenModel.update(snapshot: snapshot)
-            }
-            .stallyScreenBackground()
+                .task(id: snapshot.syncKey) {
+                    screenModel.update(snapshot: snapshot)
+                }
+        } else {
+            screenContent
+                .mhScreen(
+                    title: Text("Archive"),
+                    subtitle: Text("Past favorites can stay nearby without crowding the main list.")
+                )
+                .navigationTitle("Archive")
+                .navigationBarTitleDisplayMode(.inline)
+                .searchable(
+                    text: querySearchTextBinding,
+                    placement: .navigationBarDrawer(displayMode: .always),
+                    prompt: "Search archive"
+                )
+                .toolbar {
+                    toolbarContent
+                }
+                .task(id: snapshot.syncKey) {
+                    screenModel.update(snapshot: snapshot)
+                }
+        }
     }
 
     init(
@@ -53,6 +72,15 @@ struct StallyArchiveView: View {
 }
 
 private extension StallyArchiveView {
+    @ToolbarContentBuilder
+    var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Settings", systemImage: "gearshape") {
+                appModel.openSettings(in: .archive)
+            }
+        }
+    }
+
     var queryBinding: Binding<ItemListQuery> {
         .init(
             get: {
@@ -75,152 +103,126 @@ private extension StallyArchiveView {
         )
     }
 
-    @ViewBuilder
-    var content: some View {
-        if screenModel.snapshot.archivedItems.isEmpty {
-            ScrollView {
-                VStack(alignment: .leading, spacing: StallyDesign.Layout.sectionSpacing) {
-                    archiveHero
-                    emptyState
+    var screenContent: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.group) {
+            if snapshot.archivedItems.isEmpty {
+                emptyState
+            } else {
+                StallyItemQueryControls(
+                    query: queryBinding,
+                    displayedCount: screenModel.displayedItems.count,
+                    usesCompactLayout: usesCompactLayout
+                )
+                archiveQuickFilters
+                archiveSummaryCard
+
+                if screenModel.displayedItems.isEmpty {
+                    filteredEmptyState
+                } else {
+                    ForEach(screenModel.displayedItems, id: \.id) { item in
+                        archiveCard(item: item)
+                    }
                 }
-                .padding(.horizontal, StallyDesign.Layout.screenPadding)
-                .padding(.top, 12)
-                .safeAreaPadding(.bottom, 28)
             }
-            .contentMargins(.bottom, 28, for: .scrollContent)
-        } else {
-            ScrollView {
-                VStack(alignment: .leading, spacing: StallyDesign.Layout.sectionSpacing) {
-                    archiveHero
-                    browseSection
-                }
-                .padding(.horizontal, StallyDesign.Layout.screenPadding)
-                .padding(.top, 12)
-                .safeAreaPadding(.bottom, 28)
-            }
-            .contentMargins(.bottom, 28, for: .scrollContent)
-            .searchable(
-                text: querySearchTextBinding,
-                placement: .navigationBarDrawer(displayMode: .always),
-                prompt: "Search archive"
-            )
         }
     }
 
-    var archiveHero: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Preserved",
-                title: "Items that stepped out of the daily rotation",
-                subtitle: "Archive keeps the history intact while making space for what still feels current."
+    var usesCompactLayout: Bool {
+        horizontalSizeClass != .regular
+    }
+
+    var archiveQuickFilters: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            MHGlassContainer(spacing: theme.spacing.control) {
+                HStack(spacing: theme.spacing.control) {
+                    ForEach(screenModel.availableQuickFilters) { option in
+                        Button(option.title) {
+                            screenModel.selectQuickFilter(option.filter)
+                        }
+                        .buttonStyle(
+                            option.filter == screenModel.query.quickFilter
+                                ? .mhPrimary
+                                : .mhSecondary
+                        )
+                        .mhGlassEffectID(
+                            option.id,
+                            in: quickFilterNamespace
+                        )
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+        }
+    }
+
+    var archiveSummaryCard: some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Text("Archive Snapshot")
+                .mhRowTitle()
+
+            Text(
+                """
+                Archived items keep their history,
+                so this view stays focused on preserved use rather than active rotation.
+                """
             )
+            .mhRowSupporting()
 
             StallyMetricGrid(
                 metrics: screenModel.archiveMetrics,
                 usesCompactLayout: usesCompactLayout
             )
         }
-        .stallyPanel(.base)
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
     }
 
-    var browseSection: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            StallySectionHeader(
-                eyebrow: "Browse",
-                title: "Search what you have preserved",
-                subtitle: "Filter by history or sort differently before opening an item again."
-            )
-
-            StallyItemQueryControls(
-                query: queryBinding,
-                displayedCount: screenModel.displayedItems.count,
-                usesCompactLayout: usesCompactLayout
-            )
-
-            quickFilters
-
-            if screenModel.displayedItems.isEmpty {
-                filteredEmptyState
-            } else {
-                LazyVStack(spacing: 16) {
-                    ForEach(screenModel.displayedItems, id: \.id) { item in
-                        archiveCard(item)
-                    }
-                }
-            }
-        }
+    var emptyState: some View {
+        ContentUnavailableView(
+            "No Archived Items",
+            systemImage: "archivebox",
+            description: Text("Archived items will wait here until you move them back into the Library.")
+        )
+        .mhEmptyStateLayout()
+        .mhSurfaceInset()
+        .mhSurface()
     }
 
-    var quickFilters: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
-                ForEach(screenModel.availableQuickFilters) { option in
-                    Button(option.title) {
-                        withAnimation(StallyDesign.Motion.quick) {
-                            screenModel.selectQuickFilter(option.filter)
-                        }
-                    }
-                    .buttonStyle(
-                        StallyChipButtonStyle(
-                            isSelected: option.filter == screenModel.query.quickFilter
-                        )
-                    )
-                }
-            }
-            .scrollTargetLayout()
-        }
-        .scrollTargetBehavior(.viewAligned)
+    var filteredEmptyState: some View {
+        ContentUnavailableView(
+            "No Matching Archived Items",
+            systemImage: "line.3.horizontal.decrease.circle",
+            description: Text("Try a different search, category, or sort option.")
+        )
+        .mhEmptyStateLayout()
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
+    }
+
+    func itemLinkURL(
+        for item: Item
+    ) -> URL? {
+        StallyDeepLinking.codec().preferredURL(
+            for: .item(item.id)
+        )
     }
 
     func archiveCard(
-        _ item: Item
+        item: Item
     ) -> some View {
         let summary = ItemInsightsCalculator.summary(for: item)
 
-        return VStack(alignment: .leading, spacing: 14) {
-            NavigationLink(
-                value: StallyAppModel.StackDestination.item(item.id)
-            ) {
-                HStack(alignment: .top, spacing: 16) {
-                    StallyItemArtworkView(
-                        photoData: item.photoData,
-                        category: item.category,
-                        width: 88,
-                        height: 108
-                    )
-                    .matchedTransitionSource(
-                        id: item.id,
-                        in: navigationNamespace
-                    )
-
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text(item.name)
-                            .font(StallyDesign.Typography.cardTitle)
-                            .foregroundStyle(StallyDesign.Palette.ink)
-
-                        StallyTag(
-                            title: item.category.title,
-                            tone: .elevated
-                        )
-
-                        Text(
-                            StallyLocalization.format(
-                                "%1$lld marks kept | archived %@",
-                                summary.totalMarks,
-                                item.updatedAt.formatted(
-                                    date: .abbreviated,
-                                    time: .omitted
-                                )
-                            )
-                        )
-                        .font(StallyDesign.Typography.caption)
-                        .foregroundStyle(StallyDesign.Palette.mutedInk)
-                    }
-
-                    Spacer(minLength: .zero)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .contentShape(.rect)
+        return VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Button {
+                appModel.openItem(
+                    item.id,
+                    in: .archive
+                )
+            } label: {
+                archiveCardLabel(
+                    item: item,
+                    summary: summary
+                )
             }
             .buttonStyle(.plain)
             .contextMenu {
@@ -231,61 +233,86 @@ private extension StallyArchiveView {
                 }
             }
 
-            Button {
+            Button("Move Back to Library", systemImage: "tray.and.arrow.up.fill") {
                 appModel.performAction {
                     try StallyAppActionService.unarchive(
                         context: context,
                         item: item
                     )
                 }
-            } label: {
-                Label(
-                    "Move Back to Library",
-                    systemImage: "tray.and.arrow.up.fill"
-                )
-                .frame(maxWidth: .infinity)
             }
-            .buttonStyle(StallySecondaryButtonStyle())
+            .buttonStyle(.mhSecondary)
         }
-        .stallyPanel(.base)
     }
 
-    var emptyState: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Empty",
-                title: "Nothing has been archived yet",
-                subtitle: "Items moved out of the active library will wait here with their mark history intact."
-            )
+    func archiveCardLabel(
+        item: Item,
+        summary: ItemSummary
+    ) -> some View {
+        HStack(spacing: theme.spacing.group) {
+            archiveArtwork(for: item)
 
-            Button("Open Library") {
-                appModel.selectedTab = .library
+            VStack(alignment: .leading, spacing: theme.spacing.control) {
+                Text(item.name)
+                    .mhRowTitle()
+
+                Text(item.category.title)
+                    .mhBadge(style: .neutral)
+
+                Text(archiveDateText(for: item))
+                    .mhRowSupporting()
+
+                HStack(
+                    alignment: .firstTextBaseline,
+                    spacing: theme.spacing.control
+                ) {
+                    Text("Marks saved")
+                        .mhRowSupporting()
+
+                    Spacer(minLength: theme.spacing.control)
+
+                    Text("\(summary.totalMarks)")
+                        .mhRowValue(colorRole: .accent)
+                }
             }
-            .buttonStyle(StallyPrimaryButtonStyle())
+
+            Spacer(minLength: .zero)
+
+            Image(systemName: "chevron.right")
+                .foregroundStyle(.secondary)
         }
-        .stallyPanel(.quiet)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .mhSurfaceInset()
+        .mhSurface()
     }
 
-    var filteredEmptyState: some View {
-        ContentUnavailableView(
-            "No Matching Archived Items",
-            systemImage: "line.3.horizontal.decrease.circle",
-            description: Text("Try a different search term or history filter.")
-        )
-        .frame(maxWidth: .infinity)
-        .stallyPanel(.quiet)
-    }
-
-    var usesCompactLayout: Bool {
-        horizontalSizeClass != .regular
-    }
-
-    func itemLinkURL(
+    @ViewBuilder
+    func archiveArtwork(
         for item: Item
-    ) -> URL? {
-        StallyDeepLinking.codec().preferredURL(
-            for: .item(item.id)
+    ) -> some View {
+        StallyItemArtworkView(
+            photoData: item.photoData,
+            category: item.category,
+            width: 74,
+            height: 88
         )
+        .matchedTransitionSource(
+            id: item.id,
+            in: navigationNamespace
+        )
+    }
+
+    func archiveDateText(
+        for item: Item
+    ) -> String {
+        if let archivedAt = item.archivedAt {
+            return StallyLocalization.format(
+                "Archived %@",
+                archivedAt.formatted(date: .abbreviated, time: .omitted)
+            )
+        }
+
+        return StallyLocalization.string("Archived")
     }
 }
 
@@ -303,4 +330,3 @@ private extension StallyArchiveView {
         )
     }
 }
-// swiftlint:enable closure_body_length function_body_length type_contents_order

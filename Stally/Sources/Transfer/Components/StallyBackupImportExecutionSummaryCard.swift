@@ -1,24 +1,29 @@
+import MHUI
 import StallyLibrary
 import SwiftUI
 
 struct StallyBackupImportExecutionSummaryCard: View {
+    @Environment(\.mhTheme)
+    private var theme
+
     let summary: StallyBackupCenterState.ImportExecutionSummary
     let usesCompactLayout: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            StallySectionHeader(
-                eyebrow: "Imported",
-                title: summary.title,
-                subtitle: summary.sourceName
-            )
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Text(summary.title)
+                .mhRowTitle()
+
+            Text(summary.sourceName)
+                .mhRowSupporting()
 
             StallyMetricGrid(
                 metrics: metrics,
                 usesCompactLayout: usesCompactLayout
             )
         }
-        .stallyPanel(.elevated, padding: 16)
+        .mhSurfaceInset()
+        .mhSurface(role: .muted)
     }
 }
 
