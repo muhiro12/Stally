@@ -1,4 +1,3 @@
-import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
@@ -8,8 +7,6 @@ import UniformTypeIdentifiers
 struct StallyBackupCenterView: View {
     @Environment(\.modelContext)
     var context
-    @Environment(\.mhTheme)
-    private var theme
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
 
@@ -19,17 +16,22 @@ struct StallyBackupCenterView: View {
     let items: [Item]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
-            overviewCard
-            exportSection
-            importSection
-            safetySection
-            resetSection
+        ScrollView {
+            VStack(
+                alignment: .leading,
+                spacing: StallyDesign.Layout.sectionSpacing
+            ) {
+                overviewCard
+                exportSection
+                importSection
+                safetySection
+                resetSection
+            }
+            .padding(.horizontal, StallyDesign.Layout.screenPadding)
+            .padding(.top, 12)
+            .safeAreaPadding(.bottom, 28)
         }
-        .mhScreen(
-            title: Text("Backup Center"),
-            subtitle: Text("Prepare clean snapshots of your collection before you move them anywhere else.")
-        )
+        .contentMargins(.bottom, 28, for: .scrollContent)
         .navigationTitle("Backup Center")
         .navigationBarTitleDisplayMode(.inline)
         .fileExporter(
@@ -99,10 +101,15 @@ struct StallyBackupCenterView: View {
         } message: {
             Text("This clears Home, Archive, photos, notes, and mark history from the current library.")
         }
+        .stallyScreenBackground()
     }
 }
 
 extension StallyBackupCenterView {
+    var sectionSpacing: CGFloat {
+        14
+    }
+
     var usesCompactLayout: Bool {
         horizontalSizeClass != .regular
     }
@@ -183,74 +190,73 @@ extension StallyBackupCenterView {
     }
 
     var overviewCard: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            Text("Backup Snapshot")
-                .mhRowTitle()
-
-            Text("Exports will capture your active items, archived items, and mark history in one portable package.")
-                .mhRowSupporting()
+        VStack(alignment: .leading, spacing: sectionSpacing) {
+            StallySectionHeader(
+                eyebrow: "Snapshot",
+                title: "Current library at a glance",
+                subtitle: "Exports will capture your active items, archived items, and mark history in one portable package."
+            )
 
             StallyMetricGrid(
                 metrics: overviewMetrics,
                 usesCompactLayout: usesCompactLayout
             )
         }
-        .mhSurfaceInset()
-        .mhSurface(role: .muted)
+        .stallyPanel(.accent)
     }
 
     var exportSection: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            Text("Export")
-                .mhRowTitle()
-
-            Text(
-                """
-                Create a single backup file with every item, photo, note, and mark.
-                Exports use the `.stallybackup` extension on top of JSON data.
-                """
+        VStack(alignment: .leading, spacing: sectionSpacing) {
+            StallySectionHeader(
+                eyebrow: "Export",
+                title: "Create a portable backup",
+                subtitle:
+                    """
+                    Create a single backup file with every item, photo, note, and mark.
+                    Exports use the `.stallybackup` extension on top of JSON data.
+                    """
             )
-            .mhRowSupporting()
 
             Button("Export Backup", systemImage: "square.and.arrow.up") {
                 startExport()
             }
-            .buttonStyle(.mhSecondary)
+            .buttonStyle(StallySecondaryButtonStyle())
             .popoverTip(backupSafetyTip, arrowEdge: .top)
 
             Text(exportDetailText)
-                .mhRowSupporting()
+                .stallySupportingText()
         }
-        .mhSection(title: Text("Export Tools"))
+        .stallyPanel(.base)
     }
 
     var importSection: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            Text("Import")
-                .mhRowTitle()
-
-            Text(
-                "Bring a backup back into Stally after previewing how many items would merge, replace, or be rejected."
+        VStack(alignment: .leading, spacing: sectionSpacing) {
+            StallySectionHeader(
+                eyebrow: "Import",
+                title: "Preview before restoring",
+                subtitle: "Bring a backup back into Stally after previewing how many items would merge, replace, or be rejected."
             )
-            .mhRowSupporting()
 
             Button("Choose Backup File", systemImage: "square.and.arrow.down") {
                 state.isImporting = true
             }
-            .buttonStyle(.mhSecondary)
+            .buttonStyle(StallySecondaryButtonStyle())
 
             Text(importSupportingText)
-                .mhRowSupporting()
+                .stallySupportingText()
 
             importPreviewArea
         }
-        .mhSection(title: Text("Import Tools"))
+        .stallyPanel(.base)
     }
 
     var safetySection: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            Text("Safety")
-                .mhRowTitle()
+        VStack(alignment: .leading, spacing: sectionSpacing) {
+            StallySectionHeader(
+                eyebrow: "Guidance",
+                title: "Handle restore flows carefully",
+                subtitle: "Keep a recent export nearby before you try replace-style restore flows."
+            )
 
             Text(
                 """
@@ -258,7 +264,7 @@ extension StallyBackupCenterView {
                 Merge import will preserve local items; replace import will overwrite them.
                 """
             )
-            .mhRowSupporting()
+            .stallySupportingText()
 
             Text(
                 """
@@ -266,30 +272,25 @@ extension StallyBackupCenterView {
                 not for syncing between multiple devices at once.
                 """
             )
-            .mhRowSupporting()
+            .stallySupportingText()
         }
-        .mhSection(title: Text("Guidance"))
+        .stallyPanel(.quiet)
     }
 
     var resetSection: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
-            Text("Reset")
-                .mhRowTitle()
-
-            Text(
-                """
-                Use this only when you intentionally want an empty library
-                before starting over or testing a restore flow.
-                """
+        VStack(alignment: .leading, spacing: sectionSpacing) {
+            StallySectionHeader(
+                eyebrow: "Reset",
+                title: "Clear the current library deliberately",
+                subtitle: "Use this only when you intentionally want an empty library before starting over or testing a restore flow."
             )
-            .mhRowSupporting()
 
             Button("Delete Everything", systemImage: "trash") {
                 state.isDeleteAllConfirmationPresented = true
             }
-            .buttonStyle(.mhSecondary)
+            .buttonStyle(StallySecondaryButtonStyle())
         }
-        .mhSection(title: Text("Reset Tools"))
+        .stallyPanel(.base)
     }
 
     var backupSafetyTip: (any Tip)? {

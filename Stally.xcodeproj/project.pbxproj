@@ -16,7 +16,6 @@
 		B0A1C0102F5D000100000001 /* MHAppRuntimeDefaults in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C0112F5D000100000001 /* MHAppRuntimeDefaults */; };
 		B0A1C0122F5D000100000001 /* MHAppRuntimeAds in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C0132F5D000100000001 /* MHAppRuntimeAds */; };
 		B0A1C0142F5D000100000001 /* MHAppRuntimeLicenses in Frameworks */ = {isa = PBXBuildFile; productRef = B0A1C0152F5D000100000001 /* MHAppRuntimeLicenses */; };
-		C1F0A0012F5F100100000001 /* MHUI in Frameworks */ = {isa = PBXBuildFile; productRef = C1F0A0032F5F100100000001 /* MHUI */; };
 		D2A100022F6A000100000001 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A100052F6A000100000001 /* XCTest.framework */; };
 /* End PBXBuildFile section */
 
@@ -81,7 +80,6 @@
 				B0A1C0102F5D000100000001 /* MHAppRuntimeDefaults in Frameworks */,
 				B0A1C0122F5D000100000001 /* MHAppRuntimeAds in Frameworks */,
 				B0A1C0142F5D000100000001 /* MHAppRuntimeLicenses in Frameworks */,
-				C1F0A0012F5F100100000001 /* MHUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,7 +142,6 @@
 				B0A1C0112F5D000100000001 /* MHAppRuntimeDefaults */,
 				B0A1C0132F5D000100000001 /* MHAppRuntimeAds */,
 				B0A1C0152F5D000100000001 /* MHAppRuntimeLicenses */,
-				C1F0A0032F5F100100000001 /* MHUI */,
 			);
 			productName = Stally;
 			productReference = AD91A0F12F5C543E00BC027C /* Stally.app */;
@@ -206,7 +203,6 @@
 			packageReferences = (
 				AD91A1042F5C544100BC027C /* XCLocalSwiftPackageReference "StallyLibrary" */,
 				B0A1C0022F5D000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */,
-				C1F0A0022F5F100100000001 /* XCLocalSwiftPackageReference "MHUI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AD91A0F22F5C543E00BC027C /* Products */;
@@ -563,10 +559,6 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = StallyLibrary;
 		};
-		C1F0A0022F5F100100000001 /* XCLocalSwiftPackageReference "MHUI" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../MHUI;
-		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -625,11 +617,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B0A1C0022F5D000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */;
 			productName = MHAppRuntimeLicenses;
-		};
-		C1F0A0032F5F100100000001 /* MHUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C1F0A0022F5F100100000001 /* XCLocalSwiftPackageReference "MHUI" */;
-			productName = MHUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 

@@ -1,24 +1,26 @@
-import MHUI
 import StallyLibrary
 import SwiftUI
 
 struct StallyHistorySection: View {
-    @Environment(\.mhTheme)
-    private var theme
-
     let months: [MarkHistoryMonth]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
+        VStack(
+            alignment: .leading,
+            spacing: StallyDesign.Layout.blockSpacing
+        ) {
             ForEach(months) { month in
-                VStack(alignment: .leading, spacing: theme.spacing.control) {
+                VStack(
+                    alignment: .leading,
+                    spacing: StallyDesign.Layout.compactSpacing
+                ) {
                     Text(month.monthStart.formatted(.dateTime.year().month(.wide)))
-                        .mhRowTitle()
+                        .stallyCardTitle()
 
                     LazyVGrid(columns: columns, spacing: 8) {
                         ForEach(weekdaySymbols, id: \.self) { symbol in
                             Text(symbol)
-                                .mhRowOverline()
+                                .stallyOverlineText()
                                 .frame(maxWidth: .infinity)
                         }
 
@@ -34,8 +36,7 @@ struct StallyHistorySection: View {
                         }
                     }
                 }
-                .mhSurfaceInset()
-                .mhSurface(role: .muted)
+                .stallyPanel(.quiet, padding: 16)
             }
         }
     }
@@ -46,7 +47,7 @@ private extension StallyHistorySection {
         Array(
             repeating: .init(
                 .flexible(),
-                spacing: theme.spacing.inline * 2
+                spacing: StallyDesign.Layout.compactSpacing
             ),
             count: 7
         )
@@ -81,6 +82,10 @@ private extension StallyHistorySection {
             return .white
         }
 
-        return cell.isInDisplayedMonth ? .primary : .secondary
+        if cell.isInDisplayedMonth {
+            return StallyDesign.Palette.ink
+        }
+
+        return StallyDesign.Palette.mutedInk
     }
 }

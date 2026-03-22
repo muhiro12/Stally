@@ -32,6 +32,23 @@ enum StallySurfaceTone {
     }
 }
 
+enum StallyValueTone {
+    case primary
+    case accent
+    case secondary
+
+    var foregroundColor: Color {
+        switch self {
+        case .primary:
+            StallyDesign.Palette.ink
+        case .accent:
+            StallyDesign.Palette.accent
+        case .secondary:
+            StallyDesign.Palette.mutedInk
+        }
+    }
+}
+
 struct StallySectionHeader: View {
     let eyebrow: String?
     let title: String
@@ -58,6 +75,37 @@ struct StallySectionHeader: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+extension Text {
+    func stallyCardTitle() -> some View {
+        self
+            .font(StallyDesign.Typography.cardTitle)
+            .foregroundStyle(StallyDesign.Palette.ink)
+    }
+
+    func stallySupportingText() -> some View {
+        self
+            .font(StallyDesign.Typography.caption)
+            .foregroundStyle(StallyDesign.Palette.mutedInk)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    func stallyValueText(
+        tone: StallyValueTone = .primary
+    ) -> some View {
+        self
+            .font(StallyDesign.Typography.emphasis)
+            .foregroundStyle(tone.foregroundColor)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    func stallyOverlineText() -> some View {
+        self
+            .font(.caption.weight(.bold))
+            .tracking(1.2)
+            .foregroundStyle(StallyDesign.Palette.mutedInk)
     }
 }
 

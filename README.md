@@ -46,6 +46,9 @@ and supports portable backup export and restore flows.
 - **Library-first boundary** – `Stally/Sources/` stays focused on app
   composition and UI, while reusable domain and persistence logic lives in
   `StallyLibrary/`.
+- **App-local presentation system** – `StallyDesign` and `StallyChrome` own
+  the shared app look, text hierarchy, and any Liquid Glass usage inside
+  `Stally/Sources/Common/Components/`.
 - **SwiftData storage** – `ModelContainerFactory.shared()` creates the
   persistent container for `Item` and `Mark`.
 - **App runtime and routes** – `StallyAppAssembly` wires runtime lifecycle,
@@ -80,7 +83,8 @@ and supports portable backup export and restore flows.
 
 1. Open the repository root.
 2. Install hooks with `pre-commit install`.
-3. Open `Stally.xcodeproj` in Xcode.
+3. Open `Stally.xcodeproj` in Xcode. The app target is self-contained; no
+   sibling UI package checkout is required.
 4. Run the **Stally** scheme on an iOS 18 simulator or device, or use the
    **StallyLibrary** scheme when iterating on shared logic and tests.
 

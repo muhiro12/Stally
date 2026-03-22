@@ -27,8 +27,15 @@ if [[ ${#repository_paths[@]} -eq 0 ]]; then
 fi
 
 declare -a blocked_paths=()
+declare -a existing_repository_paths=()
 repository_path=""
 for repository_path in "${repository_paths[@]}"; do
+  if [[ ! -f "$repository_path" ]]; then
+    continue
+  fi
+
+  existing_repository_paths+=("$repository_path")
+
   case "$repository_path" in
     Secret.swift|*/Secret.swift \
     |Configuration.storekit|*/Configuration.storekit \
@@ -39,8 +46,13 @@ for repository_path in "${repository_paths[@]}"; do
     |*.p8|*.p12|*.mobileprovision)
       blocked_paths+=("$repository_path")
       ;;
-  esac
+    esac
 done
+
+if [[ ${#existing_repository_paths[@]} -eq 0 ]]; then
+  echo "No existing tracked or unignored files to scan."
+  exit 0
+fi
 
 if [[ ${#blocked_paths[@]} -gt 0 ]]; then
   echo "Blocked local-only files are present in the repository view:" >&2
@@ -72,7 +84,7 @@ for pattern in "${content_patterns[@]}"; do
   rg_arguments+=(-e "$pattern")
 done
 rg_arguments+=(--)
-rg_arguments+=("${repository_paths[@]}")
+rg_arguments+=("${existing_repository_paths[@]}")
 
 content_matches=$(rg "${rg_arguments[@]}" || true)
 if [[ -n "$content_matches" ]]; then
