@@ -186,6 +186,11 @@ run_logged_step \
   "Scan repository for committed secrets" \
   bash "$repository_root/ci_scripts/tasks/check_no_secrets.sh"
 
+run_logged_step \
+  "check_mhplatform_adoption" \
+  "Check MHPlatform adoption guardrails" \
+  bash "$repository_root/ci_scripts/tasks/check_mhplatform_adoption.sh"
+
 changed_files=$(
   {
     git diff --name-only --cached
@@ -207,7 +212,7 @@ fi
 needs_stally_build=false
 needs_stally_library_tests=false
 
-if grep -Eq '^Stally/|^Stally\.xcodeproj/' <<<"$changed_files"; then
+if grep -Eq '^Stally/|^StallyTests/|^Stally\.xcodeproj/' <<<"$changed_files"; then
   needs_stally_build=true
 fi
 
@@ -216,11 +221,11 @@ if grep -Eq '^StallyLibrary/' <<<"$changed_files"; then
 fi
 
 if ! $needs_stally_build && ! $needs_stally_library_tests; then
-  echo "No changes under Stally/, Stally.xcodeproj/, or StallyLibrary/."
+  echo "No changes under Stally/, StallyTests/, Stally.xcodeproj/, or StallyLibrary/."
   if $should_run_pre_commit; then
-    run_note="pre-commit and repository safety checks completed. No changes under Stally/, Stally.xcodeproj/, or StallyLibrary/. Build/test steps were skipped."
+    run_note="pre-commit and repository safety checks completed. No changes under Stally/, StallyTests/, Stally.xcodeproj/, or StallyLibrary/. Build/test steps were skipped."
   else
-    run_note="Repository safety checks completed. No changes under Stally/, Stally.xcodeproj/, or StallyLibrary/. Build/test steps were skipped."
+    run_note="Repository safety checks completed. No changes under Stally/, StallyTests/, Stally.xcodeproj/, or StallyLibrary/. Build/test steps were skipped."
   fi
   exit 0
 fi
