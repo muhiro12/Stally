@@ -570,8 +570,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/muhiro12/MHPlatform.git";
 			requirement = {
-				kind = revision;
-				revision = 083817e803431d33825a5878593d63e399053ed9;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
 			};
 		};
 		C1F0A0022F5F100100000001 /* XCRemoteSwiftPackageReference "MHUI" */ = {
