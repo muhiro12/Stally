@@ -43,8 +43,8 @@ else
     report_failure "revision-pinned MHPlatform dependency found in StallyLibrary/Package.swift."
   fi
 
-  if ! rg -n 'exact:\s*"1\.1\.0"' <<<"$mhplatform_package_block" >/dev/null; then
-    report_failure "MHPlatform dependency in StallyLibrary/Package.swift must use exact: \"1.1.0\"."
+  if ! rg -n '"1\.0\.0"\.\.<"2\.0\.0"' <<<"$mhplatform_package_block" >/dev/null; then
+    report_failure "MHPlatform dependency in StallyLibrary/Package.swift must use \"1.0.0\"..<\"2.0.0\"."
   fi
 fi
 
@@ -64,12 +64,12 @@ else
     report_failure "revision-pinned MHPlatform dependency found in Stally.xcodeproj."
   fi
 
-  if ! rg -n 'kind = exactVersion' <<<"$mhplatform_project_block" >/dev/null; then
-    report_failure "MHPlatform dependency must be configured as an exact version."
+  if ! rg -n 'kind = upToNextMajorVersion' <<<"$mhplatform_project_block" >/dev/null; then
+    report_failure "MHPlatform dependency must use upToNextMajorVersion."
   fi
 
-  if ! rg -n 'version = 1\.1\.0;' <<<"$mhplatform_project_block" >/dev/null; then
-    report_failure "MHPlatform dependency must pin version 1.1.0."
+  if ! rg -n 'minimumVersion = 1\.0\.0;' <<<"$mhplatform_project_block" >/dev/null; then
+    report_failure "MHPlatform dependency must use minimumVersion 1.0.0."
   fi
 fi
 
@@ -85,8 +85,8 @@ else
     report_failure "floating MHPlatform resolution found in StallyLibrary/Package.resolved."
   fi
 
-  if ! rg -n '"version"\s*:\s*"1\.1\.0"' <<<"$mhplatform_library_resolved_block" >/dev/null; then
-    report_failure "StallyLibrary/Package.resolved must pin MHPlatform 1.1.0."
+  if ! rg -n '"version"\s*:\s*"1\.2\.0"' <<<"$mhplatform_library_resolved_block" >/dev/null; then
+    report_failure "StallyLibrary/Package.resolved must resolve MHPlatform 1.2.0."
   fi
 fi
 
@@ -102,8 +102,8 @@ else
     report_failure "floating MHPlatform resolution found in the Xcode Package.resolved."
   fi
 
-  if ! rg -n '"version"\s*:\s*"1\.1\.0"' <<<"$mhplatform_xcode_resolved_block" >/dev/null; then
-    report_failure "The Xcode Package.resolved must pin MHPlatform 1.1.0."
+  if ! rg -n '"version"\s*:\s*"1\.2\.0"' <<<"$mhplatform_xcode_resolved_block" >/dev/null; then
+    report_failure "The Xcode Package.resolved must resolve MHPlatform 1.2.0."
   fi
 fi
 
@@ -117,7 +117,7 @@ if rg -n '^(@testable )?import MHPlatform$' \
   report_failure "shared-library layer must not import the MHPlatform umbrella."
 fi
 
-if rg -n '^(@testable )?import MH(DeepLinking|Logging|Preferences|RouteExecution|NotificationPlans|NotificationPayloads|AppRuntimeCore|AppRuntime|ReviewPolicy)$' \
+if rg -n '^(@testable )?import MH(DeepLinking|Logging|Preferences|RouteExecution|NotificationPlans|NotificationPayloads|AppRuntime|ReviewPolicy)$' \
   StallyLibrary/Sources StallyLibrary/Tests >/dev/null; then
   report_failure "shared-library layer must use MHPlatformCore instead of direct MHPlatform module imports."
 fi
@@ -127,7 +127,7 @@ if ! rg -n '^import MHPlatform$' \
   report_failure "Stally app and tests must import MHPlatform."
 fi
 
-if rg -n '^import MH(AppRuntimeCore|AppRuntime|PlatformCore|DeepLinking|Logging|Preferences|RouteExecution|AppRuntimeDefaults|AppRuntimeAds|AppRuntimeLicenses|ReviewPolicy)$' \
+if rg -n '^import MH(AppRuntime|PlatformCore|DeepLinking|Logging|Preferences|RouteExecution|AppRuntimeDefaults|AppRuntimeAds|AppRuntimeLicenses|ReviewPolicy)$' \
   Stally/Sources StallyTests >/dev/null; then
   report_failure "Stally app and tests must use MHPlatform instead of direct MHPlatform module imports."
 fi
@@ -147,7 +147,7 @@ if ! rg -n 'productName = MHPlatform;' \
   report_failure "Stally target must depend on the MHPlatform umbrella."
 fi
 
-if rg -n 'productName = MH(AppRuntimeCore|DeepLinking|Logging|Preferences|RouteExecution|AppRuntimeDefaults|AppRuntimeAds|AppRuntimeLicenses);' \
+if rg -n 'productName = MH(DeepLinking|Logging|Preferences|RouteExecution|AppRuntimeDefaults|AppRuntimeAds|AppRuntimeLicenses);' \
   Stally.xcodeproj/project.pbxproj >/dev/null; then
   report_failure "Stally target must not depend on direct MHPlatform core/runtime products."
 fi

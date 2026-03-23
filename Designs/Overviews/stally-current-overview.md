@@ -96,13 +96,13 @@ Current app-side directories under `Stally/Sources/` follow this shape:
 This layout intentionally mirrors the stronger repository boundary used in
 Incomes while staying scoped to Stally's simpler single-app product surface.
 
-Runtime startup is currently built from the app-facing `MHPlatform` umbrella,
-with `MHAppRuntimeBootstrap` and the package-owned default runtime shell
-providing startup, lifecycle, and environment wiring. `StallyLibrary` adopts
-`MHPlatformCore` for shared deep-linking and other core-safe platform
-primitives, while Stally keeps app-specific route meaning, tab and sheet
-state, screen snapshot builders, screen models, and feature presentation in
-the app target.
+Runtime startup is currently built from the app-facing `MHPlatform` default
+pillar, with `MHAppRuntimeBootstrap` providing the package-owned runtime,
+lifecycle, optional route-pipeline root integration, and SwiftUI environment
+wiring. `StallyLibrary` adopts the shared-library `MHPlatformCore` default
+pillar for deep-linking and other core-safe platform primitives, while Stally
+keeps app-specific route meaning, tab and sheet state, screen snapshot
+builders, screen models, and feature presentation in the app target.
 
 Shared presentation chrome comes from the public
 `https://github.com/muhiro12/MHUI.git` package, while `StallyDesign` keeps
