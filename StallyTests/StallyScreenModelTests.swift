@@ -4,7 +4,7 @@ import Foundation
 import XCTest
 
 final class StallyScreenModelTests: XCTestCase {
-    func testHomeScreenModelBuildsDisplayedItemsAndUtilityPanels() async throws {
+    func testHomeScreenModelBuildsDisplayedItemsAndMetrics() async throws {
         try await MainActor.run {
             let context = testContext()
             let firstItem = try createTestItem(
@@ -34,7 +34,6 @@ final class StallyScreenModelTests: XCTestCase {
             model.selectQuickFilter(.withoutHistory)
 
             XCTAssertEqual(model.displayedItems.map(\.name), [secondItem.name])
-            XCTAssertEqual(model.utilityPanels.count, 4)
             XCTAssertEqual(model.homeSummaryMetrics.first?.value, "1")
             XCTAssertEqual(model.totalLibraryMarks, 1)
         }
