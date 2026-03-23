@@ -36,6 +36,7 @@ final class StallyScreenModelTests: XCTestCase {
             XCTAssertEqual(model.displayedItems.map(\.name), [secondItem.name])
             XCTAssertEqual(model.utilityPanels.count, 4)
             XCTAssertEqual(model.homeSummaryMetrics.first?.value, "1")
+            XCTAssertEqual(model.totalLibraryMarks, 1)
         }
     }
 

@@ -292,7 +292,7 @@ private extension StallyHomeView {
             ),
             .init(
                 title: StallyLocalization.string("Marks"),
-                value: "\(screenModel.displayedSummary.totalMarks + archiveSummary.totalMarks)"
+                value: "\(screenModel.totalLibraryMarks)"
             )
         ]
     }

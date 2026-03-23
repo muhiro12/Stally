@@ -50,6 +50,12 @@ final class StallyHomeScreenModel {
         )
     }
 
+    var totalLibraryMarks: Int {
+        ItemInsightsCalculator.activeSummary(
+            from: snapshot.activeItems
+        ).totalMarks + snapshot.archiveSummary.totalMarks
+    }
+
     var recentItems: [Item] {
         snapshot.recentItems
     }
