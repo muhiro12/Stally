@@ -21,7 +21,15 @@ final class StallyAppAssembly {
     ) {
         let appModel = StallyAppModel()
         let routeInbox = MHObservableRouteInbox<StallyRoute>()
-        let configuration = StallyAppConfiguration.runtimeConfiguration
+        let configuration: MHAppConfiguration
+
+        switch lifecyclePlanStyle {
+        case .live:
+            configuration = StallyAppConfiguration.runtimeConfiguration
+        case .preview:
+            configuration = StallyAppConfiguration.previewConfiguration
+        }
+
         let routePipeline = MHAppRoutePipeline(
             routeLifecycle: .init(
                 logger: StallyApp.logger(category: "RoutePipeline"),

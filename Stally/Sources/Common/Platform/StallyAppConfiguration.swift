@@ -24,10 +24,26 @@ enum StallyAppConfiguration {
     }
 
     static var runtimeConfiguration: MHAppConfiguration {
+        makeConfiguration(
+            nativeAdUnitID: StallyAdMobConfiguration.nativeAdUnitID
+        )
+    }
+
+    static var previewConfiguration: MHAppConfiguration {
+        makeConfiguration(
+            nativeAdUnitID: nil
+        )
+    }
+}
+
+private extension StallyAppConfiguration {
+    static func makeConfiguration(
+        nativeAdUnitID: String?
+    ) -> MHAppConfiguration {
         .init(
             subscriptionProductIDs: [],
             subscriptionGroupID: nil,
-            nativeAdUnitID: StallyAdMobConfiguration.nativeAdUnitID,
+            nativeAdUnitID: nativeAdUnitID,
             preferencesSuiteName: nil,
             showsLicenses: true
         )

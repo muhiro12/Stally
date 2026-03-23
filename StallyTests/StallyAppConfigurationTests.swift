@@ -9,4 +9,11 @@ final class StallyAppConfigurationTests: XCTestCase {
             StallyAppConfiguration.runtimeConfiguration.preferencesSuiteName
         )
     }
+
+    @MainActor
+    func testPreviewConfigurationDisablesAds() {
+        XCTAssertNil(
+            StallyAppConfiguration.previewConfiguration.nativeAdUnitID
+        )
+    }
 }
