@@ -1,6 +1,5 @@
 // swiftlint:disable closure_body_length type_contents_order
-import MHAppRuntimeCore
-import MHDeepLinking
+import MHPlatform
 import MHUI
 import StallyLibrary
 import SwiftUI

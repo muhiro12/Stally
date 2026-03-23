@@ -6,8 +6,7 @@
 //
 
 import Foundation
-import MHAppRuntimeCore
-import MHLogging
+import MHPlatform
 import MHUI
 import SwiftUI
 

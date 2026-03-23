@@ -1,4 +1,4 @@
-import MHDeepLinking
+import MHPlatform
 import MHUI
 import StallyLibrary
 import SwiftUI

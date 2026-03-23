@@ -18,7 +18,7 @@ let package = Package( // swiftlint:disable:this prefixed_toplevel_constant
     dependencies: [
         .package(
             url: "https://github.com/muhiro12/MHPlatform.git",
-            "1.0.0"..<"2.0.0"
+            exact: "1.1.0"
         )
     ],
     targets: [
@@ -26,7 +26,7 @@ let package = Package( // swiftlint:disable:this prefixed_toplevel_constant
             name: "StallyLibrary",
             dependencies: [
                 .product(
-                    name: "MHDeepLinking",
+                    name: "MHPlatformCore",
                     package: "MHPlatform"
                 )
             ],
@@ -43,7 +43,7 @@ let package = Package( // swiftlint:disable:this prefixed_toplevel_constant
             dependencies: [
                 "StallyLibrary",
                 .product(
-                    name: "MHDeepLinking",
+                    name: "MHPlatformCore",
                     package: "MHPlatform"
                 )
             ],

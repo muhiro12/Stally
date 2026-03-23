@@ -1,5 +1,5 @@
 import Foundation
-import MHDeepLinking
+import MHPlatformCore
 
 /// Deep-linkable routes supported by Stally.
 public enum StallyRoute: Equatable, Hashable, Sendable, MHDeepLinkRoute {

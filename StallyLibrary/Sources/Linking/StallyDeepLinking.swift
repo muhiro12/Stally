@@ -1,4 +1,4 @@
-import MHDeepLinking
+import MHPlatformCore
 
 /// Shared deep-link configuration and codec factory for Stally routes.
 public enum StallyDeepLinking {

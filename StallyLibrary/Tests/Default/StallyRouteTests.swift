@@ -1,4 +1,4 @@
-import MHDeepLinking
+import MHPlatformCore
 @testable import StallyLibrary
 import XCTest
 

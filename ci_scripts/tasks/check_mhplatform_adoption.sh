@@ -43,8 +43,8 @@ else
     report_failure "revision-pinned MHPlatform dependency found in StallyLibrary/Package.swift."
   fi
 
-  if ! rg -n '"1\.0\.0"\.\.<"2\.0\.0"' <<<"$mhplatform_package_block" >/dev/null; then
-    report_failure "MHPlatform dependency in StallyLibrary/Package.swift must use the 1.0.0..<2.0.0 range."
+  if ! rg -n 'exact:\s*"1\.1\.0"' <<<"$mhplatform_package_block" >/dev/null; then
+    report_failure "MHPlatform dependency in StallyLibrary/Package.swift must use exact: \"1.1.0\"."
   fi
 fi
 
@@ -64,12 +64,12 @@ else
     report_failure "revision-pinned MHPlatform dependency found in Stally.xcodeproj."
   fi
 
-  if ! rg -n 'kind = upToNextMajorVersion' <<<"$mhplatform_project_block" >/dev/null; then
-    report_failure "MHPlatform dependency is not configured as an up-to-next-major version range."
+  if ! rg -n 'kind = exactVersion' <<<"$mhplatform_project_block" >/dev/null; then
+    report_failure "MHPlatform dependency must be configured as an exact version."
   fi
 
-  if ! rg -n 'minimumVersion = 1\.0\.0;' <<<"$mhplatform_project_block" >/dev/null; then
-    report_failure "MHPlatform dependency does not start from version 1.0.0."
+  if ! rg -n 'version = 1\.1\.0;' <<<"$mhplatform_project_block" >/dev/null; then
+    report_failure "MHPlatform dependency must pin version 1.1.0."
   fi
 fi
 
@@ -85,8 +85,8 @@ else
     report_failure "floating MHPlatform resolution found in StallyLibrary/Package.resolved."
   fi
 
-  if ! rg -n '"version"' <<<"$mhplatform_library_resolved_block" >/dev/null; then
-    report_failure "versioned MHPlatform resolution is missing from StallyLibrary/Package.resolved."
+  if ! rg -n '"version"\s*:\s*"1\.1\.0"' <<<"$mhplatform_library_resolved_block" >/dev/null; then
+    report_failure "StallyLibrary/Package.resolved must pin MHPlatform 1.1.0."
   fi
 fi
 
@@ -102,27 +102,54 @@ else
     report_failure "floating MHPlatform resolution found in the Xcode Package.resolved."
   fi
 
-  if ! rg -n '"version"' <<<"$mhplatform_xcode_resolved_block" >/dev/null; then
-    report_failure "versioned MHPlatform resolution is missing from the Xcode Package.resolved."
+  if ! rg -n '"version"\s*:\s*"1\.1\.0"' <<<"$mhplatform_xcode_resolved_block" >/dev/null; then
+    report_failure "The Xcode Package.resolved must pin MHPlatform 1.1.0."
   fi
+fi
+
+if ! rg -n '^(@testable )?import MHPlatformCore$' \
+  StallyLibrary/Sources StallyLibrary/Tests >/dev/null; then
+  report_failure "shared-library layer must import MHPlatformCore."
 fi
 
 if rg -n '^(@testable )?import MHPlatform$' \
   StallyLibrary/Sources StallyLibrary/Tests >/dev/null; then
-  report_failure "shared-library layer imports the MHPlatform umbrella."
+  report_failure "shared-library layer must not import the MHPlatform umbrella."
 fi
 
-if rg -n '^import MHPlatform$' Stally/Sources >/dev/null; then
-  report_failure "Stally app sources import the MHPlatform umbrella."
+if rg -n '^(@testable )?import MH(DeepLinking|Logging|Preferences|RouteExecution|NotificationPlans|NotificationPayloads|AppRuntimeCore|AppRuntime|ReviewPolicy)$' \
+  StallyLibrary/Sources StallyLibrary/Tests >/dev/null; then
+  report_failure "shared-library layer must use MHPlatformCore instead of direct MHPlatform module imports."
 fi
 
-if rg -n 'name: "MHPlatform"|name: "MHAppRuntime"|name: "MHReviewPolicy"' \
+if ! rg -n '^import MHPlatform$' \
+  Stally/Sources StallyTests >/dev/null; then
+  report_failure "Stally app and tests must import MHPlatform."
+fi
+
+if rg -n '^import MH(AppRuntimeCore|AppRuntime|PlatformCore|DeepLinking|Logging|Preferences|RouteExecution|AppRuntimeDefaults|AppRuntimeAds|AppRuntimeLicenses|ReviewPolicy)$' \
+  Stally/Sources StallyTests >/dev/null; then
+  report_failure "Stally app and tests must use MHPlatform instead of direct MHPlatform module imports."
+fi
+
+if ! rg -n 'name: "MHPlatformCore"' \
   StallyLibrary/Package.swift >/dev/null; then
-  report_failure "StallyLibrary depends on an app-facing MHPlatform product."
+  report_failure "StallyLibrary must depend on the MHPlatformCore product."
 fi
 
-if rg -n 'productName = MHPlatform;' Stally.xcodeproj/project.pbxproj >/dev/null; then
-  report_failure "Stally target depends on the full MHPlatform umbrella."
+if rg -n 'name: "MHPlatform"|name: "MHAppRuntime"|name: "MHReviewPolicy"|name: "MHDeepLinking"|name: "MHLogging"|name: "MHPreferences"|name: "MHRouteExecution"' \
+  StallyLibrary/Package.swift >/dev/null; then
+  report_failure "StallyLibrary must not depend on app-facing or granular MHPlatform products."
+fi
+
+if ! rg -n 'productName = MHPlatform;' \
+  Stally.xcodeproj/project.pbxproj >/dev/null; then
+  report_failure "Stally target must depend on the MHPlatform umbrella."
+fi
+
+if rg -n 'productName = MH(AppRuntimeCore|DeepLinking|Logging|Preferences|RouteExecution|AppRuntimeDefaults|AppRuntimeAds|AppRuntimeLicenses);' \
+  Stally.xcodeproj/project.pbxproj >/dev/null; then
+  report_failure "Stally target must not depend on direct MHPlatform core/runtime products."
 fi
 
 if [[ $failure_count -ne 0 ]]; then

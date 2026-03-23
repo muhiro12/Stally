@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import MHAppRuntimeCore
+import MHPlatform
 
 enum StallyAppConfiguration {
     static let displayName = "Stally"

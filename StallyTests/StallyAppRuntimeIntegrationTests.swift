@@ -1,6 +1,4 @@
-import MHAppRuntimeCore
-import MHDeepLinking
-import MHRouteExecution
+import MHPlatform
 import SwiftUI
 @testable import Stally
 @testable import StallyLibrary

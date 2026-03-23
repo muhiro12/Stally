@@ -1,5 +1,5 @@
 // swiftlint:disable file_length type_contents_order
-import MHDeepLinking
+import MHPlatform
 import MHUI
 import StallyLibrary
 import SwiftData

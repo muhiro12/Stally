@@ -1,5 +1,5 @@
 // swiftlint:disable closure_body_length file_length
-import MHDeepLinking
+import MHPlatform
 import MHUI
 import StallyLibrary
 import SwiftData

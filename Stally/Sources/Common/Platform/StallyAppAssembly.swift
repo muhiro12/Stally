@@ -1,9 +1,4 @@
-import MHAppRuntimeAds
-import MHAppRuntimeCore
-import MHAppRuntimeDefaults
-import MHAppRuntimeLicenses
-import MHPreferences
-import MHRouteExecution
+import MHPlatform
 import MHUI
 import Observation
 import StallyLibrary
@@ -27,25 +22,6 @@ final class StallyAppAssembly {
         let appModel = StallyAppModel()
         let routeInbox = MHObservableRouteInbox<StallyRoute>()
         let configuration = StallyAppConfiguration.runtimeConfiguration
-        let defaultsBundle = MHAppRuntimeDefaultsBundle(
-            configuration: configuration
-        )
-        let adsBundle = MHAppRuntimeAdsBundle(
-            configuration: configuration
-        )
-        let licensesBundle = MHAppRuntimeLicensesBundle(
-            configuration: configuration
-        )
-        let runtime = MHAppRuntime(
-            configuration: configuration,
-            preferenceStore: defaultsBundle.preferenceStore,
-            startStore: defaultsBundle.startStore,
-            subscriptionSectionFactory:
-                defaultsBundle.subscriptionSectionFactory,
-            startAds: adsBundle.startAds,
-            nativeAdFactory: adsBundle.nativeAdFactory,
-            licensesFactory: licensesBundle.licensesFactory
-        )
         let routePipeline = MHAppRoutePipeline(
             routeLifecycle: .init(
                 logger: StallyApp.logger(category: "RoutePipeline"),
@@ -56,18 +32,24 @@ final class StallyAppAssembly {
             routeInbox: routeInbox,
             pendingSources: []
         )
+        let provisionalBootstrap = MHAppRuntimeBootstrap(
+            configuration: configuration,
+            lifecyclePlan: .empty,
+            routePipeline: routePipeline
+        )
+        let lifecyclePlan = lifecyclePlanStyle.makePlan(
+            appModel: appModel,
+            preferenceStore: provisionalBootstrap.runtime.preferenceStore,
+            routePipeline: routePipeline
+        )
 
         self.modelContainer = modelContainer
         self.appModel = appModel
         self.routeInbox = routeInbox
         self.routePipeline = routePipeline
         self.bootstrap = .init(
-            runtime: runtime,
-            lifecyclePlan: lifecyclePlanStyle.makePlan(
-                appModel: appModel,
-                preferenceStore: runtime.preferenceStore,
-                routePipeline: routePipeline
-            ),
+            runtime: provisionalBootstrap.runtime,
+            lifecyclePlan: lifecyclePlan,
             routePipeline: routePipeline
         )
     }
