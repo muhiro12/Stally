@@ -214,20 +214,15 @@ final class StallyAppModel {
     func openBackup(
         in tab: Tab? = nil
     ) {
-        let hostTab = tab ?? selectedTab
+        let hostTab = tab ?? .library
         selectedTab = hostTab
-
-        var path = path(for: hostTab)
-
-        if !path.contains(.settings) {
-            path.append(.settings)
-        }
-
-        if path.last != .backup {
-            path.append(.backup)
-        }
-
-        replacePath(path, for: hostTab)
+        replacePath(
+            [
+                .settings,
+                .backup
+            ],
+            for: hostTab
+        )
     }
 
     func removeItemDestination(

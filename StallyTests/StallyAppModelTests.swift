@@ -16,4 +16,35 @@ final class StallyAppModelTests: XCTestCase {
             )
         }
     }
+
+    func testOpenBackupDefaultsToLibraryWorkspace() async {
+        await MainActor.run {
+            let appModel = StallyAppModel()
+            let itemID = UUID()
+            appModel.selectedTab = .review
+            appModel.libraryPath = [
+                .item(itemID)
+            ]
+            appModel.reviewPath = [
+                .settings
+            ]
+
+            appModel.openBackup()
+
+            XCTAssertEqual(appModel.selectedTab, .library)
+            XCTAssertEqual(
+                appModel.libraryPath,
+                [
+                    .settings,
+                    .backup
+                ]
+            )
+            XCTAssertEqual(
+                appModel.reviewPath,
+                [
+                    .settings
+                ]
+            )
+        }
+    }
 }
