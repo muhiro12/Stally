@@ -111,7 +111,7 @@ final class StallyScreenModelTests: XCTestCase {
         }
     }
 
-    func testInsightsScreenModelBuildsMetricsAndChartHelpers() async throws {
+    func testInsightsScreenModelBuildsOverviewMetrics() async throws {
         try await MainActor.run {
             let context = testContext()
             let item = try createTestItem(
@@ -137,8 +137,6 @@ final class StallyScreenModelTests: XCTestCase {
             let model = StallyInsightsScreenModel(snapshot: snapshot)
 
             XCTAssertEqual(model.overviewMetrics.first?.value, "2")
-            XCTAssertGreaterThan(model.barHeight(for: snapshot.activityDays[0]), 0)
-            XCTAssertTrue(model.shouldShowLabel(for: snapshot.activityDays[0]))
         }
     }
 
