@@ -61,10 +61,8 @@ extension StallyBackupCenterView {
                     )
                 )
             } catch {
-                state.recordImportFailure(
+                state.recordImportPreviewFailure(
                     error,
-                    operation: .importPreview,
-                    phase: .fileAccess,
                     fallback: StallyLocalization.string(
                         "Stally couldn't read this backup file."
                     )
@@ -74,10 +72,8 @@ extension StallyBackupCenterView {
                 where error.code == .userCancelled:
             state.importStatus = nil
         case .failure(let error):
-            state.recordImportFailure(
+            state.recordImportPreviewFailure(
                 error,
-                operation: .importPreview,
-                phase: .fileAccess,
                 fallback: StallyLocalization.string(
                     "Stally couldn't open the import picker."
                 )

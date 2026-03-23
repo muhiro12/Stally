@@ -118,6 +118,19 @@ struct StallyBackupCenterState {
         importStatus = nil
     }
 
+    mutating func recordImportPreviewFailure(
+        _ error: any Error,
+        fallback: String
+    ) {
+        recordImportFailure(
+            error,
+            operation: .importPreview,
+            phase: .fileAccess,
+            fallback: fallback,
+            preservePreview: true
+        )
+    }
+
     mutating func recordImportFailure(
         _ error: any Error,
         operation: StallyTransferOperationError.Operation,

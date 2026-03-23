@@ -8,6 +8,7 @@ enum StallyTransferFailurePhase: String {
     case followUp
 }
 
+// swiftlint:disable:next one_declaration_per_file
 struct StallyTransferOperationError: LocalizedError {
     enum Operation: String {
         case export
@@ -32,8 +33,8 @@ struct StallyTransferOperationError: LocalizedError {
         operation: Operation,
         phase: StallyTransferFailurePhase,
         fallbackDescription: String
-    ) -> StallyTransferOperationError {
-        if let transferError = error as? StallyTransferOperationError {
+    ) -> Self {
+        if let transferError = error as? Self {
             return transferError
         }
 

@@ -16,7 +16,7 @@ final class StallyBackupWorkflowTests: XCTestCase {
         try markTestItem(
             context: context,
             item: item,
-            on: localDate(year: 2026, month: 3, day: 22)
+            on: localDate(year: 2_026, month: 3, day: 22)
         )
 
         let preparation = StallyBackupWorkflow.prepareExport(
@@ -96,7 +96,7 @@ final class StallyBackupWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testMergeImportClassifiesValidationFailureAsPreflight() throws {
+    func testMergeImportClassifiesValidationFailureAsPreflight() {
         let context = testContext()
         let snapshot = makeInvalidSnapshot(
             duplicatedItemID: UUID()
@@ -123,7 +123,7 @@ final class StallyBackupWorkflowTests: XCTestCase {
     }
 
     @MainActor
-    func testReplaceImportClassifiesValidationFailureAsPreflight() throws {
+    func testReplaceImportClassifiesValidationFailureAsPreflight() {
         let context = testContext()
         let snapshot = makeInvalidSnapshot(
             duplicatedItemID: UUID()
@@ -185,6 +185,45 @@ final class StallyBackupWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testRecordImportPreviewFailurePreservesExistingPreview() {
+        let preview = makePreview(
+            snapshot: makeInvalidSnapshot(
+                duplicatedItemID: UUID()
+            )
+        )
+        var state = StallyBackupCenterState()
+        state.recordImportPreview(preview)
+
+        state.recordImportPreviewFailure(
+            StallyTransferOperationError(
+                operation: .importPreview,
+                phase: .decode,
+                underlyingError: DecodingError.dataCorrupted(
+                    .init(
+                        codingPath: [],
+                        debugDescription: "bad backup"
+                    )
+                ),
+                fallbackDescription: "fallback"
+            ),
+            fallback: "fallback"
+        )
+
+        XCTAssertEqual(
+            state.importPreview?.sourceName,
+            preview.sourceName
+        )
+        XCTAssertEqual(
+            state.importStatus?.failure?.operation,
+            .importPreview
+        )
+        XCTAssertEqual(
+            state.importStatus?.failure?.phase,
+            .decode
+        )
+    }
+
+    @MainActor
     func testDeleteAllItemsRemovesPersistedItems() throws {
         let context = testContext()
         _ = try createTestItem(
@@ -217,9 +256,10 @@ private extension StallyBackupWorkflowTests {
             at: directory,
             withIntermediateDirectories: true
         )
-        try StallyBackupFileAdapter.encodeData(
+        let data = try StallyBackupFileAdapter.encodeData(
             for: snapshot
-        ).write(to: url)
+        )
+        try data.write(to: url)
 
         addTeardownBlock {
             try? FileManager.default.removeItem(at: directory)
