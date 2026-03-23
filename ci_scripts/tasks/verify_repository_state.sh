@@ -1,22 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-argument_count=$#
-if [[ $argument_count -ne 0 ]]; then
-  echo "This script does not accept arguments." >&2
-  exit 2
-fi
-
 script_directory=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-repository_root=$(cd "$script_directory/../.." && pwd)
-cd "$repository_root"
+source "$script_directory/../lib/task_utils.sh"
+source "$script_directory/../lib/ci_runs.sh"
 
-source "$repository_root/ci_scripts/lib/ci_runs.sh"
-
-if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  echo "This script must run inside a git repository." >&2
-  exit 1
-fi
+ci_task_require_no_arguments "$@"
+ci_task_enter_repository "${BASH_SOURCE[0]}"
+repository_root=$CI_TASK_REPOSITORY_ROOT
 
 ci_root="$repository_root/.build/ci"
 runs_root="$ci_root/runs"
@@ -48,7 +39,7 @@ start_time_display=$(date +"%Y-%m-%d %H:%M:%S %z")
 start_time_iso=$(date +"%Y-%m-%dT%H:%M:%S%z")
 
 overall_result="success"
-run_note="Evaluating local changes to determine required verification steps."
+run_note="Evaluating local changes to determine required CI steps."
 failed_step=""
 failed_log=""
 executed_steps=()
@@ -70,7 +61,7 @@ finalize_run_artifacts() {
 
   if [[ $exit_code -ne 0 ]]; then
     overall_result="failure"
-    if [[ -z "$run_note" || "$run_note" == "Executed required verification steps based on local changes." ]]; then
+    if [[ "$run_note" != "A required step failed. Review failure details and logs." ]]; then
       run_note="A required step failed. Review failure details and logs."
     fi
   fi
@@ -169,16 +160,77 @@ run_logged_step() {
   return 0
 }
 
-should_run_pre_commit=false
-if [[ "${CI_RUN_ENABLE_PRE_COMMIT:-0}" == "1" || "${CI_RUN_ENABLE_PRE_COMMIT:-}" == "true" ]]; then
-  should_run_pre_commit=true
+should_force_full=false
+if [[ "${CI_RUN_FORCE_FULL:-0}" == "1" || "${CI_RUN_FORCE_FULL:-}" == "true" ]]; then
+  should_force_full=true
 fi
 
-if $should_run_pre_commit; then
-  run_logged_step \
-    "pre_commit" \
-    "Run pre-commit hooks" \
-    bash "$repository_root/ci_scripts/tasks/pre_commit.sh"
+should_skip_environment_check=false
+if [[ "${CI_SKIP_ENV_CHECK:-0}" == "1" || "${CI_SKIP_ENV_CHECK:-}" == "true" ]]; then
+  should_skip_environment_check=true
+fi
+
+needs_stally_build=false
+needs_stally_tests=false
+needs_stally_library_tests=false
+needs_mhplatform_boundary_checks=false
+needs_mhui_adoption_checks=false
+needs_models_directory_consistency=false
+
+if $should_force_full; then
+  echo "Forcing full verification regardless of local changes."
+  needs_stally_build=true
+  needs_stally_tests=true
+  needs_stally_library_tests=true
+  needs_mhplatform_boundary_checks=true
+  needs_mhui_adoption_checks=true
+  needs_models_directory_consistency=true
+  run_note="Executed a forced full verification run regardless of local changes."
+else
+  changed_files=$(
+    {
+      git diff --name-only --cached
+      git diff --name-only
+      git ls-files --others --exclude-standard
+    } | sed '/^$/d' | sort -u
+  )
+
+  if [[ -z "$changed_files" ]]; then
+    echo "No local changes detected."
+    run_note="No local changes detected. Build/test steps were skipped."
+    exit 0
+  fi
+
+  if grep -Eq '^Stally/|^StallyTests/|^Stally\.xcodeproj/' <<<"$changed_files"; then
+    needs_stally_build=true
+    needs_stally_tests=true
+    needs_models_directory_consistency=true
+  fi
+
+  if grep -Eq '^StallyLibrary/' <<<"$changed_files"; then
+    needs_stally_library_tests=true
+  fi
+
+  if grep -Eq '^Stally/|^StallyTests/|^StallyLibrary/|^Stally\.xcodeproj/|^ci_scripts/' <<<"$changed_files"; then
+    needs_mhplatform_boundary_checks=true
+  fi
+
+  if grep -Eq '^Stally/|^Stally\.xcodeproj/|^ci_scripts/' <<<"$changed_files"; then
+    needs_mhui_adoption_checks=true
+  fi
+
+  if ! $needs_stally_build \
+    && ! $needs_stally_tests \
+    && ! $needs_stally_library_tests \
+    && ! $needs_mhplatform_boundary_checks \
+    && ! $needs_mhui_adoption_checks \
+    && ! $needs_models_directory_consistency; then
+    echo "No changes under Stally/, StallyTests/, StallyLibrary/, Stally.xcodeproj/, or ci_scripts/."
+    run_note="No changes under Stally/, StallyTests/, StallyLibrary/, Stally.xcodeproj/, or ci_scripts/. Build/test steps were skipped."
+    exit 0
+  fi
+
+  run_note="Executed required CI steps based on local changes."
 fi
 
 run_logged_step \
@@ -186,68 +238,42 @@ run_logged_step \
   "Scan repository for committed secrets" \
   bash "$repository_root/ci_scripts/tasks/check_no_secrets.sh"
 
-run_logged_step \
-  "check_mhplatform_adoption" \
-  "Check MHPlatform adoption guardrails" \
-  bash "$repository_root/ci_scripts/tasks/check_mhplatform_adoption.sh"
-
-run_logged_step \
-  "check_mhui_adoption" \
-  "Check MHUI adoption guardrails" \
-  bash "$repository_root/ci_scripts/tasks/check_mhui_adoption.sh"
-
-changed_files=$(
-  {
-    git diff --name-only --cached
-    git diff --name-only
-    git ls-files --others --exclude-standard
-  } | sed '/^$/d' | sort -u
-)
-
-if [[ -z "$changed_files" ]]; then
-  echo "No local changes detected."
-  if $should_run_pre_commit; then
-    run_note="pre-commit and repository safety checks completed. No local changes detected. Build/test steps were skipped."
-  else
-    run_note="Repository safety checks completed. No local changes detected. Build/test steps were skipped."
-  fi
-  exit 0
+if ! $should_skip_environment_check && { $needs_stally_build || $needs_stally_tests || $needs_stally_library_tests; }; then
+  run_logged_step \
+    "check_environment" \
+    "Check build environment" \
+    bash "$repository_root/ci_scripts/tasks/check_environment.sh" --profile build
 fi
 
-needs_stally_build=false
-needs_stally_library_tests=false
-
-if grep -Eq '^Stally/|^StallyTests/|^Stally\.xcodeproj/' <<<"$changed_files"; then
-  needs_stally_build=true
+if $needs_mhplatform_boundary_checks; then
+  run_logged_step \
+    "check_mhplatform_boundaries" \
+    "Check MHPlatform boundaries" \
+    bash "$repository_root/ci_scripts/tasks/check_mhplatform_boundaries.sh"
 fi
 
-if grep -Eq '^StallyLibrary/' <<<"$changed_files"; then
-  needs_stally_library_tests=true
+if $needs_mhui_adoption_checks; then
+  run_logged_step \
+    "check_mhui_adoption" \
+    "Check MHUI adoption guardrails" \
+    bash "$repository_root/ci_scripts/tasks/check_mhui_adoption.sh"
 fi
 
-if ! $needs_stally_build && ! $needs_stally_library_tests; then
-  echo "No changes under Stally/, StallyTests/, Stally.xcodeproj/, or StallyLibrary/."
-  if $should_run_pre_commit; then
-    run_note="pre-commit and repository safety checks completed. No changes under Stally/, StallyTests/, Stally.xcodeproj/, or StallyLibrary/. Build/test steps were skipped."
-  else
-    run_note="Repository safety checks completed. No changes under Stally/, StallyTests/, Stally.xcodeproj/, or StallyLibrary/. Build/test steps were skipped."
-  fi
-  exit 0
-fi
-
-run_note="Executed required verification steps based on local changes."
-
-if $needs_stally_build; then
+if $needs_models_directory_consistency; then
   run_logged_step \
     "check_models_directory_consistency" \
     "Check Models directory consistency" \
     bash "$repository_root/ci_scripts/tasks/check_models_directory_consistency.sh"
+fi
 
+if $needs_stally_build; then
   run_logged_step \
     "build_app" \
     "Build Stally scheme" \
     bash "$repository_root/ci_scripts/tasks/build_app.sh"
+fi
 
+if $needs_stally_tests; then
   run_logged_step \
     "test_app" \
     "Test Stally scheme" \

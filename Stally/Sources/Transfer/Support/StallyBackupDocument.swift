@@ -33,14 +33,16 @@ struct StallyBackupDocument: FileDocument {
             throw CocoaError(.fileReadCorruptFile)
         }
 
-        snapshot = try StallyBackupCodec.decode(data)
+        snapshot = try StallyBackupFileAdapter.decodeSnapshot(from: data)
     }
 
     func fileWrapper(
         configuration _: WriteConfiguration
     ) throws -> FileWrapper {
         .init(
-            regularFileWithContents: try StallyBackupCodec.encode(snapshot)
+            regularFileWithContents: try StallyBackupFileAdapter.encodeData(
+                for: snapshot
+            )
         )
     }
 }

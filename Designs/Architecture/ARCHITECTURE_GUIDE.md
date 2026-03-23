@@ -8,6 +8,9 @@ this repository.
 Related document:
 [shared-service-design.md](./shared-service-design.md)
 
+Related decision:
+[0007-adapter-failure-surfacing-contract.md](../Decisions/0007-adapter-failure-surfacing-contract.md)
+
 ## Responsibility Boundaries
 
 | Layer | Owns | Must not own |
@@ -40,6 +43,18 @@ Not allowed in views:
 
 App-side adapters may orchestrate alerts, navigation, tips, and file flows
 after mutation completion, but the actual rules belong in `StallyLibrary`.
+
+## Failure-Surfacing Contract
+
+Adapter-owned mutation and transfer paths must classify failures by phase
+rather than collapsing them into one generic alert.
+
+- Preflight failures block success and must keep the current context available
+  for retry.
+- Primary mutation failures block success and must not present the operation as
+  completed.
+- Post-commit adapter follow-up failures are degraded-success cases and must
+  remain distinguishable from blocking failures.
 
 ## Deep Link Mapping
 
@@ -123,12 +138,16 @@ Keep in `Stally`:
 
 4. Backup import/export must keep its split between app adapters and library rules.
    Files:
+   - `Stally/Sources/Transfer/Services/StallyBackupFileAdapter.swift`
+   - `Stally/Sources/Transfer/Services/StallyBackupWorkflow.swift`
    - `Stally/Sources/Transfer/Support/StallyBackupDocument.swift`
    - `Stally/Sources/Transfer/Views/StallyBackupCenterView.swift`
    - `StallyLibrary/Sources/Transfer/StallyBackupCodec.swift`
    - `StallyLibrary/Sources/Transfer/StallyBackupImportService.swift`
    Minimal plan:
    - Keep file presentation and confirmation UI in `Stally`.
+   - Keep security-scoped file access, backup decode, and preview analysis in
+     app-side transfer adapters.
    - Keep snapshot validation and apply logic in `StallyLibrary`.
 
 5. App adapter behavior must stay covered by XCTest.
@@ -137,9 +156,10 @@ Keep in `Stally`:
    - `StallyTests/StallyAppModelTests.swift`
    - `StallyTests/StallyItemEditorModelTests.swift`
    - `StallyTests/StallyScreenModelTests.swift`
+   - `StallyTests/StallyBackupWorkflowTests.swift`
    - `ci_scripts/tasks/test_app.sh`
    Minimal plan:
    - Add adapter tests in `StallyTests` before pushing more route or screen
      logic into the app target.
-   - Keep `run_required_builds.sh` responsible for app build plus app tests
-     when app-side files change.
+   - Keep `verify_repository_state.sh` responsible for app build plus app
+     tests when app-side files change.

@@ -1,6 +1,6 @@
 # Stally Current Product and Architecture Overview
 
-Current as of March 22, 2026.
+Current as of March 23, 2026.
 
 ## Purpose
 
@@ -121,7 +121,15 @@ and presentation APIs, including zoom-style navigation transitions,
 matched-transition sources, `scrollTargetLayout`, `safeAreaPadding`,
 `contentMargins`, and glass-prominent call-to-action styling.
 
+Backup transfer flows now keep file presentation in `StallyBackupCenterView`
+and `StallyBackupDocument`, while app-side transfer orchestration lives in
+`StallyBackupWorkflow` and `StallyBackupFileAdapter`. Blocking transfer
+failures keep preview context available for retry instead of clearing the
+screen state immediately.
+
 App adapter behavior is now verified in `StallyTests`, with coverage focused on
-route application, screen models, and `StallyItemEditorModel`. The required CI
-entrypoint remains `bash ci_scripts/tasks/run_required_builds.sh`, which now
-includes app tests when app-side files change.
+route application, screen models, `StallyItemEditorModel`, and transfer
+workflow behavior. The repository uses `bash ci_scripts/tasks/verify_task_completion.sh`
+as the non-destructive verification gate and
+`bash ci_scripts/tasks/verify_repository_state.sh` as the change-aware CI
+entrypoint that includes app tests when app-side files change.

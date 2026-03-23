@@ -52,20 +52,20 @@ struct StallyBackupCenterView: View {
             isPresented: isExportStatusPresented
         ) {
             Button("OK", role: .cancel) {
-                state.exportStatusMessage = nil
+                state.exportStatus = nil
             }
         } message: {
-            Text(state.exportStatusMessage ?? "")
+            Text(state.exportStatus?.messageText ?? "")
         }
         .alert(
             "Backup Import",
             isPresented: isImportStatusPresented
         ) {
             Button("OK", role: .cancel) {
-                state.importStatusMessage = nil
+                state.importStatus = nil
             }
         } message: {
-            Text(state.importStatusMessage ?? "")
+            Text(state.importStatus?.messageText ?? "")
         }
         .confirmationDialog(
             "Replace the Current Library",
@@ -110,11 +110,11 @@ extension StallyBackupCenterView {
     var isExportStatusPresented: Binding<Bool> {
         .init(
             get: {
-                state.exportStatusMessage != nil
+                state.exportStatus != nil
             },
             set: { isPresented in
                 if !isPresented {
-                    state.exportStatusMessage = nil
+                    state.exportStatus = nil
                 }
             }
         )
@@ -123,11 +123,11 @@ extension StallyBackupCenterView {
     var isImportStatusPresented: Binding<Bool> {
         .init(
             get: {
-                state.importStatusMessage != nil
+                state.importStatus != nil
             },
             set: { isPresented in
                 if !isPresented {
-                    state.importStatusMessage = nil
+                    state.importStatus = nil
                 }
             }
         )

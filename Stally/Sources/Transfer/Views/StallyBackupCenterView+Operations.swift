@@ -37,7 +37,9 @@ extension StallyBackupCenterView {
 
     func startExport() {
         state.beginExport(
-            snapshot: StallyBackupCodec.snapshot(from: items)
+            StallyBackupWorkflow.prepareExport(
+                items: items
+            )
         )
     }
 
@@ -53,11 +55,16 @@ extension StallyBackupCenterView {
 
             do {
                 state.recordImportPreview(
-                    try makeImportPreview(from: url)
+                    try StallyBackupWorkflow.makeImportPreview(
+                        from: url,
+                        existingItemIDs: Set(items.map(\.id))
+                    )
                 )
             } catch {
                 state.recordImportFailure(
                     error,
+                    operation: .importPreview,
+                    phase: .fileAccess,
                     fallback: StallyLocalization.string(
                         "Stally couldn't read this backup file."
                     )
@@ -65,10 +72,12 @@ extension StallyBackupCenterView {
             }
         case .failure(let error as CocoaError)
                 where error.code == .userCancelled:
-            state.importStatusMessage = nil
+            state.importStatus = nil
         case .failure(let error):
             state.recordImportFailure(
                 error,
+                operation: .importPreview,
+                phase: .fileAccess,
                 fallback: StallyLocalization.string(
                     "Stally couldn't open the import picker."
                 )
@@ -76,37 +85,13 @@ extension StallyBackupCenterView {
         }
     }
 
-    func makeImportPreview(
-        from url: URL
-    ) throws -> StallyBackupCenterState.ImportPreview {
-        let accessedSecurityScope = url.startAccessingSecurityScopedResource()
-
-        defer {
-            if accessedSecurityScope {
-                url.stopAccessingSecurityScopedResource()
-            }
-        }
-
-        let data = try Data(contentsOf: url)
-        let snapshot = try StallyBackupCodec.decode(data)
-        let analysis = StallyBackupImportAnalyzer.analyze(
-            snapshot: snapshot,
-            existingItemIDs: Set(items.map(\.id))
-        )
-
-        return .init(
-            sourceURL: url,
-            analysis: analysis
-        )
-    }
-
     func mergeImport(
         _ preview: StallyBackupCenterState.ImportPreview
     ) {
         do {
-            let result = try StallyAppActionService.mergeImport(
+            let result = try StallyBackupWorkflow.mergeImport(
                 context: context,
-                snapshot: preview.analysis.snapshot
+                preview: preview
             )
             state.recordMerge(
                 preview: preview,
@@ -115,9 +100,12 @@ extension StallyBackupCenterView {
         } catch {
             state.recordImportFailure(
                 error,
+                operation: .mergeImport,
+                phase: .mutation,
                 fallback: StallyLocalization.string(
                     "Stally couldn't merge this backup."
-                )
+                ),
+                preservePreview: true
             )
         }
     }
@@ -126,9 +114,9 @@ extension StallyBackupCenterView {
         _ preview: StallyBackupCenterState.ImportPreview
     ) {
         do {
-            let result = try StallyAppActionService.replaceImport(
+            let result = try StallyBackupWorkflow.replaceImport(
                 context: context,
-                snapshot: preview.analysis.snapshot
+                preview: preview
             )
             state.recordReplace(
                 preview: preview,
@@ -137,22 +125,27 @@ extension StallyBackupCenterView {
         } catch {
             state.recordImportFailure(
                 error,
+                operation: .replaceImport,
+                phase: .mutation,
                 fallback: StallyLocalization.string(
                     "Stally couldn't replace the current library."
-                )
+                ),
+                preservePreview: true
             )
         }
     }
 
     func deleteAllItems() {
         do {
-            try StallyAppActionService.deleteAllItems(
+            try StallyBackupWorkflow.deleteAllItems(
                 context: context
             )
             state.recordDeleteAllSuccess()
         } catch {
             state.recordImportFailure(
                 error,
+                operation: .deleteAll,
+                phase: .mutation,
                 fallback: StallyLocalization.string(
                     "Stally couldn't delete the current library."
                 )

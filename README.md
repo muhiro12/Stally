@@ -76,17 +76,16 @@ and supports portable backup export and restore flows.
 
 ## Requirements
 
-- Xcode 16 or later with the iOS 18 SDK installed
+- Xcode 26 or later with the iOS 26 SDK installed
 - `pre-commit`
-- `swiftlint`
 
 ## Setup
 
 1. Open the repository root.
 2. Install hooks with `pre-commit install`.
 3. Open `Stally.xcodeproj` in Xcode and allow Swift Package Manager to resolve
-   the public `MHUI` dependency from GitHub.
-4. Run the **Stally** scheme on an iOS 18 simulator or device, or use the
+   the public `MHPlatform`, `MHUI`, and `SwiftLintPlugins` dependencies.
+4. Run the **Stally** scheme on an iOS 26 simulator or device, or use the
    **StallyLibrary** scheme when iterating on shared logic and tests.
 
 ### Public Repository Safety
@@ -99,7 +98,7 @@ git. The root `.gitignore` blocks common sensitive artifacts such as
 Before publishing changes, run:
 
 ```sh
-bash ci_scripts/tasks/run_required_builds.sh
+bash ci_scripts/tasks/verify_repository_state.sh
 ```
 
 The verification pipeline includes a repository secret scan before any
@@ -108,17 +107,53 @@ build/test work starts.
 ## Build and Test
 
 Use the helper scripts in `ci_scripts/` as needed.
+The repository contract is: direct entrypoints live in `ci_scripts/tasks/`,
+shared shell helpers live in `ci_scripts/lib/`, and `.pre-commit-config.yaml`
+delegates to `bash ci_scripts/tasks/verify_pre_commit.sh`.
+
+- `bash ci_scripts/tasks/check_environment.sh --profile <format|build|verify>`
+  diagnoses missing local prerequisites before you start a tool-dependent flow.
+- `bash ci_scripts/tasks/format_swift.sh` is the explicit SwiftLint autofix
+  step to run after Swift edits and before the final verification gate.
+- `bash ci_scripts/tasks/verify_task_completion.sh` is the non-destructive
+  verification gate for task completion.
+- `bash ci_scripts/tasks/verify_pre_commit.sh` reruns the same non-destructive
+  verification gate for Git `pre-commit` and manual final rechecks.
+- `bash ci_scripts/tasks/verify_repository_state.sh` checks the current
+  repository state and still writes CI run artifacts.
+
+SwiftLint is resolved from the `SimplyDanny/SwiftLintPlugins` package declared
+in `Stally.xcodeproj`. The repository scripts do not require a separately
+installed `swiftlint` binary on your `PATH`.
+
+Before running the full verify gate, diagnose the local prerequisites:
+
+```sh
+bash ci_scripts/tasks/check_environment.sh --profile verify
+```
+
+After Swift edits, run the explicit autofix step:
+
+```sh
+bash ci_scripts/tasks/format_swift.sh
+```
 
 For full local verification:
 
 ```sh
-bash ci_scripts/tasks/verify.sh
+bash ci_scripts/tasks/verify_task_completion.sh
 ```
 
 If you only need required builds/tests based on local changes:
 
 ```sh
-bash ci_scripts/tasks/run_required_builds.sh
+bash ci_scripts/tasks/verify_repository_state.sh
+```
+
+If you want a full forced verification regardless of local changes:
+
+```sh
+CI_RUN_FORCE_FULL=1 bash ci_scripts/tasks/verify_task_completion.sh
 ```
 
 If you only need the app build:
@@ -133,10 +168,10 @@ If you only need shared library tests:
 bash ci_scripts/tasks/test_shared_library.sh
 ```
 
-If you only need pre-commit hooks:
+If you only need the final pre-commit recheck shell:
 
 ```sh
-bash ci_scripts/tasks/pre_commit.sh
+bash ci_scripts/tasks/verify_pre_commit.sh
 ```
 
 ## CI Artifact Layout

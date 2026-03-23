@@ -2,9 +2,41 @@ import Foundation
 import StallyLibrary
 
 struct StallyBackupCenterState {
+    enum StatusPresentation {
+        case message(String)
+        case failure(StallyTransferOperationError)
+
+        var messageText: String {
+            switch self {
+            case .message(let message):
+                message
+            case .failure(let error):
+                error.errorDescription
+                    ?? StallyLocalization.string(
+                        "Stally couldn't complete this backup operation."
+                    )
+            }
+        }
+
+        var failure: StallyTransferOperationError? {
+            switch self {
+            case .message:
+                nil
+            case .failure(let error):
+                error
+            }
+        }
+    }
+
     enum ImportExecutionMode {
         case merge
         case replace
+    }
+
+    struct ExportPreparation {
+        let snapshot: StallyBackupSnapshot
+        let document: StallyBackupDocument
+        let filename: String
     }
 
     struct ImportPreview {
@@ -33,22 +65,21 @@ struct StallyBackupCenterState {
 
     var exportDocument: StallyBackupDocument?
     var isExporting = false
-    var exportFilename = exportFilename(for: .now)
-    var exportStatusMessage: String?
+    var exportFilename = StallyBackupFileAdapter.exportFilename(for: .now)
+    var exportStatus: StatusPresentation?
     var isImporting = false
     var importPreview: ImportPreview?
-    var importStatusMessage: String?
+    var importStatus: StatusPresentation?
     var importExecutionSummary: ImportExecutionSummary?
     var isReplaceConfirmationPresented = false
     var isDeleteAllConfirmationPresented = false
 
     mutating func beginExport(
-        snapshot: StallyBackupSnapshot
+        _ preparation: ExportPreparation
     ) {
-        exportDocument = .init(snapshot: snapshot)
-        exportFilename = Self.exportFilename(
-            for: snapshot.exportedAt
-        )
+        exportDocument = preparation.document
+        exportFilename = preparation.filename
+        exportStatus = nil
         isExporting = true
     }
 
@@ -57,16 +88,26 @@ struct StallyBackupCenterState {
     ) {
         switch result {
         case .success(let url):
-            exportStatusMessage = StallyLocalization.format(
-                "Backup saved as %@.",
-                url.lastPathComponent
+            exportStatus = .message(
+                StallyLocalization.format(
+                    "Backup saved as %@.",
+                    url.lastPathComponent
+                )
             )
         case .failure(let error as CocoaError)
                 where error.code == .userCancelled:
-            exportStatusMessage = nil
+            exportStatus = nil
         case .failure(let error):
-            exportStatusMessage = (error as? LocalizedError)?.errorDescription
-                ?? StallyLocalization.string("Stally couldn't export this backup.")
+            exportStatus = .failure(
+                StallyTransferOperationError.wrapping(
+                    error,
+                    operation: .export,
+                    phase: .fileAccess,
+                    fallbackDescription: StallyLocalization.string(
+                        "Stally couldn't export this backup."
+                    )
+                )
+            )
         }
     }
 
@@ -74,15 +115,28 @@ struct StallyBackupCenterState {
         _ preview: ImportPreview
     ) {
         importPreview = preview
+        importStatus = nil
     }
 
     mutating func recordImportFailure(
         _ error: any Error,
-        fallback: String
+        operation: StallyTransferOperationError.Operation,
+        phase: StallyTransferFailurePhase,
+        fallback: String,
+        preservePreview: Bool = false
     ) {
-        importPreview = nil
-        importStatusMessage = (error as? LocalizedError)?.errorDescription
-            ?? fallback
+        if !preservePreview {
+            importPreview = nil
+        }
+
+        importStatus = .failure(
+            StallyTransferOperationError.wrapping(
+                error,
+                operation: operation,
+                phase: phase,
+                fallbackDescription: fallback
+            )
+        )
     }
 
     mutating func recordMerge(
@@ -95,9 +149,11 @@ struct StallyBackupCenterState {
             result: result
         )
         importPreview = nil
-        importStatusMessage = StallyLocalization.format(
-            "Merged %@ into the current library.",
-            preview.sourceName
+        importStatus = .message(
+            StallyLocalization.format(
+                "Merged %@ into the current library.",
+                preview.sourceName
+            )
         )
     }
 
@@ -111,34 +167,21 @@ struct StallyBackupCenterState {
             result: result
         )
         importPreview = nil
-        importStatusMessage = StallyLocalization.format(
-            "Replaced the current library with %@.",
-            preview.sourceName
+        importStatus = .message(
+            StallyLocalization.format(
+                "Replaced the current library with %@.",
+                preview.sourceName
+            )
         )
     }
 
     mutating func recordDeleteAllSuccess() {
         importPreview = nil
         importExecutionSummary = nil
-        importStatusMessage = StallyLocalization.string(
-            "Deleted every item from the current library."
+        importStatus = .message(
+            StallyLocalization.string(
+                "Deleted every item from the current library."
+            )
         )
-    }
-}
-
-private extension StallyBackupCenterState {
-    static var backupTimestampFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.calendar = .current
-        formatter.locale = .autoupdatingCurrent
-        formatter.timeZone = .autoupdatingCurrent
-        formatter.dateFormat = "yyyyMMdd-HHmm"
-        return formatter
-    }
-
-    static func exportFilename(
-        for date: Date
-    ) -> String {
-        "stally-backup-\(backupTimestampFormatter.string(from: date))"
     }
 }

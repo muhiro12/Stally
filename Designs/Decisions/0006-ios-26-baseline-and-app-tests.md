@@ -17,8 +17,8 @@ longer gives enough confidence for app-owned route and presentation logic.
 implementation may prefer iOS 26 SwiftUI APIs where they simplify or improve
 the product flow. The repository also adds `StallyTests` as an app-side XCTest
 target covering route application, screen models, and `StallyItemEditorModel`.
-`bash ci_scripts/tasks/run_required_builds.sh` remains the required verification
-entrypoint and now includes app tests when app-side files change.
+`bash ci_scripts/tasks/verify_repository_state.sh` becomes the change-aware CI
+entrypoint and includes app tests when app-side files change.
 
 ## Consequences
 

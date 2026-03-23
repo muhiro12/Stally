@@ -1,20 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-argument_count=$#
-if [[ $argument_count -ne 0 ]]; then
-  echo "This script does not accept arguments." >&2
-  exit 2
-fi
-
 script_directory=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-repository_root=$(cd "$script_directory/../.." && pwd)
-cd "$repository_root"
+source "$script_directory/../lib/task_utils.sh"
+
+ci_task_require_no_arguments "$@"
+ci_task_enter_repository "${BASH_SOURCE[0]}"
 
 failure_count=0
 
 report_failure() {
-  echo "MHPlatform adoption violation: $1" >&2
+  echo "MHPlatform boundary violation: $1" >&2
   failure_count=$((failure_count + 1))
 }
 
@@ -156,4 +152,4 @@ if [[ $failure_count -ne 0 ]]; then
   exit 1
 fi
 
-echo "MHPlatform adoption checks passed."
+echo "MHPlatform boundary checks passed."
