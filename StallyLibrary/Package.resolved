@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/muhiro12/MHPlatform.git",
       "state" : {
-        "revision" : "083817e803431d33825a5878593d63e399053ed9",
-        "version" : "1.0.0"
+        "revision" : "d62c61c90ec81ed4dbf7118b91b5473e1e46c9a2",
+        "version" : "1.1.0"
       }
     },
     {

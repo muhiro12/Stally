@@ -17,9 +17,6 @@ struct StallyMHUIThemeMetrics: Sendable, Equatable {
         let pill: CGFloat
     }
 
-    let spacing: Spacing
-    let radius: Radius
-
     static let standard = Self(
         spacing: .init(
             inline: 4,
@@ -34,19 +31,7 @@ struct StallyMHUIThemeMetrics: Sendable, Equatable {
             pill: 999
         )
     )
-}
 
-private struct StallyMHUIThemeMetricsKey: EnvironmentKey {
-    static let defaultValue = StallyMHUIThemeMetrics.standard
-}
-
-extension EnvironmentValues {
-    var stallyMHUIThemeMetrics: StallyMHUIThemeMetrics {
-        get {
-            self[StallyMHUIThemeMetricsKey.self]
-        }
-        set {
-            self[StallyMHUIThemeMetricsKey.self] = newValue
-        }
-    }
+    let spacing: Spacing
+    let radius: Radius
 }

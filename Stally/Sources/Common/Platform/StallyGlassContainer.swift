@@ -4,14 +4,6 @@ struct StallyGlassContainer<Content: View>: View {
     private let spacing: CGFloat?
     private let content: Content
 
-    init(
-        spacing: CGFloat? = nil,
-        @ViewBuilder content: () -> Content
-    ) {
-        self.spacing = spacing
-        self.content = content()
-    }
-
     @ViewBuilder
     var body: some View {
         if #available(iOS 26, *) {
@@ -27,6 +19,14 @@ struct StallyGlassContainer<Content: View>: View {
         } else {
             content
         }
+    }
+
+    init(
+        spacing: CGFloat? = nil,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.spacing = spacing
+        self.content = content()
     }
 }
 
