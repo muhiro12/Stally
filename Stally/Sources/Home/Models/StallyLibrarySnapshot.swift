@@ -4,7 +4,6 @@ import StallyLibrary
 // swiftlint:disable file_types_order one_declaration_per_file multiline_function_chains
 struct StallyLibrarySnapshot {
     let activeItems: [Item]
-    let recentItems: [Item]
     let reviewSummary: ItemReviewSummary
     let archiveSummary: ItemInsightsCalculator.ArchiveCollectionSummary
     let insightsActivitySummary: CollectionActivitySummary
@@ -39,17 +38,9 @@ enum StallyLibrarySnapshotBuilder {
         let activeItems = ItemInsightsCalculator.homeSort(
             items: ItemInsightsCalculator.activeItems(from: items)
         )
-        let recentItems = Array(
-            activeItems
-                .sorted { left, right in
-                    left.updatedAt > right.updatedAt
-                }
-                .prefix(5)
-        )
 
         return .init(
             activeItems: activeItems,
-            recentItems: recentItems,
             reviewSummary: ItemReviewCalculator.summary(
                 from: items,
                 policy: reviewPreferences.policy

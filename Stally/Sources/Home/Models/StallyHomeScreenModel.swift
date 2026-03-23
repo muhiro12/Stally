@@ -33,10 +33,6 @@ final class StallyHomeScreenModel {
         ).totalMarks + snapshot.archiveSummary.totalMarks
     }
 
-    var recentItems: [Item] {
-        snapshot.recentItems
-    }
-
     var availableQuickFilters: [QuickFilterOption] {
         [
             .init(
