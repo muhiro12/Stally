@@ -224,6 +224,35 @@ final class StallyBackupWorkflowTests: XCTestCase {
     }
 
     @MainActor
+    func testRecordImportPreviewClearsPreviousExecutionSummary() {
+        let preview = makePreview(
+            snapshot: makeInvalidSnapshot(
+                duplicatedItemID: UUID()
+            )
+        )
+        var state = StallyBackupCenterState()
+        state.recordMerge(
+            preview: preview,
+            result: .init(
+                analysis: preview.analysis,
+                deletedItems: 0,
+                createdItems: 1,
+                updatedItems: 0,
+                insertedMarks: 0,
+                skippedMarks: 0
+            )
+        )
+
+        state.recordImportPreview(preview)
+
+        XCTAssertNil(state.importExecutionSummary)
+        XCTAssertEqual(
+            state.importPreview?.sourceName,
+            preview.sourceName
+        )
+    }
+
+    @MainActor
     func testDeleteAllItemsRemovesPersistedItems() throws {
         let context = testContext()
         _ = try createTestItem(

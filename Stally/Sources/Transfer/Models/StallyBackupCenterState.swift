@@ -115,6 +115,7 @@ struct StallyBackupCenterState {
         _ preview: ImportPreview
     ) {
         importPreview = preview
+        importExecutionSummary = nil
         importStatus = nil
     }
 
