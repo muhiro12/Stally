@@ -9362,41 +9362,6 @@
         }
       }
     },
-    "This clears Home, Archive, photos, notes, and mark history from the current library." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This clears Home, Archive, photos, notes, and mark history from the current library."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esto borra Inicio, Archivo, fotos, notas y el historial de marcas de la biblioteca actual."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cela efface Accueil, les archives, les photos, les notes et l’historique des marques de la bibliothèque actuelle."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "これを実行すると、現在のライブラリからホーム、アーカイブ、写真、メモ、マーク履歴が消去されます。"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这会清除当前资料库中的首页内容、归档、照片、备注和标记历史。"
-          }
-        }
-      }
-    },
     "This clears the Library, Archive, photos, notes, and mark history from the current collection." : {
       "localizations" : {
         "en" : {
