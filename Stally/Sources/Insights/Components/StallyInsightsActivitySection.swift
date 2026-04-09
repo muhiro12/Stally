@@ -60,9 +60,9 @@ private extension StallyInsightsActivitySection {
 
     var chart: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(alignment: .bottom, spacing: 4) {
+            HStack(alignment: .bottom, spacing: theme.spacing.inline) {
                 ForEach(days, id: \.date) { day in
-                    VStack(spacing: 6) {
+                    VStack(spacing: theme.spacing.inline) {
                         Capsule()
                             .fill(
                                 day.isActive
@@ -86,7 +86,7 @@ private extension StallyInsightsActivitySection {
                 }
             }
             .frame(height: 160, alignment: .bottomLeading)
-            .padding(.vertical, 4)
+            .padding(.vertical, theme.spacing.inline)
         }
         .mhSurfaceInset()
         .mhSurface(role: .muted)

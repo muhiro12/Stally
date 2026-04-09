@@ -49,7 +49,7 @@ private extension StallyHistorySection {
         Array(
             repeating: .init(
                 .flexible(),
-                spacing: theme.spacing.inline * 2
+                spacing: theme.spacing.control
             ),
             count: 7
         )

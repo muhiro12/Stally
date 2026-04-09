@@ -37,7 +37,7 @@ struct StallyBackupImportPreviewCard: View {
                     .mhRowSupporting()
             } else {
                 ForEach(preview.analysis.issues) { issue in
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: theme.spacing.inline) {
                         Text(issueTitle(issue))
                             .mhRowTitle()
 
@@ -45,7 +45,7 @@ struct StallyBackupImportPreviewCard: View {
                             .mhRowSupporting()
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 2)
+                    .padding(.vertical, theme.spacing.inline)
                 }
             }
 

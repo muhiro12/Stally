@@ -316,7 +316,7 @@ private extension StallyHomeView {
                         )
                     }
                 }
-                .padding(.vertical, 2)
+                .padding(.vertical, theme.spacing.inline)
             }
         }
     }

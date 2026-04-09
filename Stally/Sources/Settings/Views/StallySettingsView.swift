@@ -10,6 +10,8 @@ struct StallySettingsView: View {
     private var appRuntime
     @Environment(StallyAppModel.self)
     private var appModel
+    @Environment(\.mhDesignMetrics)
+    private var theme
 
     @Namespace private var deepLinkActionNamespace
 
@@ -20,7 +22,7 @@ struct StallySettingsView: View {
     var body: some View {
         @Bindable var appModel = appModel
 
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: theme.spacing.group) {
             aboutSection
             backupSection
             reviewPreferencesSection(
@@ -57,7 +59,7 @@ struct StallySettingsView: View {
 
 private extension StallySettingsView {
     var aboutSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             Text(StallyAppConfiguration.displayName)
                 .font(.system(size: 28, weight: .semibold, design: .serif))
 
@@ -71,7 +73,7 @@ private extension StallySettingsView {
     }
 
     var buildSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             LabeledContent("Version", value: snapshot.appVersion)
                 .labeledContentStyle(.mhKeyValue)
             LabeledContent("Build", value: snapshot.buildNumber)
@@ -81,7 +83,7 @@ private extension StallySettingsView {
     }
 
     var backupSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             Text("Open the dedicated backup workspace before you export or restore anything.")
                 .mhRowSupporting()
 
@@ -101,7 +103,7 @@ private extension StallySettingsView {
     func reviewPreferencesSection(
         reviewPreferences: Binding<StallyReviewPreferences>
     ) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             Stepper(value: reviewPreferences.untouchedGraceDays, in: 1...90) {
                 Text(
                     StallyLocalization.format(
@@ -137,7 +139,7 @@ private extension StallySettingsView {
     func insightsPreferencesSection(
         insightsPreferences: Binding<StallyInsightsPreferences>
     ) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             Picker(
                 "Default range",
                 selection: insightsPreferences.defaultRange
@@ -164,7 +166,7 @@ private extension StallySettingsView {
     }
 
     var guidanceSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             Text("Tips appear again when the related screen and state become relevant.")
                 .mhRowSupporting()
 
@@ -182,11 +184,11 @@ private extension StallySettingsView {
     }
 
     var deepLinkUtilitiesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             ForEach(screenModel.deepLinkRows) { row in
                 if let routeURL = routeURL(for: row.route) {
-                    HStack(alignment: .center, spacing: 12) {
-                        VStack(alignment: .leading, spacing: 4) {
+                    HStack(alignment: .center, spacing: theme.spacing.control) {
+                        VStack(alignment: .leading, spacing: theme.spacing.inline) {
                             Text(row.title)
                                 .mhRowTitle()
 
@@ -194,10 +196,10 @@ private extension StallySettingsView {
                                 .mhRowSupporting()
                         }
 
-                        Spacer(minLength: 12)
+                        Spacer(minLength: theme.spacing.control)
 
-                        StallyGlassContainer(spacing: 12) {
-                            HStack(spacing: 12) {
+                        StallyGlassContainer(spacing: theme.spacing.control) {
+                            HStack(spacing: theme.spacing.control) {
                                 Button("Copy") {
                                     UIPasteboard.general.url = routeURL
                                 }
@@ -237,7 +239,7 @@ private extension StallySettingsView {
 
     @ViewBuilder
     var resourcesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             if appRuntime.configuration.showsLicenses {
                 NavigationLink {
                     appRuntime.licensesView()

@@ -3,13 +3,16 @@ import StallyLibrary
 import SwiftUI
 
 struct StallyInsightsRankingSection: View {
+    @Environment(\.mhDesignMetrics)
+    private var theme
+
     let itemsByID: [UUID: Item]
     let topRankings: [CollectionItemRanking]
     let quietRankings: [CollectionItemRanking]
     let usesCompactLayout: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             Text("Rankings")
                 .mhRowTitle()
 
@@ -17,7 +20,7 @@ struct StallyInsightsRankingSection: View {
                 .mhRowSupporting()
 
             if usesCompactLayout {
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: theme.spacing.control) {
                     rankingColumn(
                         title: StallyLocalization.string("Top Items"),
                         rankings: topRankings
@@ -28,7 +31,7 @@ struct StallyInsightsRankingSection: View {
                     )
                 }
             } else {
-                HStack(alignment: .top, spacing: 12) {
+                HStack(alignment: .top, spacing: theme.spacing.control) {
                     rankingColumn(
                         title: StallyLocalization.string("Top Items"),
                         rankings: topRankings
@@ -49,7 +52,7 @@ private extension StallyInsightsRankingSection {
         title: String,
         rankings: [CollectionItemRanking]
     ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: theme.spacing.inline) {
             Text(title)
                 .mhRowTitle()
 
@@ -77,12 +80,12 @@ private extension StallyInsightsRankingSection {
         let itemName = itemsByID[ranking.itemID]?.name
             ?? StallyLocalization.string("Unknown Item")
 
-        return VStack(alignment: .leading, spacing: 4) {
-            HStack(alignment: .firstTextBaseline, spacing: 12) {
+        return VStack(alignment: .leading, spacing: theme.spacing.inline) {
+            HStack(alignment: .firstTextBaseline, spacing: theme.spacing.control) {
                 Text("\(ordinal). \(itemName)")
                     .font(.headline)
 
-                Spacer(minLength: 12)
+                Spacer(minLength: theme.spacing.control)
 
                 Text("\(ranking.totalMarksInRange)")
                     .mhRowValue(colorRole: .accent)

@@ -3,12 +3,15 @@ import StallyLibrary
 import SwiftUI
 
 struct StallyInsightsRecommendationsSection: View {
+    @Environment(\.mhDesignMetrics)
+    private var theme
+
     let recommendations: [CollectionRecommendation]
     let itemsByID: [UUID: Item]
     let onOpenItem: (UUID) -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             Text("Next Moves")
                 .mhRowTitle()
 
@@ -32,7 +35,7 @@ private extension StallyInsightsRecommendationsSection {
     func recommendationCard(
         _ recommendation: CollectionRecommendation
     ) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: theme.spacing.inline) {
             Text(recommendation.title)
                 .mhRowTitle()
 

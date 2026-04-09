@@ -3,12 +3,15 @@ import StallyLibrary
 import SwiftUI
 
 struct StallyInsightsCadenceSection: View {
+    @Environment(\.mhDesignMetrics)
+    private var theme
+
     let streakSummary: CollectionStreakSummary
     let cadenceSummary: CollectionCadenceSummary
     let usesCompactLayout: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             Text("Consistency")
                 .mhRowTitle()
 

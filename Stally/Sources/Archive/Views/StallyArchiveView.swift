@@ -150,7 +150,7 @@ private extension StallyArchiveView {
                         )
                     }
                 }
-                .padding(.vertical, 2)
+                .padding(.vertical, theme.spacing.inline)
             }
         }
     }

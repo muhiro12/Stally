@@ -3,12 +3,15 @@ import StallyLibrary
 import SwiftUI
 
 struct StallyInsightsRhythmSection: View {
+    @Environment(\.mhDesignMetrics)
+    private var theme
+
     let weekdaySummaries: [CollectionWeekdaySummary]
     let monthlySummaries: [CollectionMonthSummary]
     let usesCompactLayout: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             Text("Rhythm")
                 .mhRowTitle()
 
@@ -25,7 +28,7 @@ struct StallyInsightsRhythmSection: View {
 private extension StallyInsightsRhythmSection {
     // swiftlint:disable closure_body_length
     var weekdayLane: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: theme.spacing.inline) {
             Text("Weekdays")
                 .mhRowTitle()
 
@@ -33,15 +36,15 @@ private extension StallyInsightsRhythmSection {
                 Text("No weekday pattern yet.")
                     .mhRowSupporting()
             } else if usesCompactLayout {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: theme.spacing.inline) {
                     ForEach(weekdaySummaries, id: \.weekday) { summary in
                         weekdayRow(summary)
                     }
                 }
             } else {
-                HStack(alignment: .bottom, spacing: 8) {
+                HStack(alignment: .bottom, spacing: theme.spacing.inline) {
                     ForEach(weekdaySummaries, id: \.weekday) { summary in
-                        VStack(spacing: 8) {
+                        VStack(spacing: theme.spacing.inline) {
                             Capsule()
                                 .fill(Color.accentColor.opacity(0.22))
                                 .overlay(alignment: .bottom) {
@@ -66,7 +69,7 @@ private extension StallyInsightsRhythmSection {
     // swiftlint:enable closure_body_length
 
     var monthlyLane: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: theme.spacing.inline) {
             Text("Months")
                 .mhRowTitle()
 
@@ -86,7 +89,7 @@ private extension StallyInsightsRhythmSection {
     func weekdayRow(
         _ summary: CollectionWeekdaySummary
     ) -> some View {
-        HStack(alignment: .center, spacing: 12) {
+        HStack(alignment: .center, spacing: theme.spacing.control) {
             Text(summary.shortTitle)
                 .font(.headline)
                 .frame(width: 36, alignment: .leading)
@@ -111,8 +114,8 @@ private extension StallyInsightsRhythmSection {
     func monthlyRow(
         _ summary: CollectionMonthSummary
     ) -> some View {
-        HStack(alignment: .center, spacing: 12) {
-            VStack(alignment: .leading, spacing: 2) {
+        HStack(alignment: .center, spacing: theme.spacing.control) {
+            VStack(alignment: .leading, spacing: theme.spacing.inline) {
                 Text(summary.monthTitle)
                     .font(.headline)
                 Text(
@@ -124,7 +127,7 @@ private extension StallyInsightsRhythmSection {
                 .mhRowSupporting()
             }
 
-            Spacer(minLength: 12)
+            Spacer(minLength: theme.spacing.control)
 
             Text("\(summary.markCount)")
                 .mhRowValue(colorRole: .accent)

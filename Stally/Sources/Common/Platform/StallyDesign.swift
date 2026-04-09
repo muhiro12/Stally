@@ -20,23 +20,6 @@ enum StallyDesign {
         static let artworkWarm = Color(red: 0.98, green: 0.84, blue: 0.68)
     }
 
-    enum Layout {
-        static let screenPadding: CGFloat = 20
-        static let sectionSpacing: CGFloat = 30
-        static let blockSpacing: CGFloat = 18
-        static let compactSpacing: CGFloat = 10
-        static let cardPadding: CGFloat = 20
-        static let heroHeight: CGFloat = 312
-        static let heroCompactHeight: CGFloat = 248
-    }
-
-    enum Radius {
-        static let panel: CGFloat = 32
-        static let card: CGFloat = 26
-        static let pill: CGFloat = 20
-        static let artwork: CGFloat = 28
-    }
-
     enum Typography {
         static let display = Font.system(.title, design: .serif).weight(.semibold)
         static let hero = Font.system(.largeTitle, design: .serif).weight(.bold)

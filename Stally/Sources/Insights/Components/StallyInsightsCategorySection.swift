@@ -3,10 +3,13 @@ import StallyLibrary
 import SwiftUI
 
 struct StallyInsightsCategorySection: View {
+    @Environment(\.mhDesignMetrics)
+    private var theme
+
     let summaries: [CollectionCategorySummary]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             Text("Categories")
                 .mhRowTitle()
 
@@ -30,12 +33,12 @@ private extension StallyInsightsCategorySection {
     func row(
         for summary: CollectionCategorySummary
     ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .firstTextBaseline, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.spacing.inline) {
+            HStack(alignment: .firstTextBaseline, spacing: theme.spacing.control) {
                 Label(summary.category.title, systemImage: summary.category.symbolName)
                     .font(.headline)
 
-                Spacer(minLength: 12)
+                Spacer(minLength: theme.spacing.control)
 
                 Text("\(summary.totalMarks)")
                     .mhRowValue(colorRole: .accent)

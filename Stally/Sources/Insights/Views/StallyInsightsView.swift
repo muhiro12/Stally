@@ -161,7 +161,7 @@ private extension StallyInsightsView {
                             )
                         }
                     }
-                    .padding(.vertical, 2)
+                    .padding(.vertical, theme.spacing.inline)
                 }
             }
             .popoverTip(insightsRangeTip, arrowEdge: .top)
