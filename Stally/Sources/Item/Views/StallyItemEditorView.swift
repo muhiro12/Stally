@@ -11,6 +11,8 @@ struct StallyItemEditorView: View {
     private var appModel
     @Environment(\.modelContext)
     private var context
+    @Environment(\.mhDesignMetrics)
+    private var theme
 
     @State private var model: StallyItemEditorModel
     @State private var selectedPhotoItem: PhotosPickerItem?
@@ -208,7 +210,7 @@ private extension StallyItemEditorView {
         let photoButtonTitle = model.photoButtonTitle
 
         return Section("Photo") {
-            HStack(spacing: 16) {
+            HStack(spacing: theme.spacing.control) {
                 StallyItemArtworkView(
                     photoData: model.photoData,
                     category: model.category,
@@ -216,7 +218,7 @@ private extension StallyItemEditorView {
                     height: 118
                 )
 
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: theme.spacing.control) {
                     PhotosPicker(
                         selection: $selectedPhotoItem,
                         matching: .images,
@@ -237,7 +239,7 @@ private extension StallyItemEditorView {
                     }
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, theme.spacing.inline)
         }
     }
 

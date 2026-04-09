@@ -17,7 +17,7 @@ struct StallyHomeView: View {
     private var appModel
     @Environment(\.modelContext)
     private var context
-    @Environment(\.stallyMHUIThemeMetrics)
+    @Environment(\.mhDesignMetrics)
     private var theme
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass

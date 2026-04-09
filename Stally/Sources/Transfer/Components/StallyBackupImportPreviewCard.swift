@@ -8,7 +8,7 @@ struct StallyBackupImportPreviewCard: View {
         case replace
     }
 
-    @Environment(\.stallyMHUIThemeMetrics)
+    @Environment(\.mhDesignMetrics)
     private var theme
 
     @Namespace private var actionNamespace

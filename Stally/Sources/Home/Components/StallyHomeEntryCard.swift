@@ -8,7 +8,7 @@ struct StallyHomeEntryCard: View {
         case share
     }
 
-    @Environment(\.stallyMHUIThemeMetrics)
+    @Environment(\.mhDesignMetrics)
     private var theme
 
     @Namespace private var actionNamespace

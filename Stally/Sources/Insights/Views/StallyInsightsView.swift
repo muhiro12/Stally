@@ -12,7 +12,7 @@ struct StallyInsightsView: View {
     private var appModel
     @Environment(\.horizontalSizeClass)
     private var horizontalSizeClass
-    @Environment(\.stallyMHUIThemeMetrics)
+    @Environment(\.mhDesignMetrics)
     private var theme
 
     @Namespace private var rangeNamespace

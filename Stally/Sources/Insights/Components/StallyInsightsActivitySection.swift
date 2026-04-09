@@ -3,7 +3,7 @@ import StallyLibrary
 import SwiftUI
 
 struct StallyInsightsActivitySection: View {
-    @Environment(\.stallyMHUIThemeMetrics)
+    @Environment(\.mhDesignMetrics)
     private var theme
 
     let days: [CollectionActivityDay]

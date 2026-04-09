@@ -11,7 +11,7 @@ struct StallyMetricGrid: View {
         }
     }
 
-    @Environment(\.stallyMHUIThemeMetrics)
+    @Environment(\.mhDesignMetrics)
     private var theme
 
     let metrics: [Metric]
@@ -53,7 +53,7 @@ private extension StallyMetricGrid {
     func metricView(
         _ metric: Metric
     ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: theme.spacing.inline) {
             Text(metric.title)
                 .mhRowSupporting()
                 .fixedSize(horizontal: false, vertical: true)

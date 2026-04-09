@@ -22,7 +22,7 @@ struct StallyReviewLaneSection: View {
         case bulkAction
     }
 
-    @Environment(\.stallyMHUIThemeMetrics)
+    @Environment(\.mhDesignMetrics)
     private var theme
 
     @Namespace private var selectionControlNamespace

@@ -9,7 +9,7 @@ struct StallyItemQueryControls: View {
         case clear
     }
 
-    @Environment(\.stallyMHUIThemeMetrics)
+    @Environment(\.mhDesignMetrics)
     private var theme
 
     @Namespace private var compactHorizontalMenuNamespace

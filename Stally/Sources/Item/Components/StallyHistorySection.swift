@@ -3,7 +3,7 @@ import StallyLibrary
 import SwiftUI
 
 struct StallyHistorySection: View {
-    @Environment(\.stallyMHUIThemeMetrics)
+    @Environment(\.mhDesignMetrics)
     private var theme
 
     let months: [MarkHistoryMonth]
@@ -15,7 +15,7 @@ struct StallyHistorySection: View {
                     Text(month.monthStart.formatted(.dateTime.year().month(.wide)))
                         .mhRowTitle()
 
-                    LazyVGrid(columns: columns, spacing: 8) {
+                    LazyVGrid(columns: columns, spacing: theme.spacing.inline) {
                         ForEach(weekdaySymbols, id: \.self) { symbol in
                             Text(symbol)
                                 .mhRowOverline()
@@ -28,8 +28,11 @@ struct StallyHistorySection: View {
                                 .frame(maxWidth: .infinity, minHeight: 28)
                                 .foregroundStyle(foregroundStyle(for: cell))
                                 .background(
-                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                        .fill(backgroundColor(for: cell))
+                                    RoundedRectangle(
+                                        cornerRadius: theme.radius.control,
+                                        style: .continuous
+                                    )
+                                    .fill(backgroundColor(for: cell))
                                 )
                         }
                     }

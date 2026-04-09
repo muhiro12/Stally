@@ -181,8 +181,7 @@ extension View {
         self
             .modelContainer(assembly.modelContainer)
             .tint(StallyDesign.tint)
-            .mhTheme(MHTheme.standard())
-            .environment(\.stallyMHUIThemeMetrics, .standard)
+            .mhTheme(.standard)
             .mhGlassPolicy(.automatic)
             .environment(assembly.appModel)
             .environment(assembly)
