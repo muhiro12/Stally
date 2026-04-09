@@ -81,8 +81,8 @@ else
     report_failure "floating MHPlatform resolution found in StallyLibrary/Package.resolved."
   fi
 
-  if ! rg -n '"version"\s*:\s*"1\.2\.0"' <<<"$mhplatform_library_resolved_block" >/dev/null; then
-    report_failure "StallyLibrary/Package.resolved must resolve MHPlatform 1.2.0."
+  if ! rg -n '"version"\s*:\s*"1\.3\.0"' <<<"$mhplatform_library_resolved_block" >/dev/null; then
+    report_failure "StallyLibrary/Package.resolved must resolve MHPlatform 1.3.0."
   fi
 fi
 
@@ -98,8 +98,8 @@ else
     report_failure "floating MHPlatform resolution found in the Xcode Package.resolved."
   fi
 
-  if ! rg -n '"version"\s*:\s*"1\.2\.0"' <<<"$mhplatform_xcode_resolved_block" >/dev/null; then
-    report_failure "The Xcode Package.resolved must resolve MHPlatform 1.2.0."
+  if ! rg -n '"version"\s*:\s*"1\.3\.0"' <<<"$mhplatform_xcode_resolved_block" >/dev/null; then
+    report_failure "The Xcode Package.resolved must resolve MHPlatform 1.3.0."
   fi
 fi
 
