@@ -17,7 +17,6 @@ struct StallyApp: App {
     }
 
     private let sharedAssembly: StallyAppAssembly?
-    private let startupLogger = Self.logger(category: "AppStartup")
 
     var body: some Scene {
         WindowGroup {
@@ -38,8 +37,27 @@ struct StallyApp: App {
             return
         }
 
+        let logging = StallyDiagnostics.makeLoggingBootstrap(
+            configuration: StallyAppConfiguration.runtimeConfiguration
+        )
+        let startupLogger = logging.logger(category: "AppStartup")
+
         startupLogger.notice("app startup began")
-        sharedAssembly = StallyAppAssemblyFactory.makeLive()
+        do {
+            sharedAssembly = try StallyAppAssemblyFactory.makeLive(
+                logging: logging
+            )
+        } catch {
+            startupLogger.critical(
+                "persistent model container initialization failed",
+                metadata: [
+                    "error": String(describing: error)
+                ]
+            )
+            preconditionFailure(
+                "Failed to initialize the Stally model container: \(error)"
+            )
+        }
 
         startupLogger.notice("startup dependencies ready")
 

@@ -16,6 +16,8 @@ struct StallyItemDetailView: View {
 
     @Environment(StallyAppModel.self)
     private var appModel
+    @Environment(StallyAppAssembly.self)
+    private var assembly
     @Environment(\.modelContext)
     private var context
     @Environment(\.mhDesignMetrics)
@@ -92,6 +94,10 @@ private extension StallyItemDetailView {
 
     var usesCompactLayout: Bool {
         horizontalSizeClass != .regular
+    }
+
+    var mutationLogger: MHLogger {
+        assembly.logging.logger(category: "Mutation")
     }
 
     var itemShareURL: URL? {
@@ -244,7 +250,8 @@ private extension StallyItemDetailView {
             appModel.performAction {
                 try StallyAppActionService.toggleTodayMark(
                     context: context,
-                    item: item
+                    item: item,
+                    logger: mutationLogger
                 )
             }
         } label: {
@@ -267,7 +274,8 @@ private extension StallyItemDetailView {
             appModel.performAction {
                 try StallyAppActionService.toggleArchiveState(
                     context: context,
-                    item: item
+                    item: item,
+                    logger: mutationLogger
                 )
             }
         } label: {
@@ -407,7 +415,8 @@ private extension StallyItemDetailView {
                 context: context,
                 item: item,
                 on: selectedHistoryDate,
-                shouldBeMarked: shouldBeMarked
+                shouldBeMarked: shouldBeMarked,
+                logger: mutationLogger
             )
         }
 

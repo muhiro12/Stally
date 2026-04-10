@@ -89,10 +89,16 @@ struct StallyRootView: View {
             editorDestination(for: route)
         }
         .onChange(of: assembly.routePipeline.lastParseFailureURL) { _, failedURL in
-            guard failedURL != nil else {
+            guard let failedURL else {
                 return
             }
 
+            assembly.logging.logger(category: "DeepLink").warning(
+                "unsupported deep-link URL surfaced to the user",
+                metadata: [
+                    "url": failedURL.absoluteString
+                ]
+            )
             appModel.presentUnsupportedDeepLinkError()
             assembly.routePipeline.clearLastParseFailure()
         }
@@ -102,6 +108,22 @@ struct StallyRootView: View {
         }
         .onChange(of: appModel.insightsPreferences) { _, newValue in
             newValue.save(in: appRuntime.preferenceStore)
+        }
+        .onChange(of: appModel.isDebugModeEnabled) { _, newValue in
+            StallyDiagnostics.saveDebugMode(
+                newValue,
+                in: appRuntime.preferenceStore
+            )
+            assembly.logging.captureLevel = StallyDiagnostics.captureLevel(
+                isDebugModeEnabled: newValue
+            )
+            assembly.logging.logger(category: "Diagnostics").notice(
+                "debug mode updated",
+                metadata: [
+                    "enabled": newValue ? "true" : "false",
+                    "captureLevel": assembly.logging.captureLevel.name
+                ]
+            )
         }
     }
 }

@@ -75,9 +75,11 @@ final class StallyAppModel {
     var operationErrorMessage: String?
     var reviewPreferences = StallyReviewPreferences()
     var insightsPreferences = StallyInsightsPreferences()
+    var isDebugModeEnabled = StallyDiagnostics.defaultDebugModeEnabled
 
     private var hasLoadedReviewPreferences = false
     private var hasLoadedInsightsPreferences = false
+    private var hasLoadedDebugMode = false
 
     var currentPath: [StackDestination] {
         get {
@@ -174,6 +176,19 @@ final class StallyAppModel {
             from: store
         )
         hasLoadedInsightsPreferences = true
+    }
+
+    func loadDebugModeIfNeeded(
+        from store: MHPreferenceStore
+    ) {
+        guard hasLoadedDebugMode == false else {
+            return
+        }
+
+        isDebugModeEnabled = StallyDiagnostics.loadDebugMode(
+            from: store
+        )
+        hasLoadedDebugMode = true
     }
 
     func resetNavigation(

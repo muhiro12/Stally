@@ -6,6 +6,8 @@ import SwiftUI
 import UIKit
 
 struct StallySettingsView: View {
+    @Environment(StallyAppAssembly.self)
+    private var assembly
     @Environment(MHAppRuntime.self)
     private var appRuntime
     @Environment(StallyAppModel.self)
@@ -33,6 +35,9 @@ struct StallySettingsView: View {
             )
             guidanceSection
             deepLinkUtilitiesSection
+            diagnosticsSection(
+                isDebugModeEnabled: $appModel.isDebugModeEnabled
+            )
             buildSection
             resourcesSection
         }
@@ -80,6 +85,49 @@ private extension StallySettingsView {
                 .labeledContentStyle(.mhKeyValue)
         }
         .mhSection(title: Text("Build"))
+    }
+
+    func diagnosticsSection(
+        isDebugModeEnabled: Binding<Bool>
+    ) -> some View {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            Toggle(
+                "Enable Debug Mode",
+                isOn: isDebugModeEnabled
+            )
+
+            LabeledContent(
+                "Capture Level",
+                value: assembly.logging.captureLevel.name.uppercased()
+            )
+            .labeledContentStyle(.mhKeyValue)
+
+            if isDebugModeEnabled.wrappedValue {
+                NavigationLink {
+                    MHLogConsoleView(logging: assembly.logging)
+                } label: {
+                    Label(
+                        "Diagnostics Console",
+                        systemImage: "waveform.path.ecg"
+                    )
+                }
+                .buttonStyle(.plain)
+            }
+
+            Text(
+                """
+                Debug Mode keeps the shared diagnostics console available and
+                raises in-memory capture to include debug events.
+                """
+            )
+            .mhRowSupporting()
+        }
+        .mhSection(
+            title: Text("Diagnostics"),
+            supporting: Text(
+                "Use this when you need to inspect structured app logs, including the previous session."
+            )
+        )
     }
 
     var backupSection: some View {

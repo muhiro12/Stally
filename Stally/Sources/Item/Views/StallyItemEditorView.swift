@@ -1,3 +1,4 @@
+import MHPlatform
 import MHUI
 import PhotosUI
 import StallyLibrary
@@ -9,6 +10,8 @@ struct StallyItemEditorView: View {
 
     @Environment(StallyAppModel.self)
     private var appModel
+    @Environment(StallyAppAssembly.self)
+    private var assembly
     @Environment(\.modelContext)
     private var context
     @Environment(\.mhDesignMetrics)
@@ -187,6 +190,10 @@ private extension StallyItemEditorView {
         )
     }
 
+    var mutationLogger: MHLogger {
+        assembly.logging.logger(category: "Mutation")
+    }
+
     var detailsSection: some View {
         Section("Item") {
             TextField("Name", text: nameBinding)
@@ -282,6 +289,10 @@ private extension StallyItemEditorView {
                 break
             }
         } catch {
+            mutationLogger.error(
+                "failed to save item",
+                metadata: saveErrorMetadata(error)
+            )
             model.presentSaveError(error)
         }
     }
@@ -295,8 +306,45 @@ private extension StallyItemEditorView {
             appModel.dismissEditor()
             appModel.removeItemDestination(deletedItemID)
         } catch {
+            mutationLogger.error(
+                "failed to delete item",
+                metadata: deleteErrorMetadata(error)
+            )
             model.presentDeleteError(error)
         }
+    }
+
+    func saveErrorMetadata(
+        _ error: any Error
+    ) -> [String: String] {
+        var metadata = [
+            "error": String(describing: error)
+        ]
+
+        switch model.mode {
+        case .create:
+            metadata["operation"] = "createItem"
+        case .edit(let item):
+            metadata["operation"] = "updateItem"
+            metadata["itemID"] = item.id.uuidString
+        }
+
+        return metadata
+    }
+
+    func deleteErrorMetadata(
+        _ error: any Error
+    ) -> [String: String] {
+        var metadata = [
+            "operation": "deleteItem",
+            "error": String(describing: error)
+        ]
+
+        if let itemID = model.existingItem?.id {
+            metadata["itemID"] = itemID.uuidString
+        }
+
+        return metadata
     }
 }
 

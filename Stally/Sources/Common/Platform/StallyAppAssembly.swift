@@ -11,34 +11,33 @@ import SwiftUI
 final class StallyAppAssembly {
     let modelContainer: ModelContainer
     let appModel: StallyAppModel
+    let logging: MHLoggingBootstrap
     let routeInbox: MHObservableRouteInbox<StallyRoute>
     let routePipeline: MHAppRoutePipeline<StallyRoute>
     let bootstrap: MHAppRuntimeBootstrap
 
     private init(
         modelContainer: ModelContainer,
-        lifecyclePlanStyle: LifecyclePlanStyle
+        lifecyclePlanStyle: LifecyclePlanStyle,
+        logging: MHLoggingBootstrap? = nil
     ) {
         let appModel = StallyAppModel()
         let routeInbox = MHObservableRouteInbox<StallyRoute>()
-        let configuration: MHAppConfiguration
-
-        switch lifecyclePlanStyle {
-        case .live:
-            configuration = StallyAppConfiguration.runtimeConfiguration
-        case .preview:
-            configuration = StallyAppConfiguration.previewConfiguration
-        }
+        let configuration = lifecyclePlanStyle.configuration
+        let logging = logging ?? StallyDiagnostics.makeLoggingBootstrap(
+            configuration: configuration
+        )
 
         let routePipeline = MHAppRoutePipeline(
             routeLifecycle: .init(
-                logger: StallyApp.logger(category: "RoutePipeline"),
+                logger: logging.logger(category: "RoutePipeline"),
                 initialReadiness: false,
                 isDuplicate: ==
             ),
             using: StallyDeepLinking.codec(),
             routeInbox: routeInbox,
-            pendingSources: []
+            pendingSources: [],
+            failureLogger: logging.logger(category: "DeepLink")
         )
         let provisionalBootstrap = MHAppRuntimeBootstrap(
             configuration: configuration,
@@ -53,6 +52,7 @@ final class StallyAppAssembly {
 
         self.modelContainer = modelContainer
         self.appModel = appModel
+        self.logging = logging
         self.routeInbox = routeInbox
         self.routePipeline = routePipeline
         self.bootstrap = .init(
@@ -65,19 +65,24 @@ final class StallyAppAssembly {
     @MainActor
     static func make(
         modelContainer: ModelContainer,
-        lifecyclePlanStyle: LifecyclePlanStyle
+        lifecyclePlanStyle: LifecyclePlanStyle,
+        logging: MHLoggingBootstrap? = nil
     ) -> StallyAppAssembly {
         .init(
             modelContainer: modelContainer,
-            lifecyclePlanStyle: lifecyclePlanStyle
+            lifecyclePlanStyle: lifecyclePlanStyle,
+            logging: logging
         )
     }
 
     @MainActor
-    static func makeLiveAssembly() throws -> StallyAppAssembly {
+    static func makeLiveAssembly(
+        logging: MHLoggingBootstrap
+    ) throws -> StallyAppAssembly {
         make(
             modelContainer: try ModelContainerFactory.shared(),
-            lifecyclePlanStyle: .live
+            lifecyclePlanStyle: .live,
+            logging: logging
         )
     }
 
@@ -93,14 +98,10 @@ final class StallyAppAssembly {
 }
 enum StallyAppAssemblyFactory {
     @MainActor
-    static func makeLive() -> StallyAppAssembly {
-        do {
-            return try makeLiveAssembly()
-        } catch {
-            preconditionFailure(
-                "Failed to initialize the Stally model container: \(error)"
-            )
-        }
+    static func makeLive(
+        logging: MHLoggingBootstrap
+    ) throws -> StallyAppAssembly {
+        try StallyAppAssembly.makeLiveAssembly(logging: logging)
     }
 
     @MainActor
@@ -123,17 +124,19 @@ enum StallyAppAssemblyFactory {
     }
 }
 
-private extension StallyAppAssemblyFactory {
-    @MainActor
-    static func makeLiveAssembly() throws -> StallyAppAssembly {
-        try StallyAppAssembly.makeLiveAssembly()
-    }
-}
-
 extension StallyAppAssembly {
     enum LifecyclePlanStyle {
         case live
         case preview
+
+        var configuration: MHAppConfiguration {
+            switch self {
+            case .live:
+                StallyAppConfiguration.runtimeConfiguration
+            case .preview:
+                StallyAppConfiguration.previewConfiguration
+            }
+        }
 
         func makePlan(
             appModel: StallyAppModel,
@@ -147,6 +150,9 @@ extension StallyAppAssembly {
                     from: preferenceStore
                 )
                 appModel.loadInsightsPreferencesIfNeeded(
+                    from: preferenceStore
+                )
+                appModel.loadDebugModeIfNeeded(
                     from: preferenceStore
                 )
             }

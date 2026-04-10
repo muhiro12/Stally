@@ -8,6 +8,8 @@ import UIKit
 struct StallyArchiveView: View {
     @Environment(StallyAppModel.self)
     private var appModel
+    @Environment(StallyAppAssembly.self)
+    private var assembly
     @Environment(\.modelContext)
     private var context
     @Environment(\.mhDesignMetrics)
@@ -90,6 +92,10 @@ private extension StallyArchiveView {
                 screenModel.query = newValue
             }
         )
+    }
+
+    var mutationLogger: MHLogger {
+        assembly.logging.logger(category: "Mutation")
     }
 
     var querySearchTextBinding: Binding<String> {
@@ -237,7 +243,8 @@ private extension StallyArchiveView {
                 appModel.performAction {
                     try StallyAppActionService.unarchive(
                         context: context,
-                        item: item
+                        item: item,
+                        logger: mutationLogger
                     )
                 }
             }

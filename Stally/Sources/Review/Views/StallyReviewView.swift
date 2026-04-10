@@ -7,6 +7,8 @@ import SwiftUI
 struct StallyReviewView: View {
     @Environment(StallyAppModel.self)
     private var appModel
+    @Environment(StallyAppAssembly.self)
+    private var assembly
     @Environment(\.modelContext)
     private var context
     @Environment(\.mhDesignMetrics)
@@ -80,6 +82,10 @@ struct StallyReviewView: View {
 private extension StallyReviewView {
     var usesCompactLayout: Bool {
         horizontalSizeClass != .regular
+    }
+
+    var mutationLogger: MHLogger {
+        assembly.logging.logger(category: "Mutation")
     }
 
     var untouchedSelectionBinding: Binding<StallyReviewSelectionState.LaneSelection> {
@@ -260,7 +266,8 @@ private extension StallyReviewView {
         appModel.performAction {
             try StallyAppActionService.archive(
                 context: context,
-                item: item
+                item: item,
+                logger: mutationLogger
             )
         }
     }
@@ -271,7 +278,8 @@ private extension StallyReviewView {
         appModel.performAction {
             try StallyAppActionService.archive(
                 context: context,
-                items: items
+                items: items,
+                logger: mutationLogger
             )
         }
     }
@@ -282,7 +290,8 @@ private extension StallyReviewView {
         appModel.performAction {
             try StallyAppActionService.unarchive(
                 context: context,
-                item: item
+                item: item,
+                logger: mutationLogger
             )
         }
     }
@@ -293,7 +302,8 @@ private extension StallyReviewView {
         appModel.performAction {
             try StallyAppActionService.unarchive(
                 context: context,
-                items: items
+                items: items,
+                logger: mutationLogger
             )
         }
     }

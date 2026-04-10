@@ -1,3 +1,4 @@
+import MHPlatform
 import MHUI
 import StallyLibrary
 import SwiftData
@@ -6,6 +7,8 @@ import TipKit
 import UniformTypeIdentifiers
 
 struct StallyBackupCenterView: View {
+    @Environment(StallyAppAssembly.self)
+    var assembly
     @Environment(\.modelContext)
     var context
     @Environment(\.mhDesignMetrics)
@@ -38,7 +41,7 @@ struct StallyBackupCenterView: View {
             contentType: .stallyBackup,
             defaultFilename: state.exportFilename
         ) { result in
-            state.recordExportResult(result)
+            handleExportResult(result)
         }
         .fileImporter(
             isPresented: $state.isImporting,
