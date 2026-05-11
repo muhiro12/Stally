@@ -24,8 +24,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		AD91A1052F5C544100BC027C /* StallyLibrary */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = StallyLibrary; sourceTree = "<group>"; };
 		AD91A0F12F5C543E00BC027C /* Stally.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stally.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD91A1052F5C544100BC027C /* StallyLibrary */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = StallyLibrary; sourceTree = "<group>"; };
 		D2A100042F6A000100000001 /* StallyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StallyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2A100052F6A000100000001 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = System/Library/Frameworks/XCTest.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -51,10 +51,6 @@
 		};
 		D2A100062F6A000100000001 /* StallyTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			explicitFileTypes = {
-			};
-			explicitFolders = (
-			);
 			path = StallyTests;
 			sourceTree = "<group>";
 		};
@@ -85,10 +81,11 @@
 		AD91A0E82F5C543E00BC027C = {
 			isa = PBXGroup;
 			children = (
-				AD91A0F32F5C543E00BC027C /* Stally */,
 				AD91A1052F5C544100BC027C /* StallyLibrary */,
+				AD91A0F32F5C543E00BC027C /* Stally */,
 				D2A100062F6A000100000001 /* StallyTests */,
 				AD91A0F22F5C543E00BC027C /* Products */,
+				ADA16B642FB1E30B0046661F /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -99,6 +96,14 @@
 				D2A100042F6A000100000001 /* StallyTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		ADA16B642FB1E30B0046661F /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				D2A100052F6A000100000001 /* XCTest.framework */,
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -548,7 +553,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		B0A1C0022F5D000100000001 /* XCRemoteSwiftPackageReference "MHPlatform" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/muhiro12/MHPlatform.git";
+			repositoryURL = "https://github.com/muhiro12/MHPlatform";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.0;
@@ -556,7 +561,7 @@
 		};
 		C1F0A0022F5F100100000001 /* XCRemoteSwiftPackageReference "MHUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/muhiro12/MHUI.git";
+			repositoryURL = "https://github.com/muhiro12/MHUI";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.0;
@@ -589,7 +594,6 @@
 			productName = MHUI;
 		};
 /* End XCSwiftPackageProductDependency section */
-
 	};
 	rootObject = AD91A0E92F5C543E00BC027C /* Project object */;
 }

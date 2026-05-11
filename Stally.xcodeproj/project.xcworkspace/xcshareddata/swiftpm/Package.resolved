@@ -1,5 +1,5 @@
 {
-  "originHash" : "62f91fedf33c838afc0272be0c7a6b4479f0b38c3b30b6a6c3d8b3a98b592b4c",
+  "originHash" : "a4f9eb8037a3b6d50d7878c5ec8501b84ff23cd94ef54667cd0110eef8f59845",
   "pins" : [
     {
       "identity" : "googlemobileadswrapper",
@@ -15,26 +15,26 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/cybozu/LicenseList.git",
       "state" : {
-        "revision" : "6740b7c6372d26c89bae227b5e9ee9793064e816",
-        "version" : "2.3.0"
+        "revision" : "ee1e897acb2c8f3061fca4434cb702e8ddb7a72c",
+        "version" : "2.5.0"
       }
     },
     {
       "identity" : "mhplatform",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/muhiro12/MHPlatform.git",
+      "location" : "https://github.com/muhiro12/MHPlatform",
       "state" : {
-        "revision" : "6a52439f75897dc042f6ba07ec80b347f13b9b35",
-        "version" : "1.4.0"
+        "revision" : "d4a81f521de0cd6872beed3153226ace41f99973",
+        "version" : "1.8.0"
       }
     },
     {
       "identity" : "mhui",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/muhiro12/MHUI.git",
+      "location" : "https://github.com/muhiro12/MHUI",
       "state" : {
-        "revision" : "4805a54bd4040392a8bd1ec9880ff65273f15212",
-        "version" : "1.1.0"
+        "revision" : "b9081e284ffe982fb7b07d8a82ec2e64b2228e6e",
+        "version" : "1.3.0"
       }
     },
     {
