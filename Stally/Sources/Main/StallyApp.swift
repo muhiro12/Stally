@@ -5,38 +5,24 @@
 //  Created by Hiromu Nakano on 2026/03/07.
 //
 
-import Foundation
 import MHPlatform
 import MHUI
 import SwiftUI
 
 @main
 struct StallyApp: App {
-    nonisolated private static var isRunningTests: Bool {
-        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-    }
-
-    private let sharedAssembly: StallyAppAssembly?
+    private let sharedAssembly: StallyAppAssembly
 
     var body: some Scene {
         WindowGroup {
-            if let sharedAssembly {
-                StallyRootView()
-                    .stallyAppAssembly(sharedAssembly)
-                    .mhAppRuntimeBootstrap(sharedAssembly.bootstrap)
-            } else {
-                Color.clear
-            }
+            StallyRootView()
+                .stallyAppAssembly(sharedAssembly)
+                .mhAppRuntimeBootstrap(sharedAssembly.bootstrap)
         }
     }
 
     @MainActor
     init() {
-        guard Self.isRunningTests == false else {
-            sharedAssembly = nil
-            return
-        }
-
         let logging = StallyDiagnostics.makeLoggingBootstrap(
             configuration: StallyAppConfiguration.runtimeConfiguration
         )

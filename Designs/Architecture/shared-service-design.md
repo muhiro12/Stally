@@ -60,6 +60,13 @@ operations:
    or old local API wrappers in normal repository code. Prefer strict current
    format validation and destructive cleanup when verification stays healthy.
 
+## Test Posture
+
+- Keep repository-owned unit tests in `StallyLibrary/Tests`.
+- Do not add a separate unit test target for `Stally`.
+- If an adapter needs durable coverage, first extract the reusable rule or wire
+  contract into `StallyLibrary` and test it there.
+
 ## Current Examples
 
 - `StallyAppActionService` stays in `Stally` because it adapts view actions

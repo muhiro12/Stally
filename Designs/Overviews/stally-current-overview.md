@@ -1,20 +1,17 @@
 # Stally Current Product and Architecture Overview
 
-Current as of March 23, 2026.
+Current as of May 11, 2026.
 
 ## Purpose
 
 Stally is a SwiftUI iPhone app for quietly tracking the personal items a user
 keeps choosing over time. The product is implemented as one iOS app plus one
-shared domain library, with an app-side XCTest target covering adapter logic.
-The current deployment baseline is iOS 26 or newer:
+shared domain library. The current deployment baseline is iOS 26 or newer:
 
 - An iPhone app for library browsing, review lanes, insights, settings, backup
   export and restore, and deep-link navigation
 - A shared library for SwiftData models, mutation services, calculations,
   backup payloads, and route definitions
-- An app test target for route mapping, editor model behavior, and screen model
-  presentation assembly
 
 The current implementation is intentionally biased toward a single source of
 truth for business logic in `StallyLibrary`, with platform adapters and UI
@@ -127,9 +124,9 @@ and `StallyBackupDocument`, while app-side transfer orchestration lives in
 failures keep preview context available for retry instead of clearing the
 screen state immediately.
 
-App adapter behavior is now verified in `StallyTests`, with coverage focused on
-route application, screen models, `StallyItemEditorModel`, and transfer
-workflow behavior. The repository uses `bash ci_scripts/tasks/verify_task_completion.sh`
-as the non-destructive verification gate and
-`bash ci_scripts/tasks/verify_repository_state.sh` as the change-aware CI
-entrypoint that includes app tests when app-side files change.
+Repository-owned unit coverage lives in `StallyLibrary/Tests`. App target
+changes are verified by building the `Stally` scheme rather than maintaining a
+separate app unit test target. The repository uses
+`bash ci_scripts/tasks/verify_task_completion.sh` as the non-destructive
+verification gate and `bash ci_scripts/tasks/verify_repository_state.sh` as the
+change-aware CI entrypoint.

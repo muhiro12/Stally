@@ -115,10 +115,16 @@ tasks.filter { $0.isCompleted }
 
 ## Build and Test Entry Point
 
-Agents MUST use one of these standardized entrypoints:
+Agents MUST use this standardized verification entrypoint:
 
 ```sh
 bash ci_scripts/tasks/verify_task_completion.sh
+```
+
+Use this supplemental repository-state entrypoint when only change-based checks
+are needed:
+
+```sh
 bash ci_scripts/tasks/verify_repository_state.sh
 ```
 

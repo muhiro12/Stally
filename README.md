@@ -88,22 +88,6 @@ and supports portable backup export and restore flows.
 4. Run the **Stally** scheme on an iOS 26 simulator or device, or use the
    **StallyLibrary** scheme when iterating on shared logic and tests.
 
-### Public Repository Safety
-
-Keep local-only credentials, certificates, and service configuration out of
-git. The root `.gitignore` blocks common sensitive artifacts such as
-`Secret.swift`, `GoogleService-Info.plist`, `.env*`, `.netrc`, `*.p8`,
-`*.p12`, and `*.mobileprovision`.
-
-Before publishing changes, run:
-
-```sh
-bash ci_scripts/tasks/verify_repository_state.sh
-```
-
-The verification pipeline includes a repository secret scan before any
-build/test work starts.
-
 ## Build and Test
 
 Use the helper scripts in `ci_scripts/` as needed.
@@ -151,6 +135,9 @@ If you only need required builds/tests based on local changes:
 ```sh
 bash ci_scripts/tasks/verify_repository_state.sh
 ```
+
+The change-aware verification flow builds the app for app or shared-library
+changes, and runs shared-library tests for `StallyLibrary/` or project changes.
 
 If you want a full forced verification regardless of local changes:
 

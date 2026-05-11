@@ -16,7 +16,6 @@ boundaries, and compatibility posture rather than product behavior.
 - `Stally/Sources/`
 - `StallyLibrary/Sources/`
 - `StallyLibrary/Tests/`
-- `StallyTests/`
 - `ci_scripts/`
 - `Designs/Architecture/`
 - `Designs/Decisions/`
@@ -44,13 +43,13 @@ Stally is pre-release, so the Incomes migration-tolerance language should not
 be copied as-is. Stally should reject unsupported current-format backup data
 instead of silently adapting it.
 
-### Adapt: Testing Boundary
+### Align: Testing Boundary
 
 Incomes keeps repository-owned unit tests in `IncomesLibrary/Tests` because
-app, watch, widget, and intent adapters are responsibility-thin. Stally keeps
-app adapter tests because route and screen-model meaning is app-owned today.
-The right adaptation is to keep those tests narrow and move reusable rules
-into `StallyLibrary` when they become durable.
+app, watch, widget, and intent adapters are responsibility-thin. Stally now
+uses the same posture: no separate app unit test target, app changes are
+verified by app build, and durable rules should move into `StallyLibrary`
+before receiving repository-owned tests.
 
 ### Adapt: MHPlatform Adoption
 
@@ -64,16 +63,17 @@ Incomes has iOS, watchOS, widget, App Intent, and sync surfaces. Stally is
 currently a single iOS app plus shared library. Adding parallel surfaces for
 symmetry would create fake architecture.
 
-### Keep: CI Guardrails
+### Align: CI Guardrails
 
-Stally has extra checks for public-repository secrets and `MHUI` adoption.
-These are Stally-specific improvements and should remain even though Incomes
-does not have the same checks.
+Stally previously had extra secret-scan and `MHUI` adoption checks in the
+standard gate. Those were removed from the standard verification path so the
+workflow matches Incomes more closely: environment, MHPlatform boundary,
+models-directory consistency, app build, and shared-library tests.
 
 ## Actioned Changes
 
 - Added an optional `ci_scripts/tasks/verify_pre_push.sh` wrapper.
-- Documented the Incomes comparison and Stally-specific decisions here.
+- Documented the Incomes comparison and alignment decisions here.
 - Clarified thin-target and testing boundaries in
   `Designs/Architecture/ARCHITECTURE_GUIDE.md`.
 - Added ADR 0008 for the pre-release compatibility posture.
@@ -82,8 +82,6 @@ does not have the same checks.
 
 ## Deferred Items
 
-- Do not remove `StallyTests` unless the app-owned behavior they cover has been
-  moved into `StallyLibrary` or proven redundant.
 - Do not add Incomes-only product surfaces such as watchOS, widgets, or App
   Intents for architectural symmetry.
 - Do not copy Incomes `ci_post_clone.sh`; it writes an Xcode user default and

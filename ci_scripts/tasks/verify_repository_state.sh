@@ -39,7 +39,7 @@ start_time_display=$(date +"%Y-%m-%d %H:%M:%S %z")
 start_time_iso=$(date +"%Y-%m-%dT%H:%M:%S%z")
 
 overall_result="success"
-run_note="Evaluating local changes to determine required CI steps."
+run_note="Evaluating local changes to determine required build/test steps."
 failed_step=""
 failed_log=""
 executed_steps=()
@@ -171,19 +171,15 @@ if [[ "${CI_SKIP_ENV_CHECK:-0}" == "1" || "${CI_SKIP_ENV_CHECK:-}" == "true" ]];
 fi
 
 needs_stally_build=false
-needs_stally_tests=false
 needs_stally_library_tests=false
 needs_mhplatform_boundary_checks=false
-needs_mhui_adoption_checks=false
 needs_models_directory_consistency=false
 
 if $should_force_full; then
   echo "Forcing full verification regardless of local changes."
   needs_stally_build=true
-  needs_stally_tests=true
   needs_stally_library_tests=true
   needs_mhplatform_boundary_checks=true
-  needs_mhui_adoption_checks=true
   needs_models_directory_consistency=true
   run_note="Executed a forced full verification run regardless of local changes."
 else
@@ -201,44 +197,32 @@ else
     exit 0
   fi
 
-  if grep -Eq '^Stally/|^StallyTests/|^Stally\.xcodeproj/' <<<"$changed_files"; then
+  if grep -Eq '^Stally/|^StallyLibrary/|^Stally\.xcodeproj/' <<<"$changed_files"; then
     needs_stally_build=true
-    needs_stally_tests=true
     needs_models_directory_consistency=true
   fi
 
-  if grep -Eq '^StallyLibrary/' <<<"$changed_files"; then
+  if grep -Eq '^StallyLibrary/|^Stally\.xcodeproj/' <<<"$changed_files"; then
     needs_stally_library_tests=true
   fi
 
-  if grep -Eq '^Stally/|^StallyTests/|^StallyLibrary/|^Stally\.xcodeproj/|^ci_scripts/' <<<"$changed_files"; then
+  if grep -Eq '^Stally/|^StallyLibrary/|^Stally\.xcodeproj/|^ci_scripts/' <<<"$changed_files"; then
     needs_mhplatform_boundary_checks=true
   fi
 
-  if grep -Eq '^Stally/|^Stally\.xcodeproj/|^ci_scripts/' <<<"$changed_files"; then
-    needs_mhui_adoption_checks=true
-  fi
-
   if ! $needs_stally_build \
-    && ! $needs_stally_tests \
     && ! $needs_stally_library_tests \
     && ! $needs_mhplatform_boundary_checks \
-    && ! $needs_mhui_adoption_checks \
     && ! $needs_models_directory_consistency; then
-    echo "No changes under Stally/, StallyTests/, StallyLibrary/, Stally.xcodeproj/, or ci_scripts/."
-    run_note="No changes under Stally/, StallyTests/, StallyLibrary/, Stally.xcodeproj/, or ci_scripts/. Build/test steps were skipped."
+    echo "No changes under Stally/, StallyLibrary/, Stally.xcodeproj/, or ci_scripts/."
+    run_note="No changes under Stally/, StallyLibrary/, Stally.xcodeproj/, or ci_scripts/. Build/test steps were skipped."
     exit 0
   fi
 
   run_note="Executed required CI steps based on local changes."
 fi
 
-run_logged_step \
-  "check_no_secrets" \
-  "Scan repository for committed secrets" \
-  bash "$repository_root/ci_scripts/tasks/check_no_secrets.sh"
-
-if ! $should_skip_environment_check && { $needs_stally_build || $needs_stally_tests || $needs_stally_library_tests; }; then
+if ! $should_skip_environment_check && { $needs_stally_build || $needs_stally_library_tests; }; then
   run_logged_step \
     "check_environment" \
     "Check build environment" \
@@ -250,13 +234,6 @@ if $needs_mhplatform_boundary_checks; then
     "check_mhplatform_boundaries" \
     "Check MHPlatform boundaries" \
     bash "$repository_root/ci_scripts/tasks/check_mhplatform_boundaries.sh"
-fi
-
-if $needs_mhui_adoption_checks; then
-  run_logged_step \
-    "check_mhui_adoption" \
-    "Check MHUI adoption guardrails" \
-    bash "$repository_root/ci_scripts/tasks/check_mhui_adoption.sh"
 fi
 
 if $needs_models_directory_consistency; then
@@ -271,13 +248,6 @@ if $needs_stally_build; then
     "build_app" \
     "Build Stally scheme" \
     bash "$repository_root/ci_scripts/tasks/build_app.sh"
-fi
-
-if $needs_stally_tests; then
-  run_logged_step \
-    "test_app" \
-    "Test Stally scheme" \
-    bash "$repository_root/ci_scripts/tasks/test_app.sh"
 fi
 
 if $needs_stally_library_tests; then

@@ -33,11 +33,10 @@ Related decision:
 ## Testing Boundary
 
 - Keep durable domain and persistence coverage in `StallyLibrary/Tests`.
-- Keep `StallyTests` focused on app-owned adapter behavior that cannot be
-  tested in the shared library without moving app navigation meaning into the
-  domain layer.
-- If an app adapter test starts covering reusable business rules, first move
-  that rule into `StallyLibrary` and test it there.
+- Do not maintain a separate unit test target for `Stally`.
+- If an adapter path needs durable coverage, first move the reusable rule or
+  wire contract into `StallyLibrary` and test it there.
+- App target changes are verified by building the `Stally` scheme.
 
 ## View Rules
 
@@ -181,17 +180,3 @@ Keep in `Stally`:
    - Keep security-scoped file access, backup decode, and preview analysis in
      app-side transfer adapters.
    - Keep snapshot validation and apply logic in `StallyLibrary`.
-
-5. App adapter behavior must stay covered by XCTest.
-   Files:
-   - `StallyTests/StallyAppRouteServiceTests.swift`
-   - `StallyTests/StallyAppModelTests.swift`
-   - `StallyTests/StallyItemEditorModelTests.swift`
-   - `StallyTests/StallyScreenModelTests.swift`
-   - `StallyTests/StallyBackupWorkflowTests.swift`
-   - `ci_scripts/tasks/test_app.sh`
-   Minimal plan:
-   - Add adapter tests in `StallyTests` before pushing more route or screen
-     logic into the app target.
-   - Keep `verify_repository_state.sh` responsible for app build plus app
-     tests when app-side files change.
