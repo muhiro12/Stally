@@ -132,7 +132,7 @@ final class StallyScreenModelTests: XCTestCase {
 
             let snapshot = StallyInsightsSnapshotBuilder.build(
                 items: try fetchItems(context: context),
-                preferences: .init()
+                preferences: .init(defaultRange: .allTime)
             )
             let model = StallyInsightsScreenModel(snapshot: snapshot)
 

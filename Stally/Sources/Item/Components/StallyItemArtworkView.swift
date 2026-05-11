@@ -28,13 +28,13 @@ struct StallyItemArtworkView: View {
         .frame(width: width, height: height)
         .clipShape(
             RoundedRectangle(
-                cornerRadius: theme.radius.surface,
+                cornerRadius: theme.cornerRadius.surface,
                 style: .continuous
             )
         )
         .overlay(
             RoundedRectangle(
-                cornerRadius: theme.radius.surface,
+                cornerRadius: theme.cornerRadius.surface,
                 style: .continuous
             )
             .stroke(Color.white.opacity(0.35), lineWidth: 1)
@@ -63,7 +63,7 @@ struct StallyItemArtworkView: View {
 private extension StallyItemArtworkView {
     var artworkBackground: some View {
         RoundedRectangle(
-            cornerRadius: theme.radius.surface,
+            cornerRadius: theme.cornerRadius.surface,
             style: .continuous
         )
         .fill(

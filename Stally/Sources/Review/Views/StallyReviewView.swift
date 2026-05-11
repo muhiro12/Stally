@@ -21,7 +21,7 @@ struct StallyReviewView: View {
     let snapshot: StallyReviewSnapshot
 
     var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
+        VStack(alignment: .leading, spacing: theme.spacing.content) {
             summaryCard
 
             if snapshot.summary.totalReviewCount == .zero, !screenModel.showsCompletedSections {

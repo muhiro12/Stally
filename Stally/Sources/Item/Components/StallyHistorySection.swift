@@ -9,7 +9,7 @@ struct StallyHistorySection: View {
     let months: [MarkHistoryMonth]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
+        VStack(alignment: .leading, spacing: theme.spacing.content) {
             ForEach(months) { month in
                 VStack(alignment: .leading, spacing: theme.spacing.control) {
                     Text(month.monthStart.formatted(.dateTime.year().month(.wide)))
@@ -29,7 +29,7 @@ struct StallyHistorySection: View {
                                 .foregroundStyle(foregroundStyle(for: cell))
                                 .background(
                                     RoundedRectangle(
-                                        cornerRadius: theme.radius.control,
+                                        cornerRadius: theme.cornerRadius.control,
                                         style: .continuous
                                     )
                                     .fill(backgroundColor(for: cell))

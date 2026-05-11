@@ -4,25 +4,31 @@ import MHPlatform
 enum StallyDiagnostics {
     private static let namespace = "com.muhiro12.stally"
 
-    static let loggingSnapshotKey = MHCodablePreferenceKey<[MHLogEvent]>(
-        namespace: namespace,
-        name: "logging.lastSession"
+    static let loggingSnapshotStorageDescriptors = MHLogSnapshotStorageDescriptors(
+        current: .init(
+            storageKey: "\(namespace).logging.currentSession",
+            defaultSelection: .standard
+        ),
+        previous: .init(
+            storageKey: "\(namespace).logging.previousSession",
+            defaultSelection: .standard
+        )
     )
 
-    static var debugModeKey: MHBoolPreferenceKey {
-#if DEBUG
+    static var debugModeKey: MHBoolPreferenceDescriptor {
+        #if DEBUG
         .init(
-            namespace: namespace,
-            name: "debugModeEnabled",
+            storageKey: "\(namespace).debugModeEnabled",
+            defaultSelection: .standard,
             default: true
         )
-#else
+        #else
         .init(
-            namespace: namespace,
-            name: "debugModeEnabled",
+            storageKey: "\(namespace).debugModeEnabled",
+            defaultSelection: .standard,
             default: false
         )
-#endif
+        #endif
     }
 
     static var defaultDebugModeEnabled: Bool {
@@ -43,7 +49,7 @@ enum StallyDiagnostics {
                 )
             ),
             subsystem: subsystem,
-            snapshotKey: loggingSnapshotKey,
+            snapshotStorageDescriptors: loggingSnapshotStorageDescriptors,
             snapshotStore: preferenceStore
         )
     }
@@ -79,43 +85,7 @@ private extension StallyDiagnostics {
     static func makePreferenceStore(
         configuration: MHAppConfiguration
     ) -> MHPreferenceStore {
-        .init(
-            userDefaults: makeUserDefaults(
-                suiteName: configuration.preferencesSuiteName
-            )
-        )
-    }
-
-    static func makeUserDefaults(
-        suiteName: String?
-    ) -> UserDefaults {
-        guard let normalizedSuiteName = normalizedSuiteName(
-            suiteName
-        ),
-            let userDefaults = UserDefaults(
-                suiteName: normalizedSuiteName
-            ) else {
-            return .standard
-        }
-
-        return userDefaults
-    }
-
-    static func normalizedSuiteName(
-        _ text: String?
-    ) -> String? {
-        guard let text else {
-            return nil
-        }
-
-        let normalizedText = text.trimmingCharacters(
-            in: .whitespacesAndNewlines
-        )
-
-        guard normalizedText.isEmpty == false else {
-            return nil
-        }
-
-        return normalizedText
+        _ = configuration
+        return .init()
     }
 }

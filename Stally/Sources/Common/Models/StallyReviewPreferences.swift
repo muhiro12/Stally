@@ -2,9 +2,9 @@ import MHPlatform
 import StallyLibrary
 
 nonisolated struct StallyReviewPreferences: Codable, Equatable, Sendable {
-    static let preferenceKey = MHCodablePreferenceKey<Self>(
-        namespace: "com.muhiro12.stally.review",
-        name: "preferences"
+    static let preferenceKey = MHCodablePreferenceDescriptor<Self>(
+        storageKey: "com.muhiro12.stally.review.preferences",
+        defaultSelection: .standard
     )
 
     var untouchedGraceDays: Int

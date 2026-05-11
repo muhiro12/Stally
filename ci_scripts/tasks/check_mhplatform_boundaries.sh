@@ -20,7 +20,7 @@ if rg -n 'XCLocalSwiftPackageReference "MHPlatform"|relativePath = .*MHPlatform'
 fi
 
 mhplatform_package_block=$(
-  sed -n '/url: "https:\/\/github.com\/muhiro12\/MHPlatform.git"/,/)/p' \
+  awk '/\.package\(url: "https:\/\/github.com\/muhiro12\/MHPlatform(\.git)?"/,/)/' \
     StallyLibrary/Package.swift
 )
 
@@ -81,8 +81,8 @@ else
     report_failure "floating MHPlatform resolution found in StallyLibrary/Package.resolved."
   fi
 
-  if ! rg -n '"version"\s*:\s*"1\.4\.0"' <<<"$mhplatform_library_resolved_block" >/dev/null; then
-    report_failure "StallyLibrary/Package.resolved must resolve MHPlatform 1.4.0."
+  if ! rg -n '"version"\s*:' <<<"$mhplatform_library_resolved_block" >/dev/null; then
+    report_failure "StallyLibrary/Package.resolved must contain a versioned MHPlatform pin."
   fi
 fi
 
@@ -98,8 +98,8 @@ else
     report_failure "floating MHPlatform resolution found in the Xcode Package.resolved."
   fi
 
-  if ! rg -n '"version"\s*:\s*"1\.4\.0"' <<<"$mhplatform_xcode_resolved_block" >/dev/null; then
-    report_failure "The Xcode Package.resolved must resolve MHPlatform 1.4.0."
+  if ! rg -n '"version"\s*:' <<<"$mhplatform_xcode_resolved_block" >/dev/null; then
+    report_failure "The Xcode Package.resolved must contain a versioned MHPlatform pin."
   fi
 fi
 

@@ -29,7 +29,7 @@ struct StallyMetricGrid: View {
                 }
             }
         } else {
-            HStack(spacing: theme.spacing.group) {
+            HStack(spacing: theme.spacing.content) {
                 ForEach(metrics) { metric in
                     metricView(metric)
                 }
@@ -43,7 +43,7 @@ private extension StallyMetricGrid {
         Array(
             repeating: GridItem(
                 .flexible(minimum: 0, maximum: .infinity),
-                spacing: theme.spacing.group,
+                spacing: theme.spacing.content,
                 alignment: .leading
             ),
             count: 2

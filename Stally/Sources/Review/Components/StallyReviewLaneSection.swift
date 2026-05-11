@@ -224,7 +224,7 @@ private extension StallyReviewLaneSection {
         let summary = ItemInsightsCalculator.summary(for: item)
         let snapshot = snapshotsByID[item.id]
 
-        return HStack(spacing: theme.spacing.group) {
+        return HStack(spacing: theme.spacing.content) {
             StallyItemArtworkView(
                 photoData: item.photoData,
                 category: item.category,

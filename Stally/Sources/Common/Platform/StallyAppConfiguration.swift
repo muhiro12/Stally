@@ -44,7 +44,6 @@ private extension StallyAppConfiguration {
             subscriptionProductIDs: [],
             subscriptionGroupID: nil,
             nativeAdUnitID: nativeAdUnitID,
-            preferencesSuiteName: nil,
             showsLicenses: true
         )
     }

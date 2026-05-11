@@ -22,7 +22,7 @@ struct StallyBackupCenterView: View {
     let items: [Item]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
+        VStack(alignment: .leading, spacing: theme.spacing.content) {
             overviewCard
             exportSection
             importSection

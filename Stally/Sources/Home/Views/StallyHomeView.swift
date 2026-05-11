@@ -124,7 +124,7 @@ private extension StallyHomeView {
     }
 
     var screenContent: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
+        VStack(alignment: .leading, spacing: theme.spacing.content) {
             if snapshot.activeItems.isEmpty {
                 emptyState
             } else {
@@ -403,7 +403,7 @@ private extension StallyHomeView {
     }
 
     var emptyState: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
+        VStack(alignment: .leading, spacing: theme.spacing.content) {
             ContentUnavailableView(
                 "Start with a few pieces you actually reach for.",
                 systemImage: "hanger",

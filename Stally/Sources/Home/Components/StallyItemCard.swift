@@ -15,9 +15,9 @@ struct StallyItemCard: View {
     let onToggleTodayMark: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
+        VStack(alignment: .leading, spacing: theme.spacing.content) {
             Button(action: onOpen) {
-                VStack(alignment: .leading, spacing: theme.spacing.group) {
+                VStack(alignment: .leading, spacing: theme.spacing.content) {
                     headerSection
 
                     Text(markSupportingText)
@@ -27,7 +27,7 @@ struct StallyItemCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .contentShape(
                     RoundedRectangle(
-                        cornerRadius: theme.radius.surface,
+                        cornerRadius: theme.cornerRadius.surface,
                         style: .continuous
                     )
                 )
@@ -51,7 +51,7 @@ struct StallyItemCard: View {
 
 private extension StallyItemCard {
     var headerSection: some View {
-        HStack(alignment: .top, spacing: theme.spacing.group) {
+        HStack(alignment: .top, spacing: theme.spacing.content) {
             artwork
 
             VStack(alignment: .leading, spacing: theme.spacing.control) {

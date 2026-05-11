@@ -24,7 +24,7 @@ struct StallySettingsView: View {
     var body: some View {
         @Bindable var appModel = appModel
 
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
+        VStack(alignment: .leading, spacing: theme.spacing.content) {
             aboutSection
             backupSection
             reviewPreferencesSection(

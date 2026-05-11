@@ -24,7 +24,7 @@ struct StallyInsightsView: View {
     var body: some View {
         @Bindable var appModel = appModel
 
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
+        VStack(alignment: .leading, spacing: theme.spacing.content) {
             overviewCard
             controlsSection(
                 includeArchivedItems: $appModel.insightsPreferences.includesArchivedItems

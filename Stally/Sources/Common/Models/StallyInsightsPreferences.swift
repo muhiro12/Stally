@@ -2,9 +2,9 @@ import MHPlatform
 import StallyLibrary
 
 nonisolated struct StallyInsightsPreferences: Codable, Equatable, Sendable {
-    static let preferenceKey = MHCodablePreferenceKey<Self>(
-        namespace: "com.muhiro12.stally.insights",
-        name: "preferences"
+    static let preferenceKey = MHCodablePreferenceDescriptor<Self>(
+        storageKey: "com.muhiro12.stally.insights.preferences",
+        defaultSelection: .standard
     )
 
     var defaultRange: ItemInsightsRange

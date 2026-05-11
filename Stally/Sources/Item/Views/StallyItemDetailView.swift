@@ -128,7 +128,7 @@ private extension StallyItemDetailView {
     }
 
     var heroSection: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
+        VStack(alignment: .leading, spacing: theme.spacing.content) {
             heroContent
 
             if item.isArchived {
@@ -148,12 +148,12 @@ private extension StallyItemDetailView {
     @ViewBuilder
     var heroContent: some View {
         if usesCompactLayout {
-            VStack(alignment: .leading, spacing: theme.spacing.group) {
+            VStack(alignment: .leading, spacing: theme.spacing.content) {
                 heroArtwork
                 heroTextBlock
             }
         } else {
-            HStack(alignment: .top, spacing: theme.spacing.group) {
+            HStack(alignment: .top, spacing: theme.spacing.content) {
                 heroArtwork
                 heroTextBlock
                 Spacer(minLength: .zero)
@@ -171,7 +171,7 @@ private extension StallyItemDetailView {
     }
 
     var heroTextBlock: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
+        VStack(alignment: .leading, spacing: theme.spacing.content) {
             Text(item.name)
                 .font(.system(size: 28, weight: .semibold, design: .serif))
 

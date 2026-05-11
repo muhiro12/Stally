@@ -4,9 +4,9 @@ import XCTest
 
 final class StallyAppConfigurationTests: XCTestCase {
     @MainActor
-    func testRuntimeConfigurationUsesStandardDefaultsStore() {
-        XCTAssertNil(
-            StallyAppConfiguration.runtimeConfiguration.preferencesSuiteName
+    func testRuntimeConfigurationUsesLicenses() {
+        XCTAssertTrue(
+            StallyAppConfiguration.runtimeConfiguration.showsLicenses
         )
     }
 

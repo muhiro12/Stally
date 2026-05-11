@@ -110,7 +110,7 @@ private extension StallyArchiveView {
     }
 
     var screenContent: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.group) {
+        VStack(alignment: .leading, spacing: theme.spacing.content) {
             if snapshot.archivedItems.isEmpty {
                 emptyState
             } else {
@@ -256,7 +256,7 @@ private extension StallyArchiveView {
         item: Item,
         summary: ItemSummary
     ) -> some View {
-        HStack(spacing: theme.spacing.group) {
+        HStack(spacing: theme.spacing.content) {
             archiveArtwork(for: item)
 
             VStack(alignment: .leading, spacing: theme.spacing.control) {
