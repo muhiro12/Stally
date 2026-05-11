@@ -114,10 +114,10 @@ private extension StallyBackupImportAnalyzer {
         if !item.hasKnownCategory {
             issues.append(
                 .init(
-                    severity: .warning,
+                    severity: .error,
                     code: .unknownCategory,
                     message: StallyLibraryLocalization.format(
-                        "Unknown category '%@' will be imported as Other.",
+                        "Backup contains unsupported category '%@'.",
                         item.categoryRawValue
                     ),
                     itemID: item.id,

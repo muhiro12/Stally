@@ -88,10 +88,11 @@ public extension Item {
 
     /// Applies imported backup metadata to the item.
     func applyImportedSnapshot(
-        _ backupItem: StallyBackupItem
+        _ backupItem: StallyBackupItem,
+        category: ItemCategory
     ) {
         name = backupItem.name
-        category = backupItem.category
+        self.category = category
         photoData = backupItem.photoData
         note = backupItem.note
         createdAt = backupItem.createdAt

@@ -54,7 +54,7 @@ final class StallyBackupImportAnalysisTests: XCTestCase {
         )
     }
 
-    func testAnalyzeCountsExistingItemsAndWarnsUnknownCategories() throws {
+    func testAnalyzeCountsExistingItemsAndRejectsUnknownCategories() throws {
         let snapshot = makeBackupSnapshot(
             exportedAt: localDate(year: 2_026, month: 3, day: 8),
             items: [
@@ -88,16 +88,16 @@ final class StallyBackupImportAnalysisTests: XCTestCase {
             existingItemIDs: [try testUUID("AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA")]
         )
 
-        XCTAssertTrue(analysis.canImport)
+        XCTAssertFalse(analysis.canImport)
         XCTAssertEqual(analysis.summary.totalItems, 2)
         XCTAssertEqual(analysis.summary.archivedItems, 1)
         XCTAssertEqual(analysis.summary.totalMarks, 1)
         XCTAssertEqual(analysis.summary.existingItems, 1)
         XCTAssertEqual(analysis.summary.newItems, 1)
-        XCTAssertEqual(analysis.warnings.count, 1)
-        XCTAssertEqual(analysis.warnings.first?.code, .unknownCategory)
-        XCTAssertEqual(analysis.warnings.first?.categoryRawValue, "headwear")
-        XCTAssertEqual(snapshot.items[1].category, .other)
+        XCTAssertEqual(analysis.errors.count, 1)
+        XCTAssertEqual(analysis.errors.first?.code, .unknownCategory)
+        XCTAssertEqual(analysis.errors.first?.categoryRawValue, "headwear")
+        XCTAssertNil(snapshot.items[1].category)
         XCTAssertFalse(snapshot.items[1].hasKnownCategory)
         XCTAssertEqual(snapshot.items[1].lastMarkedAt, localDate(year: 2_026, month: 2, day: 1))
     }

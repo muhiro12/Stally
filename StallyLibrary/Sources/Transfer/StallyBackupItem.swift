@@ -55,13 +55,13 @@ public struct StallyBackupItem: Codable, Equatable, Identifiable, Sendable {
 
 public extension StallyBackupItem {
     /// Strongly typed category inferred from the stored raw value.
-    var category: ItemCategory {
-        .init(rawValue: categoryRawValue) ?? .other
+    var category: ItemCategory? {
+        .init(rawValue: categoryRawValue)
     }
 
     /// Indicates whether the exported category is currently recognized.
     var hasKnownCategory: Bool {
-        ItemCategory(rawValue: categoryRawValue) != nil
+        category != nil
     }
 
     /// Indicates whether the item was archived when exported.

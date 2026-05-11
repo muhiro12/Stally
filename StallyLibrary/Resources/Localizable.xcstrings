@@ -1191,36 +1191,36 @@
         }
       }
     },
-    "Unknown category '%@' will be imported as Other.": {
+    "Backup contains unsupported category '%@'.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Unknown category '%@' will be imported as Other."
+            "value": "Backup contains unsupported category '%@'."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "不明なカテゴリ '%@' はその他として読み込みます。"
+            "value": "バックアップに未対応のカテゴリ '%@' が含まれています。"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "La categoría desconocida '%@' se importará como Otro."
+            "value": "La copia contiene la categoría no compatible '%@'."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "La catégorie inconnue '%@' sera importée comme Autre."
+            "value": "La sauvegarde contient la catégorie non prise en charge '%@'."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "未知类别“%@”将作为“其他”导入。"
+            "value": "备份包含不支持的类别“%@”。"
           }
         }
       }

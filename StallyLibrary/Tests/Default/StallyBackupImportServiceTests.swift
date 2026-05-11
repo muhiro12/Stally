@@ -31,7 +31,7 @@ final class StallyBackupImportServiceTests: XCTestCase {
             localDate(year: 2_026, month: 1, day: 15)
         )
         XCTAssertEqual(
-            items.first { $0.name == "Unknown Category Piece" }?.category,
+            items.first { $0.name == "Notebook Sleeve" }?.category,
             .other
         )
     }
@@ -199,6 +199,33 @@ final class StallyBackupImportServiceTests: XCTestCase {
             ["Keep Me"]
         )
     }
+
+    func testMergeRejectsUnknownCategoriesWithoutCreatingItems() throws {
+        let context = testContext()
+        let snapshot = makeBackupSnapshot(
+            exportedAt: localDate(year: 2_026, month: 3, day: 8),
+            items: [
+                try makeBackupItem(
+                    id: "B0000000-0000-0000-0000-000000000001",
+                    name: "Unknown Category Piece",
+                    categoryRawValue: "headwear",
+                    createdAt: localDate(year: 2_026, month: 2, day: 1),
+                    updatedAt: localDate(year: 2_026, month: 2, day: 3)
+                )
+            ]
+        )
+
+        XCTAssertThrowsError(
+            try StallyBackupImportService.merge(
+                context: context,
+                snapshot: snapshot
+            )
+        )
+        XCTAssertEqual(
+            try context.fetchCount(FetchDescriptor<Item>()),
+            0
+        )
+    }
 }
 
 private func makeMergeCreatesSnapshot() throws -> StallyBackupSnapshot {
@@ -222,8 +249,8 @@ private func makeMergeCreatesSnapshot() throws -> StallyBackupSnapshot {
             ),
             try makeBackupItem(
                 id: "30000000-0000-0000-0000-000000000002",
-                name: "Unknown Category Piece",
-                categoryRawValue: "headwear",
+                name: "Notebook Sleeve",
+                categoryRawValue: ItemCategory.other.rawValue,
                 createdAt: localDate(year: 2_026, month: 2, day: 1),
                 photoData: Data([0x0A, 0x0B]),
                 updatedAt: localDate(year: 2_026, month: 2, day: 3)

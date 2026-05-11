@@ -43,7 +43,7 @@ public enum StallyBackupImportService {
         var didChange = false
 
         for backupItem in snapshot.items {
-            let counts = merge(
+            let counts = try merge(
                 backupItem: backupItem,
                 context: context,
                 existingItemsByID: &existingItemsByID
@@ -83,7 +83,7 @@ public enum StallyBackupImportService {
             existingItems,
             context: context
         )
-        let counts = insertSnapshotItems(
+        let counts = try insertSnapshotItems(
             snapshot.items,
             context: context
         )
@@ -132,8 +132,8 @@ private extension StallyBackupImportService {
         backupItem: StallyBackupItem,
         context: ModelContext,
         existingItemsByID: inout [UUID: Item]
-    ) -> MergeCounts {
-        let itemOutcome = upsert(
+    ) throws -> MergeCounts {
+        let itemOutcome = try upsert(
             backupItem: backupItem,
             context: context,
             existingItemsByID: &existingItemsByID
@@ -157,12 +157,17 @@ private extension StallyBackupImportService {
         backupItem: StallyBackupItem,
         context: ModelContext,
         existingItemsByID: inout [UUID: Item]
-    ) -> UpsertOutcome {
+    ) throws -> UpsertOutcome {
+        let category = try requireCategory(for: backupItem)
+
         if let existingItem = existingItemsByID[backupItem.id] {
             let shouldApplyBackupMetadata = backupItem.updatedAt >= existingItem.updatedAt
 
             if shouldApplyBackupMetadata {
-                existingItem.applyImportedSnapshot(backupItem)
+                existingItem.applyImportedSnapshot(
+                    backupItem,
+                    category: category
+                )
             }
 
             return .init(
@@ -173,7 +178,10 @@ private extension StallyBackupImportService {
             )
         }
 
-        let newItem = makeItem(from: backupItem)
+        let newItem = makeItem(
+            from: backupItem,
+            category: category
+        )
         context.insert(newItem)
         existingItemsByID[newItem.id] = newItem
 
@@ -238,12 +246,12 @@ private extension StallyBackupImportService {
     static func insertSnapshotItems(
         _ backupItems: [StallyBackupItem],
         context: ModelContext
-    ) -> InsertCounts {
+    ) throws -> InsertCounts {
         var createdItems = 0
         var insertedMarks = 0
 
         for backupItem in backupItems {
-            let item = makeItem(from: backupItem)
+            let item = try makeItem(from: backupItem)
             context.insert(item)
             createdItems += 1
 
@@ -268,10 +276,20 @@ private extension StallyBackupImportService {
 
     static func makeItem(
         from backupItem: StallyBackupItem
+    ) throws -> Item {
+        try makeItem(
+            from: backupItem,
+            category: requireCategory(for: backupItem)
+        )
+    }
+
+    static func makeItem(
+        from backupItem: StallyBackupItem,
+        category: ItemCategory
     ) -> Item {
         Item(
             name: backupItem.name,
-            category: backupItem.category,
+            category: category,
             photoData: backupItem.photoData,
             note: backupItem.note,
             createdAt: backupItem.createdAt,
@@ -279,5 +297,28 @@ private extension StallyBackupImportService {
             archivedAt: backupItem.archivedAt,
             id: backupItem.id
         )
+    }
+
+    static func requireCategory(
+        for backupItem: StallyBackupItem
+    ) throws -> ItemCategory {
+        guard let category = backupItem.category else {
+            throw StallyBackupImportValidationError(
+                issues: [
+                    .init(
+                        severity: .error,
+                        code: .unknownCategory,
+                        message: StallyLibraryLocalization.format(
+                            "Backup contains unsupported category '%@'.",
+                            backupItem.categoryRawValue
+                        ),
+                        itemID: backupItem.id,
+                        categoryRawValue: backupItem.categoryRawValue
+                    )
+                ]
+            )
+        }
+
+        return category
     }
 }
