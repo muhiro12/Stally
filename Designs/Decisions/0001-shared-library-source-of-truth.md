@@ -24,5 +24,6 @@ definitions belong there. The module stays as one shared library for now.
   `ItemInsightsCalculator`, `StallyBackupImportService`, and
   `StallyDeepLinking` are primary shared entry points.
 - UI and deep-link flows should depend on the same canonical shared APIs.
-- Compatibility wrappers may exist during migration, but new call sites should
-  target the canonical library APIs.
+- Because Stally is pre-release, compatibility wrappers and migration shims
+  should not be retained by default. Destructive cleanup is preferred when the
+  current shared APIs remain coherent and verification stays healthy.

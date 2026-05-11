@@ -11,6 +11,9 @@ Related document:
 Related decision:
 [0007-adapter-failure-surfacing-contract.md](../Decisions/0007-adapter-failure-surfacing-contract.md)
 
+Related decision:
+[0008-pre-release-compatibility-posture.md](../Decisions/0008-pre-release-compatibility-posture.md)
+
 ## Responsibility Boundaries
 
 | Layer | Owns | Must not own |
@@ -18,6 +21,23 @@ Related decision:
 | Domain (`StallyLibrary`) | Validation, query helpers, review and insights calculations, backup codecs and import analysis, SwiftData schema, deep-link route definitions and codec | TipKit, `FileDocument`, `UIPasteboard`, app runtime/bootstrap wiring, SwiftUI navigation state |
 | Adapter (`Stally/Sources/Common/Platform`, `Stally/Sources/Main`, `Stally/Sources/**/Models`, `Stally/Sources/Transfer`) | Platform API calls, dependency wiring, tab and sheet state, route application, screen snapshot building, screen-local query or selection models, file import/export orchestration, follow-up orchestration around domain outcomes | Reimplemented domain branching or persistence rules already expressible in `StallyLibrary` |
 | View (`Stally/Sources/**/Views`) | SwiftUI binding, sheets, navigation presentation, formatting, view composition, display-only animation and layout | Search/filter/selection bookkeeping that belongs in screen models, review scoring rules, archive heuristics, backup merge semantics, insights calculations duplicated from library services |
+
+## Thin-Target Clarification
+
+- "Thin target" means responsibility-thin, not line-count-thin.
+- `Stally` may own SwiftUI shells, route application, file presentation,
+  TipKit, logging views, preferences, and other Apple-framework adapters.
+- The target is still thin when reusable item, mark, review, insights, backup,
+  and route contracts continue to live in `StallyLibrary`.
+
+## Testing Boundary
+
+- Keep durable domain and persistence coverage in `StallyLibrary/Tests`.
+- Keep `StallyTests` focused on app-owned adapter behavior that cannot be
+  tested in the shared library without moving app navigation meaning into the
+  domain layer.
+- If an app adapter test starts covering reusable business rules, first move
+  that rule into `StallyLibrary` and test it there.
 
 ## View Rules
 
@@ -92,6 +112,18 @@ Keep in `Stally`:
   `safeAreaPadding`, `contentMargins`, and `scrollTargetLayout`.
 - Backward-compatibility branches for pre-iOS 26 behavior should not be added
   in app code unless a new ADR explicitly changes the deployment baseline.
+
+## Pre-Release Compatibility Posture
+
+- Stally is pre-release, so repository-owned code should not preserve
+  migration shims, old local APIs, or beta backup compatibility paths by
+  default.
+- Destructive cleanup is acceptable when it keeps the current schema and
+  product behavior coherent and the repository verification flow remains
+  healthy.
+- Current-format validation is still required for user-provided files and
+  deep links. Strict rejection is preferred over silently adapting stale or
+  malformed payloads.
 
 ## Current Hotspots and Minimal Refactor Plans
 

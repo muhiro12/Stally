@@ -14,7 +14,7 @@ composition.
 
 Keep route definitions and codec logic in `StallyLibrary`, and keep route
 application in the `Stally` target. `StallyRoute` and `StallyDeepLinking`
-define the shared URL contract, while `StallyRootRouteService` applies routes
+define the shared URL contract, while `StallyAppRouteService` applies routes
 to navigation state.
 
 ## Consequences

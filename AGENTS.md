@@ -6,6 +6,9 @@ Stally.
 ## Agent Philosophy
 
 - Follow existing repository conventions as the source of truth.
+- Do not invent architecture or workflows.
+- When uncertain, leave a narrow TODO or explain the blocker rather than
+  guessing.
 - Prefer minimal, safe changes over speculative refactors.
 - Treat sibling repositories and external packages as read-only reference
   material unless the user explicitly asks otherwise.
@@ -127,6 +130,8 @@ When Swift files are edited, agents should run
 verification gate.
 `bash ci_scripts/tasks/verify_pre_commit.sh` reruns the same non-destructive
 verification shell for manual final checks and `.pre-commit-config.yaml`.
+`bash ci_scripts/tasks/verify_pre_push.sh` is the optional Git `pre-push`
+wrapper for the same non-destructive verification gate.
 SwiftLint is resolved from the `SimplyDanny/SwiftLintPlugins` package declared
 in `Stally.xcodeproj`, not from a separately installed `swiftlint` binary.
 
@@ -136,6 +141,7 @@ Use these narrower entrypoints only when the task specifically needs them:
 bash ci_scripts/tasks/build_app.sh
 bash ci_scripts/tasks/test_shared_library.sh
 bash ci_scripts/tasks/verify_pre_commit.sh
+bash ci_scripts/tasks/verify_pre_push.sh
 ```
 
 ## CI Artifact Layout

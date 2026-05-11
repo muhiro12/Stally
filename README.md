@@ -119,6 +119,8 @@ delegates to `bash ci_scripts/tasks/verify_pre_commit.sh`.
   verification gate for task completion.
 - `bash ci_scripts/tasks/verify_pre_commit.sh` reruns the same non-destructive
   verification gate for Git `pre-commit` and manual final rechecks.
+- `bash ci_scripts/tasks/verify_pre_push.sh` reruns the same non-destructive
+  verification gate for an optional local Git `pre-push` hook.
 - `bash ci_scripts/tasks/verify_repository_state.sh` checks the current
   repository state and still writes CI run artifacts.
 
@@ -172,6 +174,12 @@ If you only need the final pre-commit recheck shell:
 
 ```sh
 bash ci_scripts/tasks/verify_pre_commit.sh
+```
+
+If you only need the optional pre-push verification wrapper:
+
+```sh
+bash ci_scripts/tasks/verify_pre_push.sh
 ```
 
 ## CI Artifact Layout

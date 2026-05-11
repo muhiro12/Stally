@@ -56,10 +56,13 @@ operations:
 5. If glue code is app-only but reused by multiple features, factor it into
    `Stally/Sources/Common/Platform` or a feature-local adapter directory
    instead of moving it into `StallyLibrary`.
+6. Do not keep pre-release migration shims, beta backup compatibility paths,
+   or old local API wrappers in normal repository code. Prefer strict current
+   format validation and destructive cleanup when verification stays healthy.
 
 ## Current Examples
 
-- `StallyRootActionService` stays in `Stally` because it adapts view actions
+- `StallyAppActionService` stays in `Stally` because it adapts view actions
   into library mutations and app error presentation flows.
 - `StallyBackupDocument` stays in `Stally` because `FileDocument` is an Apple
   framework adapter, while backup encoding and import application remain in
