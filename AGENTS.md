@@ -1,100 +1,18 @@
 # AGENTS.md
 
-This document defines the repository-specific agent behavior contract for
-Stally.
+Repository-specific agent contract for Stally.
 
-## Agent Philosophy
+## Repository Rules
 
-- Follow existing repository conventions as the source of truth.
-- Do not invent architecture or workflows.
-- When uncertain, leave a narrow TODO or explain the blocker rather than
-  guessing.
-- Prefer minimal, safe changes over speculative refactors.
+- Use English for branch names, code comments, documentation, and identifiers
+  unless UI localization or legal content requires otherwise.
+- Follow existing architecture and source style; keep changes small and
+  repository-local.
 - Treat sibling repositories and external packages as read-only reference
   material unless the user explicitly asks otherwise.
-
-## Naming and Language Rules
-
-Use English for:
-
-- Branch names
-- Code comments
-- Documentation
-- Identifiers
-
-Avoid non-English text unless required for UI localization or legal content.
-
-## Markdown Guidelines
-
-All Markdown files must follow:
-
-https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
-
-## Swift Code Guidelines
-
-### Follow SwiftLint rules
-
-All Swift code must comply with the project's SwiftLint configuration.
-
-### Avoid abbreviated variable names
-
-#### Preferred
-
-- `result`
-- `image`
-- `button`
-
-#### Not preferred
-
-- `res`
-- `img`
-- `btn`
-
-### Use `.init(...)` when return type is explicit
-
-#### Preferred
-
-```swift
-var user: User {
-    .init(name: "Alice")
-}
-```
-
-#### Not preferred
-
-```swift
-var user: User {
-    User(name: "Alice")
-}
-```
-
-### Multiline control-flow formatting
-
-Do NOT use single-line bodies for control-flow statements or trailing closures.
-
-#### Preferred
-
-```swift
-guard let currentUser else {
-    return
-}
-
-if isDebugMode {
-    logger.debug("Entering debug state")
-}
-
-tasks.filter { task in
-    task.isCompleted
-}
-```
-
-#### Not preferred
-
-```swift
-guard let currentUser else { return }
-if isDebugMode { logger.debug("Entering debug state") }
-tasks.filter { $0.isCompleted }
-```
+- Markdown must follow
+  <https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md>.
+- Swift code must comply with the repository SwiftLint configuration.
 
 ## Repository Boundaries
 
@@ -157,12 +75,6 @@ bash ci_scripts/tasks/verify_pre_commit.sh
 bash ci_scripts/tasks/verify_pre_push.sh
 ```
 
-## CI Artifact Layout
-
-CI run artifacts are written under `.build/ci/runs/<RUN_ID>/`.
-Each run stores `summary.md`, `commands.txt`, `meta.json`, `logs/`,
-`results/`, and `work/`.
-Shared CI directories are under `.build/ci/shared/` (`cache/`,
-`DerivedData/`, `tmp/`, `home/`).
-Only the newest 5 run directories are retained.
-The entire `.build/ci` directory is disposable.
+Compatibility scripts write disposable CI artifacts under
+`.build/ci/runs/<RUN_ID>/` and shared data under `.build/ci/shared/`. Only the
+newest 5 run directories are retained.
