@@ -40,14 +40,23 @@ Before the first XcodeBuildMCP build, test, or run call in a session, run
 XcodeBuildMCP `session_show_defaults`. If defaults do not point at this
 repository, set them for the current session before continuing.
 
-For app compile checks, use XcodeBuildMCP `build_sim` with the `Stally`
-scheme. For shared-library tests, use XcodeBuildMCP `test_sim` with the
-`StallyLibrary` scheme. For runtime or UI-sensitive checks, use XcodeBuildMCP
-`build_run_sim`, `launch_app_sim`, `snapshot_ui`, and `screenshot` as
-appropriate.
+Treat library tests, surface builds, and runtime/UI evidence as separate
+verification capabilities. Choose the smallest set that proves the current
+change, and prefer stronger evidence when public APIs, wire contracts,
+SwiftData schema, app lifecycle wiring, or visible UI behavior are affected.
 
-Use this supplemental repository-state entrypoint when only change-based checks
-are needed:
+- For shared-library logic, model, or test changes, use XcodeBuildMCP
+  `test_sim` with the `StallyLibrary` scheme.
+- For public `StallyLibrary` APIs, shared persistence or deep-link contracts,
+  SwiftData schema, or adapter-facing contracts, also use XcodeBuildMCP
+  `build_sim` with the `Stally` scheme.
+- For app compile checks, use XcodeBuildMCP `build_sim` with the `Stally`
+  scheme.
+- For runtime or UI-sensitive changes, use XcodeBuildMCP `build_run_sim`,
+  `launch_app_sim`, `snapshot_ui`, and `screenshot` as appropriate.
+
+Use this supplemental repository-state entrypoint when only change-based shell
+checks are needed:
 
 ```sh
 bash ci_scripts/tasks/verify_repository_state.sh
