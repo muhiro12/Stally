@@ -55,10 +55,14 @@ collection patterns in Insights, and protect the collection with backups.
 
 - Product name and quiet personal tone.
 - Item, category, note, photo, mark, and history concepts.
+- Item-level history readings: total marks, last marked, recent 30-day and
+  90-day marks, months used, days since last mark, and Quiet History.
 - Active Library and preserved Archive distinction.
 - Review lanes for Needs First Mark, Dormant, and Recovery Candidates.
 - Insights concepts: activity, consistency, categories, rankings, rhythm, and
   recommendations.
+- Insights report concepts: scope, collection health, and spotlight callouts
+  for top and quiet items.
 - Time ranges: 30 Days, 90 Days, 365 Days, and All Time.
 - Optional archived-item scope for insights.
 - Backup export, import preview, merge, replace, and reset safety concepts.
@@ -88,6 +92,12 @@ easy to lose:
   `docs/product-language.md` as tone evidence, not required seed data.
 - The "one mark per item per day" meaning is captured in
   `docs/domain-concepts.md` and `docs/user-workflows.md`.
+- Today's mark filters and selected-day mark filters are captured in
+  `docs/domain-concepts.md`, `docs/user-workflows.md`, and
+  `docs/product-language.md`.
+- Item-level history readings are captured in `docs/preserved-concepts.md`,
+  `docs/domain-concepts.md`, `docs/user-workflows.md`, and
+  `docs/product-language.md`.
 - Archived items being preserved, not deleted, is captured across
   `docs/domain-concepts.md`, `docs/user-workflows.md`, and
   `docs/user-experience-principles.md`.
@@ -98,8 +108,13 @@ easy to lose:
   `docs/user-experience-principles.md`.
 - Insights metrics, ranges, and recommendation meanings are captured in
   `docs/domain-concepts.md` and `docs/product-language.md`.
+- Insights report vocabulary such as scope, collection health, and spotlight
+  is captured in `docs/domain-concepts.md` and `docs/product-language.md`.
 - Backup safety, merge, replace, reset, validation, and non-sync framing are
   captured in `docs/domain-concepts.md`, `docs/user-workflows.md`, and
+  `docs/product-language.md`.
+- Backup preview and result labels such as existing, new, skipped, and marks
+  added are captured in `docs/domain-concepts.md` and
   `docs/product-language.md`.
 - Shareable route and item link intent is captured in
   `docs/domain-concepts.md` and `docs/user-workflows.md`.

@@ -80,6 +80,7 @@ The rebuild must preserve these concepts:
 - Photo.
 - Mark.
 - Mark history.
+- Item-level history readings.
 - Active Library.
 - Archive.
 - Review lanes.
@@ -92,6 +93,8 @@ The rebuild must preserve these concepts:
 - Category share.
 - Rankings.
 - Rhythm.
+- Collection health.
+- Spotlight.
 - Recommendations or next moves.
 - Backup export.
 - Backup import preview.

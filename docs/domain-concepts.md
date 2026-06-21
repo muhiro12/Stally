@@ -81,15 +81,29 @@ filter items, and notice what still has room to accumulate.
 Important filters and sort concepts are:
 
 - All.
+- All Categories.
 - Open Today.
 - Marked Today.
+- Marked on Day.
+- Open on Day.
 - Never Marked.
 - With History.
 - Without History.
+- Default Order.
 - Recently Marked.
 - Most Marked.
 - Name.
 - Category.
+
+Item detail should also preserve a compact reading of one item's history:
+
+- Total marks.
+- Last marked.
+- Marks in the last 30 days.
+- Marks in the last 90 days.
+- Months used.
+- Days since last mark.
+- Quiet History as a calendar-like record of marked days.
 
 ## Archive
 
@@ -144,6 +158,9 @@ Preserved insight concepts include:
 - Note coverage.
 - Photo coverage.
 - Recently added items.
+- Collection health.
+- Report scope.
+- Spotlight callouts for the top item and quiet item.
 
 Insights ranges are:
 
@@ -183,7 +200,8 @@ Preserve these concepts:
 - Export a portable snapshot containing active items, archived items, notes,
   photos, and mark history.
 - Preview an imported backup before applying it.
-- Show counts for items, archived items, marks, existing items, and new items.
+- Show counts for items, archived items, marks, existing items, new items,
+  skipped items, and marks added.
 - Surface validation issues before import.
 - Merge import preserves local items where appropriate and adds missing data.
 - Replace import removes the current library before restoring the selected

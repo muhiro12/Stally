@@ -73,16 +73,40 @@ Preserved refinements include:
 - All Categories.
 - Open Today.
 - Marked Today.
+- Marked on Day.
+- Open on Day.
 - Never Marked.
 - With History.
 - Without History.
+- Default Order.
 - Recently Marked.
 - Most Marked.
 - Name.
 
+`Open Today` and `Marked Today` preserve the lightweight daily Library scan.
+`Open on Day` and `Marked on Day` preserve the same idea when the user is
+looking at another selected date.
+
 The user should be able to reach item links, settings, add item, Review,
 Archive, Insights, and Backup Center from product entry points, but the old
 navigation shape is not a preservation requirement.
+
+## Inspect One Item
+
+Item detail should help the user understand whether one item is current,
+fading, or mostly historical.
+
+The preserved readings are:
+
+- Total marks.
+- Last marked.
+- Marks in the last 30 days.
+- Marks in the last 90 days.
+- Months used.
+- Days since last mark.
+- Quiet History.
+
+These are product readings, not a requirement to keep the old detail layout.
 
 ## Use Archive
 
@@ -132,6 +156,7 @@ The user workflows are:
 - Choose a reading range: 30 Days, 90 Days, 365 Days, or All Time.
 - Decide whether archived items should be included.
 - Review activity, consistency, categories, rankings, rhythm, and next moves.
+- Review collection health and spotlight callouts in copied or shared reports.
 - Open a suggested item.
 - Copy or share the generated report.
 - Copy a link to Insights.

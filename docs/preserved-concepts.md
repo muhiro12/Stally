@@ -38,6 +38,10 @@ Items can have:
 - A mark history.
 - Active or archived state.
 
+Item detail should preserve item-level readings such as total marks, last
+marked date, recent 30-day and 90-day marks, months used, days since last mark,
+and Quiet History.
+
 ### Mark
 
 A mark records that the user chose an item on a specific day.
@@ -81,6 +85,8 @@ Insights should preserve:
 - Rankings.
 - Rhythm.
 - Recommendations or next moves.
+- Collection health.
+- Spotlight callouts for top and quiet items.
 - Range controls for 30 Days, 90 Days, 365 Days, and All Time.
 - Optional inclusion of archived items.
 - Shareable or copyable insight reports.
@@ -150,6 +156,7 @@ Preserve these verbs:
 - Mark an item for today.
 - Adjust a mark on a past day carefully.
 - Search, filter, and sort active and archived lists.
+- Distinguish today's mark filters from selected-day mark filters.
 - Review untouched, dormant, and recovery-candidate items.
 - Archive and restore items one at a time or in lane groups.
 - Read insights by selected time range.

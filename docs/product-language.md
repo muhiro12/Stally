@@ -47,6 +47,14 @@ Use these nouns consistently:
 - Backup.
 - Snapshot.
 - Report.
+- Needs Review.
+- Collection Snapshot.
+- Archive Snapshot.
+- Review Snapshot.
+- Backup Snapshot.
+- Collection Health.
+- Spotlight.
+- Scope.
 
 ## Category Names
 
@@ -57,6 +65,46 @@ Preserve these category labels:
 - Bags.
 - Notebooks.
 - Other.
+
+## Library Language
+
+Preserve these Library and Archive refinement labels:
+
+- All.
+- All Categories.
+- Search items.
+- Search archive.
+- Clear.
+- Open Today.
+- Marked Today.
+- Marked on Day.
+- Open on Day.
+- Never Marked.
+- With History.
+- Without History.
+- Default Order.
+- Recently Marked.
+- Most Marked.
+- Name.
+- Category.
+- Items shown.
+
+`Open Today` and `Marked Today` belong to the lightweight daily Library scan.
+`Open on Day` and `Marked on Day` are the selected-day versions of the same
+marking idea.
+
+Preserve these item-level reading labels:
+
+- Overview.
+- Actions.
+- Quiet History.
+- Total marks.
+- Last marked.
+- Not yet.
+- Marks (30d).
+- Marks (90d).
+- Months Used.
+- Days Since Last.
 
 ## Review Language
 
@@ -85,19 +133,28 @@ Preserve these section and metric names:
 - Rhythm.
 - Recommendations.
 - Next Moves.
+- Collection Health.
+- Spotlight.
+- Scope.
 - Marks.
 - Active Days.
 - Best Streak.
 - Current Streak.
 - Idle Gap.
+- Longest idle gap.
 - Avg Marks / Week.
 - Active Weeks.
 - Weekend Share.
 - Unique Items.
 - Avg / Active Day.
 - Busiest Day.
+- With History.
+- Note coverage.
+- Photo coverage.
 - Top Items.
+- Top item.
 - Quiet Items.
+- Quiet item.
 - Weekdays.
 - Months.
 - Current State.
@@ -149,16 +206,22 @@ Use these action labels when the matching concept appears:
 - Add Mark.
 - Remove Mark.
 - Adjust History.
+- Danger Zone.
 - Archive Item.
 - Archive Selected.
 - Move Back to Library.
 - Copy Item Link.
 - Share Item Link.
 - Copy Report.
+- Open Review.
+- Open Archive.
+- Open Insights.
+- Open Backup Center.
 - Export Backup.
 - Choose Backup File.
 - Merge Into Library.
 - Replace Library.
+- Delete Every Item.
 - Delete Everything.
 - Restore From Backup.
 - Show Tips Again.
@@ -182,8 +245,17 @@ Important safety phrases:
 - "Backup files are meant for your own archive and transfer workflow, not for
   syncing between multiple devices at once."
 
-Preserve these result labels and statuses:
+Preserve these backup grouping, preview, result, and status labels:
 
+- Backup Snapshot.
+- Export Tools.
+- Import Tools.
+- Reset Tools.
+- Safety.
+- Existing.
+- New.
+- Skipped.
+- Marks Added.
 - Last Merge Result.
 - Last Replace Result.
 - Backup saved.
@@ -209,6 +281,12 @@ Preserve these concepts:
 - Nothing in this lane right now.
 - Nothing currently looks dormant.
 - Nothing is asking to come back right now.
+- No activity in this window yet.
+- No category activity in this window yet.
+- No weekday pattern yet.
+- No monthly trend available.
+- No follow-up suggestions right now.
+- All review lanes are clear right now.
 
 ## Preferred Verbs
 
