@@ -2,7 +2,10 @@
 #
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
 
-## Product
+## Local OS files
+.DS_Store
+
+## Secrets and local configuration
 Secret.swift
 Configuration.storekit
 StoreKitTestCertificate.cer
@@ -16,6 +19,7 @@ GoogleService-Info.plist
 
 ## User settings
 xcuserdata/
+*.xcuserstate
 
 ## Obj-C/Swift specific
 *.hmap
@@ -24,6 +28,8 @@ xcuserdata/
 *.ipa
 *.dSYM.zip
 *.dSYM
+*.xcarchive
+*.xcresult
 
 ## Playgrounds
 timeline.xctimeline
