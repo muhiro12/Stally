@@ -22,6 +22,8 @@ plan.
 - `docs/product-language.md` records preserved nouns, verbs, labels, and copy
   direction.
 - `docs/rebuild-handoff.md` records the extraction audit and boundaries.
+- `docs/rebuild-implementation-direction.md` records owner-directed rebuild
+  constraints added after this product-intent extraction.
 
 ## Evidence Inspected
 
@@ -152,3 +154,7 @@ This handoff does not redesign Stally.
 It does not choose a new architecture, create a new Xcode project, select
 frameworks, or plan implementation tasks. It only preserves the product intent
 needed so the old source code can be safely removed later.
+
+Owner-directed implementation constraints added after this handoff are recorded
+separately in `docs/rebuild-implementation-direction.md`. Treat that document
+as future rebuild direction, not as legacy evidence.

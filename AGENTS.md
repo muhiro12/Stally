@@ -11,8 +11,7 @@ Repository-specific agent contract for Stally.
   architecture and source style; keep changes small and repository-local.
 - Markdown must follow
   <https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md>.
-- Swift code must comply with the repository SwiftLint configuration once a
-  SwiftLint configuration exists again.
+- Swift code must comply with the repository SwiftLint configuration.
 - Treat sibling repositories and external packages as read-only reference
   material unless the user explicitly asks otherwise.
 - Do not add team-process artifacts such as contribution guides, issue
@@ -36,8 +35,8 @@ This repository does not currently contain:
 
 ## Documentation Boundary
 
-`docs/` is the source of truth for preserved product intent until the future
-rebuild begins.
+`docs/` is the source of truth for preserved product intent and
+owner-directed rebuild constraints until the future rebuild begins.
 
 - `docs/product-brief.md` summarizes what Stally is.
 - `docs/product-purpose.md` explains why it exists and what problem it solves.
@@ -50,10 +49,14 @@ rebuild begins.
 - `docs/product-language.md` records preserved nouns, verbs, labels, and copy
   direction.
 - `docs/rebuild-handoff.md` records the extraction audit and phase boundary.
+- `docs/rebuild-implementation-direction.md` records explicit future rebuild
+  direction added after the legacy extraction.
 
-When editing these documents, preserve the existing English voice, avoid
-speculation, and keep the distinction between product intent and discarded
-implementation details explicit.
+When editing product-intent documents, preserve the existing English voice,
+avoid speculation, and keep the distinction between product intent and
+discarded implementation details explicit. Keep owner-directed future
+implementation constraints in `docs/rebuild-implementation-direction.md`
+instead of blending them into extracted legacy evidence.
 
 ## Rebuild Boundary
 
@@ -65,11 +68,39 @@ Do not infer future architecture, framework choices, SwiftData schema,
 navigation, UI hierarchy, routing, backup schema, or verification flow from
 the removed legacy implementation.
 
+Follow explicit owner-directed rebuild constraints in
+`docs/rebuild-implementation-direction.md`. Do not expand those constraints
+into a full implementation plan unless the user asks.
+
 If a future task creates a new Xcode project or app implementation, update this
 file in the same task with the concrete schemes, targets, source boundaries,
 and verification entrypoints that then exist. At that point, align the new
-contract with the current Apple app repository pattern used by Incomes and
-Cookle, but keep Stally-specific facts authoritative.
+contract with the current Apple app repository pattern used by Origami and
+Incomes where available, with Cookle as a secondary app-repository reference
+when useful. Keep Stally-specific facts authoritative.
+
+## Owner-Directed Rebuild Direction
+
+The rebuild should treat Stally as a focused AI-era deep interface over its
+own domain data: the app should own clean, high-quality item choice history and
+make that domain reliable for app UI, App Intents, Siri, Apple Intelligence,
+and future AI surfaces without becoming a broad assistant or super app.
+
+Origami and Incomes are the highest-priority reference app projects. Treat
+them as read-only references and adapt their intent rather than copying
+product-specific behavior.
+
+The future project should target the iOS 27 family as the minimum supported iOS
+version unless the user explicitly changes that decision.
+
+Use the same package family as Incomes unless the user explicitly changes that
+direction. The current reference package set is `MHPlatform`, `MHUI`, and
+`SwiftLintPlugins`; recheck Incomes when creating the project and align with
+its then-current package set.
+
+Use MHUI intentionally and take full advantage of SDK capabilities available at
+the iOS 27 baseline. Do not restrict Stally to minimal or legacy-compatible
+MHUI usage without a concrete product or technical reason.
 
 ## Expected Apple Implementation Contract
 
