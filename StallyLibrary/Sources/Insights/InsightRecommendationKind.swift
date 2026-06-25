@@ -8,11 +8,16 @@
 import Foundation
 
 /// Recommendation categories generated from the current collection reading.
-public enum InsightRecommendationKind: Equatable, Sendable {
+public enum InsightRecommendationKind: Equatable, Hashable, Identifiable, Sendable {
     case addContextToFrequentItems
     case protectCurrentStreak
     case revisitQuietFavorites
     case startThisRangeWithOneMark
+
+    /// Stable recommendation identity.
+    public var id: Self {
+        self
+    }
 
     /// User-facing recommendation title.
     public var title: LocalizedStringResource {

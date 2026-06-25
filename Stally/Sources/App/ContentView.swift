@@ -38,6 +38,11 @@ struct ContentView: View {
                     Label("Review", systemImage: "text.badge.checkmark")
                 }
 
+            InsightsView(items: items)
+                .tabItem {
+                    Label("Insights", systemImage: "chart.line.uptrend.xyaxis")
+                }
+
             ArchiveView(items: archivedItems)
                 .tabItem {
                     Label("Archive", systemImage: "archivebox")

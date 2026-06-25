@@ -8,7 +8,7 @@
 import Foundation
 
 /// Time windows for reading collection patterns.
-public enum InsightsRange: CaseIterable, Equatable, Identifiable, Sendable {
+public enum InsightsRange: CaseIterable, Equatable, Hashable, Identifiable, Sendable {
     case thirtyDays
     case ninetyDays
     case year
