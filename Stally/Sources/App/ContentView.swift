@@ -47,6 +47,11 @@ struct ContentView: View {
                 .tabItem {
                     Label("Archive", systemImage: "archivebox")
                 }
+
+            BackupCenterView(items: items)
+                .tabItem {
+                    Label("Backup", systemImage: "externaldrive")
+                }
         }
         .sheet(isPresented: $isPresentingAddItem) {
             AddItemView()
