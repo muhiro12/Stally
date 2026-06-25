@@ -7,18 +7,18 @@
 
 import Foundation
 
-enum ItemCategory: String, CaseIterable, Codable, Hashable, Identifiable {
+public enum ItemCategory: String, CaseIterable, Codable, Hashable, Identifiable {
     case clothing = "Clothing"
     case shoes = "Shoes"
     case bags = "Bags"
     case notebooks = "Notebooks"
     case other = "Other"
 
-    var id: Self {
+    public var id: Self {
         self
     }
 
-    var title: LocalizedStringResource {
+    public var title: LocalizedStringResource {
         switch self {
         case .clothing:
             "Clothing"

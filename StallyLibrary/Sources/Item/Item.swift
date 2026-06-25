@@ -8,17 +8,24 @@
 import Foundation
 import SwiftData
 
+/// A personal object the user keeps in the active Library and marks when chosen.
 @Model
-final class Item {
-    var name: String
-    var categoryRawValue: String
-    var note: String
-    var createdAt: Date
+public final class Item {
+    /// User-facing item name.
+    public var name: String
+    /// Persisted raw value for `category`.
+    public var categoryRawValue: String
+    /// Optional user note that gives the item more context.
+    public var note: String
+    /// Date when the item was added.
+    public var createdAt: Date
 
+    /// Calendar-day marks attached to this item.
     @Relationship(deleteRule: .cascade, inverse: \ItemMark.item)
-    var marks: [ItemMark]
+    public var marks: [ItemMark]
 
-    var category: ItemCategory {
+    /// The preserved product category for this item.
+    public var category: ItemCategory {
         get {
             ItemCategory(rawValue: categoryRawValue) ?? .other
         }
@@ -27,13 +34,15 @@ final class Item {
         }
     }
 
-    var sortedMarks: [ItemMark] {
+    /// Marks sorted from newest day to oldest day.
+    public var sortedMarks: [ItemMark] {
         marks.sorted { lhsMark, rhsMark in
             lhsMark.day > rhsMark.day
         }
     }
 
-    init(
+    /// Creates a new Library item.
+    public init(
         name: String,
         category: ItemCategory,
         note: String = "",
@@ -46,14 +55,16 @@ final class Item {
         marks = []
     }
 
-    func historySnapshot(
+    /// Builds the current item-level history reading.
+    public func historySnapshot(
         calendar: Calendar = .current,
         now: Date = .now
     ) -> ItemHistorySnapshot {
         .init(item: self, calendar: calendar, now: now)
     }
 
-    func mark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
+    /// Returns the mark for a calendar day when one exists.
+    public func mark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
         let day = calendar.startOfDay(for: date)
 
         return marks.first { mark in
@@ -61,11 +72,13 @@ final class Item {
         }
     }
 
-    func isMarked(on date: Date, calendar: Calendar = .current) -> Bool {
+    /// Returns whether the item is marked for a calendar day.
+    public func isMarked(on date: Date, calendar: Calendar = .current) -> Bool {
         mark(on: date, calendar: calendar) != nil
     }
 
-    func addMark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
+    /// Adds one mark for a calendar day, returning `nil` when already marked.
+    public func addMark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
         let day = calendar.startOfDay(for: date)
 
         guard mark(on: day, calendar: calendar) == nil else {
@@ -77,7 +90,8 @@ final class Item {
         return mark
     }
 
-    func removeMark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
+    /// Removes the mark for a calendar day, returning `nil` when unmarked.
+    public func removeMark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
         let day = calendar.startOfDay(for: date)
 
         guard let existingMark = mark(on: day, calendar: calendar) else {

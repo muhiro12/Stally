@@ -7,22 +7,31 @@
 
 import Foundation
 
-struct ItemHistorySnapshot {
+/// Item-level history readings derived from one item and its marks.
+public struct ItemHistorySnapshot {
     private enum Defaults {
         static let shortWindowDayCount = 30
         static let mediumWindowDayCount = 90
         static let inclusiveWindowAdjustment = 1
     }
 
-    let totalMarks: Int
-    let lastMarkedDay: Date?
-    let marksInLast30Days: Int
-    let marksInLast90Days: Int
-    let monthsUsed: Int
-    let daysSinceLastMark: Int?
-    let markedDays: [Date]
+    /// Total unique marked days.
+    public let totalMarks: Int
+    /// Most recent marked day.
+    public let lastMarkedDay: Date?
+    /// Unique marked days in the latest 30-day window.
+    public let marksInLast30Days: Int
+    /// Unique marked days in the latest 90-day window.
+    public let marksInLast90Days: Int
+    /// Number of distinct calendar months with marks.
+    public let monthsUsed: Int
+    /// Days between the last mark and `now`.
+    public let daysSinceLastMark: Int?
+    /// Unique marked days sorted from newest to oldest.
+    public let markedDays: [Date]
 
-    init(item: Item, calendar: Calendar = .current, now: Date = .now) {
+    /// Creates a snapshot from an item's current mark history.
+    public init(item: Item, calendar: Calendar = .current, now: Date = .now) {
         let today = calendar.startOfDay(for: now)
         let uniqueDays = Set(
             item.marks.map { mark in

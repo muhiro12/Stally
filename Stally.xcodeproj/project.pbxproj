@@ -6,8 +6,13 @@
 	objectVersion = 110;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B8AB10002FED000000000001 /* StallyLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = B8AB10002FED000000000004 /* StallyLibrary */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		AD75E9902FED371000094EFB /* Stally.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stally.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B8AB10002FED000000000002 /* StallyLibrary */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = StallyLibrary; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -35,6 +40,7 @@
 		AD75E98D2FED371000094EFB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				B8AB10002FED000000000001 /* StallyLibrary in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -44,6 +50,7 @@
 			isa = PBXGroup;
 			children = (
 				AD75E9922FED371000094EFB /* Stally */,
+				B8AB10002FED000000000002 /* StallyLibrary */,
 				AD75E9912FED371000094EFB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -73,6 +80,9 @@
 				AD75E9922FED371000094EFB /* Stally */,
 			);
 			name = Stally;
+			packageProductDependencies = (
+				B8AB10002FED000000000004 /* StallyLibrary */,
+			);
 			productName = Stally;
 			productReference = AD75E9902FED371000094EFB /* Stally.app */;
 			productType = "com.apple.product-type.application";
@@ -101,6 +111,9 @@
 			);
 			mainGroup = AD75E9872FED371000094EFB;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B8AB10002FED000000000003 /* XCLocalSwiftPackageReference "StallyLibrary" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AD75E9912FED371000094EFB /* Products */;
 			projectDirPath = "";
@@ -354,6 +367,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		B8AB10002FED000000000003 /* XCLocalSwiftPackageReference "StallyLibrary" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = StallyLibrary;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B8AB10002FED000000000004 /* StallyLibrary */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = StallyLibrary;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = AD75E9882FED371000094EFB /* Project object */;
 	validationLevel = 1;
