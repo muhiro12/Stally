@@ -44,5 +44,15 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: [Item.self, ItemMark.self], inMemory: true)
+        .modelContainer(ContentView.previewModelContainer)
+}
+
+private extension ContentView {
+    static var previewModelContainer: ModelContainer {
+        do {
+            return try StallyModelContainerFactory.inMemory()
+        } catch {
+            fatalError("Could not create preview ModelContainer: \(error)")
+        }
+    }
 }
