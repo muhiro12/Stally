@@ -14,9 +14,9 @@ import Testing
 struct ItemOperationsTests {
     private enum Fixtures {
         static var calendar: Calendar {
-            var calendar = Calendar(identifier: .gregorian)
-            calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? calendar.timeZone
-            return calendar
+            var configuredCalendar = Calendar(identifier: .gregorian)
+            configuredCalendar.timeZone = TimeZone(secondsFromGMT: 0) ?? configuredCalendar.timeZone
+            return configuredCalendar
         }
 
         static var today: Date {

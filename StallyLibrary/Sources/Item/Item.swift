@@ -43,8 +43,8 @@ public final class Item {
     init(
         name: String,
         category: ItemCategory,
-        note: String = "",
-        createdAt: Date = .now
+        note: String,
+        createdAt: Date
     ) {
         self.name = name
         categoryRawValue = category.rawValue
@@ -54,13 +54,13 @@ public final class Item {
     }
 
     func historySnapshot(
-        calendar: Calendar = .current,
-        now: Date = .now
+        calendar: Calendar,
+        now: Date
     ) -> ItemHistorySnapshot {
         .init(item: self, calendar: calendar, now: now)
     }
 
-    func mark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
+    func mark(on date: Date, calendar: Calendar) -> ItemMark? {
         let day = calendar.startOfDay(for: date)
 
         return marks.first { mark in
@@ -68,11 +68,11 @@ public final class Item {
         }
     }
 
-    func isMarked(on date: Date, calendar: Calendar = .current) -> Bool {
+    func isMarked(on date: Date, calendar: Calendar) -> Bool {
         mark(on: date, calendar: calendar) != nil
     }
 
-    func addMark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
+    func addMark(on date: Date, calendar: Calendar) -> ItemMark? {
         let day = calendar.startOfDay(for: date)
 
         guard mark(on: day, calendar: calendar) == nil else {
@@ -84,7 +84,7 @@ public final class Item {
         return mark
     }
 
-    func removeMark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
+    func removeMark(on date: Date, calendar: Calendar) -> ItemMark? {
         let day = calendar.startOfDay(for: date)
 
         guard let existingMark = mark(on: day, calendar: calendar) else {
