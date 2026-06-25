@@ -41,10 +41,18 @@ struct ItemDetailView: View {
         List {
             ItemDetailHeaderSection(item: item)
 
-            TodayMarkSection(
-                isMarkedToday: isMarkedToday,
-                markAction: markToday,
-                undoAction: undoToday
+            if !item.isArchived {
+                TodayMarkSection(
+                    isMarkedToday: isMarkedToday,
+                    markAction: markToday,
+                    undoAction: undoToday
+                )
+            }
+
+            ArchiveActionSection(
+                isArchived: item.isArchived,
+                archiveAction: archiveItem,
+                moveBackAction: moveBackToLibrary
             )
 
             HistoryOverviewSection(history: history)
@@ -87,6 +95,25 @@ struct ItemDetailView: View {
             try action()
         } catch {
             saveErrorMessage = error.localizedDescription
+        }
+    }
+
+    private func archiveItem() {
+        performSave {
+            try ItemOperations.archive(
+                item,
+                on: .now,
+                context: modelContext
+            )
+        }
+    }
+
+    private func moveBackToLibrary() {
+        performSave {
+            try ItemOperations.moveBackToLibrary(
+                item,
+                context: modelContext
+            )
         }
     }
 

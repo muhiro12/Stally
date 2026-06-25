@@ -14,26 +14,28 @@ struct ContentView: View {
 
     @State private var isPresentingAddItem = false
 
+    private var activeItems: [Item] {
+        ItemOperations.activeItems(from: items)
+    }
+
+    private var archivedItems: [Item] {
+        ItemOperations.archivedItems(from: items)
+    }
+
     var body: some View {
-        NavigationStack {
-            Group {
-                if items.isEmpty {
-                    EmptyLibraryView(addAction: presentAddItem)
-                } else {
-                    ItemLibraryList(items: items)
+        TabView {
+            LibraryView(items: activeItems, addAction: presentAddItem)
+                .tabItem {
+                    Label("Library", systemImage: "tray")
                 }
-            }
-            .navigationTitle("Library")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: presentAddItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
+
+            ArchiveView(items: archivedItems)
+                .tabItem {
+                    Label("Archive", systemImage: "archivebox")
                 }
-            }
-            .sheet(isPresented: $isPresentingAddItem) {
-                AddItemView()
-            }
+        }
+        .sheet(isPresented: $isPresentingAddItem) {
+            AddItemView()
         }
     }
 
