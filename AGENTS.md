@@ -19,23 +19,29 @@ Repository-specific agent contract for Stally.
 
 ## Current State
 
-Stally has re-entered rebuild implementation with a seed Apple-platform app
-project.
+Stally has re-entered rebuild implementation and now contains the first
+Library vertical slice plus the local development foundation for continuing the
+rebuild.
 
 This repository currently contains:
 
 - `Stally.xcodeproj`, with the `Stally` app target and `Stally` scheme.
-- `Stally/`, a SwiftUI app source tree using SwiftData starter persistence.
+- `Stally/`, a SwiftUI app source tree under `Stally/Sources/`.
+- `StallyLibrary/Package.swift`, a local Swift package linked into the app
+  target as the `StallyLibrary` product.
+- `StallyLibrary/Sources/`, which owns the current durable item domain,
+  SwiftData models, persistence factory, and `ItemOperations` use cases.
+- `StallyLibrary/Tests/`, which owns library behavior tests for the current
+  item operations.
+- `ci_scripts/`, which owns repository-managed lint, rule, and library-test
+  entrypoints.
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
   manifest.
 - Preserved product-intent documentation under `docs/`.
 
-This repository does not currently contain:
-
-- A `StallyLibrary` target or scheme.
-- Swift package manifests.
-- Test targets.
-- Local verification scripts.
+This repository does not currently contain completed Archive, Review,
+Insights, Backup, App Intents, Widget, Share, MHPlatform runtime, or MHUI
+runtime surfaces.
 
 ## Documentation Boundary
 
@@ -66,22 +72,50 @@ retime them unless a stale statement would misdirect current work.
 
 ## Rebuild Boundary
 
-Do not add architecture, a library target, a persistence model beyond the
-current starter SwiftData item, a navigation model, CI scripts, or an
-implementation plan unless the user explicitly asks.
-
-Do not infer future architecture, framework choices, SwiftData schema,
-navigation, UI hierarchy, routing, backup schema, or verification flow from
-the removed legacy implementation.
+Do not infer future framework choices, SwiftData schema, navigation,
+UI hierarchy, routing, backup schema, or verification flow from the removed
+legacy implementation.
 
 Follow explicit owner-directed rebuild constraints in
 `docs/rebuild-implementation-direction.md`. Do not expand those constraints
 into a full implementation plan unless the user asks.
 
+Keep the first vertical slice as the current behavior reference while
+structural work continues. Do not add Archive, Review, Insights, Backup, App
+Intents, Widget, Share, or broad UI redesign work unless the user explicitly
+asks for that phase.
+
 If a future task adds targets, schemes, packages, tests, scripts, or app
 surfaces, update this file in the same task with the concrete source
 boundaries and verification entrypoints that then exist. Keep Stally-specific
 facts authoritative.
+
+## Source Boundaries
+
+The app target should stay a thin adapter over the current product surface.
+
+- `Stally/Sources/App/` owns app lifecycle, exported library import, and root
+  composition.
+- `Stally/Sources/Features/Library/` owns the current SwiftUI Library, Add
+  Item, Item Detail, Mark Today, Undo Today's Mark, and Quiet History views.
+- App views may use SwiftData environment values and `@Query` for the current
+  app surface, but durable item business behavior should enter through
+  `ItemOperations`.
+- App views should not directly create `Item`, call item mark/history helper
+  methods, declare `@Model` types, or duplicate business branching that belongs
+  in the library.
+
+`StallyLibrary` is the durable domain and use-case boundary.
+
+- `StallyLibrary/Sources/Item/` owns `Item`, `ItemMark`, `ItemCategory`,
+  `ItemHistorySnapshot`, `ItemFormInput`, `ItemValidationError`, and
+  `ItemOperations`.
+- `StallyLibrary/Sources/Persistence/` owns `StallyModelContainerFactory`.
+- Public business use cases that app UI, future App Intents, widgets, or other
+  surfaces need should be exposed through public `*Operations` facades.
+- Implementation helpers should stay internal unless they are stable value,
+  persistence, route, wire, or presentation contracts needed by another
+  surface.
 
 ## Owner-Directed Rebuild Direction
 
@@ -106,6 +140,18 @@ Use MHUI intentionally and take full advantage of SDK capabilities available at
 the iOS 27 baseline. Do not restrict Stally to minimal or legacy-compatible
 MHUI usage without a concrete product or technical reason.
 
+## Package Posture
+
+Treat package declaration and product linking as separate decisions.
+
+- The app target currently links only the local `StallyLibrary` product.
+- `SwiftLintPlugins` is declared in `Stally.xcodeproj` for repository-managed
+  linting and should not be treated as a runtime dependency.
+- `MHPlatform` and `MHUI` are intentionally not linked yet. Recheck Incomes and
+  add or link them only when a concrete Stally implementation phase needs their
+  package products.
+- Do not add runtime products solely because Incomes or Fluel declares them.
+
 ## Expected Apple Implementation Contract
 
 Agents MUST prefer XcodeBuildMCP for Apple build, test, run, Simulator,
@@ -125,16 +171,18 @@ Use this expected verification shape:
 
 - For app compile checks, use XcodeBuildMCP `build_sim` with the `Stally`
   scheme.
-- For runtime or UI-sensitive changes, use XcodeBuildMCP `build_run_sim`,
-  `launch_app_sim`, `snapshot_ui`, and `screenshot` as appropriate.
-
-When these schemes exist later, add this stronger verification shape:
-
-- For shared-library logic, model, or test changes, use XcodeBuildMCP
-  `test_sim` with the `StallyLibrary` scheme.
+- For shared-library logic, model, or test changes, run
+  `bash ci_scripts/tasks/test_stally_library.sh`.
 - For public `StallyLibrary` APIs, `*Operations`, shared contracts, SwiftData
   schema, or adapter-facing contracts, also use XcodeBuildMCP `build_sim` with
   the `Stally` scheme.
+- For runtime or UI-sensitive changes, use XcodeBuildMCP `build_run_sim`,
+  `launch_app_sim`, `snapshot_ui`, and `screenshot` as appropriate.
+
+The generated project-level `StallyLibrary` package product scheme is currently
+buildable through XcodeBuildMCP, but package tests are driven by
+`ci_scripts/tasks/test_stally_library.sh`, which runs `xcodebuild -scheme
+StallyLibrary ... test` from the package directory.
 
 When retained repository scripts exist, agents should run the Swift formatter
 after Swift edits:
@@ -167,16 +215,28 @@ audit unless explicitly requested.
 
 ## Verification
 
-For the current seed app state, verify changes by inspecting the diff and
-running:
+For current implementation work, choose the smallest evidence set that proves
+the changed boundary.
+
+Available repository-managed commands:
 
 ```sh
-git diff --check
+bash ci_scripts/tasks/format_swift.sh
+bash ci_scripts/tasks/lint_swift.sh
+bash ci_scripts/tasks/check_repository_rules.sh
+bash ci_scripts/tasks/test_stally_library.sh
+bash ci_scripts/tasks/verify_task_completion.sh
 ```
 
-For Swift or Xcode project changes, also run XcodeBuildMCP `build_sim` with
-the `Stally` scheme.
+`verify_task_completion.sh` runs repository rules, StallyLibrary tests, and
+`git diff --check`. It does not replace XcodeBuildMCP app build or runtime
+evidence when app lifecycle, package linking, SwiftData container wiring, or
+visible UI behavior changes.
 
-Report that Swift package tests, SwiftLint, test schemes, and local repository
-CI checks are unavailable until the rebuild adds the relevant packages,
-targets, or scripts.
+For Swift or Xcode project changes, also run XcodeBuildMCP `build_sim` with the
+`Stally` scheme. For runtime or UI-sensitive changes, run XcodeBuildMCP
+`build_run_sim`, inspect the returned runtime log, and capture a screenshot.
+
+If Xcode beta UI automation is unavailable or unreliable, fall back to
+runtime logs, screenshots, and library/domain tests. Do not treat successful
+launch alone as sufficient evidence for visible UI behavior.

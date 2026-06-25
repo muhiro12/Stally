@@ -3,17 +3,22 @@
 Stally is an unfinished iPhone app for quietly tracking the personal items a
 user keeps choosing over time.
 
-The repository is in seed rebuild implementation. The legacy implementation
-was removed after product intent was preserved under `docs/`, and the current
-tree now contains a fresh Apple-platform app project:
+The repository is in rebuild implementation. The legacy implementation was
+removed after product intent was preserved under `docs/`, and the current tree
+now contains a fresh Apple-platform app project plus a local library package:
 
 - `Stally.xcodeproj`, with the `Stally` app target and `Stally` scheme.
-- `Stally/`, a SwiftUI app source tree with starter SwiftData persistence.
+- `Stally/`, a SwiftUI app source tree for the current Library vertical slice.
+- `StallyLibrary/`, a local Swift package for the durable item domain,
+  SwiftData models, persistence setup, and item operations.
+- `StallyLibrary/Tests/`, Swift Testing coverage for the current item
+  operations.
+- `ci_scripts/`, repository-managed lint, rule, and library-test entrypoints.
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
   manifest.
 
-The current app project is intentionally small. It is not a restoration of the
-removed legacy architecture, navigation, persistence model, or feature set.
+The current implementation is intentionally small. It is not a restoration of
+the removed legacy architecture, navigation, persistence model, or feature set.
 
 ## Rebuild Documentation
 
@@ -39,13 +44,25 @@ created. This README and `AGENTS.md` describe the current repository state.
 
 ## Current Repository State
 
-This repository currently contains a buildable seed app target.
+This repository currently contains a buildable first Library vertical slice.
+The app target owns SwiftUI presentation and app lifecycle wiring. The local
+`StallyLibrary` package owns the current item domain, SwiftData models,
+container factory, and `ItemOperations` use cases that future app surfaces can
+reuse.
 
-It does not currently contain a shared library target, Swift package manifest,
-test target, or local verification scripts. Further implementation decisions
-should continue to use the preserved product intent and owner-directed rebuild
-direction in `docs/`, without inferring requirements from the removed legacy
-implementation.
+Further implementation decisions should continue to use the preserved product
+intent and owner-directed rebuild direction in `docs/`, without inferring
+requirements from the removed legacy implementation.
 
 The project currently targets the iOS 27 family. Compile checks should build
 the `Stally` scheme for iOS Simulator with a matching Xcode and SDK.
+
+Useful local checks:
+
+```sh
+bash ci_scripts/tasks/check_repository_rules.sh
+bash ci_scripts/tasks/test_stally_library.sh
+bash ci_scripts/tasks/verify_task_completion.sh
+```
+
+Use XcodeBuildMCP for app build, run, runtime log, and screenshot evidence.
