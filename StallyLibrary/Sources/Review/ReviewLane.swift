@@ -41,4 +41,16 @@ public enum ReviewLane: CaseIterable, Identifiable, Sendable {
             "Archived items whose history suggests they may deserve another turn."
         }
     }
+
+    /// Empty-state copy for a clear lane.
+    public var emptyMessage: LocalizedStringResource {
+        switch self {
+        case .dormant:
+            "Nothing currently looks dormant."
+        case .needsFirstMark:
+            "Nothing in this lane right now."
+        case .recoveryCandidates:
+            "Nothing is asking to come back right now."
+        }
+    }
 }

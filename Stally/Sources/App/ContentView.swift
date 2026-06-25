@@ -22,11 +22,20 @@ struct ContentView: View {
         ItemOperations.archivedItems(from: items)
     }
 
+    private var reviewSnapshot: ReviewSnapshot {
+        ReviewOperations.snapshot(for: items)
+    }
+
     var body: some View {
         TabView {
             LibraryView(items: activeItems, addAction: presentAddItem)
                 .tabItem {
                     Label("Library", systemImage: "tray")
+                }
+
+            ReviewView(snapshot: reviewSnapshot)
+                .tabItem {
+                    Label("Review", systemImage: "text.badge.checkmark")
                 }
 
             ArchiveView(items: archivedItems)
