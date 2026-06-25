@@ -8,10 +8,11 @@ removed after product intent was preserved under `docs/`, and the current tree
 now contains a fresh Apple-platform app project plus a local library package:
 
 - `Stally.xcodeproj`, with the `Stally` app target and `Stally` scheme.
-- `Stally/`, a SwiftUI app source tree for the current Library vertical slice.
+- `Stally/`, a SwiftUI app source tree for the rebuilt Library, Archive,
+  Review, Insights, Backup Center, Settings, and shareable-link surfaces.
 - `StallyLibrary/`, a local Swift package for the durable item domain,
-  SwiftData models, persistence setup, and item operations.
-- `StallyLibrary/Tests/`, Swift Testing coverage for the current item
+  SwiftData models, persistence setup, and product operations.
+- `StallyLibrary/Tests/`, Swift Testing coverage for the current domain
   operations.
 - `ci_scripts/`, repository-managed lint, rule, and library-test entrypoints.
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
@@ -44,11 +45,12 @@ created. This README and `AGENTS.md` describe the current repository state.
 
 ## Current Repository State
 
-This repository currently contains a buildable first Library vertical slice.
-The app target owns SwiftUI presentation and app lifecycle wiring. The local
-`StallyLibrary` package owns the current item domain, SwiftData models,
-container factory, and `ItemOperations` use cases that future app surfaces can
-reuse.
+This repository currently contains rebuilt core Stally surfaces for Library,
+Archive, Review, Insights, Backup Center, Settings, and shareable links. The
+app target owns SwiftUI presentation, app lifecycle wiring, navigation, file
+import/export presentation, and route handling. The local `StallyLibrary`
+package owns SwiftData models, the model-container factory, and durable
+operations for items, review lanes, insights, backups, and links.
 
 Further implementation decisions should continue to use the preserved product
 intent and owner-directed rebuild direction in `docs/`, without inferring

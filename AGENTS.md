@@ -19,9 +19,9 @@ Repository-specific agent contract for Stally.
 
 ## Current State
 
-Stally has re-entered rebuild implementation and now contains the first
-Library vertical slice plus the local development foundation for continuing the
-rebuild.
+Stally has re-entered rebuild implementation and now contains the rebuilt core
+Library, Archive, Review, Insights, Backup Center, Settings, and shareable-link
+surfaces plus the local development foundation for continuing the rebuild.
 
 This repository currently contains:
 
@@ -29,19 +29,20 @@ This repository currently contains:
 - `Stally/`, a SwiftUI app source tree under `Stally/Sources/`.
 - `StallyLibrary/Package.swift`, a local Swift package linked into the app
   target as the `StallyLibrary` product.
-- `StallyLibrary/Sources/`, which owns the current durable item domain,
-  SwiftData models, persistence factory, and `ItemOperations` use cases.
+- `StallyLibrary/Sources/`, which owns the current durable item, review,
+  insights, backup, link, SwiftData model, persistence factory, and
+  `*Operations` use cases.
 - `StallyLibrary/Tests/`, which owns library behavior tests for the current
-  item operations.
+  item, review, insights, backup, and link operations.
 - `ci_scripts/`, which owns repository-managed lint, rule, and library-test
   entrypoints.
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
   manifest.
 - Preserved product-intent documentation under `docs/`.
 
-This repository does not currently contain completed Archive, Review,
-Insights, Backup, App Intents, Widget, Share, MHPlatform runtime, or MHUI
-runtime surfaces.
+This repository does not currently contain App Intents, Widget, Watch,
+CloudKit sync, external AI integration, ads, purchases, advanced settings,
+MHPlatform runtime, or MHUI runtime surfaces.
 
 ## Documentation Boundary
 
@@ -80,10 +81,10 @@ Follow explicit owner-directed rebuild constraints in
 `docs/rebuild-implementation-direction.md`. Do not expand those constraints
 into a full implementation plan unless the user asks.
 
-Keep the first vertical slice as the current behavior reference while
-structural work continues. Do not add Archive, Review, Insights, Backup, App
-Intents, Widget, Share, or broad UI redesign work unless the user explicitly
-asks for that phase.
+Keep the current rebuilt core surfaces as the behavior reference while
+structural work continues. Do not add App Intents, Widget, Watch, external AI
+integration, ads, purchases, CloudKit sync, advanced settings, or broad UI
+redesign work unless the user explicitly asks for that phase.
 
 If a future task adds targets, schemes, packages, tests, scripts, or app
 surfaces, update this file in the same task with the concrete source
@@ -95,12 +96,22 @@ facts authoritative.
 The app target should stay a thin adapter over the current product surface.
 
 - `Stally/Sources/App/` owns app lifecycle, exported library import, and root
-  composition.
+  composition, including tab selection, sheet routing, and incoming link
+  handling.
 - `Stally/Sources/Features/Library/` owns the current SwiftUI Library, Add
   Item, Item Detail, Mark Today, Undo Today's Mark, and Quiet History views.
+- `Stally/Sources/Features/Archive/` owns the SwiftUI Archive surface.
+- `Stally/Sources/Features/Review/` owns the SwiftUI Review lane surface.
+- `Stally/Sources/Features/Insights/` owns the SwiftUI Insights reading
+  surface.
+- `Stally/Sources/Features/Backup/` owns the SwiftUI Backup Center surface,
+  including file importer/exporter presentation and safety confirmations.
+- `Stally/Sources/Features/Links/` owns app-side link-sharing presentation.
+- `Stally/Sources/Features/Settings/` owns the minimal SwiftUI Settings and
+  shareable-link list surface.
 - App views may use SwiftData environment values and `@Query` for the current
-  app surface, but durable item business behavior should enter through
-  `ItemOperations`.
+  app surface, but durable business behavior should enter through public
+  `*Operations`.
 - App views should not directly create `Item`, call item mark/history helper
   methods, declare `@Model` types, or duplicate business branching that belongs
   in the library.
@@ -110,6 +121,14 @@ The app target should stay a thin adapter over the current product surface.
 - `StallyLibrary/Sources/Item/` owns `Item`, `ItemMark`, `ItemCategory`,
   `ItemHistorySnapshot`, `ItemFormInput`, `ItemValidationError`, and
   `ItemOperations`.
+- `StallyLibrary/Sources/Review/` owns Review lane values, settings,
+  snapshots, and `ReviewOperations`.
+- `StallyLibrary/Sources/Insights/` owns Insights range/options, reading
+  values, recommendations, snapshots, and `InsightsOperations`.
+- `StallyLibrary/Sources/Backup/` owns versioned backup snapshots, import
+  previews/results, validation issues, reset results, and `BackupOperations`.
+- `StallyLibrary/Sources/Link/` owns shareable destination and item link
+  values, parsing results, and `StallyLinkOperations`.
 - `StallyLibrary/Sources/Persistence/` owns `StallyModelContainerFactory`.
 - Public business use cases that app UI, future App Intents, widgets, or other
   surfaces need should be exposed through public `*Operations` facades.
