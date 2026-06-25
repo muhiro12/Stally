@@ -20,11 +20,11 @@ struct ItemDetailView: View {
     @State private var saveErrorMessage: String?
 
     private var history: ItemHistorySnapshot {
-        item.historySnapshot(calendar: calendar)
+        ItemOperations.historySnapshot(for: item, calendar: calendar)
     }
 
     private var isMarkedToday: Bool {
-        item.isMarked(on: .now, calendar: calendar)
+        ItemOperations.isMarked(item, on: .now, calendar: calendar)
     }
 
     private var isShowingSaveError: Binding<Bool> {
@@ -61,26 +61,30 @@ struct ItemDetailView: View {
     }
 
     private func markToday() {
-        guard let mark = item.addMark(on: .now, calendar: calendar) else {
-            return
+        performSave {
+            try ItemOperations.mark(
+                item,
+                on: .now,
+                context: modelContext,
+                calendar: calendar
+            )
         }
-
-        modelContext.insert(mark)
-        saveChanges()
     }
 
     private func undoToday() {
-        guard let mark = item.removeMark(on: .now, calendar: calendar) else {
-            return
+        performSave {
+            try ItemOperations.undoMark(
+                item,
+                on: .now,
+                context: modelContext,
+                calendar: calendar
+            )
         }
-
-        modelContext.delete(mark)
-        saveChanges()
     }
 
-    private func saveChanges() {
+    private func performSave(_ action: () throws -> Void) {
         do {
-            try modelContext.save()
+            try action()
         } catch {
             saveErrorMessage = error.localizedDescription
         }

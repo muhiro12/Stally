@@ -34,15 +34,13 @@ public final class Item {
         }
     }
 
-    /// Marks sorted from newest day to oldest day.
-    public var sortedMarks: [ItemMark] {
+    var sortedMarks: [ItemMark] {
         marks.sorted { lhsMark, rhsMark in
             lhsMark.day > rhsMark.day
         }
     }
 
-    /// Creates a new Library item.
-    public init(
+    init(
         name: String,
         category: ItemCategory,
         note: String = "",
@@ -55,16 +53,14 @@ public final class Item {
         marks = []
     }
 
-    /// Builds the current item-level history reading.
-    public func historySnapshot(
+    func historySnapshot(
         calendar: Calendar = .current,
         now: Date = .now
     ) -> ItemHistorySnapshot {
         .init(item: self, calendar: calendar, now: now)
     }
 
-    /// Returns the mark for a calendar day when one exists.
-    public func mark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
+    func mark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
         let day = calendar.startOfDay(for: date)
 
         return marks.first { mark in
@@ -72,13 +68,11 @@ public final class Item {
         }
     }
 
-    /// Returns whether the item is marked for a calendar day.
-    public func isMarked(on date: Date, calendar: Calendar = .current) -> Bool {
+    func isMarked(on date: Date, calendar: Calendar = .current) -> Bool {
         mark(on: date, calendar: calendar) != nil
     }
 
-    /// Adds one mark for a calendar day, returning `nil` when already marked.
-    public func addMark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
+    func addMark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
         let day = calendar.startOfDay(for: date)
 
         guard mark(on: day, calendar: calendar) == nil else {
@@ -90,8 +84,7 @@ public final class Item {
         return mark
     }
 
-    /// Removes the mark for a calendar day, returning `nil` when unmarked.
-    public func removeMark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
+    func removeMark(on date: Date, calendar: Calendar = .current) -> ItemMark? {
         let day = calendar.startOfDay(for: date)
 
         guard let existingMark = mark(on: day, calendar: calendar) else {

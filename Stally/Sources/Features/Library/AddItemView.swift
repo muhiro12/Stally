@@ -24,14 +24,6 @@ struct AddItemView: View {
     @State private var note = ""
     @State private var saveErrorMessage: String?
 
-    private var trimmedName: String {
-        name.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private var trimmedNote: String {
-        note.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
     private var isShowingSaveError: Binding<Bool> {
         Binding {
             saveErrorMessage != nil
@@ -61,7 +53,7 @@ struct AddItemView: View {
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add", action: addItem)
-                        .disabled(trimmedName.isEmpty)
+                        .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
             }
             .alert("Could Not Save", isPresented: isShowingSaveError) {
@@ -73,14 +65,13 @@ struct AddItemView: View {
     }
 
     private func addItem() {
-        let item = Item(name: trimmedName, category: category, note: trimmedNote)
-        modelContext.insert(item)
-
         do {
-            try modelContext.save()
+            try ItemOperations.create(
+                context: modelContext,
+                input: .init(name: name, category: category, note: note)
+            )
             dismiss()
         } catch {
-            modelContext.delete(item)
             saveErrorMessage = error.localizedDescription
         }
     }

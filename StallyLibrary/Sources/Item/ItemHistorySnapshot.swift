@@ -30,8 +30,7 @@ public struct ItemHistorySnapshot {
     /// Unique marked days sorted from newest to oldest.
     public let markedDays: [Date]
 
-    /// Creates a snapshot from an item's current mark history.
-    public init(item: Item, calendar: Calendar = .current, now: Date = .now) {
+    init(item: Item, calendar: Calendar = .current, now: Date = .now) {
         let today = calendar.startOfDay(for: now)
         let uniqueDays = Set(
             item.marks.map { mark in

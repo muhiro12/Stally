@@ -21,7 +21,7 @@ struct ItemRow: View {
     let item: Item
 
     private var history: ItemHistorySnapshot {
-        item.historySnapshot(calendar: calendar)
+        ItemOperations.historySnapshot(for: item, calendar: calendar)
     }
 
     var body: some View {
@@ -32,7 +32,7 @@ struct ItemRow: View {
 
                 Spacer()
 
-                if item.isMarked(on: .now, calendar: calendar) {
+                if ItemOperations.isMarked(item, on: .now, calendar: calendar) {
                     Label("Marked Today", systemImage: "checkmark.circle.fill")
                         .labelStyle(.iconOnly)
                         .foregroundStyle(.tint)

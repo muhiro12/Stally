@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum ItemCategory: String, CaseIterable, Codable, Hashable, Identifiable {
+public enum ItemCategory: String, CaseIterable, Codable, Hashable, Identifiable, Sendable {
     case clothing = "Clothing"
     case shoes = "Shoes"
     case bags = "Bags"
