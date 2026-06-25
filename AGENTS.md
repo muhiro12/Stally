@@ -53,14 +53,16 @@ owner-directed rebuild constraints while the implementation is rebuilt.
 - `docs/product-language.md` records preserved nouns, verbs, labels, and copy
   direction.
 - `docs/rebuild-handoff.md` records the extraction audit and phase boundary.
-- `docs/rebuild-implementation-direction.md` records explicit future rebuild
+- `docs/rebuild-implementation-direction.md` records explicit rebuild
   direction added after the legacy extraction.
 
 When editing product-intent documents, preserve the existing English voice,
 avoid speculation, and keep the distinction between product intent and
-discarded implementation details explicit. Keep owner-directed future
+discarded implementation details explicit. Keep owner-directed
 implementation constraints in `docs/rebuild-implementation-direction.md`
-instead of blending them into extracted legacy evidence.
+instead of blending them into extracted legacy evidence. Some docs
+intentionally preserve phase-boundary language from their creation time; do not
+retime them unless a stale statement would misdirect current work.
 
 ## Rebuild Boundary
 
@@ -134,8 +136,8 @@ When these schemes exist later, add this stronger verification shape:
   schema, or adapter-facing contracts, also use XcodeBuildMCP `build_sim` with
   the `Stally` scheme.
 
-When Swift files and retained repository scripts exist again, agents should
-run the Swift formatter after Swift edits:
+When retained repository scripts exist, agents should run the Swift formatter
+after Swift edits:
 
 ```sh
 bash ci_scripts/tasks/format_swift.sh
@@ -150,8 +152,8 @@ bash ci_scripts/tasks/check_repository_rules.sh
 `check_repository_rules.sh` should own SwiftLint plus repository-specific
 static architecture checks that are not naturally covered by XcodeBuildMCP.
 SwiftLint should be resolved from the `SimplyDanny/SwiftLintPlugins` package
-declared in the future Xcode project, not from a separately installed
-`swiftlint` binary.
+declared in the project once package dependencies are added, not from a
+separately installed `swiftlint` binary.
 
 Xcode Cloud should own formal CI builds, tests, and archives once the rebuilt
 app is ready for hosted CI.
@@ -176,5 +178,5 @@ For Swift or Xcode project changes, also run XcodeBuildMCP `build_sim` with
 the `Stally` scheme.
 
 Report that Swift package tests, SwiftLint, test schemes, and local repository
-CI checks are unavailable until a future rebuild creates the relevant packages,
+CI checks are unavailable until the rebuild adds the relevant packages,
 targets, or scripts.
