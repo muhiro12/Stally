@@ -20,6 +20,14 @@ struct ArchiveView: View {
                 }
             }
             .navigationTitle("Archive")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    StallyLinkShareButton(
+                        link: .destination(.archive),
+                        title: "Share Archive Link"
+                    )
+                }
+            }
         }
     }
 }

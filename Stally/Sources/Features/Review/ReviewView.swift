@@ -20,6 +20,14 @@ struct ReviewView: View {
                 }
             }
             .navigationTitle("Review")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    StallyLinkShareButton(
+                        link: .destination(.review),
+                        title: "Share Review Link"
+                    )
+                }
+            }
         }
     }
 }

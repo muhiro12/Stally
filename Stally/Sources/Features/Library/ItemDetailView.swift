@@ -61,6 +61,14 @@ struct ItemDetailView: View {
         }
         .navigationTitle(item.name)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                StallyLinkShareButton(
+                    link: .item(item.uuid),
+                    title: "Share Item Link"
+                )
+            }
+        }
         .alert("Could Not Save", isPresented: isShowingSaveError) {
             Button("OK", role: .cancel, action: clearSaveError)
         } message: {

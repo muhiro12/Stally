@@ -48,6 +48,14 @@ struct BackupCenterView: View {
                 deleteEverythingAction: confirmDeleteEverything
             )
             .navigationTitle("Backup Center")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    StallyLinkShareButton(
+                        link: .destination(.backupCenter),
+                        title: "Share Backup Center Link"
+                    )
+                }
+            }
         }
         .fileExporter(
             isPresented: $isPresentingExporter,

@@ -39,6 +39,14 @@ struct InsightsView: View {
                 includesArchivedItems: $includesArchivedItems
             )
             .navigationTitle("Insights")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    StallyLinkShareButton(
+                        link: .destination(.insights),
+                        title: "Share Insights Link"
+                    )
+                }
+            }
         }
     }
 }
