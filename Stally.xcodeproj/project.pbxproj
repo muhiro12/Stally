@@ -113,6 +113,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				B8AB10002FED000000000003 /* XCLocalSwiftPackageReference "StallyLibrary" */,
+				B8AB10012FED000000000001 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AD75E9912FED371000094EFB /* Products */;
@@ -374,6 +375,17 @@
 			relativePath = StallyLibrary;
 		};
 /* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B8AB10012FED000000000001 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		B8AB10002FED000000000004 /* StallyLibrary */ = {
