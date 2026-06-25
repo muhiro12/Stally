@@ -27,12 +27,37 @@ public enum ItemOperations {
             name: normalizedName,
             category: input.category,
             note: input.normalizedNote,
-            createdAt: createdAt
+            createdAt: createdAt,
+            uuid: .init(),
+            photoData: input.photoData,
+            archivedAt: nil
         )
         context.insert(item)
         try context.save()
 
         return item
+    }
+
+    /// Returns active Library items in newest-created order.
+    public static func activeItems(from items: [Item]) -> [Item] {
+        items
+            .filter { item in
+                !item.isArchived
+            }
+            .sorted { lhsItem, rhsItem in
+                lhsItem.createdAt > rhsItem.createdAt
+            }
+    }
+
+    /// Returns archived items in newest-archived order.
+    public static func archivedItems(from items: [Item]) -> [Item] {
+        items
+            .filter(\.isArchived)
+            .sorted { lhsItem, rhsItem in
+                let lhsArchivedAt = lhsItem.archivedAt ?? lhsItem.createdAt
+                let rhsArchivedAt = rhsItem.archivedAt ?? rhsItem.createdAt
+                return lhsArchivedAt > rhsArchivedAt
+            }
     }
 
     /// Returns whether an item is marked for a calendar day.
@@ -52,6 +77,10 @@ public enum ItemOperations {
         context: ModelContext,
         calendar: Calendar = .current
     ) throws -> Bool {
+        guard !item.isArchived else {
+            throw ItemValidationError.archivedItemsCannotChangeHistory
+        }
+
         guard let mark = item.addMark(on: date, calendar: calendar) else {
             return false
         }
@@ -70,11 +99,48 @@ public enum ItemOperations {
         context: ModelContext,
         calendar: Calendar = .current
     ) throws -> Bool {
+        guard !item.isArchived else {
+            throw ItemValidationError.archivedItemsCannotChangeHistory
+        }
+
         guard let mark = item.removeMark(on: date, calendar: calendar) else {
             return false
         }
 
         context.delete(mark)
+        try context.save()
+
+        return true
+    }
+
+    /// Moves an active item into Archive while preserving its context and marks.
+    @discardableResult
+    public static func archive(
+        _ item: Item,
+        on date: Date,
+        context: ModelContext
+    ) throws -> Bool {
+        guard !item.isArchived else {
+            return false
+        }
+
+        item.archivedAt = date
+        try context.save()
+
+        return true
+    }
+
+    /// Moves an archived item back to the active Library.
+    @discardableResult
+    public static func moveBackToLibrary(
+        _ item: Item,
+        context: ModelContext
+    ) throws -> Bool {
+        guard item.isArchived else {
+            return false
+        }
+
+        item.archivedAt = nil
         try context.save()
 
         return true

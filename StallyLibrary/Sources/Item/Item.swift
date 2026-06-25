@@ -11,14 +11,21 @@ import SwiftData
 /// A personal object the user keeps in the active Library and marks when chosen.
 @Model
 public final class Item {
+    /// Stable item identifier for backups, links, and cross-surface references.
+    @Attribute(.unique)
+    public var uuid: UUID
     /// User-facing item name.
     public var name: String
     /// Persisted raw value for `category`.
     public var categoryRawValue: String
     /// Optional user note that gives the item more context.
     public var note: String
+    /// Optional visual context for recognizing the item later.
+    public var photoData: Data?
     /// Date when the item was added.
     public var createdAt: Date
+    /// Date when the item was moved into Archive.
+    public var archivedAt: Date?
 
     /// Calendar-day marks attached to this item.
     @Relationship(deleteRule: .cascade, inverse: \ItemMark.item)
@@ -34,6 +41,11 @@ public final class Item {
         }
     }
 
+    /// Whether this item is currently preserved in Archive.
+    public var isArchived: Bool {
+        archivedAt != nil
+    }
+
     var sortedMarks: [ItemMark] {
         marks.sorted { lhsMark, rhsMark in
             lhsMark.day > rhsMark.day
@@ -44,12 +56,18 @@ public final class Item {
         name: String,
         category: ItemCategory,
         note: String,
-        createdAt: Date
+        createdAt: Date,
+        uuid: UUID,
+        photoData: Data?,
+        archivedAt: Date?
     ) {
+        self.uuid = uuid
         self.name = name
         categoryRawValue = category.rawValue
         self.note = note
+        self.photoData = photoData
         self.createdAt = createdAt
+        self.archivedAt = archivedAt
         marks = []
     }
 

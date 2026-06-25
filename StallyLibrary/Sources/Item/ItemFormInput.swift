@@ -15,6 +15,8 @@ public struct ItemFormInput: Equatable, Sendable {
     public let category: ItemCategory
     /// Optional note that gives the item more context.
     public let note: String
+    /// Optional visual context for recognizing the item later.
+    public let photoData: Data?
 
     var normalizedName: String {
         name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -28,10 +30,12 @@ public struct ItemFormInput: Equatable, Sendable {
     public init(
         name: String,
         category: ItemCategory,
-        note: String = ""
+        note: String = "",
+        photoData: Data? = nil
     ) {
         self.name = name
         self.category = category
         self.note = note
+        self.photoData = photoData
     }
 }

@@ -51,13 +51,15 @@ struct ItemOperationsTests {
     @Test
     func `create stores normalized item input`() throws {
         let context = try makeContext()
+        let photoData = Data([0x01, 0x02, 0x03])
 
         let item = try ItemOperations.create(
             context: context,
             input: .init(
                 name: "  Black Wool Coat  ",
                 category: .clothing,
-                note: "  The one I reach for on cold mornings.  "
+                note: "  The one I reach for on cold mornings.  ",
+                photoData: photoData
             ),
             createdAt: Fixtures.today
         )
@@ -66,7 +68,9 @@ struct ItemOperationsTests {
         #expect(fetchedItem.name == "Black Wool Coat")
         #expect(fetchedItem.category == .clothing)
         #expect(fetchedItem.note == "The one I reach for on cold mornings.")
+        #expect(fetchedItem.photoData == photoData)
         #expect(fetchedItem.createdAt == Fixtures.today)
+        #expect(!fetchedItem.isArchived)
         #expect(fetchedItem.persistentModelID == item.persistentModelID)
     }
 
@@ -185,15 +189,23 @@ struct ItemOperationsTests {
         try context.fetch(.init())
     }
 
-    private func createItem(context: ModelContext) throws -> Item {
+    private func createItem(
+        context: ModelContext,
+        name: String = "Canvas Tote",
+        category: ItemCategory = .bags,
+        note: String = "Usually comes with me when I need one extra layer.",
+        createdAt: Date = Fixtures.today,
+        photoData: Data? = nil
+    ) throws -> Item {
         try ItemOperations.create(
             context: context,
             input: .init(
-                name: "Canvas Tote",
-                category: .bags,
-                note: "Usually comes with me when I need one extra layer."
+                name: name,
+                category: category,
+                note: note,
+                photoData: photoData
             ),
-            createdAt: Fixtures.today
+            createdAt: createdAt
         )
     }
 }
