@@ -58,8 +58,25 @@ import SwiftUI
     }
 }
 
+#Preview("Archive - Empty") {
+    StallyPreviewContainer(.empty) { _ in
+        ArchiveView(items: [])
+    }
+}
+
 #Preview("Review - Attention Lanes") {
     StallyPreviewContainer(.dense) { items in
+        ReviewView(
+            snapshot: ReviewOperations.snapshot(
+                for: items,
+                calendar: StallyPreviewData.calendar
+            )
+        )
+    }
+}
+
+#Preview("Review - Empty") {
+    StallyPreviewContainer(.empty) { items in
         ReviewView(
             snapshot: ReviewOperations.snapshot(
                 for: items,
