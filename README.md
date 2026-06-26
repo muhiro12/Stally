@@ -9,12 +9,16 @@ now contains a fresh Apple-platform app project plus a local library package:
 
 - `Stally.xcodeproj`, with the `Stally` app target and `Stally` scheme.
 - `Stally/`, a SwiftUI app source tree for the rebuilt Library, Archive,
-  Review, Insights, Backup Center, Settings, and shareable-link surfaces.
+  Review, Insights, Backup Center, Settings, shareable-link surfaces, and
+  DEBUG-only preview support.
 - `StallyLibrary/`, a local Swift package for the durable item domain,
   SwiftData models, persistence setup, and product operations.
 - `StallyLibrary/Tests/`, Swift Testing coverage for the current domain
   operations.
 - `ci_scripts/`, repository-managed lint, rule, and library-test entrypoints.
+- `docs/ui-preview-report.md` and `docs/ui-preview-screenshots/`, a
+  current-state UI preview and screenshot audit for the next MHUI/MHDesign
+  adoption phase.
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
   manifest.
 

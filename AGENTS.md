@@ -109,6 +109,9 @@ The app target should stay a thin adapter over the current product surface.
 - `Stally/Sources/Features/Links/` owns app-side link-sharing presentation.
 - `Stally/Sources/Features/Settings/` owns the minimal SwiftUI Settings and
   shareable-link list surface.
+- `Stally/Sources/PreviewSupport/` owns DEBUG-only preview data, in-memory
+  preview containers, screenshot launch routes, and screen-level previews for
+  UI review. It must not become product behavior or shared-library logic.
 - App views may use SwiftData environment values and `@Query` for the current
   app surface, but durable business behavior should enter through public
   `*Operations`.
@@ -221,6 +224,10 @@ static architecture checks that are not naturally covered by XcodeBuildMCP.
 SwiftLint should be resolved from the `SimplyDanny/SwiftLintPlugins` package
 declared in the project once package dependencies are added, not from a
 separately installed `swiftlint` binary.
+
+UI preview reports and screenshots are implementation review artifacts. Keep
+them separate from preserved product-intent documents, and update them when a
+task intentionally changes the visible app surface or visual-system adoption.
 
 Xcode Cloud should own formal CI builds, tests, and archives once the rebuilt
 app is ready for hosted CI.
