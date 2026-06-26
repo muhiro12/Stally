@@ -38,5 +38,6 @@ struct BackupList: View {
                 BackupStatusSection(message: statusMessage)
             }
         }
+        .stallyListChrome()
     }
 }

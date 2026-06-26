@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct CoverageRow: View {
@@ -17,8 +18,7 @@ struct CoverageRow: View {
                 Text(coverage.fraction, format: .percent)
 
                 Text("\(coverage.coveredCount, format: .number) of \(coverage.totalCount, format: .number)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .mhTextStyle(.caption, colorRole: .secondaryText)
             }
         } label: {
             Text(title)

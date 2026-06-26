@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct InsightsRecommendationsSection: View {
@@ -14,17 +15,17 @@ struct InsightsRecommendationsSection: View {
         Section("Next Moves") {
             if recommendations.isEmpty {
                 Text("No follow-up suggestions right now.")
-                    .foregroundStyle(.secondary)
+                    .mhRowSupporting()
             } else {
                 ForEach(recommendations, id: \.kind) { recommendation in
                     VStack(alignment: .leading) {
                         Text(recommendation.title)
-                            .font(.headline)
+                            .mhRowTitle()
 
                         Text(recommendation.summary)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .mhRowSupporting()
                     }
+                    .mhRow()
                 }
             }
         }

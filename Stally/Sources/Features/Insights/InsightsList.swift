@@ -41,5 +41,6 @@ struct InsightsList: View {
 
             InsightsRecommendationsSection(recommendations: snapshot.recommendations)
         }
+        .stallyListChrome()
     }
 }

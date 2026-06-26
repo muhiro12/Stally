@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import MHUI
 import SwiftUI
 
 struct EmptyLibraryView: View {
@@ -17,7 +18,8 @@ struct EmptyLibraryView: View {
             Text("Start with a few pieces you actually reach for.")
         } actions: {
             Button("Add Your First Item", action: addAction)
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.mhPrimary)
         }
+        .mhEmptyStateLayout()
     }
 }

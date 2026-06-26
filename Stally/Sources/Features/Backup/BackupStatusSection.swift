@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct BackupStatusSection: View {
@@ -13,7 +14,7 @@ struct BackupStatusSection: View {
     var body: some View {
         Section("Last Result") {
             Text(message)
-                .foregroundStyle(.secondary)
+                .mhRowSupporting()
         }
     }
 }

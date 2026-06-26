@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct BackupValidationIssueList: View {
@@ -13,7 +14,7 @@ struct BackupValidationIssueList: View {
     var body: some View {
         if issues.isEmpty {
             Text("No validation issues were found in this backup.")
-                .foregroundStyle(.secondary)
+                .mhRowSupporting()
         } else {
             ForEach(issues) { issue in
                 BackupValidationIssueRow(issue: issue)

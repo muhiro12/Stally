@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct BackupExportSection: View {
@@ -15,6 +16,7 @@ struct BackupExportSection: View {
             Button(action: exportAction) {
                 Label("Export Backup", systemImage: "square.and.arrow.up")
             }
+            .buttonStyle(.mhSecondary)
         }
     }
 }

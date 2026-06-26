@@ -41,8 +41,9 @@ This repository currently contains:
 - Preserved product-intent documentation under `docs/`.
 
 This repository does not currently contain App Intents, Widget, Watch,
-CloudKit sync, external AI integration, ads, purchases, advanced settings,
-MHPlatform runtime, or MHUI runtime surfaces.
+CloudKit sync, external AI integration, ads, purchases, advanced settings, or
+MHPlatform runtime surfaces. The app target links MHUI for app-side visual
+chrome and presentation styling only.
 
 ## Documentation Boundary
 
@@ -109,6 +110,9 @@ The app target should stay a thin adapter over the current product surface.
 - `Stally/Sources/Features/Links/` owns app-side link-sharing presentation.
 - `Stally/Sources/Features/Settings/` owns the minimal SwiftUI Settings and
   shareable-link list surface.
+- `Stally/Sources/SharedUI/` owns app-local MHUI presentation adapters and
+  shared visual treatment helpers. It must not contain product behavior,
+  persistence logic, or reusable library operations.
 - `Stally/Sources/PreviewSupport/` owns DEBUG-only preview data, in-memory
   preview containers, screenshot launch routes, and screen-level previews for
   UI review. It must not become product behavior or shared-library logic.
@@ -166,12 +170,15 @@ MHUI usage without a concrete product or technical reason.
 
 Treat package declaration and product linking as separate decisions.
 
-- The app target currently links only the local `StallyLibrary` product.
+- The app target currently links the local `StallyLibrary` product and the
+  remote `MHUI` product for presentation styling.
 - `SwiftLintPlugins` is declared in `Stally.xcodeproj` for repository-managed
   linting and should not be treated as a runtime dependency.
-- `MHPlatform` and `MHUI` are intentionally not linked yet. Recheck Incomes and
-  add or link them only when a concrete Stally implementation phase needs their
-  package products.
+- `MHUI` re-exports `MHDesign`; do not add a separate `MHDesign` product link
+  unless a concrete build or target-boundary need appears.
+- `MHPlatform` is intentionally not linked yet. Recheck Incomes and add or
+  link it only when a concrete Stally implementation phase needs its package
+  products.
 - Do not add runtime products solely because Incomes or Fluel declares them.
 
 ## Expected Apple Implementation Contract

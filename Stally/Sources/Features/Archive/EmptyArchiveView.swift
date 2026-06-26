@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct EmptyArchiveView: View {
@@ -14,5 +15,6 @@ struct EmptyArchiveView: View {
         } description: {
             Text("Past favorites can stay nearby without crowding the main list.")
         }
+        .mhEmptyStateLayout()
     }
 }

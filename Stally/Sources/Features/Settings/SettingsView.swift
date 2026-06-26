@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct SettingsView: View {
@@ -13,7 +14,7 @@ struct SettingsView: View {
             List {
                 Section("Settings") {
                     Text("Quiet app details and shareable routes live here while the rebuild continues.")
-                        .foregroundStyle(.secondary)
+                        .mhRowSupporting()
                 }
 
                 Section("Shareable Links") {
@@ -25,9 +26,11 @@ struct SettingsView: View {
                                 Image(systemName: destination.systemImageName)
                             }
                         }
+                        .mhRow()
                     }
                 }
             }
+            .stallyListChrome()
             .navigationTitle("Settings")
         }
     }

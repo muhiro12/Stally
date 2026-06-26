@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import MHUI
 import SwiftUI
 
 struct HistoryOverviewSection: View {
@@ -21,7 +22,7 @@ struct HistoryOverviewSection: View {
                     Text(lastMarkedDay, format: .dateTime.month().day().year())
                 } else {
                     Text("Not yet")
-                        .foregroundStyle(.secondary)
+                        .mhTextStyle(.body, colorRole: .secondaryText)
                 }
             }
 
@@ -42,9 +43,10 @@ struct HistoryOverviewSection: View {
                     Text(daysSinceLastMark, format: .number)
                 } else {
                     Text("Not yet")
-                        .foregroundStyle(.secondary)
+                        .mhTextStyle(.body, colorRole: .secondaryText)
                 }
             }
         }
+        .labeledContentStyle(.mhKeyValue)
     }
 }

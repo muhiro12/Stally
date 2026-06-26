@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import MHUI
 import SwiftUI
 
 struct TodayMarkSection: View {
@@ -18,15 +19,16 @@ struct TodayMarkSection: View {
                 Button(action: undoAction) {
                     Label("Undo Today's Mark", systemImage: "arrow.uturn.backward")
                 }
+                .buttonStyle(.mhQuiet)
             } else {
                 Button(action: markAction) {
                     Label("Mark Today", systemImage: "checkmark.circle")
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.mhPrimary)
             }
 
             Text("One mark is enough for today.")
-                .foregroundStyle(.secondary)
+                .mhSectionFooterText()
         }
     }
 }

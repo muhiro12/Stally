@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import MHUI
 import SwiftUI
 
 struct ItemRow: View {
@@ -12,7 +13,6 @@ struct ItemRow: View {
         static let verticalSpacing: CGFloat = 6
         static let metadataSpacing: CGFloat = 8
         static let noteLineLimit = 2
-        static let verticalPadding: CGFloat = 4
     }
 
     @Environment(\.calendar)
@@ -28,15 +28,16 @@ struct ItemRow: View {
         VStack(alignment: .leading, spacing: Layout.verticalSpacing) {
             HStack(alignment: .firstTextBaseline) {
                 Text(item.name)
-                    .font(.headline)
+                    .mhRowTitle()
 
                 Spacer()
 
                 if ItemOperations.isMarked(item, on: .now, calendar: calendar) {
-                    Label("Marked Today", systemImage: "checkmark.circle.fill")
-                        .labelStyle(.iconOnly)
-                        .foregroundStyle(.tint)
-                        .accessibilityLabel("Marked Today")
+                    Text("Marked")
+                        .mhBadge(
+                            style: .accent,
+                            accessibilityLabel: Text("Marked Today")
+                        )
                 }
             }
 
@@ -49,16 +50,14 @@ struct ItemRow: View {
                     Text("Not yet")
                 }
             }
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
+            .mhRowOverline()
 
             if !item.note.isEmpty {
                 Text(item.note)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .mhRowSupporting()
                     .lineLimit(Layout.noteLineLimit)
             }
         }
-        .padding(.vertical, Layout.verticalPadding)
+        .mhRow()
     }
 }

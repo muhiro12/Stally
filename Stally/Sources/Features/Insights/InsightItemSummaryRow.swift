@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct InsightItemSummaryRow: View {
@@ -13,7 +14,7 @@ struct InsightItemSummaryRow: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(summary.item.name)
-                .font(.headline)
+                .mhRowTitle()
 
             HStack {
                 Text(summary.item.category.title)
@@ -24,8 +25,8 @@ struct InsightItemSummaryRow: View {
                     Text(lastMarkedDay, format: .dateTime.month().day())
                 }
             }
-            .font(.subheadline)
-            .foregroundStyle(.secondary)
+            .mhRowOverline()
         }
+        .mhRow()
     }
 }

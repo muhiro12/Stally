@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import MHUI
 import SwiftUI
 
 struct AddItemFormFields: View {
@@ -29,6 +30,7 @@ struct AddItemFormFields: View {
                 .lineLimit(noteLineLimit, reservesSpace: true)
         } footer: {
             Text("A short note can make this item's history easier to read later.")
+                .mhSectionFooterText()
         }
     }
 }

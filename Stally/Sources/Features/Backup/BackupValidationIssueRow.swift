@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct BackupValidationIssueRow: View {
@@ -18,16 +19,17 @@ struct BackupValidationIssueRow: View {
         VStack(alignment: .leading, spacing: Layout.spacing) {
             Label {
                 Text(issue.title)
+                    .mhRowTitle()
             } icon: {
                 Image(systemName: "exclamationmark.triangle")
             }
-            .foregroundStyle(.orange)
+            .mhTextStyle(.bodyStrong, colorRole: .warning)
 
             if let value = issue.value, !value.isEmpty {
                 Text(value)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .mhTextStyle(.caption, colorRole: .secondaryText)
             }
         }
+        .mhRow()
     }
 }

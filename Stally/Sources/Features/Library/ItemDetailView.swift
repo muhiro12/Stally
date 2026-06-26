@@ -59,6 +59,7 @@ struct ItemDetailView: View {
 
             QuietHistorySection(history: history)
         }
+        .stallyListChrome()
         .navigationTitle(item.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

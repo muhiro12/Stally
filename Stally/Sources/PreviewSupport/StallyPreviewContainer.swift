@@ -6,6 +6,7 @@
 //
 
 #if DEBUG
+import MHUI
 import SwiftData
 import SwiftUI
 
@@ -18,6 +19,8 @@ struct StallyPreviewContainer<Content: View>: View {
         content(StallyPreviewData.items(in: container))
             .modelContainer(container)
             .environment(\.calendar, StallyPreviewData.calendar)
+            .mhTheme(.standard)
+            .mhGlassPolicy(.automatic)
     }
 
     init(

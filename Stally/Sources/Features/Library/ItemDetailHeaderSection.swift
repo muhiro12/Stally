@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import MHUI
 import SwiftUI
 
 struct ItemDetailHeaderSection: View {
@@ -20,16 +21,14 @@ struct ItemDetailHeaderSection: View {
         Section {
             VStack(alignment: .leading, spacing: Layout.verticalSpacing) {
                 Text(item.name)
-                    .font(.title2)
-                    .fontWeight(.semibold)
+                    .mhTextStyle(.screenTitle)
 
                 Text(item.category.title)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .mhBadge(style: .neutral)
 
                 if !item.note.isEmpty {
                     Text(item.note)
-                        .font(.body)
+                        .mhTextStyle(.body, colorRole: .secondaryText)
                         .padding(.top, Layout.noteTopPadding)
                 }
             }

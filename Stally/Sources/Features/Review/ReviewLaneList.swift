@@ -19,5 +19,6 @@ struct ReviewLaneList: View {
                 )
             }
         }
+        .stallyListChrome()
     }
 }

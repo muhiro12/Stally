@@ -18,5 +18,6 @@ struct ItemLibraryList: View {
                 ItemRow(item: item)
             }
         }
+        .stallyListChrome()
     }
 }

@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct InsightsActivitySection: View {
@@ -14,7 +15,7 @@ struct InsightsActivitySection: View {
         Section("Activity") {
             if snapshot.totalMarks == 0 {
                 Text("No activity in this window yet.")
-                    .foregroundStyle(.secondary)
+                    .mhRowSupporting()
             }
 
             LabeledContent("Marks") {

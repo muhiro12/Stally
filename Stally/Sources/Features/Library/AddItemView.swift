@@ -44,6 +44,7 @@ struct AddItemView: View {
                     noteLineLimit: Layout.noteLineLimit
                 )
             }
+            .stallyFormChrome()
             .navigationTitle("Add Item")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

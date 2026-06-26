@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		B8AB10002FED000000000001 /* StallyLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = B8AB10002FED000000000004 /* StallyLibrary */; };
+		B8C000012FED000000000003 /* MHUI in Frameworks */ = {isa = PBXBuildFile; productRef = B8C000012FED000000000002 /* MHUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		AD75E98D2FED371000094EFB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				B8C000012FED000000000003 /* MHUI in Frameworks */,
 				B8AB10002FED000000000001 /* StallyLibrary in Frameworks */,
 			);
 		};
@@ -81,6 +83,7 @@
 			);
 			name = Stally;
 			packageProductDependencies = (
+				B8C000012FED000000000002 /* MHUI */,
 				B8AB10002FED000000000004 /* StallyLibrary */,
 			);
 			productName = Stally;
@@ -113,6 +116,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				B8AB10002FED000000000003 /* XCLocalSwiftPackageReference "StallyLibrary" */,
+				B8C000012FED000000000001 /* XCRemoteSwiftPackageReference "MHUI" */,
 				B8AB10012FED000000000001 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -385,12 +389,25 @@
 				minimumVersion = 0.0.0;
 			};
 		};
+		B8C000012FED000000000001 /* XCRemoteSwiftPackageReference "MHUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/muhiro12/MHUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		B8AB10002FED000000000004 /* StallyLibrary */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = StallyLibrary;
+		};
+		B8C000012FED000000000002 /* MHUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B8C000012FED000000000001 /* XCRemoteSwiftPackageReference "MHUI" */;
+			productName = MHUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

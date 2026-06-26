@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import MHUI
 import SwiftUI
 
 struct QuietHistoryDayCell: View {
@@ -23,9 +24,8 @@ struct QuietHistoryDayCell: View {
                 .frame(width: Layout.circleSize, height: Layout.circleSize)
 
             Text(day.day, format: .dateTime.day())
-                .font(.caption2)
                 .monospacedDigit()
-                .foregroundStyle(.secondary)
+                .mhTextStyle(.caption, colorRole: .secondaryText)
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .ignore)

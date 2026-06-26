@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct InsightsCategoryShareSection: View {
@@ -14,7 +15,7 @@ struct InsightsCategoryShareSection: View {
         Section("Categories") {
             if categoryShares.isEmpty {
                 Text("No category activity in this window yet.")
-                    .foregroundStyle(.secondary)
+                    .mhRowSupporting()
             } else {
                 ForEach(categoryShares, id: \.category) { categoryShare in
                     LabeledContent {
@@ -22,8 +23,7 @@ struct InsightsCategoryShareSection: View {
                             Text(categoryShare.markCount, format: .number)
 
                             Text(categoryShare.fraction, format: .percent)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .mhTextStyle(.caption, colorRole: .secondaryText)
                         }
                     } label: {
                         Text(categoryShare.category.title)

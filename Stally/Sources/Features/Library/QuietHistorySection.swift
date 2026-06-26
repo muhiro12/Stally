@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import MHUI
 import SwiftUI
 
 struct QuietHistorySection: View {
@@ -19,7 +20,7 @@ struct QuietHistorySection: View {
         Section("Quiet History") {
             if history.markedDays.isEmpty {
                 Text("No marks yet.")
-                    .foregroundStyle(.secondary)
+                    .mhRowSupporting()
             } else {
                 QuietHistoryGrid(markedDays: history.markedDays)
                     .padding(.vertical, Layout.gridVerticalPadding)

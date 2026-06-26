@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct InsightsRankingSection: View {
@@ -16,7 +17,7 @@ struct InsightsRankingSection: View {
         Section(title) {
             if summaries.isEmpty {
                 Text(emptyMessage)
-                    .foregroundStyle(.secondary)
+                    .mhRowSupporting()
             } else {
                 ForEach(summaries, id: \.item.uuid) { summary in
                     NavigationLink {

@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import MHUI
 import SwiftData
 import SwiftUI
 
@@ -30,16 +31,22 @@ struct StallyApp: App {
 
     var body: some Scene {
         WindowGroup {
-            #if DEBUG
-            if let route = Self.previewLaunchConfiguration.route {
-                ContentView(initialPreviewRoute: route)
-            } else {
-                ContentView()
-            }
-            #else
-            ContentView()
-            #endif
+            rootContent
+                .mhTheme(.standard)
+                .mhGlassPolicy(.automatic)
         }
         .modelContainer(sharedModelContainer)
+    }
+
+    @ViewBuilder private var rootContent: some View {
+        #if DEBUG
+        if let route = Self.previewLaunchConfiguration.route {
+            ContentView(initialPreviewRoute: route)
+        } else {
+            ContentView()
+        }
+        #else
+        ContentView()
+        #endif
     }
 }
