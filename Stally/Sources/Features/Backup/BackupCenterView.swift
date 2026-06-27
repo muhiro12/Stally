@@ -61,7 +61,7 @@ struct BackupCenterView: View {
             isPresented: $isPresentingExporter,
             document: exportDocument,
             contentType: .stallyBackup,
-            defaultFilename: "Stally Backup"
+            defaultFilename: String(localized: "Stally Backup")
         ) { result in
             handleExportResult(result)
         }
@@ -135,7 +135,7 @@ private extension BackupCenterView {
             isPresentingExporter = true
         } catch {
             presentError(
-                title: "Backup could not be exported.",
+                title: String(localized: "Backup could not be exported."),
                 message: error.localizedDescription
             )
         }
@@ -144,10 +144,10 @@ private extension BackupCenterView {
     private func handleExportResult(_ result: Result<URL, any Error>) {
         switch result {
         case .success:
-            statusMessage = "Backup saved."
+            statusMessage = String(localized: "Backup saved.")
         case .failure(let error):
             presentError(
-                title: "Backup could not be saved.",
+                title: String(localized: "Backup could not be saved."),
                 message: error.localizedDescription
             )
         }
@@ -163,7 +163,7 @@ private extension BackupCenterView {
             readBackupFile(at: url)
         case .failure(let error):
             presentError(
-                title: "Backup file could not be opened.",
+                title: String(localized: "Backup file could not be opened."),
                 message: error.localizedDescription
             )
         }
@@ -190,7 +190,7 @@ private extension BackupCenterView {
             selectedBackupData = nil
             selectedBackupPreview = nil
             presentError(
-                title: "Backup file could not be read.",
+                title: String(localized: "Backup file could not be read."),
                 message: error.localizedDescription
             )
         }
@@ -222,7 +222,7 @@ private extension BackupCenterView {
             selectedBackupPreview = nil
             self.selectedBackupData = nil
             statusMessage = importStatusMessage(
-                prefix: "Merged into the current library.",
+                prefix: String(localized: "Merged into the current library."),
                 result: result
             )
         } catch {
@@ -244,7 +244,7 @@ private extension BackupCenterView {
             selectedBackupPreview = nil
             self.selectedBackupData = nil
             statusMessage = importStatusMessage(
-                prefix: "Replaced the current library.",
+                prefix: String(localized: "Replaced the current library."),
                 result: result
             )
         } catch {
@@ -260,7 +260,7 @@ private extension BackupCenterView {
             statusMessage = deleteStatusMessage(for: result)
         } catch {
             presentError(
-                title: "Library could not be cleared.",
+                title: String(localized: "Library could not be cleared."),
                 message: error.localizedDescription
             )
         }
@@ -271,12 +271,12 @@ private extension BackupCenterView {
            case .validationFailed(let preview) = backupError {
             selectedBackupPreview = preview
             presentError(
-                title: "Backup has validation issues.",
-                message: "Preview the validation issues before importing this backup."
+                title: String(localized: "Backup has validation issues."),
+                message: String(localized: "Preview the validation issues before importing this backup.")
             )
         } else {
             presentError(
-                title: "Backup action failed.",
+                title: String(localized: "Backup action failed."),
                 message: error.localizedDescription
             )
         }
@@ -292,13 +292,20 @@ private extension BackupCenterView {
         prefix: String,
         result: BackupImportResult
     ) -> String {
-        "\(prefix)\nNew: \(result.insertedItemCount). Marks Added: \(result.insertedMarkCount)."
+        let counts = String(
+            localized: "New: \(result.insertedItemCount). Marks Added: \(result.insertedMarkCount)."
+        )
+        return "\(prefix)\n\(counts)"
     }
 
     private func deleteStatusMessage(for result: BackupResetResult) -> String {
-        """
-        Deleted every item from the current library.
-        Items: \(result.deletedItemCount). Marks: \(result.deletedMarkCount).
-        """
+        let format = String(
+            localized: "Deleted every item from the current library.\nItems: %lld. Marks: %lld."
+        )
+        return String(
+            format: format,
+            result.deletedItemCount,
+            result.deletedMarkCount
+        )
     }
 }

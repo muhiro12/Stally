@@ -13,7 +13,7 @@ enum StallyIntentError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .itemNotFound:
-            "Item could not be found."
+            String(localized: "Item could not be found.", table: "AppIntents")
         }
     }
 }
