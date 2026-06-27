@@ -20,18 +20,22 @@ Repository-specific agent contract for Stally.
 ## Current State
 
 Stally has re-entered rebuild implementation and now contains the rebuilt core
-Library, Archive, Review, Insights, Backup Center, Settings, and shareable-link
-surfaces plus the local development foundation for continuing the rebuild.
+Library, Archive, Review, Insights, Backup Center, Settings, shareable-link,
+CloudKit persistence, App Intents, and English/Japanese localization baselines
+plus the local development foundation for continuing the rebuild.
 
 This repository currently contains:
 
 - `Stally.xcodeproj`, with the `Stally` app target and `Stally` scheme.
-- `Stally/`, a SwiftUI app source tree under `Stally/Sources/`.
+- `Stally/`, a SwiftUI app source tree under `Stally/Sources/` plus app
+  String Catalogs under `Stally/Resources/`.
 - `StallyLibrary/Package.swift`, a local Swift package linked into the app
   target as the `StallyLibrary` product.
 - `StallyLibrary/Sources/`, which owns the current durable item, review,
   insights, backup, link, SwiftData model, persistence factory, and
   `*Operations` use cases.
+- `StallyLibrary/Sources/Resources/`, which owns package-local localized
+  library strings.
 - `StallyLibrary/Tests/`, which owns library behavior tests for the current
   item, review, insights, backup, and link operations.
 - `ci_scripts/`, which owns repository-managed lint, rule, and library-test
@@ -40,10 +44,12 @@ This repository currently contains:
   manifest.
 - Preserved product-intent documentation under `docs/`.
 
-This repository does not currently contain App Intents, Widget, Watch,
-CloudKit sync, external AI integration, ads, purchases, advanced settings, or
-MHPlatform runtime surfaces. The app target links MHUI for app-side visual
-chrome and presentation styling only.
+This repository does not currently contain Widget, Watch, external AI
+integration, ads, purchases, advanced settings, or MHPlatform runtime surfaces.
+The app target links MHUI for app-side visual chrome and presentation styling
+only. CloudKit is configured as the runtime SwiftData persistence baseline, but
+real-device iCloud sync and production CloudKit behavior are not proven by
+local simulator verification alone.
 
 ## Documentation Boundary
 
@@ -63,6 +69,8 @@ owner-directed rebuild constraints while the implementation is rebuilt.
 - `docs/rebuild-handoff.md` records the extraction audit and phase boundary.
 - `docs/rebuild-implementation-direction.md` records explicit rebuild
   direction added after the legacy extraction.
+- `docs/rebuild-implementation-principles.md` records current rebuild
+  baseline implementation principles.
 
 When editing product-intent documents, preserve the existing English voice,
 avoid speculation, and keep the distinction between product intent and
@@ -83,9 +91,9 @@ Follow explicit owner-directed rebuild constraints in
 into a full implementation plan unless the user asks.
 
 Keep the current rebuilt core surfaces as the behavior reference while
-structural work continues. Do not add App Intents, Widget, Watch, external AI
-integration, ads, purchases, CloudKit sync, advanced settings, or broad UI
-redesign work unless the user explicitly asks for that phase.
+structural work continues. Do not add Widget, Watch, external AI integration,
+ads, purchases, advanced settings, broad UI redesign work, or wider App
+Intents/CloudKit behavior unless the user explicitly asks for that phase.
 
 If a future task adds targets, schemes, packages, tests, scripts, or app
 surfaces, update this file in the same task with the concrete source
@@ -99,6 +107,9 @@ The app target should stay a thin adapter over the current product surface.
 - `Stally/Sources/App/` owns app lifecycle, exported library import, and root
   composition, including tab selection, sheet routing, and incoming link
   handling.
+- `Stally/Sources/App/Intents/` owns App Intents, App Entities, App Shortcuts,
+  dependency routing, and thin app-target adapters over public library
+  Operations.
 - `Stally/Sources/Features/Library/` owns the current SwiftUI Library, Add
   Item, Item Detail, Mark Today, Undo Today's Mark, and Quiet History views.
 - `Stally/Sources/Features/Archive/` owns the SwiftUI Archive surface.
@@ -116,12 +127,16 @@ The app target should stay a thin adapter over the current product surface.
 - `Stally/Sources/PreviewSupport/` owns DEBUG-only preview data, in-memory
   preview containers, screenshot launch routes, and screen-level previews for
   UI review. It must not become product behavior or shared-library logic.
+- `Stally/Resources/` owns app-target String Catalogs for SwiftUI, App
+  Intents, and App Shortcuts strings.
 - App views may use SwiftData environment values and `@Query` for the current
   app surface, but durable business behavior should enter through public
   `*Operations`.
 - App views should not directly create `Item`, call item mark/history helper
   methods, declare `@Model` types, or duplicate business branching that belongs
   in the library.
+- App Intents must call public `*Operations` for business behavior and should
+  not reimplement domain rules in the app target.
 
 `StallyLibrary` is the durable domain and use-case boundary.
 
@@ -137,6 +152,8 @@ The app target should stay a thin adapter over the current product surface.
 - `StallyLibrary/Sources/Link/` owns shareable destination and item link
   values, parsing results, and `StallyLinkOperations`.
 - `StallyLibrary/Sources/Persistence/` owns `StallyModelContainerFactory`.
+- `StallyLibrary/Sources/Resources/` owns library String Catalogs and is
+  processed as a Swift Package resource bundle.
 - Public business use cases that app UI, future App Intents, widgets, or other
   surfaces need should be exposed through public `*Operations` facades.
 - Implementation helpers should stay internal unless they are stable value,
@@ -166,6 +183,10 @@ Use MHUI intentionally and take full advantage of SDK capabilities available at
 the iOS 27 baseline. Do not restrict Stally to minimal or legacy-compatible
 MHUI usage without a concrete product or technical reason.
 
+CloudKit, App Intents, and English/Japanese localization are rebuild baseline
+requirements for Stally. Add them early in rebuild work and preserve them as
+future surfaces are added.
+
 For app UI, treat Apple Human Interface Guidelines and native Apple controls
 as the foundation. Use MHUI and MHDesign as a shared app-family style layer for
 spacing, hierarchy, row rhythm, section treatment, metadata, badges, empty
@@ -184,6 +205,8 @@ Treat package declaration and product linking as separate decisions.
   linting and should not be treated as a runtime dependency.
 - `MHUI` re-exports `MHDesign`; do not add a separate `MHDesign` product link
   unless a concrete build or target-boundary need appears.
+- CloudKit is enabled through SwiftData configuration and app entitlements. It
+  is not a package dependency.
 - `MHPlatform` is intentionally not linked yet. Recheck Incomes and add or
   link it only when a concrete Stally implementation phase needs its package
   products.
@@ -215,6 +238,25 @@ Use this expected verification shape:
   the `Stally` scheme.
 - For runtime or UI-sensitive changes, use XcodeBuildMCP `build_run_sim`,
   `launch_app_sim`, `snapshot_ui`, and `screenshot` as appropriate.
+
+For localization changes, run the string-catalog audit with the required
+English and Japanese locale set:
+
+```sh
+CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
+python3 "$CODEX_HOME/skills/string-catalog-maintainer/scripts/audit_xcstrings.py" \
+  --project-root . \
+  --required-locales en,ja \
+  --format markdown
+```
+
+For App Intents changes, confirm the app build extracts App Intents metadata
+and that user-facing intent strings remain catalog-backed.
+
+For CloudKit or SwiftData container changes, run an app runtime check and
+inspect logs for fatal CloudKit, SwiftData, ModelContainer, App Intents, crash,
+or exception output. A local simulator run does not prove real-device iCloud
+sync or production CloudKit environment behavior.
 
 The generated project-level `StallyLibrary` package product scheme is currently
 buildable through XcodeBuildMCP, but package tests are driven by

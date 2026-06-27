@@ -3,11 +3,13 @@
 ## Purpose
 
 This report records the current SwiftUI preview and screenshot coverage for
-the rebuilt Stally core surfaces after the MHUI and MHDesign presentation pass.
+the rebuilt Stally core surfaces after the MHUI and MHDesign presentation pass
+and the CloudKit, App Intents, and localization rebuild baseline pass.
 
-The pass intentionally improves the existing UI only. It does not add product
-features, change the SwiftData schema, add Operations, or change the
-StallyLibrary package boundary.
+The MHUI pass intentionally improved the existing UI only. The later baseline
+pass added CloudKit-aware persistence setup, App Intents adapters, and
+English/Japanese localization infrastructure without adding new product
+surfaces.
 
 ## HIG And MHUI Style Policy
 
@@ -165,6 +167,30 @@ simulator through the DEBUG screenshot launch routes.
   `docs/ui-preview-screenshots/settings.jpg`
 - Add Item:
   `docs/ui-preview-screenshots/add-item.jpg`
+- English localization smoke:
+  `docs/ui-preview-screenshots/localization-library-empty-en.jpg`
+- Japanese localization smoke:
+  `docs/ui-preview-screenshots/localization-library-empty-ja.jpg`
+
+The localization smoke screenshots use the Library empty state because it
+exercises navigation, tab labels, empty-state copy, and a primary action while
+remaining deterministic through the in-memory preview container.
+
+## Localization Baseline
+
+String Catalog coverage added for this baseline:
+
+- `Stally/Resources/Localizable.xcstrings`
+- `Stally/Resources/AppIntents.xcstrings`
+- `Stally/Resources/AppShortcuts.xcstrings`
+- `StallyLibrary/Sources/Resources/Localizable.xcstrings`
+
+English remains the source language. Japanese is the required additional
+baseline language.
+
+The app build processed the app catalogs into English and Japanese localized
+resources, copied the `StallyLibrary_StallyLibrary.bundle`, and extracted
+`Metadata.appintents`.
 
 ## Adopted MHUI And MHDesign APIs
 

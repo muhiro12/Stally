@@ -10,9 +10,11 @@ now contains a fresh Apple-platform app project plus a local library package:
 - `Stally.xcodeproj`, with the `Stally` app target and `Stally` scheme.
 - `Stally/`, a SwiftUI app source tree for the rebuilt Library, Archive,
   Review, Insights, Backup Center, Settings, shareable-link surfaces,
-  app-side MHUI presentation chrome, and DEBUG-only preview support.
+  App Intents adapters, app-side MHUI presentation chrome, English and
+  Japanese string catalogs, and DEBUG-only preview support.
 - `StallyLibrary/`, a local Swift package for the durable item domain,
-  SwiftData models, persistence setup, and product operations.
+  SwiftData models, CloudKit-aware persistence setup, localized library
+  resources, and product operations.
 - `StallyLibrary/Tests/`, Swift Testing coverage for the current domain
   operations.
 - `ci_scripts/`, repository-managed lint, rule, and library-test entrypoints.
@@ -37,6 +39,7 @@ Use the documents under `docs/` as the rebuild documentation set:
 - `docs/product-language.md`
 - `docs/rebuild-handoff.md`
 - `docs/rebuild-implementation-direction.md`
+- `docs/rebuild-implementation-principles.md`
 
 These documents describe what Stally is, why it exists, which concepts must
 survive, and which legacy implementation details were intentionally discarded.
@@ -49,11 +52,13 @@ created. This README and `AGENTS.md` describe the current repository state.
 ## Current Repository State
 
 This repository currently contains rebuilt core Stally surfaces for Library,
-Archive, Review, Insights, Backup Center, Settings, and shareable links. The
-app target owns SwiftUI presentation, app lifecycle wiring, navigation, MHUI
-visual chrome, file import/export presentation, and route handling. The local
-`StallyLibrary` package owns SwiftData models, the model-container factory, and
-durable operations for items, review lanes, insights, backups, and links.
+Archive, Review, Insights, Backup Center, Settings, shareable links, CloudKit
+persistence baseline, App Intents, and English/Japanese localization. The app
+target owns SwiftUI presentation, app lifecycle wiring, navigation, MHUI visual
+chrome, file import/export presentation, route handling, App Intents adapters,
+and app string catalogs. The local `StallyLibrary` package owns SwiftData
+models, the model-container factory, localized library resources, and durable
+operations for items, review lanes, insights, backups, and links.
 
 Further implementation decisions should continue to use the preserved product
 intent and owner-directed rebuild direction in `docs/`, without inferring

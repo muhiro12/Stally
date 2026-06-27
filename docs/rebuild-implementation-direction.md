@@ -128,6 +128,31 @@ Use platform-native persistence and Apple framework patterns when choosing the
 future implementation, but do not treat the removed legacy SwiftData schema as
 the required design.
 
+## Rebuild Baseline Infrastructure
+
+CloudKit, App Intents, and English/Japanese localization are standard rebuild
+baseline infrastructure for Stally. They should be introduced early enough
+that the SwiftData schema, Operations boundary, app adapters, previews,
+screenshots, tests, and verification contract grow around them rather than
+receiving them as late release additions.
+
+CloudKit should stay a persistence configuration concern, not a reason to add
+an unnecessary repository or service layer. Preview and test containers should
+remain in-memory and separate from the runtime CloudKit-capable persistent
+configuration.
+
+App Intents should expose existing Stally behavior through public
+`*Operations` facades and thin app-target adapters. The `StallyLibrary` package
+should not gain an AppIntents dependency unless a later concrete target
+boundary requires it.
+
+Localization should keep English as the source language and Japanese as a
+supported additional language. UI, App Intents, App Shortcuts, and reusable
+library error or presentation strings should be catalog-backed as the app
+grows. Product nouns such as Stally, Item, Mark, Library, Archive, Review,
+Insights, Backup Center, and Quiet History should preserve their documented
+meaning in both languages.
+
 ## Boundaries
 
 This document does not create the new Xcode project.
