@@ -166,6 +166,14 @@ Use MHUI intentionally and take full advantage of SDK capabilities available at
 the iOS 27 baseline. Do not restrict Stally to minimal or legacy-compatible
 MHUI usage without a concrete product or technical reason.
 
+For app UI, treat Apple Human Interface Guidelines and native Apple controls
+as the foundation. Use MHUI and MHDesign as a shared app-family style layer for
+spacing, hierarchy, row rhythm, section treatment, metadata, badges, empty
+states, summary surfaces, action emphasis, destructive and safety treatment,
+feedback, and app-wide visual consistency. Do not replace native `List`,
+`Form`, navigation, sharing, sheets, menus, alerts, or confirmation behavior
+merely to use MHUI.
+
 ## Package Posture
 
 Treat package declaration and product linking as separate decisions.
