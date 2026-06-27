@@ -39,6 +39,7 @@ struct ContentView: View {
 
     @State private var selectedTab: StallyTab
     @State private var presentedSheet: PresentedSheet?
+    @State private var intentRouter = StallyIntentRouter.shared
     @State private var isPresentingUnsupportedLinkAlert = false
 
     #if DEBUG
@@ -113,6 +114,9 @@ struct ContentView: View {
             Text("This link is not supported by this version of Stally.")
         }
         .onOpenURL(perform: openLink)
+        .task(id: intentRouter.pendingRoute?.id) {
+            applyPendingIntentRouteIfNeeded()
+        }
         #if DEBUG
         .task(id: items.count) {
             applyInitialPreviewRouteIfNeeded()
@@ -212,6 +216,15 @@ struct ContentView: View {
 
     private func showUnsupportedLinkAlert() {
         isPresentingUnsupportedLinkAlert = true
+    }
+
+    private func applyPendingIntentRouteIfNeeded() {
+        guard let route = intentRouter.pendingRoute else {
+            return
+        }
+
+        openSupportedLink(route.link)
+        intentRouter.consume(route)
     }
 
     #if DEBUG

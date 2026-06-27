@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import AppIntents
 import MHUI
 import OSLog
 import SwiftData
@@ -21,7 +22,40 @@ struct StallyApp: App {
     private static let previewLaunchConfiguration = StallyPreviewLaunchConfiguration.current
     #endif
 
-    let sharedModelContainer: ModelContainer = {
+    let sharedModelContainer: ModelContainer
+
+    var body: some Scene {
+        WindowGroup {
+            rootContent
+                .mhTheme(.standard)
+                .mhGlassPolicy(.automatic)
+        }
+        .modelContainer(sharedModelContainer)
+    }
+
+    @ViewBuilder private var rootContent: some View {
+        #if DEBUG
+        if let route = Self.previewLaunchConfiguration.route {
+            ContentView(initialPreviewRoute: route)
+        } else {
+            ContentView()
+        }
+        #else
+        ContentView()
+        #endif
+    }
+
+    @MainActor
+    init() {
+        let modelContainer = Self.makeModelContainer()
+        sharedModelContainer = modelContainer
+        Self.registerDependencies(modelContainer: modelContainer)
+        StallyShortcuts.updateAppShortcutParameters()
+    }
+}
+
+private extension StallyApp {
+    static func makeModelContainer() -> ModelContainer {
         #if DEBUG
         if let modelContainer = Self.previewLaunchConfiguration.modelContainer {
             return modelContainer
@@ -44,26 +78,12 @@ struct StallyApp: App {
                 fatalError("Could not create local ModelContainer: \(error)")
             }
         }
-    }()
-
-    var body: some Scene {
-        WindowGroup {
-            rootContent
-                .mhTheme(.standard)
-                .mhGlassPolicy(.automatic)
-        }
-        .modelContainer(sharedModelContainer)
     }
 
-    @ViewBuilder private var rootContent: some View {
-        #if DEBUG
-        if let route = Self.previewLaunchConfiguration.route {
-            ContentView(initialPreviewRoute: route)
-        } else {
-            ContentView()
+    @MainActor
+    static func registerDependencies(modelContainer: ModelContainer) {
+        AppDependencyManager.shared.add {
+            modelContainer
         }
-        #else
-        ContentView()
-        #endif
     }
 }

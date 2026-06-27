@@ -89,6 +89,50 @@ struct ItemOperationsTests {
     }
 
     @Test
+    func `items fetches newest first and by stable identifier`() throws {
+        let context = try makeContext()
+        let olderItem = try createItem(
+            context: context,
+            name: "Canvas Tote",
+            createdAt: Fixtures.day(offset: -2)
+        )
+        let newerItem = try createItem(
+            context: context,
+            name: "Daily Field Notes",
+            category: .notebooks,
+            createdAt: Fixtures.today
+        )
+
+        let fetchedItems = try ItemOperations.items(context: context)
+        let fetchedItem = try ItemOperations.item(context: context, uuid: olderItem.uuid)
+
+        #expect(fetchedItems.map(\.uuid) == [newerItem.uuid, olderItem.uuid])
+        #expect(fetchedItem?.persistentModelID == olderItem.persistentModelID)
+    }
+
+    @Test
+    func `items matching name supports system surface search`() throws {
+        let context = try makeContext()
+        let coat = try createItem(
+            context: context,
+            name: "Black Wool Coat",
+            category: .clothing
+        )
+        _ = try createItem(
+            context: context,
+            name: "Canvas Tote",
+            category: .bags
+        )
+
+        let matches = try ItemOperations.items(
+            context: context,
+            matchingName: " wool "
+        )
+
+        #expect(matches.map(\.uuid) == [coat.uuid])
+    }
+
+    @Test
     func `mark adds only one mark per item per day`() throws {
         let context = try makeContext()
         let item = try createItem(context: context)

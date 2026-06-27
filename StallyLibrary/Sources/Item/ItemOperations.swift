@@ -49,6 +49,43 @@ public enum ItemOperations {
             }
     }
 
+    /// Fetches Library items in newest-created order for app and system surfaces.
+    public static func items(context: ModelContext) throws -> [Item] {
+        var descriptor = FetchDescriptor<Item>(
+            sortBy: [
+                .init(\.createdAt, order: .reverse)
+            ]
+        )
+        descriptor.includePendingChanges = true
+        return try context.fetch(descriptor)
+    }
+
+    /// Fetches the item with a stable cross-surface identifier.
+    public static func item(
+        context: ModelContext,
+        uuid: UUID
+    ) throws -> Item? {
+        try items(context: context).first { item in
+            item.uuid == uuid
+        }
+    }
+
+    /// Fetches items whose user-facing name matches the query.
+    public static func items(
+        context: ModelContext,
+        matchingName query: String
+    ) throws -> [Item] {
+        let normalizedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !normalizedQuery.isEmpty else {
+            return try items(context: context)
+        }
+
+        return try items(context: context).filter { item in
+            item.name.localizedCaseInsensitiveContains(normalizedQuery)
+        }
+    }
+
     /// Returns archived items in newest-archived order.
     public static func archivedItems(from items: [Item]) -> [Item] {
         items
