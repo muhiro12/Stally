@@ -6,16 +6,22 @@
 //
 
 import MHUI
+import OSLog
 import SwiftData
 import SwiftUI
 
 @main
 struct StallyApp: App {
+    private static let logger = Logger(
+        subsystem: "com.muhiro12.Stally",
+        category: "ModelContainer"
+    )
+
     #if DEBUG
     private static let previewLaunchConfiguration = StallyPreviewLaunchConfiguration.current
     #endif
 
-    var sharedModelContainer: ModelContainer = {
+    let sharedModelContainer: ModelContainer = {
         #if DEBUG
         if let modelContainer = Self.previewLaunchConfiguration.modelContainer {
             return modelContainer
@@ -25,7 +31,18 @@ struct StallyApp: App {
         do {
             return try StallyModelContainerFactory.persistent()
         } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+            Self.logger.notice(
+                """
+                model_container.cloudkit_unavailable_falling_back_local: \
+                \(error.localizedDescription, privacy: .public)
+                """
+            )
+
+            do {
+                return try StallyModelContainerFactory.persistent(syncsWithCloudKit: false)
+            } catch {
+                fatalError("Could not create local ModelContainer: \(error)")
+            }
         }
     }()
 

@@ -12,12 +12,11 @@ import SwiftData
 @Model
 public final class ItemMark {
     /// Stable mark identifier for backups and cross-surface references.
-    @Attribute(.unique)
-    public var uuid: UUID
+    public var uuid = UUID()
     /// Start-of-day date for the marked calendar day.
-    public var day: Date
+    public var day = Date()
     /// Date when this mark record was created.
-    public var createdAt: Date
+    public var createdAt = Date()
     /// The item this mark belongs to.
     public var item: Item?
 
