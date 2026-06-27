@@ -46,10 +46,11 @@ This repository currently contains:
 
 This repository does not currently contain Widget, Watch, external AI
 integration, ads, purchases, advanced settings, or MHPlatform runtime surfaces.
-The app target links MHUI for app-side visual chrome and presentation styling
-only. CloudKit is configured as the runtime SwiftData persistence baseline, but
-real-device iCloud sync and production CloudKit behavior are not proven by
-local simulator verification alone.
+`StallyLibrary` links `MHPlatformCore` for shareable-link deep-link route
+encoding. The app target links MHUI for app-side visual chrome and
+presentation styling only. CloudKit is configured as the runtime SwiftData
+persistence baseline, but real-device iCloud sync and production CloudKit
+behavior are not proven by local simulator verification alone.
 
 ## Documentation Boundary
 
@@ -150,7 +151,8 @@ The app target should stay a thin adapter over the current product surface.
 - `StallyLibrary/Sources/Backup/` owns versioned backup snapshots, import
   previews/results, validation issues, reset results, and `BackupOperations`.
 - `StallyLibrary/Sources/Link/` owns shareable destination and item link
-  values, parsing results, and `StallyLinkOperations`.
+  values, MHPlatformCore deep-link route encoding, parsing results, and
+  `StallyLinkOperations`.
 - `StallyLibrary/Sources/Persistence/` owns `StallyModelContainerFactory`.
 - `StallyLibrary/Sources/Resources/` owns library String Catalogs and is
   processed as a Swift Package resource bundle.
@@ -201,15 +203,18 @@ Treat package declaration and product linking as separate decisions.
 
 - The app target currently links the local `StallyLibrary` product and the
   remote `MHUI` product for presentation styling.
+- `StallyLibrary` declares `MHPlatform` and links the `MHPlatformCore` product
+  for shared deep-link route contracts.
 - `SwiftLintPlugins` is declared in `Stally.xcodeproj` for repository-managed
   linting and should not be treated as a runtime dependency.
 - `MHUI` re-exports `MHDesign`; do not add a separate `MHDesign` product link
   unless a concrete build or target-boundary need appears.
 - CloudKit is enabled through SwiftData configuration and app entitlements. It
   is not a package dependency.
-- `MHPlatform` is intentionally not linked yet. Recheck Incomes and add or
-  link it only when a concrete Stally implementation phase needs its package
-  products.
+- The app target does not currently link the `MHPlatform` runtime umbrella.
+  Recheck Incomes before adding runtime products such as route inbox,
+  navigation handoff, logging bootstrap, preferences, review flow, ads,
+  purchases, or notification delivery.
 - Do not add runtime products solely because Incomes or Fluel declares them.
 
 ## Expected Apple Implementation Contract

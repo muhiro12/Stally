@@ -15,9 +15,21 @@ let package = Package( // swiftlint:disable:this prefixed_toplevel_constant
             targets: ["StallyLibrary"]
         )
     ],
+    dependencies: [
+        .package(
+            url: "https://github.com/muhiro12/MHPlatform",
+            "1.0.0"..<"2.0.0"
+        )
+    ],
     targets: [
         .target(
             name: "StallyLibrary",
+            dependencies: [
+                .product(
+                    name: "MHPlatformCore",
+                    package: "MHPlatform"
+                )
+            ],
             path: "Sources",
             resources: [
                 .process("Resources")

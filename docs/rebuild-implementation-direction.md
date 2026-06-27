@@ -78,9 +78,10 @@ As of June 22, 2026, the Incomes package baseline includes:
 - `SwiftLintPlugins` from
   `https://github.com/SimplyDanny/SwiftLintPlugins`.
 
-For a future shared library package, use Incomes as the reference for choosing
+For the shared library package, use Incomes as the reference for choosing
 library-level package products such as `MHPlatformCore` when only core platform
-support is needed.
+support is needed. The current StallyLibrary package follows this for
+shareable-link deep-link route encoding.
 
 For app targets, use Incomes as the reference for package products such as
 `MHPlatform`, `MHPreferences`, and the relevant MHUI products. Recheck Incomes

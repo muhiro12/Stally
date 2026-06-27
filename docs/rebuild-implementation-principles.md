@@ -30,6 +30,11 @@ item creation, marking, archiving, search, review, insights, backup, or link
 logic. Add or extend Operations before exposing a new cross-surface business
 use case.
 
+Shareable-link URL grammar belongs to `StallyLibrary` and should use the
+shared app-family deep-link route primitives. The app target should apply
+resolved links to its current navigation state instead of duplicating URL
+parsing rules.
+
 Preview and tests should use in-memory containers. Runtime should use the
 CloudKit-capable persistent configuration, with a local persistent fallback
 only for recoverable CloudKit initialization failure.
