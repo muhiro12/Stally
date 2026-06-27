@@ -64,15 +64,53 @@ struct BackupOperationsSafetyTests {
         )
 
         #expect(!preview.canImport)
-        #expect(preview.skippedItemCount == 1)
+        #expect(preview.skippedItemCount == 2)
         #expect(
             preview.validationIssues.map(\.kind) == [
                 .unsupportedSchemaVersion,
                 .duplicateItemID,
                 .duplicateMarkID,
+                .itemNameRequired,
                 .unknownCategory
             ]
         )
+    }
+
+    @Test
+    func `replace rejects nameless backup items before deleting local library`() throws {
+        let context = try makeContext()
+        _ = try createItem(context: context, name: "Local Item")
+        let snapshot = BackupSnapshot(
+            exportedAt: Fixtures.today,
+            items: [
+                .init(
+                    id: UUID(),
+                    name: "   ",
+                    categoryRawValue: ItemCategory.other.rawValue,
+                    note: "",
+                    photoData: nil,
+                    createdAt: Fixtures.today,
+                    archivedAt: nil,
+                    marks: []
+                )
+            ]
+        )
+        let expectedPreview = BackupOperations.preview(
+            snapshot: snapshot,
+            currentItems: try fetchItems(context),
+            calendar: Fixtures.calendar
+        )
+
+        #expect(throws: BackupError.validationFailed(expectedPreview)) {
+            try BackupOperations.replaceLibrary(
+                snapshot: snapshot,
+                context: context,
+                calendar: Fixtures.calendar
+            )
+        }
+
+        let items = try fetchItems(context)
+        #expect(items.map(\.name) == ["Local Item"])
     }
 
     @Test
@@ -132,7 +170,8 @@ struct BackupOperationsSafetyTests {
             exportedAt: Fixtures.today,
             items: [
                 validBackupItem(itemID: duplicateItemID, markID: duplicateMarkID),
-                unknownCategoryBackupItem(itemID: duplicateItemID, markID: duplicateMarkID)
+                unknownCategoryBackupItem(itemID: duplicateItemID, markID: duplicateMarkID),
+                namelessBackupItem()
             ],
             schemaVersion: BackupSnapshot.currentSchemaVersion + 1
         )
@@ -165,6 +204,19 @@ struct BackupOperationsSafetyTests {
             marks: [
                 .init(id: markID, day: Fixtures.day(offset: -1), createdAt: Fixtures.today)
             ]
+        )
+    }
+
+    private func namelessBackupItem() -> BackupItem {
+        .init(
+            id: UUID(),
+            name: "   ",
+            categoryRawValue: ItemCategory.other.rawValue,
+            note: "",
+            photoData: nil,
+            createdAt: Fixtures.today,
+            archivedAt: nil,
+            marks: []
         )
     }
 }

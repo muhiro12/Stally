@@ -32,9 +32,7 @@ public extension BackupOperations {
         currentItems: [Item],
         calendar: Calendar = .current
     ) -> BackupPreview {
-        let validItems = snapshot.items.filter { item in
-            ItemCategory(rawValue: item.categoryRawValue) != nil
-        }
+        let validItems = validImportItems(in: snapshot.items)
 
         return .init(
             itemCount: snapshot.items.count,
@@ -81,13 +79,30 @@ extension BackupOperations {
 
         issues.append(contentsOf: duplicateItemIDIssues(in: snapshot.items))
         issues.append(contentsOf: duplicateMarkIDIssues(in: snapshot.items))
+        issues.append(contentsOf: itemNameRequiredIssues(in: snapshot.items))
         issues.append(contentsOf: unknownCategoryIssues(in: snapshot.items))
 
         return issues
     }
+
+    static func itemFormInput(from item: BackupItem) -> ItemFormInput {
+        .init(
+            name: item.name,
+            category: ItemCategory(rawValue: item.categoryRawValue) ?? .other,
+            note: item.note,
+            photoData: item.photoData
+        )
+    }
 }
 
 private extension BackupOperations {
+    static func validImportItems(in items: [BackupItem]) -> [BackupItem] {
+        items.filter { item in
+            ItemCategory(rawValue: item.categoryRawValue) != nil
+                && !itemFormInput(from: item).normalizedName.isEmpty
+        }
+    }
+
     static func archivedItemCount(in items: [BackupItem]) -> Int {
         items.filter { item in
             item.archivedAt != nil
@@ -135,6 +150,16 @@ private extension BackupOperations {
         return duplicateIDs.map { id in
             .init(kind: .duplicateMarkID, value: id.uuidString)
         }
+    }
+
+    static func itemNameRequiredIssues(in items: [BackupItem]) -> [BackupValidationIssue] {
+        items
+            .filter { item in
+                itemFormInput(from: item).normalizedName.isEmpty
+            }
+            .map { item in
+                .init(kind: .itemNameRequired, value: item.id.uuidString)
+            }
     }
 
     static func unknownCategoryIssues(in items: [BackupItem]) -> [BackupValidationIssue] {

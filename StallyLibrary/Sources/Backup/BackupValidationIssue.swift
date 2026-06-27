@@ -13,6 +13,7 @@ public struct BackupValidationIssue: Equatable, Identifiable, Sendable {
     public enum Kind: String, Equatable, Sendable {
         case duplicateItemID
         case duplicateMarkID
+        case itemNameRequired
         case unknownCategory
         case unreadableBackup
         case unsupportedSchemaVersion
@@ -32,6 +33,8 @@ public struct BackupValidationIssue: Equatable, Identifiable, Sendable {
             "Duplicate Item ID"
         case .duplicateMarkID:
             "Duplicate Mark ID"
+        case .itemNameRequired:
+            "Item name is required."
         case .unknownCategory:
             "Unknown Category"
         case .unreadableBackup:

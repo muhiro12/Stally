@@ -132,6 +132,7 @@ struct BackupOperationsTests {
         #expect(mergedExistingItem.note == "Usually comes with me when I need one extra layer.")
         #expect(ItemOperations.historySnapshot(for: mergedExistingItem, calendar: Fixtures.calendar).totalMarks == 2)
         #expect(insertedItem.name == "Daily Field Notes")
+        #expect(insertedItem.note == "Still waiting for its first stretch of regular use.")
         #expect(ItemOperations.historySnapshot(for: insertedItem, calendar: Fixtures.calendar).totalMarks == 1)
     }
 
@@ -255,9 +256,9 @@ struct BackupOperationsTests {
     private func newBackupItem(id: UUID) -> BackupItem {
         .init(
             id: id,
-            name: "Daily Field Notes",
+            name: "  Daily Field Notes  ",
             categoryRawValue: ItemCategory.notebooks.rawValue,
-            note: "Still waiting for its first stretch of regular use.",
+            note: "  Still waiting for its first stretch of regular use.  ",
             photoData: nil,
             createdAt: Fixtures.day(offset: -3),
             archivedAt: nil,

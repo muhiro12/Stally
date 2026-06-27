@@ -50,7 +50,7 @@ public extension BackupOperations {
             currentItems: currentItems,
             calendar: calendar
         )
-        try context.save()
+        try saveOrRollback(context)
 
         return .init(
             preview: preview,
@@ -94,7 +94,7 @@ public extension BackupOperations {
             throw BackupError.validationFailed(preview)
         }
 
-        try deleteEverything(context: context)
+        _ = try prepareDeleteEverything(context: context)
         let importResult = importItems(
             snapshot.items,
             into: context,
@@ -102,7 +102,7 @@ public extension BackupOperations {
             currentItems: [],
             calendar: calendar
         )
-        try context.save()
+        try saveOrRollback(context)
 
         return .init(
             preview: preview,
@@ -115,21 +115,9 @@ public extension BackupOperations {
     /// Intentionally deletes every item and mark from the local library.
     @discardableResult
     static func deleteEverything(context: ModelContext) throws -> BackupResetResult {
-        let items = try fetchItems(context)
-        let markCount = items.reduce(0) { count, item in
-            count + item.marks.count
-        }
-
-        for item in items {
-            context.delete(item)
-        }
-
-        try context.save()
-
-        return .init(
-            deletedItemCount: items.count,
-            deletedMarkCount: markCount
-        )
+        let result = try prepareDeleteEverything(context: context)
+        try saveOrRollback(context)
+        return result
     }
 }
 
@@ -146,6 +134,22 @@ extension BackupOperations {
 }
 
 private extension BackupOperations {
+    static func prepareDeleteEverything(context: ModelContext) throws -> BackupResetResult {
+        let items = try fetchItems(context)
+        let markCount = items.reduce(0) { count, item in
+            count + item.marks.count
+        }
+
+        for item in items {
+            context.delete(item)
+        }
+
+        return .init(
+            deletedItemCount: items.count,
+            deletedMarkCount: markCount
+        )
+    }
+
     static func importItems(
         _ backupItems: [BackupItem],
         into context: ModelContext,
@@ -235,10 +239,12 @@ private extension BackupOperations {
     }
 
     static func item(from backupItem: BackupItem) -> Item {
-        .init(
-            name: backupItem.name,
+        let input = itemFormInput(from: backupItem)
+
+        return .init(
+            name: input.normalizedName,
             category: ItemCategory(rawValue: backupItem.categoryRawValue) ?? .other,
-            note: backupItem.note,
+            note: input.normalizedNote,
             createdAt: backupItem.createdAt,
             uuid: backupItem.id,
             photoData: backupItem.photoData,
@@ -263,5 +269,14 @@ private extension BackupOperations {
 
     static func fetchItems(_ context: ModelContext) throws -> [Item] {
         try context.fetch(.init())
+    }
+
+    static func saveOrRollback(_ context: ModelContext) throws {
+        do {
+            try context.save()
+        } catch {
+            context.rollback()
+            throw error
+        }
     }
 }
