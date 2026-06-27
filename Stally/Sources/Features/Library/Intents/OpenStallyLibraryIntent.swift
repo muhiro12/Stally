@@ -14,7 +14,7 @@ struct OpenStallyLibraryIntent: AppIntent {
 
     @MainActor
     func perform() -> some IntentResult {
-        StallyIntentRouter.shared.open(.destination(.library))
+        StallyIntentRouteOpener.store(.destination(.library))
         return .result()
     }
 }

@@ -13,11 +13,12 @@ import SwiftUI
 @MainActor
 struct StallyPreviewContainer<Content: View>: View {
     private let container: ModelContainer
+    private let platformEnvironment: StallyPlatformEnvironment
     private let content: ([Item]) -> Content
 
     var body: some View {
         content(StallyPreviewData.items(in: container))
-            .modelContainer(container)
+            .stallyPreviewPlatformEnvironment(platformEnvironment)
             .environment(\.calendar, StallyPreviewData.calendar)
             .mhTheme(.standard)
             .mhGlassPolicy(.automatic)
@@ -26,7 +27,11 @@ struct StallyPreviewContainer<Content: View>: View {
     init(
         @ViewBuilder content: @escaping ([Item]) -> Content
     ) {
-        container = StallyPreviewData.makeContainer(for: .typical)
+        let resolvedContainer = StallyPreviewData.makeContainer(for: .typical)
+        container = resolvedContainer
+        platformEnvironment = Self.makePlatformEnvironment(
+            modelContainer: resolvedContainer
+        )
         self.content = content
     }
 
@@ -34,8 +39,22 @@ struct StallyPreviewContainer<Content: View>: View {
         _ scenario: StallyPreviewScenario,
         @ViewBuilder content: @escaping ([Item]) -> Content
     ) {
-        container = StallyPreviewData.makeContainer(for: scenario)
+        let resolvedContainer = StallyPreviewData.makeContainer(for: scenario)
+        container = resolvedContainer
+        platformEnvironment = Self.makePlatformEnvironment(
+            modelContainer: resolvedContainer
+        )
         self.content = content
+    }
+
+    private static func makePlatformEnvironment(
+        modelContainer: ModelContainer
+    ) -> StallyPlatformEnvironment {
+        StallyPlatformEnvironmentFactory.make(
+            modelContainer: modelContainer,
+            platformMode: .preview,
+            logging: StallyLogging.makeBootstrap()
+        )
     }
 }
 #endif

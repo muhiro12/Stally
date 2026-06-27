@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		B8AB10002FED000000000001 /* StallyLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = B8AB10002FED000000000004 /* StallyLibrary */; };
 		B8C000012FED000000000003 /* MHUI in Frameworks */ = {isa = PBXBuildFile; productRef = B8C000012FED000000000002 /* MHUI */; };
+		B8D000012FED000000000003 /* MHAppRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = B8D000012FED000000000002 /* MHAppRuntime */; };
+		B8D000012FED000000000005 /* MHPlatformCore in Frameworks */ = {isa = PBXBuildFile; productRef = B8D000012FED000000000004 /* MHPlatformCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,7 +22,7 @@
 		AD75E99D2FED371100094EFB /* Exceptions for "Stally" folder in "Stally" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Configurations/Info.plist,
 			);
 			target = AD75E98F2FED371000094EFB /* Stally */;
 		};
@@ -41,6 +43,8 @@
 		AD75E98D2FED371000094EFB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				B8D000012FED000000000003 /* MHAppRuntime in Frameworks */,
+				B8D000012FED000000000005 /* MHPlatformCore in Frameworks */,
 				B8C000012FED000000000003 /* MHUI in Frameworks */,
 				B8AB10002FED000000000001 /* StallyLibrary in Frameworks */,
 			);
@@ -83,6 +87,8 @@
 			);
 			name = Stally;
 			packageProductDependencies = (
+				B8D000012FED000000000002 /* MHAppRuntime */,
+				B8D000012FED000000000004 /* MHPlatformCore */,
 				B8C000012FED000000000002 /* MHUI */,
 				B8AB10002FED000000000004 /* StallyLibrary */,
 			);
@@ -117,6 +123,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				B8AB10002FED000000000003 /* XCLocalSwiftPackageReference "StallyLibrary" */,
+				B8D000012FED000000000001 /* XCRemoteSwiftPackageReference "MHPlatform" */,
 				B8C000012FED000000000001 /* XCRemoteSwiftPackageReference "MHUI" */,
 				B8AB10012FED000000000001 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 			);
@@ -152,7 +159,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Stally/Stally.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Stally/Configurations/Stally.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 66PKF55HK5;
@@ -161,7 +168,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Stally/Info.plist;
+				INFOPLIST_FILE = Stally/Configurations/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -198,7 +205,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Stally/Stally.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Stally/Configurations/Stally.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 66PKF55HK5;
@@ -207,7 +214,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Stally/Info.plist;
+				INFOPLIST_FILE = Stally/Configurations/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -400,6 +407,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		B8D000012FED000000000001 /* XCRemoteSwiftPackageReference "MHPlatform" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/muhiro12/MHPlatform";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -411,6 +426,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B8C000012FED000000000001 /* XCRemoteSwiftPackageReference "MHUI" */;
 			productName = MHUI;
+		};
+		B8D000012FED000000000002 /* MHAppRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B8D000012FED000000000001 /* XCRemoteSwiftPackageReference "MHPlatform" */;
+			productName = MHAppRuntime;
+		};
+		B8D000012FED000000000004 /* MHPlatformCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B8D000012FED000000000001 /* XCRemoteSwiftPackageReference "MHPlatform" */;
+			productName = MHPlatformCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

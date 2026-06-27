@@ -11,13 +11,14 @@ struct OpenStallyItemIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Open Item", table: "AppIntents")
     static let description = IntentDescription("Open Stally to an item detail.")
     static let openAppWhenRun = true
+    static let isDiscoverable = false
 
     @Parameter(title: "Item")
     private var item: StallyItemEntity
 
     @MainActor
     func perform() -> some IntentResult {
-        StallyIntentRouter.shared.open(.item(item.uuid))
+        StallyIntentRouteOpener.store(.item(item.uuid))
         return .result()
     }
 }

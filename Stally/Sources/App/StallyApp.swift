@@ -6,31 +6,26 @@
 //
 
 import AppIntents
+import MHPlatformCore
 import MHUI
-import OSLog
 import SwiftData
 import SwiftUI
 
 @main
 struct StallyApp: App {
-    private static let logger = Logger(
-        subsystem: "com.muhiro12.Stally",
-        category: "ModelContainer"
-    )
-
     #if DEBUG
     private static let previewLaunchConfiguration = StallyPreviewLaunchConfiguration.current
     #endif
 
-    let sharedModelContainer: ModelContainer
+    private let platformEnvironment: StallyPlatformEnvironment
 
     var body: some Scene {
         WindowGroup {
             rootContent
+                .stallyPlatformEnvironment(platformEnvironment)
                 .mhTheme(.standard)
                 .mhGlassPolicy(.automatic)
         }
-        .modelContainer(sharedModelContainer)
     }
 
     @ViewBuilder private var rootContent: some View {
@@ -47,43 +42,80 @@ struct StallyApp: App {
 
     @MainActor
     init() {
-        let modelContainer = Self.makeModelContainer()
-        sharedModelContainer = modelContainer
-        Self.registerDependencies(modelContainer: modelContainer)
+        let logging = StallyLogging.makeBootstrap()
+        let startupLogger = StallyLogging.logger(
+            logging: logging,
+            category: StallyLogging.Category.appStartup,
+            source: #fileID
+        )
+        startupLogger.notice("startup.begin")
+
+        let modelContainer = Self.makeModelContainer(startupLogger: startupLogger)
+        let resolvedPlatformEnvironment = StallyPlatformEnvironmentFactory.make(
+            modelContainer: modelContainer,
+            platformMode: .production,
+            logging: logging
+        )
+        platformEnvironment = resolvedPlatformEnvironment
+        startupLogger.notice("startup.dependencies_ready")
+
+        Self.registerDependencies(
+            platformEnvironment,
+            startupLogger: startupLogger
+        )
         StallyShortcuts.updateAppShortcutParameters()
+        startupLogger.notice("startup.ready")
     }
 }
 
 private extension StallyApp {
-    static func makeModelContainer() -> ModelContainer {
+    static func makeModelContainer(
+        startupLogger: MHLogger
+    ) -> ModelContainer {
         #if DEBUG
         if let modelContainer = Self.previewLaunchConfiguration.modelContainer {
+            startupLogger.notice("model_container.preview_created")
             return modelContainer
         }
         #endif
 
         do {
-            return try StallyModelContainerFactory.persistent()
+            let modelContainer = try StallyModelContainerFactory.persistent()
+            startupLogger.notice("model_container.cloudkit_created")
+            return modelContainer
         } catch {
-            Self.logger.notice(
-                """
-                model_container.cloudkit_unavailable_falling_back_local: \
-                \(error.localizedDescription, privacy: .public)
-                """
+            startupLogger.notice(
+                "model_container.cloudkit_unavailable_falling_back_local",
+                metadata: StallyLogging.errorMetadata(error)
             )
 
             do {
-                return try StallyModelContainerFactory.persistent(syncsWithCloudKit: false)
+                let modelContainer = try StallyModelContainerFactory.persistent(
+                    syncsWithCloudKit: false
+                )
+                startupLogger.notice("model_container.local_created")
+                return modelContainer
             } catch {
+                startupLogger.critical(
+                    "model_container.local_failed",
+                    metadata: StallyLogging.errorMetadata(error)
+                )
                 fatalError("Could not create local ModelContainer: \(error)")
             }
         }
     }
 
     @MainActor
-    static func registerDependencies(modelContainer: ModelContainer) {
+    static func registerDependencies(
+        _ platformEnvironment: StallyPlatformEnvironment,
+        startupLogger: MHLogger
+    ) {
         AppDependencyManager.shared.add {
-            modelContainer
+            platformEnvironment.logging
         }
+        AppDependencyManager.shared.add {
+            platformEnvironment.modelContainer
+        }
+        startupLogger.notice("startup.dependencies_registered")
     }
 }

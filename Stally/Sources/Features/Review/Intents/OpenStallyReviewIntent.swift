@@ -14,7 +14,7 @@ struct OpenStallyReviewIntent: AppIntent {
 
     @MainActor
     func perform() -> some IntentResult {
-        StallyIntentRouter.shared.open(.destination(.review))
+        StallyIntentRouteOpener.store(.destination(.review))
         return .result()
     }
 }

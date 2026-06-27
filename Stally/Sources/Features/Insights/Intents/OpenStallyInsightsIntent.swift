@@ -14,7 +14,7 @@ struct OpenStallyInsightsIntent: AppIntent {
 
     @MainActor
     func perform() -> some IntentResult {
-        StallyIntentRouter.shared.open(.destination(.insights))
+        StallyIntentRouteOpener.store(.destination(.insights))
         return .result()
     }
 }

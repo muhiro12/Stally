@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import MHAppRuntime
 import SwiftData
 import SwiftUI
 
@@ -36,11 +37,14 @@ struct ContentView: View {
 
     @Query(sort: \Item.createdAt, order: .reverse)
     private var items: [Item]
+    @Environment(StallyRouteInbox.self)
+    private var routeInbox
+    @Environment(StallyRoutePipeline.self)
+    private var routePipeline
 
     @State private var selectedTab: StallyTab
     @State private var presentedSheet: PresentedSheet?
-    @State private var intentRouter = StallyIntentRouter.shared
-    @State private var isPresentingUnsupportedLinkAlert = false
+    @State private var isPresentingMissingItemLinkAlert = false
 
     #if DEBUG
     @State private var pendingInitialPreviewRoute: StallyPreviewRoute?
@@ -56,6 +60,19 @@ struct ContentView: View {
 
     private var reviewSnapshot: ReviewSnapshot {
         ReviewOperations.snapshot(for: items)
+    }
+
+    private var invalidDeepLinkAlertBinding: Binding<Bool> {
+        .init(
+            get: {
+                routePipeline.lastParseFailureURL != nil
+            },
+            set: { isPresented in
+                if !isPresented {
+                    routePipeline.clearLastParseFailure()
+                }
+            }
+        )
     }
 
     var body: some View {
@@ -106,16 +123,26 @@ struct ContentView: View {
                 }
             }
         }
-        .alert("Unsupported Link", isPresented: $isPresentingUnsupportedLinkAlert) {
+        .alert("Unsupported Link", isPresented: $isPresentingMissingItemLinkAlert) {
             Button("OK", role: .cancel) {
-                isPresentingUnsupportedLinkAlert = false
+                isPresentingMissingItemLinkAlert = false
             }
         } message: {
             Text("This link is not supported by this version of Stally.")
         }
-        .onOpenURL(perform: openLink)
-        .task(id: intentRouter.pendingRoute?.id) {
-            applyPendingIntentRouteIfNeeded()
+        .alert(
+            "Unsupported Link",
+            isPresented: invalidDeepLinkAlertBinding,
+            presenting: routePipeline.lastParseFailureURL
+        ) { _ in
+            Button("OK", role: .cancel) {
+                routePipeline.clearLastParseFailure()
+            }
+        } message: { _ in
+            Text("This link is not supported by this version of Stally.")
+        }
+        .mhRouteHandler(routeInbox) { link in
+            openSupportedLink(link)
         }
         #if DEBUG
         .task(id: items.count) {
@@ -165,15 +192,6 @@ struct ContentView: View {
         presentedSheet = .settings
     }
 
-    private func openLink(_ url: URL) {
-        switch StallyLinkOperations.parse(url) {
-        case .supported(let link):
-            openSupportedLink(link)
-        case .unsupported:
-            showUnsupportedLinkAlert()
-        }
-    }
-
     private func openSupportedLink(_ link: StallyLink) {
         switch link {
         case .destination(let destination):
@@ -206,7 +224,7 @@ struct ContentView: View {
         guard let item = items.first(where: { item in
             item.uuid == itemID
         }) else {
-            showUnsupportedLinkAlert()
+            showMissingItemLinkAlert()
             return
         }
 
@@ -214,17 +232,8 @@ struct ContentView: View {
         presentedSheet = .item(item)
     }
 
-    private func showUnsupportedLinkAlert() {
-        isPresentingUnsupportedLinkAlert = true
-    }
-
-    private func applyPendingIntentRouteIfNeeded() {
-        guard let route = intentRouter.pendingRoute else {
-            return
-        }
-
-        openSupportedLink(route.link)
-        intentRouter.consume(route)
+    private func showMissingItemLinkAlert() {
+        isPresentingMissingItemLinkAlert = true
     }
 
     #if DEBUG

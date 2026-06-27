@@ -11,6 +11,7 @@ import SwiftData
 struct UndoStallyItemTodayIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Undo Today's Mark", table: "AppIntents")
     static let description = IntentDescription("Remove today's mark from an item.")
+    static let isDiscoverable = false
 
     private static var removedDialog: IntentDialog {
         .init(.init("Removed today's mark.", table: "AppIntents"))

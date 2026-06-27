@@ -300,6 +300,22 @@
         }
       }
     },
+    "Item is already in Library.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Item is already in Library."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このアイテムはすでにライブラリにあります。"
+          }
+        }
+      }
+    },
     "Library": {
       "localizations": {
         "en": {
@@ -364,6 +380,38 @@
         }
       }
     },
+    "Move Item Back to Library": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move Item Back to Library"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテムをライブラリに戻す"
+          }
+        }
+      }
+    },
+    "Move an archived item back to Library.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move an archived item back to Library."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アーカイブ済みのアイテムをライブラリに戻します。"
+          }
+        }
+      }
+    },
     "Move an item into Archive while preserving its history.": {
       "localizations": {
         "en": {
@@ -376,6 +424,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "履歴を残したままアイテムをアーカイブへ移します。"
+          }
+        }
+      }
+    },
+    "Moved item back to Library.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moved item back to Library."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテムをライブラリに戻しました。"
           }
         }
       }
@@ -444,6 +508,38 @@
         }
       }
     },
+    "Open Archive": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Archive"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アーカイブを開く"
+          }
+        }
+      }
+    },
+    "Open Backup Center": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Backup Center"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バックアップセンターを開く"
+          }
+        }
+      }
+    },
     "Open Insights": {
       "localizations": {
         "en": {
@@ -508,6 +604,22 @@
         }
       }
     },
+    "Open Settings": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Settings"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定を開く"
+          }
+        }
+      }
+    },
     "Open Stally Destination": {
       "localizations": {
         "en": {
@@ -524,6 +636,54 @@
         }
       }
     },
+    "Open Stally Route": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Stally Route"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stallyのルートを開く"
+          }
+        }
+      }
+    },
+    "Open Stally to Archive.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Stally to Archive."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stallyでアーカイブを開きます。"
+          }
+        }
+      }
+    },
+    "Open Stally to Backup Center.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Stally to Backup Center."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stallyでバックアップセンターを開きます。"
+          }
+        }
+      }
+    },
     "Open Stally to Insights.": {
       "localizations": {
         "en": {
@@ -536,6 +696,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Stallyでインサイトを開きます。"
+          }
+        }
+      }
+    },
+    "Open Stally to Settings.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Stally to Settings."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stallyで設定を開きます。"
           }
         }
       }
@@ -699,6 +875,9 @@
           }
         }
       }
+    },
+    "URL": {
+      "shouldTranslate": false
     },
     "Undo Today's Mark": {
       "localizations": {
