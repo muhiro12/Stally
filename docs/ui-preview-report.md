@@ -9,6 +9,24 @@ The pass intentionally improves the existing UI only. It does not add product
 features, change the SwiftData schema, add Operations, or change the
 StallyLibrary package boundary.
 
+## HIG And MHUI Style Policy
+
+Apple Human Interface Guidelines and platform-native iOS behavior are the
+foundation for Stally's app UI. Navigation, tab structure, lists, forms,
+sharing, sheets, dialogs, alerts, and standard controls should keep their
+native SwiftUI semantics unless a concrete product need justifies a custom
+treatment.
+
+MHUI and MHDesign are the shared app-family style layer on top of that
+foundation. In Stally, they should be used more actively than in Incomes where
+they improve spacing, hierarchy, typography rhythm, row rhythm, section
+treatment, metadata, badges, empty states, summary surfaces, action emphasis,
+destructive or safety treatment, feedback, and app-wide visual consistency.
+
+MHUI should not make Stally feel louder, more dashboard-like, or less familiar
+as an iPhone app. The desired result is a quiet Apple-native app that still
+visibly belongs to the MHUI family.
+
 ## Target Screens
 
 Reviewed as current Stally surfaces:
@@ -28,6 +46,53 @@ Not included as implemented screens:
 - Edit Item: no dedicated edit surface exists yet.
 - Photo-specific item UI: preview data includes placeholder photo data, but
   the current UI does not render item photos.
+
+## Audit Findings
+
+Current MHUI usage:
+
+- App root and previews apply `MHTheme.standard` and `MHGlassPolicy.automatic`.
+- Existing `List` and `Form` surfaces use Stally-local wrappers around
+  `mhListChrome`, `mhFormChrome`, and `MHKeyValueLabeledContentStyle`.
+- Rows, metadata, badges, empty states, action emphasis, destructive actions,
+  and section support text use MHUI treatment across Library, Archive, Review,
+  Insights, Backup Center, Settings, Add Item, and Item Detail.
+
+Common UI kept outside MHUI:
+
+- `NavigationStack`, `TabView`, `NavigationLink`, toolbar buttons, sheets,
+  alerts, file import/export, confirmation dialogs, and `ShareLink` remain
+  standard SwiftUI because they already carry the correct platform behavior.
+- Quiet History's dot grid remains a small app-specific data visualization.
+  MHUI provides text rhythm around it, but the marked/unmarked dot state is
+  product-specific.
+- Preview and screenshot launch routing stays DEBUG-only app support, not a
+  reusable style-system concern.
+
+Improvement made in this pass:
+
+- Backup Center Safety changed from four equal supporting rows into one quiet
+  MHUI row summary. This better matches the product principle that safety
+  belongs near risk, gives the most important instruction clearer hierarchy,
+  and avoids a heavier card or custom surface.
+
+Overuse risks intentionally avoided:
+
+- No `mhScreen`, `mhSection`, `mhSurface`, `mhGroupedRows`, `mhInputChrome`, or
+  custom theme was added. Those would replace natural native structure or add
+  card weight before Stally has a real screen-specific need.
+- Item Detail's `Mark Today` remains the single primary action for now because
+  it is the central workflow. Its full-width emphasis should be revisited only
+  after real usage confirms whether it feels too strong.
+
+Family assessment:
+
+- The app now reads closer to the MHUI family through shared chrome, typography
+  rhythm, row treatment, badges, empty states, action styles, and safety
+  treatment.
+- It still preserves Stally's quiet product tone because the pass avoids
+  decorative cards, charts, dense dashboards, and custom replacements for
+  familiar iOS controls.
 
 ## Preview Coverage
 
@@ -68,7 +133,7 @@ Preview states covered:
 - Review lanes with Needs First Mark, Dormant, and Recovery Candidates.
 - Empty Review.
 - Insights with active marks and category variety.
-- Backup snapshot and import validation issues.
+- Backup snapshot, safety summary, and import validation issues.
 - Add Item empty form validation state.
 - Dark mode for a dense Library state.
 - Large Dynamic Type for Item Detail.
@@ -125,6 +190,8 @@ Adopted:
 - `mhSectionHeader`, `mhSectionHeaderTitle`, `mhSectionHeaderSupporting`, and
   `mhSectionFooterText` where native section structure needed quieter support
   text.
+- A grouped Backup Center safety summary using `mhRow`, `mhRowTitle`, and
+  `mhRowSupporting` instead of four equal supporting rows.
 
 ## APIs Not Adopted
 
@@ -137,7 +204,8 @@ Not adopted:
   for these screens. Full MHUI section containers can be revisited if a future
   non-list screen needs grouped surfaces.
 - `mhSurface` and `mhSurfaceInset`: the goal was calmer native list/form
-  chrome, not card-heavy treatment.
+  chrome, not card-heavy treatment. Backup Safety gained a stronger summary
+  hierarchy inside a native row instead of becoming a separate card surface.
 - `mhGroupedRows`: native List rows already provide the right platform
   affordance. Grouped rows should wait until Stally has custom stack content
   that is not naturally a List.
@@ -198,7 +266,8 @@ Insights:
 
 Backup Center:
 
-- Applied list chrome, key-value rows, and semantic button styles.
+- Applied list chrome, key-value rows, semantic button styles, and a grouped
+  safety summary row.
 - Kept risky actions behind native confirmation dialogs.
 - Used destructive styling only for replace and delete actions.
 
@@ -232,7 +301,8 @@ Compared with `docs/ui-preview-screenshots/before/`:
   header.
 - Insights reads more like a collection summary than a dashboard because the
   pass avoided new chart or card treatments.
-- Backup Center safety copy is softer and action roles are clearer.
+- Backup Center safety copy is grouped into a clearer safety summary, and
+  action roles are clearer.
 - Add Item is still a simple form, but it now matches the visual rhythm of the
   other screens.
 - Empty states remain native, but their spacing and primary action style match
@@ -251,8 +321,8 @@ Confirmed through after screenshots:
 - Review renders all three attention lanes with MHUI section headers.
 - Insights renders scope controls and metric rows without heavier dashboard
   treatment.
-- Backup Center renders safety copy, snapshot counts, and export/import/reset
-  entry points.
+- Backup Center renders the grouped safety summary, snapshot counts, and
+  export/import/reset entry points.
 - Settings renders shareable destination links.
 - Add Item renders the empty form with disabled Add action.
 
@@ -278,8 +348,8 @@ Capture limits:
   row.
 - Add an editor-specific pass before adopting `mhInputChrome`; the current Add
   Item form is still intentionally simple.
-- Revisit `mhSection` only if Stally gains non-list summary surfaces that need
-  true grouped cards.
+- Revisit `mhSection` or `mhSurface` only if Stally gains non-list summary
+  surfaces that need true grouped cards.
 - Add empty-state runtime screenshots for Archive and Review if those surfaces
   become release-sensitive.
 - Consider owner-directed accent color and metrics tuning later; this pass
