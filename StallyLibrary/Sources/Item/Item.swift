@@ -26,9 +26,21 @@ public final class Item {
     /// Date when the item was moved into Archive.
     public var archivedAt: Date?
 
-    /// Calendar-day marks attached to this item.
+    // CloudKit requires SwiftData relationships to be optional.
+    // swiftlint:disable discouraged_optional_collection
     @Relationship(deleteRule: .cascade, inverse: \ItemMark.item)
-    public var marks: [ItemMark]
+    var markRecords: [ItemMark]?
+    // swiftlint:enable discouraged_optional_collection
+
+    /// Calendar-day marks attached to this item.
+    public var marks: [ItemMark] {
+        get {
+            markRecords ?? []
+        }
+        set {
+            markRecords = newValue
+        }
+    }
 
     /// The preserved product category for this item.
     public var category: ItemCategory {
@@ -67,7 +79,7 @@ public final class Item {
         self.photoData = photoData
         self.createdAt = createdAt
         self.archivedAt = archivedAt
-        marks = []
+        markRecords = []
     }
 
     func historySnapshot(
