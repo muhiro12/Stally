@@ -13,8 +13,8 @@ struct OpenStallyLibraryIntent: AppIntent {
     static let openAppWhenRun = true
 
     @MainActor
-    func perform() -> some IntentResult {
-        StallyIntentRouteOpener.store(.destination(.library))
+    func perform() async -> some IntentResult {
+        await StallyIntentRouteOpener.store(.destination(.library))
         return .result()
     }
 }

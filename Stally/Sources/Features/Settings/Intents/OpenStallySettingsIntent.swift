@@ -14,8 +14,8 @@ struct OpenStallySettingsIntent: AppIntent {
     static let isDiscoverable = false
 
     @MainActor
-    func perform() -> some IntentResult {
-        StallyIntentRouteOpener.store(.destination(.settings))
+    func perform() async -> some IntentResult {
+        await StallyIntentRouteOpener.store(.destination(.settings))
         return .result()
     }
 }

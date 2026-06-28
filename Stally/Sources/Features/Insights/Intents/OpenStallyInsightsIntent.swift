@@ -13,8 +13,8 @@ struct OpenStallyInsightsIntent: AppIntent {
     static let openAppWhenRun = true
 
     @MainActor
-    func perform() -> some IntentResult {
-        StallyIntentRouteOpener.store(.destination(.insights))
+    func perform() async -> some IntentResult {
+        await StallyIntentRouteOpener.store(.destination(.insights))
         return .result()
     }
 }

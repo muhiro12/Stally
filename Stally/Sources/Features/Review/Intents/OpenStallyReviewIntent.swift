@@ -13,8 +13,8 @@ struct OpenStallyReviewIntent: AppIntent {
     static let openAppWhenRun = true
 
     @MainActor
-    func perform() -> some IntentResult {
-        StallyIntentRouteOpener.store(.destination(.review))
+    func perform() async -> some IntentResult {
+        await StallyIntentRouteOpener.store(.destination(.review))
         return .result()
     }
 }

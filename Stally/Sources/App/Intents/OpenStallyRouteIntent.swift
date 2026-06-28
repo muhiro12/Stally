@@ -25,8 +25,8 @@ struct OpenStallyRouteIntent: AppIntent {
     }
 
     @MainActor
-    func perform() -> some IntentResult {
-        StallyIntentRouteStore.store(url)
+    func perform() async -> some IntentResult {
+        await StallyIntentRouteStore.store(url)
         return .result()
     }
 }

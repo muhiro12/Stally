@@ -12,8 +12,9 @@ enum StallyIntentRouteOpener {
         .init(url: StallyLinkOperations.url(for: link))
     }
 
-    static func store(_ link: StallyLink) {
-        StallyIntentRouteStore.store(
+    @MainActor
+    static func store(_ link: StallyLink) async {
+        await StallyIntentRouteStore.store(
             StallyLinkOperations.url(for: link)
         )
     }

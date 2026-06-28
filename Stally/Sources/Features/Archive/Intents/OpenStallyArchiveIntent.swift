@@ -14,8 +14,8 @@ struct OpenStallyArchiveIntent: AppIntent {
     static let isDiscoverable = false
 
     @MainActor
-    func perform() -> some IntentResult {
-        StallyIntentRouteOpener.store(.destination(.archive))
+    func perform() async -> some IntentResult {
+        await StallyIntentRouteOpener.store(.destination(.archive))
         return .result()
     }
 }

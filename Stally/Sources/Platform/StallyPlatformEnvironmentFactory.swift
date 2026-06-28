@@ -21,6 +21,7 @@ enum StallyPlatformEnvironmentFactory {
             routeInbox: routeInbox,
             logging: logging
         )
+        StallyIntentRouteStore.registerLiveRoutePipeline(routePipeline)
 
         return .init(
             logging: logging,

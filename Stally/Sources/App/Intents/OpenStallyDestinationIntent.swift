@@ -17,8 +17,10 @@ struct OpenStallyDestinationIntent: AppIntent {
     private var destination: StallyDestinationIntentValue
 
     @MainActor
-    func perform() -> some IntentResult {
-        StallyIntentRouteOpener.store(.destination(destination.linkDestination))
+    func perform() async -> some IntentResult {
+        await StallyIntentRouteOpener.store(
+            .destination(destination.linkDestination)
+        )
         return .result()
     }
 }

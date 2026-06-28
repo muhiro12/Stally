@@ -17,8 +17,8 @@ struct OpenStallyItemIntent: AppIntent {
     private var item: StallyItemEntity
 
     @MainActor
-    func perform() -> some IntentResult {
-        StallyIntentRouteOpener.store(.item(item.uuid))
+    func perform() async -> some IntentResult {
+        await StallyIntentRouteOpener.store(.item(item.uuid))
         return .result()
     }
 }

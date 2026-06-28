@@ -22,7 +22,18 @@ enum StallyIntentRouteStore {
         deepLinkStore
     }
 
-    static func store(_ url: URL) {
+    @MainActor private static var liveRoutePipeline: StallyRoutePipeline?
+
+    @MainActor
+    static func registerLiveRoutePipeline(
+        _ routePipeline: StallyRoutePipeline
+    ) {
+        liveRoutePipeline = routePipeline
+    }
+
+    @MainActor
+    static func store(_ url: URL) async {
         deepLinkStore.ingest(url)
+        await liveRoutePipeline?.synchronizePendingRoutesIfPossible()
     }
 }

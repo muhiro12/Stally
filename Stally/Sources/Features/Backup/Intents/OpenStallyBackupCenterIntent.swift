@@ -14,8 +14,8 @@ struct OpenStallyBackupCenterIntent: AppIntent {
     static let isDiscoverable = false
 
     @MainActor
-    func perform() -> some IntentResult {
-        StallyIntentRouteOpener.store(.destination(.backupCenter))
+    func perform() async -> some IntentResult {
+        await StallyIntentRouteOpener.store(.destination(.backupCenter))
         return .result()
     }
 }
