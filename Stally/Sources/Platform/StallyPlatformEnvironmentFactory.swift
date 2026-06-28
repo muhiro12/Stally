@@ -6,8 +6,7 @@
 //
 
 import Foundation
-import MHAppRuntime
-import MHPlatformCore
+import MHPlatform
 import SwiftData
 
 enum StallyPlatformEnvironmentFactory {
@@ -38,10 +37,15 @@ enum StallyPlatformEnvironmentFactory {
     private static func makeAppConfiguration(
         for platformMode: StallyPlatformMode
     ) -> MHAppConfiguration {
-        switch platformMode {
-        case .production, .preview:
-            .init(showsLicenses: false)
-        }
+        .init(
+            subscriptionProductIDs: [
+                StallyMonetizationConfiguration.subscriptionProductID
+            ],
+            nativeAdUnitID: StallyMonetizationConfiguration.nativeAdUnitID(
+                for: platformMode
+            ),
+            showsLicenses: true
+        )
     }
 
     @MainActor

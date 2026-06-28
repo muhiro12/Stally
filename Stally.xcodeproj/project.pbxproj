@@ -9,8 +9,7 @@
 /* Begin PBXBuildFile section */
 		B8AB10002FED000000000001 /* StallyLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = B8AB10002FED000000000004 /* StallyLibrary */; };
 		B8C000012FED000000000003 /* MHUI in Frameworks */ = {isa = PBXBuildFile; productRef = B8C000012FED000000000002 /* MHUI */; };
-		B8D000012FED000000000003 /* MHAppRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = B8D000012FED000000000002 /* MHAppRuntime */; };
-		B8D000012FED000000000005 /* MHPlatformCore in Frameworks */ = {isa = PBXBuildFile; productRef = B8D000012FED000000000004 /* MHPlatformCore */; };
+		B8D000012FED000000000003 /* MHPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = B8D000012FED000000000002 /* MHPlatform */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,8 +42,7 @@
 		AD75E98D2FED371000094EFB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
-				B8D000012FED000000000003 /* MHAppRuntime in Frameworks */,
-				B8D000012FED000000000005 /* MHPlatformCore in Frameworks */,
+				B8D000012FED000000000003 /* MHPlatform in Frameworks */,
 				B8C000012FED000000000003 /* MHUI in Frameworks */,
 				B8AB10002FED000000000001 /* StallyLibrary in Frameworks */,
 			);
@@ -87,8 +85,7 @@
 			);
 			name = Stally;
 			packageProductDependencies = (
-				B8D000012FED000000000002 /* MHAppRuntime */,
-				B8D000012FED000000000004 /* MHPlatformCore */,
+				B8D000012FED000000000002 /* MHPlatform */,
 				B8C000012FED000000000002 /* MHUI */,
 				B8AB10002FED000000000004 /* StallyLibrary */,
 			);
@@ -427,15 +424,10 @@
 			package = B8C000012FED000000000001 /* XCRemoteSwiftPackageReference "MHUI" */;
 			productName = MHUI;
 		};
-		B8D000012FED000000000002 /* MHAppRuntime */ = {
+		B8D000012FED000000000002 /* MHPlatform */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B8D000012FED000000000001 /* XCRemoteSwiftPackageReference "MHPlatform" */;
-			productName = MHAppRuntime;
-		};
-		B8D000012FED000000000004 /* MHPlatformCore */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B8D000012FED000000000001 /* XCRemoteSwiftPackageReference "MHPlatform" */;
-			productName = MHPlatformCore;
+			productName = MHPlatform;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

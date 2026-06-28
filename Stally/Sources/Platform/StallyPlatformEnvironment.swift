@@ -5,8 +5,7 @@
 //  Created by Codex on 2026/06/27.
 //
 
-import MHAppRuntime
-import MHPlatformCore
+import MHPlatform
 import SwiftData
 import SwiftUI
 

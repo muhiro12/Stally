@@ -6,7 +6,7 @@
 //
 
 import AppIntents
-import MHPlatformCore
+import MHPlatform
 import MHUI
 import SwiftData
 import SwiftUI
@@ -50,7 +50,15 @@ struct StallyApp: App {
         )
         startupLogger.notice("startup.begin")
 
-        let modelContainer = Self.makeModelContainer(startupLogger: startupLogger)
+        let preferenceStore = MHPreferenceStore()
+        let isSubscriptionActive = preferenceStore.bool(for: \.isSubscribeOn)
+        let syncsWithCloudKit = isSubscriptionActive && preferenceStore.bool(
+            for: \.isICloudOn
+        )
+        let modelContainer = Self.makeModelContainer(
+            syncsWithCloudKit: syncsWithCloudKit,
+            startupLogger: startupLogger
+        )
         let resolvedPlatformEnvironment = StallyPlatformEnvironmentFactory.make(
             modelContainer: modelContainer,
             platformMode: .production,
@@ -70,6 +78,7 @@ struct StallyApp: App {
 
 private extension StallyApp {
     static func makeModelContainer(
+        syncsWithCloudKit: Bool,
         startupLogger: MHLogger
     ) -> ModelContainer {
         #if DEBUG
@@ -80,15 +89,28 @@ private extension StallyApp {
         #endif
 
         do {
-            let modelContainer = try StallyModelContainerFactory.persistent()
-            startupLogger.notice("model_container.cloudkit_created")
+            let modelContainer = try StallyModelContainerFactory.persistent(
+                syncsWithCloudKit: syncsWithCloudKit
+            )
+            startupLogger.notice(
+                syncsWithCloudKit
+                    ? "model_container.cloudkit_created"
+                    : "model_container.local_created"
+            )
             return modelContainer
         } catch {
+            guard syncsWithCloudKit else {
+                startupLogger.critical(
+                    "model_container.local_failed",
+                    metadata: StallyLogging.errorMetadata(error)
+                )
+                fatalError("Could not create local ModelContainer: \(error)")
+            }
+
             startupLogger.notice(
                 "model_container.cloudkit_unavailable_falling_back_local",
                 metadata: StallyLogging.errorMetadata(error)
             )
-
             do {
                 let modelContainer = try StallyModelContainerFactory.persistent(
                     syncsWithCloudKit: false

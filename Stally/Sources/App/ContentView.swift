@@ -5,7 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
-import MHAppRuntime
+import MHPlatform
 import SwiftData
 import SwiftUI
 
@@ -144,6 +144,7 @@ struct ContentView: View {
         .mhRouteHandler(routeInbox) { link in
             openSupportedLink(link)
         }
+        .stallySubscriptionStateSync()
         #if DEBUG
         .task(id: items.count) {
             applyInitialPreviewRouteIfNeeded()

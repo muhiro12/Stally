@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import MHPlatformCore
+import MHPlatform
 
 enum StallyIntentRouteStore {
     static let storageDescriptor = MHRawStorageDescriptor(
