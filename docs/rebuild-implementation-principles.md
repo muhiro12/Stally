@@ -7,11 +7,15 @@ the current rebuild. It is a short engineering memo, not a product roadmap.
 
 ## Baseline Infrastructure
 
-CloudKit, App Intents, and English/Japanese localization are baseline rebuild
-requirements for Stally.
+CloudKit, App Intents, monetization, and English/Japanese localization are
+baseline rebuild requirements for Stally.
 
-- CloudKit belongs in the SwiftData persistence configuration from the start.
+- CloudKit belongs in the SwiftData persistence configuration, but runtime
+  startup should select it only when the persisted premium and iCloud
+  preferences allow sync.
 - App Intents belong beside the app target as system-facing adapters.
+- StoreKit and AdMob belong in the app target through MHPlatform. Durable
+  premium/iCloud state rules belong in StallyLibrary.
 - Localization belongs in String Catalogs while UI and App Intents are being
   built, not after the visible surface is complete.
 
@@ -22,8 +26,8 @@ factory setup, localized library resources, and public `*Operations` use
 cases.
 
 The app target owns SwiftUI presentation, navigation, App Intents, dependency
-registration, incoming-link handling, preview launch routing, screenshots, and
-app String Catalogs.
+registration, incoming-link handling, monetization wiring, preview launch
+routing, screenshots, and app String Catalogs.
 
 App Intents must call existing public `*Operations` and should not reimplement
 item creation, marking, archiving, search, review, insights, backup, or link
@@ -35,9 +39,10 @@ shared app-family deep-link route primitives. The app target should apply
 resolved links to its current navigation state instead of duplicating URL
 parsing rules.
 
-Preview and tests should use in-memory containers. Runtime should use the
-CloudKit-capable persistent configuration, with a local persistent fallback
-only for recoverable CloudKit initialization failure.
+Preview and tests should use in-memory containers. Runtime should use the local
+persistent configuration by default and the CloudKit-capable persistent
+configuration only when premium iCloud sync is enabled, with a local persistent
+fallback only for recoverable CloudKit initialization failure.
 
 ## Localization Rules
 
@@ -67,6 +72,9 @@ Choose verification by changed boundary:
   and English/Japanese screenshots.
 - Runtime persistence or visible UI: `build_run_sim`, runtime log scan, and
   screenshot evidence.
+- StoreKit, AdMob, or MHPlatform runtime wiring: app `build_sim`,
+  `build_run_sim`, runtime log scan for StoreKit, Google Mobile Ads, SwiftData,
+  CloudKit, fatal, exception, or crash output, and screenshot evidence.
 
 Real-device iCloud sync and production CloudKit environment behavior may need
 manual or hosted verification outside the local simulator. Record that

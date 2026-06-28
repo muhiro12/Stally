@@ -21,9 +21,9 @@ Repository-specific agent contract for Stally.
 
 Stally has re-entered rebuild implementation and now contains the rebuilt core
 Library, Archive, Review, Insights, Backup Center, Settings, shareable-link,
-CloudKit persistence, App Intents, and English/Japanese localization baselines
-plus the local MHPlatform runtime, logging, and route foundation for continuing
-the rebuild.
+CloudKit persistence, App Intents, monetization, and English/Japanese
+localization baselines plus the local MHPlatform runtime, logging, and route
+foundation for continuing the rebuild.
 
 This repository currently contains:
 
@@ -34,9 +34,9 @@ This repository currently contains:
 - `StallyLibrary/Package.swift`, a local Swift package linked into the app
   target as the `StallyLibrary` product.
 - `StallyLibrary/Sources/`, which owns the current durable item, review,
-  insights, backup, link, SwiftData model, persistence factory, and
-  `*Operations` use cases, with `MHPlatformCore` used only for library-safe
-  platform primitives.
+  insights, backup, link, subscription-state, SwiftData model, persistence
+  factory, and `*Operations` use cases, with `MHPlatformCore` used only for
+  library-safe platform primitives and preference descriptors.
 - `StallyLibrary/Sources/Resources/`, which owns package-local localized
   library strings.
 - `StallyLibrary/Tests/`, which owns library behavior tests for the current
@@ -48,13 +48,15 @@ This repository currently contains:
 - Preserved product-intent documentation under `docs/`.
 
 This repository does not currently contain Widget, Watch, external AI
-integration, ads, purchases, or advanced settings. `StallyLibrary` links
-`MHPlatformCore` for shareable-link deep-link route encoding. The app target
-links MHAppRuntime and MHPlatformCore from the MHPlatform package for app-side
-runtime, logging, and route plumbing, and MHUI for visual chrome and
-presentation styling. CloudKit is configured as the runtime SwiftData
-persistence baseline, but real-device iCloud sync and production CloudKit
-behavior are not proven by local simulator verification alone.
+integration, or broad advanced settings. `StallyLibrary` links
+`MHPlatformCore` for shareable-link deep-link route encoding and preference
+descriptors. The app target links the full MHPlatform umbrella for app-side
+runtime, logging, routing, StoreKit, AdMob, and license integration, and MHUI
+for visual chrome and presentation styling. CloudKit is configured through the
+runtime SwiftData persistence baseline and is gated by the persisted premium
+iCloud preference, but real-device iCloud sync, StoreKit purchase resolution,
+production AdMob serving, and production CloudKit behavior are not proven by
+local simulator verification alone.
 
 ## Documentation Boundary
 
@@ -115,8 +117,9 @@ The app target should stay a thin adapter over the current product surface.
   App Intents. Feature-specific App Intents should live under the owning
   `Features/*/Intents/` directory.
 - `Stally/Sources/Platform/` owns app-side MHPlatform assembly, logging,
-  runtime bootstrap, route pipeline, route inbox, and intent URL-store
-  plumbing. It must not own product behavior or durable domain use cases.
+  runtime bootstrap, route pipeline, route inbox, monetization configuration,
+  and intent URL-store plumbing. It must not own product behavior or durable
+  domain use cases.
 - `Stally/Sources/Features/Library/` owns the current SwiftUI Library, Add
   Item, Item Detail, Mark Today, Undo Today's Mark, Quiet History views, and
   Library-owned App Intents and App Entities.
@@ -130,11 +133,13 @@ The app target should stay a thin adapter over the current product surface.
   including file importer/exporter presentation, safety confirmations, and
   Backup-owned App Intents.
 - `Stally/Sources/Features/Links/` owns app-side link-sharing presentation.
-- `Stally/Sources/Features/Settings/` owns the minimal SwiftUI Settings and
-  shareable-link list surface and Settings-owned App Intents.
+- `Stally/Sources/Features/Settings/` owns the SwiftUI Settings surface,
+  premium/iCloud controls, StoreKit subscription section, shareable-link list
+  surface, and Settings-owned App Intents.
 - `Stally/Sources/SharedUI/` owns app-local MHUI presentation adapters and
-  shared visual treatment helpers. It must not contain product behavior,
-  persistence logic, or reusable library operations.
+  shared visual treatment helpers, including app-local ad presentation
+  wrappers. It must not contain product behavior, persistence logic, or
+  reusable library operations.
 - `Stally/Sources/PreviewSupport/` owns DEBUG-only preview data, in-memory
   preview containers, screenshot launch routes, and screen-level previews for
   UI review. It must not become product behavior or shared-library logic.
@@ -163,6 +168,10 @@ The app target should stay a thin adapter over the current product surface.
 - `StallyLibrary/Sources/Link/` owns shareable destination and item link
   values, MHPlatformCore deep-link route encoding, parsing results, and
   `StallyLinkOperations`.
+- `StallyLibrary/Sources/Settings/` owns premium/iCloud subscription-state
+  values and `SubscriptionStateOperations`.
+- `StallyLibrary/Sources/Preferences/` owns app-local preference descriptors
+  used by app startup and SwiftUI settings surfaces.
 - `StallyLibrary/Sources/Persistence/` owns `StallyModelContainerFactory`.
 - `StallyLibrary/Sources/Resources/` owns library String Catalogs and is
   processed as a Swift Package resource bundle.
@@ -211,25 +220,29 @@ merely to use MHUI.
 
 Treat package declaration and product linking as separate decisions.
 
-- The app target currently links the local `StallyLibrary` product,
-  `MHAppRuntime` and `MHPlatformCore` from the remote `MHPlatform` package for
-  runtime/logging/routing, and the remote `MHUI` product for presentation
+- The app target currently links the local `StallyLibrary` product, the full
+  `MHPlatform` umbrella product for runtime/logging/routing, StoreKit, AdMob,
+  and license integration, and the remote `MHUI` product for presentation
   styling.
 - `StallyLibrary` declares `MHPlatform` and links the `MHPlatformCore` product
-  for shared deep-link route contracts.
+  for shared deep-link route contracts and preference descriptors.
 - `SwiftLintPlugins` is declared in `Stally.xcodeproj` for repository-managed
   linting and should not be treated as a runtime dependency.
 - `MHUI` re-exports `MHDesign`; do not add a separate `MHDesign` product link
   unless a concrete build or target-boundary need appears.
 - CloudKit is enabled through SwiftData configuration and app entitlements. It
-  is not a package dependency.
+  is not a package dependency. Runtime startup selects the CloudKit-backed
+  container only when the persisted premium and iCloud preferences are both on.
 - Do not upgrade `StallyLibrary` to the app-facing `MHPlatform` product unless
   a concrete library-safe boundary requires it.
-- Do not link the app target to the `MHPlatform` umbrella while Stally has no
-  ads, purchases, license surface, or notification runtime need; use narrower
-  MHPlatform package products first.
-- Do not add additional runtime products solely because Incomes or Fluel
-  declares them.
+- The app target intentionally adopts the `MHPlatform` umbrella now that
+  Stally has StoreKit and AdMob surfaces. Do not add additional runtime
+  products outside the umbrella solely because Incomes or Fluel declares them.
+- AdMob app configuration currently uses Google's official sample application
+  ID so the umbrella-linked Google Mobile Ads SDK can initialize safely.
+  Debug and preview builds use Google's official native test ad unit. Release
+  builds must not invent or borrow an ad unit; keep production native ads
+  disabled until a Stally-owned production AdMob ad unit exists.
 
 ## Expected Apple Implementation Contract
 

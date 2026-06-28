@@ -66,6 +66,17 @@ compatibility work unless a later product decision requires it.
 When the project is created, use the Xcode and iOS SDK that match the iOS 27
 baseline rather than preserving compatibility with the removed legacy project.
 
+## Monetization Direction
+
+Stally should align with the Incomes-style premium model: premium removes ads
+and unlocks iCloud sync. Ads and StoreKit integration belong in the app target
+through MHPlatform, while the durable subscription-state calculation belongs in
+StallyLibrary so app UI, settings, and future surfaces share the same rule.
+
+Do not invent production AdMob identifiers or borrow identifiers from another
+app. Use official Google test identifiers only for development and preview
+builds until Stally-owned production AdMob identifiers exist.
+
 ## Package Direction
 
 The rebuilt Stally project should use the same package family as Incomes unless
