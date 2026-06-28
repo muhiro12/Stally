@@ -105,6 +105,22 @@
         }
       }
     },
+    "Ads Removed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ads Removed"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "広告を削除済み"
+          }
+        }
+      }
+    },
     "Add": {
       "localizations": {
         "en": {
@@ -889,6 +905,38 @@
         }
       }
     },
+    "iCloud Sync": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud Sync"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud同期"
+          }
+        }
+      }
+    },
+    "iCloud sync changes take effect the next time Stally starts.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud sync changes take effect the next time Stally starts."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud同期の変更は、次にStallyを起動したときに反映されます。"
+          }
+        }
+      }
+    },
     "Mark Today": {
       "localizations": {
         "en": {
@@ -1516,18 +1564,34 @@
         }
       }
     },
-    "Quiet app details and shareable routes live here while the rebuild continues.": {
+    "Premium": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Quiet app details and shareable routes live here while the rebuild continues."
+            "value": "Premium"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "リビルド中の今は、静かなアプリ情報と共有リンクをここに置いています。"
+            "value": "プレミアム"
+          }
+        }
+      }
+    },
+    "Premium status and shareable routes live here during the rebuild.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Premium status and shareable routes live here during the rebuild."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リビルド中の今は、プレミアム状態と共有リンクをここに置いています。"
           }
         }
       }
@@ -1800,6 +1864,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "共有リンク"
+          }
+        }
+      }
+    },
+    "Subscribe to remove ads and unlock iCloud sync.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subscribe to remove ads and unlock iCloud sync."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登録すると、広告の削除とiCloud同期が利用できます。"
+          }
+        }
+      }
+    },
+    "Subscription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subscription"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サブスクリプション"
           }
         }
       }

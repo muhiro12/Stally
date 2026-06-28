@@ -5,15 +5,28 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHPlatform
 import MHUI
 import SwiftUI
 
 struct SettingsView: View {
+    @AppStorage(\.isSubscribeOn)
+    private var isSubscribeOn
+    @AppStorage(\.isICloudOn)
+    private var isICloudOn
+
     var body: some View {
         NavigationStack {
             List {
+                SettingsSubscriptionSection(
+                    isSubscribeOn: isSubscribeOn,
+                    isICloudOn: $isICloudOn
+                )
+
+                StallyStoreSection()
+
                 Section("Settings") {
-                    Text("Quiet app details and shareable routes live here while the rebuild continues.")
+                    Text("Premium status and shareable routes live here during the rebuild.")
                         .mhRowSupporting()
                 }
 

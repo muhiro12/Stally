@@ -5,9 +5,13 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHPlatform
 import SwiftUI
 
 struct InsightsList: View {
+    @AppStorage(\.isSubscribeOn)
+    private var isSubscribeOn
+
     let snapshot: InsightsSnapshot
     @Binding var selectedRange: InsightsRange
     @Binding var includesArchivedItems: Bool
@@ -38,6 +42,10 @@ struct InsightsList: View {
             )
 
             InsightsCollectionHealthSection(snapshot: snapshot)
+
+            if !isSubscribeOn {
+                StallyAdvertisementSection(size: .medium)
+            }
 
             InsightsRecommendationsSection(recommendations: snapshot.recommendations)
         }
