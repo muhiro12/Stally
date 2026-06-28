@@ -6,15 +6,22 @@
 	objectVersion = 110;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		B8AB10002FED000000000001 /* StallyLibrary in Frameworks */ = {isa = PBXBuildFile; productRef = B8AB10002FED000000000004 /* StallyLibrary */; };
+		B8C000012FED000000000003 /* MHUI in Frameworks */ = {isa = PBXBuildFile; productRef = B8C000012FED000000000002 /* MHUI */; };
+		B8D000012FED000000000003 /* MHPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = B8D000012FED000000000002 /* MHPlatform */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		AD75E9902FED371000094EFB /* Stally.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stally.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B8AB10002FED000000000002 /* StallyLibrary */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = StallyLibrary; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
 		AD75E99D2FED371100094EFB /* Exceptions for "Stally" folder in "Stally" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Info.plist,
+				Configurations/Info.plist,
 			);
 			target = AD75E98F2FED371000094EFB /* Stally */;
 		};
@@ -35,6 +42,9 @@
 		AD75E98D2FED371000094EFB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				B8D000012FED000000000003 /* MHPlatform in Frameworks */,
+				B8C000012FED000000000003 /* MHUI in Frameworks */,
+				B8AB10002FED000000000001 /* StallyLibrary in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -44,6 +54,7 @@
 			isa = PBXGroup;
 			children = (
 				AD75E9922FED371000094EFB /* Stally */,
+				B8AB10002FED000000000002 /* StallyLibrary */,
 				AD75E9912FED371000094EFB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -73,6 +84,11 @@
 				AD75E9922FED371000094EFB /* Stally */,
 			);
 			name = Stally;
+			packageProductDependencies = (
+				B8D000012FED000000000002 /* MHPlatform */,
+				B8C000012FED000000000002 /* MHUI */,
+				B8AB10002FED000000000004 /* StallyLibrary */,
+			);
 			productName = Stally;
 			productReference = AD75E9902FED371000094EFB /* Stally.app */;
 			productType = "com.apple.product-type.application";
@@ -97,10 +113,17 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				ja,
 				Base,
 			);
 			mainGroup = AD75E9872FED371000094EFB;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B8AB10002FED000000000003 /* XCLocalSwiftPackageReference "StallyLibrary" */,
+				B8D000012FED000000000001 /* XCRemoteSwiftPackageReference "MHPlatform" */,
+				B8C000012FED000000000001 /* XCRemoteSwiftPackageReference "MHUI" */,
+				B8AB10012FED000000000001 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AD75E9912FED371000094EFB /* Products */;
 			projectDirPath = "";
@@ -133,6 +156,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Stally/Configurations/Stally.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 66PKF55HK5;
@@ -141,7 +165,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Stally/Info.plist;
+				INFOPLIST_FILE = Stally/Configurations/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -178,6 +202,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Stally/Configurations/Stally.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 66PKF55HK5;
@@ -186,7 +211,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = Stally/Info.plist;
+				INFOPLIST_FILE = Stally/Configurations/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -354,6 +379,57 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		B8AB10002FED000000000003 /* XCLocalSwiftPackageReference "StallyLibrary" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = StallyLibrary;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B8AB10012FED000000000001 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SimplyDanny/SwiftLintPlugins";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.0;
+			};
+		};
+		B8C000012FED000000000001 /* XCRemoteSwiftPackageReference "MHUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/muhiro12/MHUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		B8D000012FED000000000001 /* XCRemoteSwiftPackageReference "MHPlatform" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/muhiro12/MHPlatform";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B8AB10002FED000000000004 /* StallyLibrary */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = StallyLibrary;
+		};
+		B8C000012FED000000000002 /* MHUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B8C000012FED000000000001 /* XCRemoteSwiftPackageReference "MHUI" */;
+			productName = MHUI;
+		};
+		B8D000012FED000000000002 /* MHPlatform */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B8D000012FED000000000001 /* XCRemoteSwiftPackageReference "MHPlatform" */;
+			productName = MHPlatform;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = AD75E9882FED371000094EFB /* Project object */;
 	validationLevel = 1;

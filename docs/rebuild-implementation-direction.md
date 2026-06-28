@@ -66,6 +66,17 @@ compatibility work unless a later product decision requires it.
 When the project is created, use the Xcode and iOS SDK that match the iOS 27
 baseline rather than preserving compatibility with the removed legacy project.
 
+## Monetization Direction
+
+Stally should align with the Incomes-style premium model: premium removes ads
+and unlocks iCloud sync. Ads and StoreKit integration belong in the app target
+through MHPlatform, while the durable subscription-state calculation belongs in
+StallyLibrary so app UI, settings, and future surfaces share the same rule.
+
+Do not invent production AdMob identifiers or borrow identifiers from another
+app. Use official Google test identifiers only for development and preview
+builds until Stally-owned production AdMob identifiers exist.
+
 ## Package Direction
 
 The rebuilt Stally project should use the same package family as Incomes unless
@@ -78,9 +89,10 @@ As of June 22, 2026, the Incomes package baseline includes:
 - `SwiftLintPlugins` from
   `https://github.com/SimplyDanny/SwiftLintPlugins`.
 
-For a future shared library package, use Incomes as the reference for choosing
+For the shared library package, use Incomes as the reference for choosing
 library-level package products such as `MHPlatformCore` when only core platform
-support is needed.
+support is needed. The current StallyLibrary package follows this for
+shareable-link deep-link route encoding.
 
 For app targets, use Incomes as the reference for package products such as
 `MHPlatform`, `MHPreferences`, and the relevant MHUI products. Recheck Incomes
@@ -127,6 +139,31 @@ Important domain concepts for future structured access include:
 Use platform-native persistence and Apple framework patterns when choosing the
 future implementation, but do not treat the removed legacy SwiftData schema as
 the required design.
+
+## Rebuild Baseline Infrastructure
+
+CloudKit, App Intents, and English/Japanese localization are standard rebuild
+baseline infrastructure for Stally. They should be introduced early enough
+that the SwiftData schema, Operations boundary, app adapters, previews,
+screenshots, tests, and verification contract grow around them rather than
+receiving them as late release additions.
+
+CloudKit should stay a persistence configuration concern, not a reason to add
+an unnecessary repository or service layer. Preview and test containers should
+remain in-memory and separate from the runtime CloudKit-capable persistent
+configuration.
+
+App Intents should expose existing Stally behavior through public
+`*Operations` facades and thin app-target adapters. The `StallyLibrary` package
+should not gain an AppIntents dependency unless a later concrete target
+boundary requires it.
+
+Localization should keep English as the source language and Japanese as a
+supported additional language. UI, App Intents, App Shortcuts, and reusable
+library error or presentation strings should be catalog-backed as the app
+grows. Product nouns such as Stally, Item, Mark, Library, Archive, Review,
+Insights, Backup Center, and Quiet History should preserve their documented
+meaning in both languages.
 
 ## Boundaries
 

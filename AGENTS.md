@@ -19,23 +19,44 @@ Repository-specific agent contract for Stally.
 
 ## Current State
 
-Stally has re-entered rebuild implementation with a seed Apple-platform app
-project.
+Stally has re-entered rebuild implementation and now contains the rebuilt core
+Library, Archive, Review, Insights, Backup Center, Settings, shareable-link,
+CloudKit persistence, App Intents, monetization, and English/Japanese
+localization baselines plus the local MHPlatform runtime, logging, and route
+foundation for continuing the rebuild.
 
 This repository currently contains:
 
 - `Stally.xcodeproj`, with the `Stally` app target and `Stally` scheme.
-- `Stally/`, a SwiftUI app source tree using SwiftData starter persistence.
+- `Stally/`, a SwiftUI app source tree under `Stally/Sources/`,
+  configuration files under `Stally/Configurations/`, and app resources under
+  `Stally/Resources/`.
+- `StallyLibrary/Package.swift`, a local Swift package linked into the app
+  target as the `StallyLibrary` product.
+- `StallyLibrary/Sources/`, which owns the current durable item, review,
+  insights, backup, link, subscription-state, SwiftData model, persistence
+  factory, and `*Operations` use cases, with `MHPlatformCore` used only for
+  library-safe platform primitives and preference descriptors.
+- `StallyLibrary/Sources/Resources/`, which owns package-local localized
+  library strings.
+- `StallyLibrary/Tests/`, which owns library behavior tests for the current
+  item, review, insights, backup, and link operations.
+- `ci_scripts/`, which owns repository-managed lint, rule, and library-test
+  entrypoints.
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
   manifest.
 - Preserved product-intent documentation under `docs/`.
 
-This repository does not currently contain:
-
-- A `StallyLibrary` target or scheme.
-- Swift package manifests.
-- Test targets.
-- Local verification scripts.
+This repository does not currently contain Widget, Watch, external AI
+integration, or broad advanced settings. `StallyLibrary` links
+`MHPlatformCore` for shareable-link deep-link route encoding and preference
+descriptors. The app target links the full MHPlatform umbrella for app-side
+runtime, logging, routing, StoreKit, AdMob, and license integration, and MHUI
+for visual chrome and presentation styling. CloudKit is configured through the
+runtime SwiftData persistence baseline and is gated by the persisted premium
+iCloud preference, but real-device iCloud sync, StoreKit purchase resolution,
+production AdMob serving, and production CloudKit behavior are not proven by
+local simulator verification alone.
 
 ## Documentation Boundary
 
@@ -55,6 +76,8 @@ owner-directed rebuild constraints while the implementation is rebuilt.
 - `docs/rebuild-handoff.md` records the extraction audit and phase boundary.
 - `docs/rebuild-implementation-direction.md` records explicit rebuild
   direction added after the legacy extraction.
+- `docs/rebuild-implementation-principles.md` records current rebuild
+  baseline implementation principles.
 
 When editing product-intent documents, preserve the existing English voice,
 avoid speculation, and keep the distinction between product intent and
@@ -66,22 +89,97 @@ retime them unless a stale statement would misdirect current work.
 
 ## Rebuild Boundary
 
-Do not add architecture, a library target, a persistence model beyond the
-current starter SwiftData item, a navigation model, CI scripts, or an
-implementation plan unless the user explicitly asks.
-
-Do not infer future architecture, framework choices, SwiftData schema,
-navigation, UI hierarchy, routing, backup schema, or verification flow from
-the removed legacy implementation.
+Do not infer future framework choices, SwiftData schema, navigation,
+UI hierarchy, routing, backup schema, or verification flow from the removed
+legacy implementation.
 
 Follow explicit owner-directed rebuild constraints in
 `docs/rebuild-implementation-direction.md`. Do not expand those constraints
 into a full implementation plan unless the user asks.
 
+Keep the current rebuilt core surfaces as the behavior reference while
+structural work continues. Do not add Widget, Watch, external AI integration,
+ads, purchases, advanced settings, broad UI redesign work, or wider App
+Intents/CloudKit behavior unless the user explicitly asks for that phase.
+
 If a future task adds targets, schemes, packages, tests, scripts, or app
 surfaces, update this file in the same task with the concrete source
 boundaries and verification entrypoints that then exist. Keep Stally-specific
 facts authoritative.
+
+## Source Boundaries
+
+The app target should stay a thin adapter over the current product surface.
+
+- `Stally/Sources/App/` owns app lifecycle, exported library import, and root
+  composition, including tab selection and sheet routing.
+- `Stally/Sources/App/Intents/` owns app-wide App Shortcuts and generic route
+  App Intents. Feature-specific App Intents should live under the owning
+  `Features/*/Intents/` directory.
+- `Stally/Sources/Platform/` owns app-side MHPlatform assembly, logging,
+  runtime bootstrap, route pipeline, route inbox, monetization configuration,
+  and intent URL-store plumbing. It must not own product behavior or durable
+  domain use cases.
+- `Stally/Sources/Features/Library/` owns the current SwiftUI Library, Add
+  Item, Item Detail, Mark Today, Undo Today's Mark, Quiet History views, and
+  Library-owned App Intents and App Entities.
+- `Stally/Sources/Features/Archive/` owns the SwiftUI Archive surface and
+  Archive-owned App Intents.
+- `Stally/Sources/Features/Review/` owns the SwiftUI Review lane surface and
+  Review-owned App Intents.
+- `Stally/Sources/Features/Insights/` owns the SwiftUI Insights reading
+  surface and Insights-owned App Intents.
+- `Stally/Sources/Features/Backup/` owns the SwiftUI Backup Center surface,
+  including file importer/exporter presentation, safety confirmations, and
+  Backup-owned App Intents.
+- `Stally/Sources/Features/Links/` owns app-side link-sharing presentation.
+- `Stally/Sources/Features/Settings/` owns the SwiftUI Settings surface,
+  premium/iCloud controls, StoreKit subscription section, shareable-link list
+  surface, and Settings-owned App Intents.
+- `Stally/Sources/SharedUI/` owns app-local MHUI presentation adapters and
+  shared visual treatment helpers, including app-local ad presentation
+  wrappers. It must not contain product behavior, persistence logic, or
+  reusable library operations.
+- `Stally/Sources/PreviewSupport/` owns DEBUG-only preview data, in-memory
+  preview containers, screenshot launch routes, and screen-level previews for
+  UI review. It must not become product behavior or shared-library logic.
+- `Stally/Resources/` owns app-target String Catalogs for SwiftUI, App
+  Intents, and App Shortcuts strings.
+- App views may use SwiftData environment values and `@Query` for the current
+  app surface, but durable business behavior should enter through public
+  `*Operations`.
+- App views should not directly create `Item`, call item mark/history helper
+  methods, declare `@Model` types, or duplicate business branching that belongs
+  in the library.
+- App Intents must call public `*Operations` for business behavior and should
+  not reimplement domain rules in the app target.
+
+`StallyLibrary` is the durable domain and use-case boundary.
+
+- `StallyLibrary/Sources/Item/` owns `Item`, `ItemMark`, `ItemCategory`,
+  `ItemHistorySnapshot`, `ItemFormInput`, `ItemValidationError`, and
+  `ItemOperations`.
+- `StallyLibrary/Sources/Review/` owns Review lane values, settings,
+  snapshots, and `ReviewOperations`.
+- `StallyLibrary/Sources/Insights/` owns Insights range/options, reading
+  values, recommendations, snapshots, and `InsightsOperations`.
+- `StallyLibrary/Sources/Backup/` owns versioned backup snapshots, import
+  previews/results, validation issues, reset results, and `BackupOperations`.
+- `StallyLibrary/Sources/Link/` owns shareable destination and item link
+  values, MHPlatformCore deep-link route encoding, parsing results, and
+  `StallyLinkOperations`.
+- `StallyLibrary/Sources/Settings/` owns premium/iCloud subscription-state
+  values and `SubscriptionStateOperations`.
+- `StallyLibrary/Sources/Preferences/` owns app-local preference descriptors
+  used by app startup and SwiftUI settings surfaces.
+- `StallyLibrary/Sources/Persistence/` owns `StallyModelContainerFactory`.
+- `StallyLibrary/Sources/Resources/` owns library String Catalogs and is
+  processed as a Swift Package resource bundle.
+- Public business use cases that app UI, future App Intents, widgets, or other
+  surfaces need should be exposed through public `*Operations` facades.
+- Implementation helpers should stay internal unless they are stable value,
+  persistence, route, wire, or presentation contracts needed by another
+  surface.
 
 ## Owner-Directed Rebuild Direction
 
@@ -106,6 +204,46 @@ Use MHUI intentionally and take full advantage of SDK capabilities available at
 the iOS 27 baseline. Do not restrict Stally to minimal or legacy-compatible
 MHUI usage without a concrete product or technical reason.
 
+CloudKit, App Intents, and English/Japanese localization are rebuild baseline
+requirements for Stally. Add them early in rebuild work and preserve them as
+future surfaces are added.
+
+For app UI, treat Apple Human Interface Guidelines and native Apple controls
+as the foundation. Use MHUI and MHDesign as a shared app-family style layer for
+spacing, hierarchy, row rhythm, section treatment, metadata, badges, empty
+states, summary surfaces, action emphasis, destructive and safety treatment,
+feedback, and app-wide visual consistency. Do not replace native `List`,
+`Form`, navigation, sharing, sheets, menus, alerts, or confirmation behavior
+merely to use MHUI.
+
+## Package Posture
+
+Treat package declaration and product linking as separate decisions.
+
+- The app target currently links the local `StallyLibrary` product, the full
+  `MHPlatform` umbrella product for runtime/logging/routing, StoreKit, AdMob,
+  and license integration, and the remote `MHUI` product for presentation
+  styling.
+- `StallyLibrary` declares `MHPlatform` and links the `MHPlatformCore` product
+  for shared deep-link route contracts and preference descriptors.
+- `SwiftLintPlugins` is declared in `Stally.xcodeproj` for repository-managed
+  linting and should not be treated as a runtime dependency.
+- `MHUI` re-exports `MHDesign`; do not add a separate `MHDesign` product link
+  unless a concrete build or target-boundary need appears.
+- CloudKit is enabled through SwiftData configuration and app entitlements. It
+  is not a package dependency. Runtime startup selects the CloudKit-backed
+  container only when the persisted premium and iCloud preferences are both on.
+- Do not upgrade `StallyLibrary` to the app-facing `MHPlatform` product unless
+  a concrete library-safe boundary requires it.
+- The app target intentionally adopts the `MHPlatform` umbrella now that
+  Stally has StoreKit and AdMob surfaces. Do not add additional runtime
+  products outside the umbrella solely because Incomes or Fluel declares them.
+- AdMob app configuration currently uses Google's official sample application
+  ID so the umbrella-linked Google Mobile Ads SDK can initialize safely.
+  Debug and preview builds use Google's official native test ad unit. Release
+  builds must not invent or borrow an ad unit; keep production native ads
+  disabled until a Stally-owned production AdMob ad unit exists.
+
 ## Expected Apple Implementation Contract
 
 Agents MUST prefer XcodeBuildMCP for Apple build, test, run, Simulator,
@@ -125,16 +263,37 @@ Use this expected verification shape:
 
 - For app compile checks, use XcodeBuildMCP `build_sim` with the `Stally`
   scheme.
-- For runtime or UI-sensitive changes, use XcodeBuildMCP `build_run_sim`,
-  `launch_app_sim`, `snapshot_ui`, and `screenshot` as appropriate.
-
-When these schemes exist later, add this stronger verification shape:
-
-- For shared-library logic, model, or test changes, use XcodeBuildMCP
-  `test_sim` with the `StallyLibrary` scheme.
+- For shared-library logic, model, or test changes, run
+  `bash ci_scripts/tasks/test_stally_library.sh`.
 - For public `StallyLibrary` APIs, `*Operations`, shared contracts, SwiftData
   schema, or adapter-facing contracts, also use XcodeBuildMCP `build_sim` with
   the `Stally` scheme.
+- For runtime or UI-sensitive changes, use XcodeBuildMCP `build_run_sim`,
+  `launch_app_sim`, `snapshot_ui`, and `screenshot` as appropriate.
+
+For localization changes, run the string-catalog audit with the required
+English and Japanese locale set:
+
+```sh
+CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
+python3 "$CODEX_HOME/skills/string-catalog-maintainer/scripts/audit_xcstrings.py" \
+  --project-root . \
+  --required-locales en,ja \
+  --format markdown
+```
+
+For App Intents changes, confirm the app build extracts App Intents metadata
+and that user-facing intent strings remain catalog-backed.
+
+For CloudKit or SwiftData container changes, run an app runtime check and
+inspect logs for fatal CloudKit, SwiftData, ModelContainer, App Intents, crash,
+or exception output. A local simulator run does not prove real-device iCloud
+sync or production CloudKit environment behavior.
+
+The generated project-level `StallyLibrary` package product scheme is currently
+buildable through XcodeBuildMCP, but package tests are driven by
+`ci_scripts/tasks/test_stally_library.sh`, which runs `xcodebuild -scheme
+StallyLibrary ... test` from the package directory.
 
 When retained repository scripts exist, agents should run the Swift formatter
 after Swift edits:
@@ -155,6 +314,10 @@ SwiftLint should be resolved from the `SimplyDanny/SwiftLintPlugins` package
 declared in the project once package dependencies are added, not from a
 separately installed `swiftlint` binary.
 
+UI preview reports and screenshots are implementation review artifacts. Keep
+them separate from preserved product-intent documents, and update them when a
+task intentionally changes the visible app surface or visual-system adoption.
+
 Xcode Cloud should own formal CI builds, tests, and archives once the rebuilt
 app is ready for hosted CI.
 
@@ -167,16 +330,28 @@ audit unless explicitly requested.
 
 ## Verification
 
-For the current seed app state, verify changes by inspecting the diff and
-running:
+For current implementation work, choose the smallest evidence set that proves
+the changed boundary.
+
+Available repository-managed commands:
 
 ```sh
-git diff --check
+bash ci_scripts/tasks/format_swift.sh
+bash ci_scripts/tasks/lint_swift.sh
+bash ci_scripts/tasks/check_repository_rules.sh
+bash ci_scripts/tasks/test_stally_library.sh
+bash ci_scripts/tasks/verify_task_completion.sh
 ```
 
-For Swift or Xcode project changes, also run XcodeBuildMCP `build_sim` with
-the `Stally` scheme.
+`verify_task_completion.sh` runs repository rules, StallyLibrary tests, and
+`git diff --check`. It does not replace XcodeBuildMCP app build or runtime
+evidence when app lifecycle, package linking, SwiftData container wiring, or
+visible UI behavior changes.
 
-Report that Swift package tests, SwiftLint, test schemes, and local repository
-CI checks are unavailable until the rebuild adds the relevant packages,
-targets, or scripts.
+For Swift or Xcode project changes, also run XcodeBuildMCP `build_sim` with the
+`Stally` scheme. For runtime or UI-sensitive changes, run XcodeBuildMCP
+`build_run_sim`, inspect the returned runtime log, and capture a screenshot.
+
+If Xcode beta UI automation is unavailable or unreliable, fall back to
+runtime logs, screenshots, and library/domain tests. Do not treat successful
+launch alone as sufficient evidence for visible UI behavior.
