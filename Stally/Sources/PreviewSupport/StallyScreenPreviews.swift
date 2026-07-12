@@ -58,6 +58,24 @@ import SwiftUI
     }
 }
 
+#Preview("Adjust History - Marked Day") {
+    StallyPreviewContainer(.typical) { items in
+        StallyAdjustHistoryPreview(
+            items: items,
+            itemName: "Black Wool Coat"
+        )
+    }
+}
+
+#Preview("Adjust History - Unmarked Day") {
+    StallyPreviewContainer(.typical) { items in
+        StallyAdjustHistoryPreview(
+            items: items,
+            itemName: "Daily Field Notes"
+        )
+    }
+}
+
 #Preview("Archive - Preserved Items") {
     StallyPreviewContainer(.dense) { items in
         ArchiveView(items: ItemOperations.archivedItems(from: items))

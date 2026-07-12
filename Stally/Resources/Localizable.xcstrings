@@ -153,6 +153,22 @@
         }
       }
     },
+    "Add Mark": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Mark"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マークを追加"
+          }
+        }
+      }
+    },
     "Add Your First Item": {
       "localizations": {
         "en": {
@@ -165,6 +181,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "最初のアイテムを追加"
+          }
+        }
+      }
+    },
+    "Adjust History": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adjust History"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "履歴を調整"
           }
         }
       }
@@ -489,6 +521,22 @@
         }
       }
     },
+    "Changes apply only to the selected day.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changes apply only to the selected day."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変更は選択した日だけに適用されます。"
+          }
+        }
+      }
+    },
     "Choose Backup File": {
       "localizations": {
         "en": {
@@ -501,6 +549,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "バックアップファイルを選択"
+          }
+        }
+      }
+    },
+    "Choose a valid day no later than today.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a valid day no later than today."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日以前の有効な日付を選んでください。"
+          }
+        }
+      }
+    },
+    "Choose today or an earlier day.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose today or an earlier day."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日以前の日付を選んでください。"
           }
         }
       }
@@ -569,6 +649,22 @@
         }
       }
     },
+    "Could Not Update History": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could Not Update History"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "履歴を更新できませんでした"
+          }
+        }
+      }
+    },
     "Current Streak": {
       "localizations": {
         "en": {
@@ -581,6 +677,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "現在のストリーク"
+          }
+        }
+      }
+    },
+    "Date": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日付"
           }
         }
       }
@@ -741,6 +853,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "このアイテムを削除すると、すべてのマークも削除されます。"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完了"
           }
         }
       }
@@ -1676,6 +1804,22 @@
         }
       }
     },
+    "Remove Mark": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove Mark"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マークを削除"
+          }
+        }
+      }
+    },
     "Replace Library": {
       "localizations": {
         "en": {
@@ -2040,6 +2184,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "実際によく手に取るものを、まずは少しだけ追加しましょう。"
+          }
+        }
+      }
+    },
+    "Status": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "状態"
           }
         }
       }

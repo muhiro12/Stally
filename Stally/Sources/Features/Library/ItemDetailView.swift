@@ -9,6 +9,31 @@ import SwiftData
 import SwiftUI
 
 struct ItemDetailView: View {
+    private struct HistoryAdjustmentContext: Identifiable {
+        let item: Item
+        let timeZone: TimeZone
+        let today: LocalDay
+        let todayDate: Date
+
+        var id: UUID {
+            item.uuid
+        }
+    }
+
+    private enum PresentedSheet: Identifiable {
+        case adjustHistory(HistoryAdjustmentContext)
+        case editItem(Item)
+
+        var id: String {
+            switch self {
+            case .adjustHistory:
+                "adjust-history"
+            case .editItem:
+                "edit-item"
+            }
+        }
+    }
+
     @Environment(\.dismiss)
     private var dismiss
     @Environment(\.modelContext)
@@ -18,7 +43,7 @@ struct ItemDetailView: View {
 
     let item: Item
 
-    @State private var itemToEdit: Item?
+    @State private var presentedSheet: PresentedSheet?
     @State private var isConfirmingDeleteItem = false
     @State private var errorTitle = ""
     @State private var errorMessage = ""
@@ -40,6 +65,8 @@ struct ItemDetailView: View {
                     markAction: markToday,
                     undoAction: undoToday
                 )
+
+                HistoryAdjustmentEntrySection(adjustAction: presentHistoryAdjustment)
             }
 
             ArchiveActionSection(
@@ -71,8 +98,18 @@ struct ItemDetailView: View {
                 )
             }
         }
-        .sheet(item: $itemToEdit) { item in
-            EditItemView(item: item)
+        .sheet(item: $presentedSheet) { sheet in
+            switch sheet {
+            case .adjustHistory(let context):
+                AdjustHistoryView(
+                    item: context.item,
+                    timeZone: context.timeZone,
+                    today: context.today,
+                    todayDate: context.todayDate
+                )
+            case .editItem(let item):
+                EditItemView(item: item)
+            }
         }
         .alert("Delete Item?", isPresented: $isConfirmingDeleteItem) {
             Button("Delete Item", role: .destructive, action: deleteItem)
@@ -162,7 +199,30 @@ struct ItemDetailView: View {
     }
 
     private func presentEditItem() {
-        itemToEdit = item
+        presentedSheet = .editItem(item)
+    }
+
+    private func presentHistoryAdjustment() {
+        let capturedTimeZone = timeZone
+        let now = Date()
+
+        guard let today = LocalDay(containing: now, in: capturedTimeZone),
+              let todayDate = today.date(in: capturedTimeZone) else {
+            presentError(
+                title: String(localized: "Could Not Update History"),
+                message: String(localized: "Choose a valid day no later than today.")
+            )
+            return
+        }
+
+        presentedSheet = .adjustHistory(
+            .init(
+                item: item,
+                timeZone: capturedTimeZone,
+                today: today,
+                todayDate: todayDate
+            )
+        )
     }
 
     private func confirmDeleteItem() {
