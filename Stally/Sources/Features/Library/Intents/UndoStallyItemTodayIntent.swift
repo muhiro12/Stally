@@ -6,6 +6,7 @@
 //
 
 import AppIntents
+import Foundation
 import SwiftData
 
 struct UndoStallyItemTodayIntent: AppIntent {
@@ -28,10 +29,16 @@ struct UndoStallyItemTodayIntent: AppIntent {
 
     @MainActor
     func perform() throws -> some IntentResult & ProvidesDialog {
+        let now = Date()
+        let timeZone = TimeZone.current
+        guard let today = LocalDay(containing: now, in: timeZone) else {
+            throw CocoaError(.coderInvalidValue)
+        }
+
         let model = try item.model(in: modelContainer.mainContext)
         let didUndo = try ItemOperations.undoMark(
             model,
-            on: .now,
+            on: today,
             context: modelContainer.mainContext
         )
         let dialog = didUndo ? Self.removedDialog : Self.notMarkedDialog

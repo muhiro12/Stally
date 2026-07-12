@@ -11,24 +11,35 @@ import SwiftData
 /// A single calendar-day record that an item was chosen.
 @Model
 public final class ItemMark {
+    private static let defaultDayKey = 19_700_101
+
     /// Stable mark identifier for backups and cross-surface references.
-    public var uuid = UUID()
-    /// Start-of-day date for the marked calendar day.
-    public var day = Date()
+    public internal(set) var uuid = UUID()
+    /// Compact proleptic Gregorian day representation used by SwiftData.
+    var dayKey = defaultDayKey
     /// Date when this mark record was created.
-    public var createdAt = Date()
+    public internal(set) var createdAt = Date()
     /// The item this mark belongs to.
-    public var item: Item?
+    public internal(set) var item: Item?
+
+    /// Timezone-independent calendar day when the item was chosen.
+    public var day: LocalDay {
+        guard let localDay = LocalDay(dayKey: dayKey) else {
+            preconditionFailure("ItemMark contains an invalid day key: \(dayKey)")
+        }
+
+        return localDay
+    }
 
     /// Creates a mark for a calendar day.
-    public init(
-        day: Date,
-        createdAt: Date = .now,
-        item: Item? = nil,
-        uuid: UUID = .init()
+    init(
+        day: LocalDay,
+        createdAt: Date,
+        item: Item?,
+        uuid: UUID
     ) {
         self.uuid = uuid
-        self.day = day
+        dayKey = day.dayKey
         self.createdAt = createdAt
         self.item = item
     }

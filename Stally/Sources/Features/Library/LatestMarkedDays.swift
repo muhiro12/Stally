@@ -13,7 +13,10 @@ struct LatestMarkedDays: View {
         static let verticalSpacing: CGFloat = 8
     }
 
-    let days: [Date]
+    @Environment(\.timeZone)
+    private var timeZone
+
+    let days: [LocalDay]
 
     var body: some View {
         VStack(alignment: .leading, spacing: Layout.verticalSpacing) {
@@ -21,8 +24,13 @@ struct LatestMarkedDays: View {
                 .mhRowOverline()
 
             ForEach(days, id: \.self) { day in
-                Text(day, format: .dateTime.month().day().year())
-                    .mhRowSupporting()
+                if let date = day.date(in: timeZone) {
+                    Text(date, format: .dateTime.month().day().year())
+                        .mhRowSupporting()
+                } else {
+                    Text(verbatim: day.iso8601Date)
+                        .mhRowSupporting()
+                }
             }
         }
     }

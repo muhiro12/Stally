@@ -132,25 +132,28 @@ public enum ItemOperations {
     /// Returns whether an item is marked for a calendar day.
     public static func isMarked(
         _ item: Item,
-        on date: Date = .now,
-        calendar: Calendar = .current
+        on day: LocalDay
     ) -> Bool {
-        item.isMarked(on: date, calendar: calendar)
+        item.isMarked(on: day)
     }
 
     /// Adds one mark for a calendar day and saves the context.
     @discardableResult
     public static func mark(
         _ item: Item,
-        on date: Date,
-        context: ModelContext,
-        calendar: Calendar = .current
+        on day: LocalDay,
+        today: LocalDay,
+        context: ModelContext
     ) throws -> Bool {
         guard !item.isArchived else {
             throw ItemValidationError.archivedItemsCannotChangeHistory
         }
 
-        guard let mark = item.addMark(on: date, calendar: calendar) else {
+        guard day <= today else {
+            throw ItemValidationError.futureMarksNotAllowed
+        }
+
+        guard let mark = item.addMark(on: day) else {
             return false
         }
 
@@ -164,15 +167,14 @@ public enum ItemOperations {
     @discardableResult
     public static func undoMark(
         _ item: Item,
-        on date: Date,
-        context: ModelContext,
-        calendar: Calendar = .current
+        on day: LocalDay,
+        context: ModelContext
     ) throws -> Bool {
         guard !item.isArchived else {
             throw ItemValidationError.archivedItemsCannotChangeHistory
         }
 
-        let marks = item.removeMarks(on: date, calendar: calendar)
+        let marks = item.removeMarks(on: day)
 
         guard !marks.isEmpty else {
             return false
@@ -222,10 +224,9 @@ public enum ItemOperations {
     /// Builds the current item-level history reading.
     public static func historySnapshot(
         for item: Item,
-        calendar: Calendar = .current,
-        now: Date = .now
+        today: LocalDay
     ) -> ItemHistorySnapshot {
-        .init(item: item, calendar: calendar, now: now)
+        .init(item: item, today: today)
     }
 
     private static func saveOrRollback(_ context: ModelContext) throws {

@@ -14,14 +14,18 @@ public extension BackupOperations {
     static func mergeIntoLibrary(
         data: Data,
         context: ModelContext,
-        calendar: Calendar = .current,
         decoder: JSONDecoder = .init()
     ) throws -> BackupImportResult {
+        let schemaVersion = try schemaVersion(in: data, decoder: decoder)
+
+        guard schemaVersion == BackupSnapshot.currentSchemaVersion else {
+            throw BackupError.validationFailed(unsupportedSchemaPreview(schemaVersion))
+        }
+
         let snapshot = try decoder.decode(BackupSnapshot.self, from: data)
         return try mergeIntoLibrary(
             snapshot: snapshot,
-            context: context,
-            calendar: calendar
+            context: context
         )
     }
 
@@ -29,14 +33,12 @@ public extension BackupOperations {
     @discardableResult
     static func mergeIntoLibrary(
         snapshot: BackupSnapshot,
-        context: ModelContext,
-        calendar: Calendar = .current
+        context: ModelContext
     ) throws -> BackupImportResult {
         let currentItems = try fetchItems(context)
         let importPlan = importPlan(
             snapshot: snapshot,
-            currentItems: currentItems,
-            calendar: calendar
+            currentItems: currentItems
         )
         let preview = importPlan.preview(replacingExistingItems: false)
 
@@ -64,14 +66,18 @@ public extension BackupOperations {
     static func replaceLibrary(
         data: Data,
         context: ModelContext,
-        calendar: Calendar = .current,
         decoder: JSONDecoder = .init()
     ) throws -> BackupImportResult {
+        let schemaVersion = try schemaVersion(in: data, decoder: decoder)
+
+        guard schemaVersion == BackupSnapshot.currentSchemaVersion else {
+            throw BackupError.validationFailed(unsupportedSchemaPreview(schemaVersion))
+        }
+
         let snapshot = try decoder.decode(BackupSnapshot.self, from: data)
         return try replaceLibrary(
             snapshot: snapshot,
-            context: context,
-            calendar: calendar
+            context: context
         )
     }
 
@@ -79,14 +85,12 @@ public extension BackupOperations {
     @discardableResult
     static func replaceLibrary(
         snapshot: BackupSnapshot,
-        context: ModelContext,
-        calendar: Calendar = .current
+        context: ModelContext
     ) throws -> BackupImportResult {
         let currentItems = try fetchItems(context)
         let importPlan = importPlan(
             snapshot: snapshot,
-            currentItems: currentItems,
-            calendar: calendar
+            currentItems: currentItems
         )
         let preview = importPlan.preview(replacingExistingItems: true)
 
@@ -122,11 +126,10 @@ public extension BackupOperations {
 extension BackupOperations {
     static func shouldAddMark(
         _ backupMark: BackupMark,
-        to item: Item,
-        calendar: Calendar
+        to item: Item
     ) -> Bool {
         !item.marks.contains { mark in
-            calendar.isDate(mark.day, inSameDayAs: backupMark.day)
+            mark.day == backupMark.day
         }
     }
 }

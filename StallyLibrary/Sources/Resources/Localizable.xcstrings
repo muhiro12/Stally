@@ -385,6 +385,22 @@
         }
       }
     },
+    "Marks cannot be added for a future day.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marks cannot be added for a future day."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未来の日にはマークを追加できません。"
+          }
+        }
+      }
+    },
     "Move this item back to Library before changing its history.": {
       "localizations": {
         "en": {

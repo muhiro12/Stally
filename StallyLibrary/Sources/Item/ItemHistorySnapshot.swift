@@ -5,38 +5,32 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
-import Foundation
-
 /// Item-level history readings derived from one item and its marks.
 public struct ItemHistorySnapshot {
     private enum Defaults {
         static let shortWindowDayCount = 30
         static let mediumWindowDayCount = 90
         static let inclusiveWindowAdjustment = 1
+        static let monthKeyMultiplier = 100
     }
 
     /// Total unique marked days.
     public let totalMarks: Int
     /// Most recent marked day.
-    public let lastMarkedDay: Date?
+    public let lastMarkedDay: LocalDay?
     /// Unique marked days in the latest 30-day window.
     public let marksInLast30Days: Int
     /// Unique marked days in the latest 90-day window.
     public let marksInLast90Days: Int
     /// Number of distinct calendar months with marks.
     public let monthsUsed: Int
-    /// Days between the last mark and `now`.
+    /// Days between the last mark and `today`.
     public let daysSinceLastMark: Int?
     /// Unique marked days sorted from newest to oldest.
-    public let markedDays: [Date]
+    public let markedDays: [LocalDay]
 
-    init(item: Item, calendar: Calendar, now: Date) {
-        let today = calendar.startOfDay(for: now)
-        let uniqueDays = Set(
-            item.marks.map { mark in
-                calendar.startOfDay(for: mark.day)
-            }
-        )
+    init(item: Item, today: LocalDay) {
+        let uniqueDays = Set(item.marks.map(\.day))
         let sortedDays = uniqueDays.sorted(by: >)
 
         totalMarks = uniqueDays.count
@@ -44,49 +38,40 @@ public struct ItemHistorySnapshot {
         marksInLast30Days = Self.countMarks(
             in: uniqueDays,
             from: today,
-            numberOfDays: Defaults.shortWindowDayCount,
-            calendar: calendar
+            numberOfDays: Defaults.shortWindowDayCount
         )
         marksInLast90Days = Self.countMarks(
             in: uniqueDays,
             from: today,
-            numberOfDays: Defaults.mediumWindowDayCount,
-            calendar: calendar
+            numberOfDays: Defaults.mediumWindowDayCount
         )
-        monthsUsed = Self.countMonthsUsed(in: uniqueDays, calendar: calendar)
+        monthsUsed = Self.countMonthsUsed(in: uniqueDays)
         daysSinceLastMark = lastMarkedDay.map { lastMarkedDay in
-            calendar.dateComponents([.day], from: lastMarkedDay, to: today).day ?? 0
+            max(0, lastMarkedDay.distance(to: today))
         }
         markedDays = sortedDays
     }
 
     private static func countMarks(
-        in markedDays: Set<Date>,
-        from today: Date,
-        numberOfDays: Int,
-        calendar: Calendar
+        in markedDays: Set<LocalDay>,
+        from today: LocalDay,
+        numberOfDays: Int
     ) -> Int {
-        guard let startDay = calendar.date(
-            byAdding: .day,
-            value: -(numberOfDays - Defaults.inclusiveWindowAdjustment),
-            to: today
+        guard let startDay = today.adding(
+            days: -(numberOfDays - Defaults.inclusiveWindowAdjustment)
         ) else {
             return 0
         }
 
         return markedDays.filter { day in
-            day >= startDay && day <= today
+            day >= startDay
         }
         .count
     }
 
-    private static func countMonthsUsed(
-        in markedDays: Set<Date>,
-        calendar: Calendar
-    ) -> Int {
+    private static func countMonthsUsed(in markedDays: Set<LocalDay>) -> Int {
         let monthKeys = markedDays.map { day in
-            let components = calendar.dateComponents([.year, .month], from: day)
-            return "\(components.year ?? 0)-\(components.month ?? 0)"
+            day.year * Defaults.monthKeyMultiplier + day.month
         }
 
         return Set(monthKeys).count

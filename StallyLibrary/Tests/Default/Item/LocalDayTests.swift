@@ -121,6 +121,15 @@ struct LocalDayTests {
     }
 
     @Test
+    func `a skipped timezone date keeps its canonical representation`() throws {
+        let apia = try #require(TimeZone(identifier: "Pacific/Apia"))
+        let skippedDay = try #require(LocalDay(year: 2_011, month: 12, day: 30))
+
+        #expect(skippedDay.date(in: apia) == nil)
+        #expect(skippedDay.iso8601Date == "2011-12-30")
+    }
+
+    @Test
     func `date capture ignores non Gregorian calendar construction`() throws {
         let utc = try #require(TimeZone(secondsFromGMT: 0))
         var buddhistCalendar = Calendar(identifier: .buddhist)
@@ -154,6 +163,7 @@ struct LocalDayTests {
         let encodedDay = try #require(String(data: data, encoding: .utf8))
 
         #expect(encodedDay == #""2026-06-03""#)
+        #expect(day.iso8601Date == "2026-06-03")
         #expect(try JSONDecoder().decode(LocalDay.self, from: data) == day)
     }
 

@@ -9,8 +9,14 @@ import Foundation
 
 /// Versioned portable snapshot of the Stally collection.
 public struct BackupSnapshot: Codable, Equatable, Sendable {
+    private enum CodingKeys: String, CodingKey {
+        case schemaVersion
+        case exportedAt
+        case items
+    }
+
     /// Current supported backup schema version.
-    public static let currentSchemaVersion = 1
+    public static let currentSchemaVersion = 2
 
     /// Backup schema version.
     public let schemaVersion: Int

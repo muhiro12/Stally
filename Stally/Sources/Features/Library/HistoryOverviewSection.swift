@@ -9,6 +9,9 @@ import MHUI
 import SwiftUI
 
 struct HistoryOverviewSection: View {
+    @Environment(\.timeZone)
+    private var timeZone
+
     let history: ItemHistorySnapshot
 
     var body: some View {
@@ -18,12 +21,7 @@ struct HistoryOverviewSection: View {
             }
 
             LabeledContent("Last marked") {
-                if let lastMarkedDay = history.lastMarkedDay {
-                    Text(lastMarkedDay, format: .dateTime.month().day().year())
-                } else {
-                    Text("Not yet")
-                        .mhTextStyle(.body, colorRole: .secondaryText)
-                }
+                lastMarkedValue
             }
 
             LabeledContent("Marks (30d)") {
@@ -48,5 +46,18 @@ struct HistoryOverviewSection: View {
             }
         }
         .labeledContentStyle(.mhKeyValue)
+    }
+
+    @ViewBuilder private var lastMarkedValue: some View {
+        if let lastMarkedDay = history.lastMarkedDay {
+            if let date = lastMarkedDay.date(in: timeZone) {
+                Text(date, format: .dateTime.month().day().year())
+            } else {
+                Text(verbatim: lastMarkedDay.iso8601Date)
+            }
+        } else {
+            Text("Not yet")
+                .mhTextStyle(.body, colorRole: .secondaryText)
+        }
     }
 }

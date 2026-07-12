@@ -15,24 +15,31 @@ public enum InsightsOperations {
     public static func snapshot(
         for items: [Item],
         options: InsightsOptions = .default,
-        calendar: Calendar = .current,
+        timeZone: TimeZone = .current,
         now: Date = .now
     ) -> InsightsSnapshot {
-        let today = calendar.startOfDay(for: now)
-        let startDay = options.range.startDay(from: today, calendar: calendar)
         let scopedItems = options.includesArchivedItems ? items : ItemOperations.activeItems(from: items)
+
+        guard let today = LocalDay(containing: now, in: timeZone) else {
+            return unavailableSnapshot(options: options, scopedItems: scopedItems)
+        }
+
+        let startDay = options.range.startDay(from: today)
+
+        guard options.range == .allTime || startDay != nil else {
+            return unavailableSnapshot(options: options, scopedItems: scopedItems)
+        }
+
         let readings = scopedItems.map { item in
             makeReading(
                 for: item,
-                startDay: startDay,
-                today: today,
-                calendar: calendar
+                startDay: startDay
             )
         }
         let activeDays = Set(readings.flatMap(\.rangeMarkedDays))
         let topItems = makeTopItems(from: readings)
         let quietItems = makeQuietItems(from: readings)
-        let currentStreak = currentStreak(in: activeDays, today: today, calendar: calendar)
+        let currentStreak = currentStreak(in: activeDays, today: today)
         let totalMarks = readings.reduce(0) { result, reading in
             result + reading.rangeMarkCount
         }
@@ -50,7 +57,7 @@ public enum InsightsOperations {
             topItems: topItems,
             quietItems: quietItems,
             currentStreak: currentStreak,
-            bestStreak: bestStreak(in: activeDays, calendar: calendar),
+            bestStreak: bestStreak(in: activeDays),
             categoryShares: categoryShares,
             noteCoverage: noteCoverage(for: scopedItems),
             photoCoverage: photoCoverage(for: scopedItems),
@@ -63,22 +70,33 @@ public enum InsightsOperations {
         )
     }
 
+    private static func unavailableSnapshot(
+        options: InsightsOptions,
+        scopedItems: [Item]
+    ) -> InsightsSnapshot {
+        .init(
+            options: options,
+            totalMarks: 0,
+            activeDays: 0,
+            uniqueMarkedItems: 0,
+            uniqueMarkedCategories: 0,
+            topItems: [],
+            quietItems: [],
+            currentStreak: 0,
+            bestStreak: 0,
+            categoryShares: [],
+            noteCoverage: noteCoverage(for: scopedItems),
+            photoCoverage: photoCoverage(for: scopedItems),
+            recommendations: []
+        )
+    }
+
     private static func makeReading(
         for item: Item,
-        startDay: Date?,
-        today: Date,
-        calendar: Calendar
+        startDay: LocalDay?
     ) -> ItemRangeReading {
-        let allMarkedDays = Set(
-            item.marks.map { mark in
-                calendar.startOfDay(for: mark.day)
-            }
-        )
+        let allMarkedDays = Set(item.marks.map(\.day))
         let rangeMarkedDays = allMarkedDays.filter { day in
-            guard day <= today else {
-                return false
-            }
-
             guard let startDay else {
                 return true
             }
@@ -126,7 +144,13 @@ public enum InsightsOperations {
                 reading.totalMarkCount > 0 && reading.rangeMarkCount == 0
             }
             .sorted { lhsReading, rhsReading in
-                (lhsReading.lastMarkedDay ?? .distantPast) < (rhsReading.lastMarkedDay ?? .distantPast)
+                if let lhsLastMarkedDay = lhsReading.lastMarkedDay,
+                   let rhsLastMarkedDay = rhsReading.lastMarkedDay,
+                   lhsLastMarkedDay != rhsLastMarkedDay {
+                    return lhsLastMarkedDay < rhsLastMarkedDay
+                }
+
+                return lhsReading.item.createdAt < rhsReading.item.createdAt
             }
             .prefix(Self.rankedItemLimit)
             .map(\.summary)
@@ -209,9 +233,8 @@ public enum InsightsOperations {
     }
 
     private static func currentStreak(
-        in activeDays: Set<Date>,
-        today: Date,
-        calendar: Calendar
+        in activeDays: Set<LocalDay>,
+        today: LocalDay
     ) -> Int {
         var streak = 0
         var day = today
@@ -219,7 +242,7 @@ public enum InsightsOperations {
         while activeDays.contains(day) {
             streak += 1
 
-            guard let previousDay = calendar.date(byAdding: .day, value: -1, to: day) else {
+            guard let previousDay = day.adding(days: -1) else {
                 return streak
             }
 
@@ -229,17 +252,14 @@ public enum InsightsOperations {
         return streak
     }
 
-    private static func bestStreak(
-        in activeDays: Set<Date>,
-        calendar: Calendar
-    ) -> Int {
+    private static func bestStreak(in activeDays: Set<LocalDay>) -> Int {
         var bestStreak = 0
         var currentStreak = 0
-        var previousDay: Date?
+        var previousDay: LocalDay?
 
         for day in activeDays.sorted() {
             if let previousDay,
-               calendar.dateComponents([.day], from: previousDay, to: day).day == 1 {
+               previousDay.distance(to: day) == 1 {
                 currentStreak += 1
             } else {
                 currentStreak = 1

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import StallyLibrary
+@testable import StallyLibrary
 import SwiftData
 import Testing
 
@@ -23,6 +23,10 @@ extension SwiftDataOperationsTests {
 
             static var today: Date {
                 day(offset: 0)
+            }
+
+            static var todayLocalDay: LocalDay {
+                localDay(offset: 0)
             }
 
             private static var baseDay: Date {
@@ -47,6 +51,17 @@ extension SwiftDataOperationsTests {
                 }
 
                 return date
+            }
+
+            static func localDay(offset: Int) -> LocalDay {
+                guard let localDay = LocalDay(
+                    containing: day(offset: offset),
+                    in: calendar.timeZone
+                ) else {
+                    preconditionFailure("Invalid fixture local day offset: \(offset)")
+                }
+
+                return localDay
             }
         }
 
@@ -141,26 +156,44 @@ extension SwiftDataOperationsTests {
 
             let didMark = try ItemOperations.mark(
                 item,
-                on: Fixtures.today,
-                context: context,
-                calendar: Fixtures.calendar
+                on: Fixtures.todayLocalDay,
+                today: Fixtures.todayLocalDay,
+                context: context
             )
             let didMarkAgain = try ItemOperations.mark(
                 item,
-                on: Fixtures.today,
-                context: context,
-                calendar: Fixtures.calendar
+                on: Fixtures.todayLocalDay,
+                today: Fixtures.todayLocalDay,
+                context: context
             )
 
             let history = ItemOperations.historySnapshot(
                 for: item,
-                calendar: Fixtures.calendar,
-                now: Fixtures.today
+                today: Fixtures.todayLocalDay
             )
             #expect(didMark)
             #expect(!didMarkAgain)
             #expect(history.totalMarks == 1)
-            #expect(ItemOperations.isMarked(item, on: Fixtures.today, calendar: Fixtures.calendar))
+            #expect(ItemOperations.isMarked(item, on: Fixtures.todayLocalDay))
+        }
+
+        @Test
+        func `mark rejects a future day without changing history`() throws {
+            let context = try makeContext()
+            let item = try createItem(context: context)
+            let futureDay = Fixtures.localDay(offset: 1)
+
+            #expect(throws: ItemValidationError.futureMarksNotAllowed) {
+                try ItemOperations.mark(
+                    item,
+                    on: futureDay,
+                    today: Fixtures.todayLocalDay,
+                    context: context
+                )
+            }
+
+            #expect(item.marks.isEmpty)
+            #expect(!ItemOperations.isMarked(item, on: futureDay))
         }
 
         @Test
@@ -169,33 +202,30 @@ extension SwiftDataOperationsTests {
             let item = try createItem(context: context)
             try ItemOperations.mark(
                 item,
-                on: Fixtures.today,
-                context: context,
-                calendar: Fixtures.calendar
+                on: Fixtures.todayLocalDay,
+                today: Fixtures.todayLocalDay,
+                context: context
             )
 
             let didUndo = try ItemOperations.undoMark(
                 item,
-                on: Fixtures.today,
-                context: context,
-                calendar: Fixtures.calendar
+                on: Fixtures.todayLocalDay,
+                context: context
             )
             let didUndoAgain = try ItemOperations.undoMark(
                 item,
-                on: Fixtures.today,
-                context: context,
-                calendar: Fixtures.calendar
+                on: Fixtures.todayLocalDay,
+                context: context
             )
 
             let history = ItemOperations.historySnapshot(
                 for: item,
-                calendar: Fixtures.calendar,
-                now: Fixtures.today
+                today: Fixtures.todayLocalDay
             )
             #expect(didUndo)
             #expect(!didUndoAgain)
             #expect(history.totalMarks == 0)
-            #expect(!ItemOperations.isMarked(item, on: Fixtures.today, calendar: Fixtures.calendar))
+            #expect(!ItemOperations.isMarked(item, on: Fixtures.todayLocalDay))
         }
 
         @Test
@@ -204,14 +234,15 @@ extension SwiftDataOperationsTests {
             let item = try createItem(context: context)
             try ItemOperations.mark(
                 item,
-                on: Fixtures.today,
-                context: context,
-                calendar: Fixtures.calendar
+                on: Fixtures.todayLocalDay,
+                today: Fixtures.todayLocalDay,
+                context: context
             )
             let duplicateMark = ItemMark(
-                day: Fixtures.today,
+                day: Fixtures.todayLocalDay,
                 createdAt: Fixtures.today,
-                item: item
+                item: item,
+                uuid: .init()
             )
             item.marks.append(duplicateMark)
             context.insert(duplicateMark)
@@ -221,43 +252,13 @@ extension SwiftDataOperationsTests {
 
             let didUndo = try ItemOperations.undoMark(
                 item,
-                on: Fixtures.today,
-                context: context,
-                calendar: Fixtures.calendar
+                on: Fixtures.todayLocalDay,
+                context: context
             )
 
             #expect(didUndo)
             #expect(item.marks.isEmpty)
             #expect(try fetchMarks(context).isEmpty)
-        }
-
-        @Test
-        func `history snapshot counts calendar windows`() throws {
-            let context = try makeContext()
-            let item = try createItem(context: context)
-            let offsets = [0, -1, -29, -30, -89, -90]
-
-            for offset in offsets {
-                try ItemOperations.mark(
-                    item,
-                    on: Fixtures.day(offset: offset),
-                    context: context,
-                    calendar: Fixtures.calendar
-                )
-            }
-
-            let history = ItemOperations.historySnapshot(
-                for: item,
-                calendar: Fixtures.calendar,
-                now: Fixtures.today
-            )
-            #expect(history.totalMarks == 6)
-            #expect(history.marksInLast30Days == 3)
-            #expect(history.marksInLast90Days == 5)
-            #expect(history.monthsUsed == 3)
-            #expect(history.daysSinceLastMark == 0)
-            #expect(history.lastMarkedDay == Fixtures.today)
-            #expect(history.markedDays.first == Fixtures.today)
         }
 
         private func makeContext() throws -> ModelContext {

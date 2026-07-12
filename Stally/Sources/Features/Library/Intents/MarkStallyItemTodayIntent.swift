@@ -6,6 +6,7 @@
 //
 
 import AppIntents
+import Foundation
 import SwiftData
 
 struct MarkStallyItemTodayIntent: AppIntent {
@@ -27,10 +28,17 @@ struct MarkStallyItemTodayIntent: AppIntent {
 
     @MainActor
     func perform() throws -> some IntentResult & ProvidesDialog {
+        let now = Date()
+        let timeZone = TimeZone.current
+        guard let today = LocalDay(containing: now, in: timeZone) else {
+            throw CocoaError(.coderInvalidValue)
+        }
+
         let model = try item.model(in: modelContainer.mainContext)
         let didMark = try ItemOperations.mark(
             model,
-            on: .now,
+            on: today,
+            today: today,
             context: modelContainer.mainContext
         )
         let dialog = didMark ? Self.markedDialog : Self.alreadyMarkedDialog

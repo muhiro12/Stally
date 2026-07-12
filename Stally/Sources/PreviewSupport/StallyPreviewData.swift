@@ -12,9 +12,11 @@ import SwiftData
 
 @MainActor
 enum StallyPreviewData {
-    static let calendar: Calendar = {
+    static let timeZone = TimeZone(secondsFromGMT: 0) ?? .current
+
+    private static let calendar: Calendar = {
         var previewCalendar = Calendar(identifier: .gregorian)
-        previewCalendar.timeZone = TimeZone(secondsFromGMT: 0) ?? .current
+        previewCalendar.timeZone = timeZone
         return previewCalendar
     }()
 
@@ -179,9 +181,17 @@ private extension StallyPreviewData {
         in context: ModelContext
     ) throws {
         let now = Date()
+        guard let today = LocalDay(containing: now, in: timeZone) else {
+            throw CocoaError(.coderInvalidValue)
+        }
 
         for itemSeed in itemSeeds {
-            try createItem(from: itemSeed, in: context, now: now)
+            try createItem(
+                from: itemSeed,
+                in: context,
+                now: now,
+                today: today
+            )
         }
     }
 
@@ -189,7 +199,8 @@ private extension StallyPreviewData {
     static func createItem(
         from itemSeed: StallyPreviewItemSeed,
         in context: ModelContext,
-        now: Date
+        now: Date,
+        today: LocalDay
     ) throws -> Item {
         let item = try ItemOperations.create(
             context: context,
@@ -203,11 +214,15 @@ private extension StallyPreviewData {
         )
 
         for markedDay in itemSeed.markedDaysAgo {
+            guard let localDay = today.adding(days: -markedDay) else {
+                throw CocoaError(.coderInvalidValue)
+            }
+
             try ItemOperations.mark(
                 item,
-                on: day(markedDay, before: now),
-                context: context,
-                calendar: calendar
+                on: localDay,
+                today: today,
+                context: context
             )
         }
 

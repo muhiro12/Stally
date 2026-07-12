@@ -12,30 +12,34 @@ public extension BackupOperations {
     static func preview(
         data: Data,
         currentItems: [Item],
-        calendar: Calendar = .current,
         decoder: JSONDecoder = .init()
     ) -> BackupPreview {
+        guard let schemaVersion = try? schemaVersion(in: data, decoder: decoder) else {
+            return unreadablePreview()
+        }
+
+        guard schemaVersion == BackupSnapshot.currentSchemaVersion else {
+            return unsupportedSchemaPreview(schemaVersion)
+        }
+
         guard let snapshot = try? decoder.decode(BackupSnapshot.self, from: data) else {
             return unreadablePreview()
         }
 
         return preview(
             snapshot: snapshot,
-            currentItems: currentItems,
-            calendar: calendar
+            currentItems: currentItems
         )
     }
 
     /// Previews an import before applying it to the local library.
     static func preview(
         snapshot: BackupSnapshot,
-        currentItems: [Item],
-        calendar: Calendar = .current
+        currentItems: [Item]
     ) -> BackupPreview {
         importPlan(
             snapshot: snapshot,
-            currentItems: currentItems,
-            calendar: calendar
+            currentItems: currentItems
         )
         .preview(replacingExistingItems: false)
     }
@@ -44,14 +48,12 @@ public extension BackupOperations {
 extension BackupOperations {
     static func importPlan(
         snapshot: BackupSnapshot,
-        currentItems: [Item],
-        calendar: Calendar
+        currentItems: [Item]
     ) -> BackupImportPlan {
         let validItems = validImportItems(in: snapshot.items)
         let validationIssues = validationIssues(
             for: snapshot,
-            currentItems: currentItems,
-            calendar: calendar
+            currentItems: currentItems
         )
         let mergeItemPlans: [BackupItemImportPlan]
         let replacementItemPlans: [BackupItemImportPlan]
@@ -60,14 +62,12 @@ extension BackupOperations {
             mergeItemPlans = itemPlans(
                 from: snapshot.items,
                 currentItems: currentItems,
-                replacingExistingItems: false,
-                calendar: calendar
+                replacingExistingItems: false
             )
             replacementItemPlans = itemPlans(
                 from: snapshot.items,
                 currentItems: [],
-                replacingExistingItems: true,
-                calendar: calendar
+                replacingExistingItems: true
             )
         } else {
             mergeItemPlans = []
@@ -107,10 +107,34 @@ extension BackupOperations {
         )
     }
 
+    static func unsupportedSchemaPreview(_ schemaVersion: Int) -> BackupPreview {
+        .init(
+            itemCount: 0,
+            archivedItemCount: 0,
+            markCount: 0,
+            existingItemCount: 0,
+            newItemCount: 0,
+            skippedItemCount: 0,
+            marksAddedCount: 0,
+            validationIssues: [
+                .init(
+                    kind: .unsupportedSchemaVersion,
+                    value: "\(schemaVersion)"
+                )
+            ]
+        )
+    }
+
+    static func schemaVersion(
+        in data: Data,
+        decoder: JSONDecoder
+    ) throws -> Int {
+        try decoder.decode(BackupSchemaEnvelope.self, from: data).schemaVersion
+    }
+
     static func validationIssues(
         for snapshot: BackupSnapshot,
-        currentItems: [Item],
-        calendar: Calendar
+        currentItems: [Item]
     ) -> [BackupValidationIssue] {
         var issues: [BackupValidationIssue] = []
 
@@ -125,7 +149,7 @@ extension BackupOperations {
 
         issues.append(contentsOf: duplicateItemIDIssues(in: snapshot.items))
         issues.append(contentsOf: duplicateMarkIDIssues(in: snapshot.items))
-        issues.append(contentsOf: duplicateMarkDayIssues(in: snapshot.items, calendar: calendar))
+        issues.append(contentsOf: duplicateMarkDayIssues(in: snapshot.items))
         issues.append(contentsOf: itemNameRequiredIssues(in: snapshot.items))
         issues.append(contentsOf: unknownCategoryIssues(in: snapshot.items))
         issues.append(contentsOf: duplicateCurrentItemIDIssues(in: currentItems))
@@ -144,6 +168,10 @@ extension BackupOperations {
 }
 
 private extension BackupOperations {
+    struct BackupSchemaEnvelope: Decodable {
+        let schemaVersion: Int
+    }
+
     static func validImportItems(in items: [BackupItem]) -> [BackupItem] {
         items.filter { item in
             ItemCategory(rawValue: item.categoryRawValue) != nil
@@ -200,19 +228,14 @@ private extension BackupOperations {
         }
     }
 
-    static func duplicateMarkDayIssues(
-        in items: [BackupItem],
-        calendar: Calendar
-    ) -> [BackupValidationIssue] {
+    static func duplicateMarkDayIssues(in items: [BackupItem]) -> [BackupValidationIssue] {
         items.flatMap { item in
-            let duplicateDays = duplicateValues(item.marks.map { mark in
-                calendar.startOfDay(for: mark.day)
-            })
+            let duplicateDays = duplicateValues(item.marks.map(\.day))
 
             return duplicateDays.map { day in
                 BackupValidationIssue(
                     kind: .duplicateMarkDay,
-                    value: "\(item.id.uuidString):\(calendarDayIdentifier(for: day, calendar: calendar))"
+                    value: "\(item.id.uuidString):\(localDayIdentifier(day))"
                 )
             }
         }
@@ -261,20 +284,14 @@ private extension BackupOperations {
         }
     }
 
-    static func calendarDayIdentifier(for date: Date, calendar: Calendar) -> String {
-        let components = calendar.dateComponents([.year, .month, .day], from: date)
-        let year = components.year ?? 0
-        let month = components.month ?? 0
-        let day = components.day ?? 0
-
-        return "\(year)-\(month)-\(day)"
+    static func localDayIdentifier(_ day: LocalDay) -> String {
+        day.iso8601Date
     }
 
     static func itemPlans(
         from backupItems: [BackupItem],
         currentItems: [Item],
-        replacingExistingItems: Bool,
-        calendar: Calendar
+        replacingExistingItems: Bool
     ) -> [BackupItemImportPlan] {
         let currentItemsByID = currentItemIndex(currentItems)
         var knownMarkIDs = Set(replacingExistingItems ? [] : currentItems.flatMap { item in
@@ -287,8 +304,7 @@ private extension BackupOperations {
             let marks = plannedMarks(
                 from: backupItem.marks,
                 existingItem: existingItem,
-                knownMarkIDs: &knownMarkIDs,
-                calendar: calendar
+                knownMarkIDs: &knownMarkIDs
             )
             itemPlans.append(
                 .init(
@@ -319,8 +335,7 @@ private extension BackupOperations {
     static func plannedMarks(
         from backupMarks: [BackupMark],
         existingItem: Item?,
-        knownMarkIDs: inout Set<UUID>,
-        calendar: Calendar
+        knownMarkIDs: inout Set<UUID>
     ) -> [BackupMark] {
         var plannedMarks: [BackupMark] = []
 
@@ -330,12 +345,12 @@ private extension BackupOperations {
             }
 
             if let existingItem,
-               !shouldAddMark(backupMark, to: existingItem, calendar: calendar) {
+               !shouldAddMark(backupMark, to: existingItem) {
                 continue
             }
 
             guard !plannedMarks.contains(where: { plannedMark in
-                calendar.isDate(plannedMark.day, inSameDayAs: backupMark.day)
+                plannedMark.day == backupMark.day
             }) else {
                 continue
             }

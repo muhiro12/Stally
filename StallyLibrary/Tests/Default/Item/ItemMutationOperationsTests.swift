@@ -25,6 +25,10 @@ private enum ItemMutationFixtures {
         day(offset: 0)
     }
 
+    static var todayLocalDay: LocalDay {
+        localDay(offset: 0)
+    }
+
     private static var baseDay: Date {
         let components = DateComponents(
             calendar: calendar,
@@ -48,6 +52,17 @@ private enum ItemMutationFixtures {
 
         return date
     }
+
+    static func localDay(offset: Int) -> LocalDay {
+        guard let localDay = LocalDay(
+            containing: day(offset: offset),
+            in: calendar.timeZone
+        ) else {
+            preconditionFailure("Invalid fixture local day offset: \(offset)")
+        }
+
+        return localDay
+    }
 }
 
 extension SwiftDataOperationsTests {
@@ -59,9 +74,9 @@ extension SwiftDataOperationsTests {
             let item = try createItem(context: context)
             try ItemOperations.mark(
                 item,
-                on: ItemMutationFixtures.day(offset: -1),
-                context: context,
-                calendar: ItemMutationFixtures.calendar
+                on: ItemMutationFixtures.localDay(offset: -1),
+                today: ItemMutationFixtures.todayLocalDay,
+                context: context
             )
             try ItemOperations.archive(
                 item,
@@ -126,15 +141,15 @@ extension SwiftDataOperationsTests {
             let survivor = try createItem(context: context, name: "Black Wool Coat")
             try ItemOperations.mark(
                 item,
-                on: ItemMutationFixtures.day(offset: -2),
-                context: context,
-                calendar: ItemMutationFixtures.calendar
+                on: ItemMutationFixtures.localDay(offset: -2),
+                today: ItemMutationFixtures.todayLocalDay,
+                context: context
             )
             try ItemOperations.mark(
                 item,
-                on: ItemMutationFixtures.day(offset: -1),
-                context: context,
-                calendar: ItemMutationFixtures.calendar
+                on: ItemMutationFixtures.localDay(offset: -1),
+                today: ItemMutationFixtures.todayLocalDay,
+                context: context
             )
             try ItemOperations.archive(
                 item,

@@ -66,10 +66,13 @@ import SwiftUI
 
 #Preview("Review - Attention Lanes") {
     StallyPreviewContainer(.dense) { items in
+        let now = Date()
+
         ReviewView(
             snapshot: ReviewOperations.snapshot(
                 for: items,
-                calendar: StallyPreviewData.calendar
+                timeZone: StallyPreviewData.timeZone,
+                now: now
             )
         )
     }
@@ -77,10 +80,13 @@ import SwiftUI
 
 #Preview("Review - Empty") {
     StallyPreviewContainer(.empty) { items in
+        let now = Date()
+
         ReviewView(
             snapshot: ReviewOperations.snapshot(
                 for: items,
-                calendar: StallyPreviewData.calendar
+                timeZone: StallyPreviewData.timeZone,
+                now: now
             )
         )
     }

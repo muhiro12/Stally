@@ -34,6 +34,11 @@ public struct LocalDay: Codable, Comparable, Hashable, Sendable {
     /// The Gregorian calendar day of the month.
     public let day: Int
 
+    /// Canonical ISO 8601 full-date representation.
+    public var iso8601Date: String {
+        canonicalValue
+    }
+
     /// Compact numeric representation used by SwiftData storage.
     var dayKey: Int {
         year * StorageKey.yearMultiplier + month * StorageKey.monthMultiplier + day

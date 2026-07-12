@@ -9,8 +9,9 @@ import Foundation
 
 /// Validation failures for item input.
 public enum ItemValidationError: Equatable, LocalizedError, Sendable {
-    case nameRequired
     case archivedItemsCannotChangeHistory
+    case futureMarksNotAllowed
+    case nameRequired
 
     /// User-readable validation message.
     public var errorDescription: String? {
@@ -20,6 +21,8 @@ public enum ItemValidationError: Equatable, LocalizedError, Sendable {
                 localized: "Move this item back to Library before changing its history.",
                 bundle: #bundle
             )
+        case .futureMarksNotAllowed:
+            String(localized: "Marks cannot be added for a future day.", bundle: #bundle)
         case .nameRequired:
             String(localized: "Item name is required.", bundle: #bundle)
         }

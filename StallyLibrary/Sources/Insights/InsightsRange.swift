@@ -37,16 +37,16 @@ public enum InsightsRange: CaseIterable, Equatable, Hashable, Identifiable, Send
         }
     }
 
-    func startDay(from today: Date, calendar: Calendar) -> Date? {
+    func startDay(from today: LocalDay) -> LocalDay? {
         switch self {
         case .allTime:
             nil
         case .ninetyDays:
-            calendar.date(byAdding: .day, value: Self.ninetyDayStartOffset, to: today)
+            today.adding(days: Self.ninetyDayStartOffset)
         case .thirtyDays:
-            calendar.date(byAdding: .day, value: Self.thirtyDayStartOffset, to: today)
+            today.adding(days: Self.thirtyDayStartOffset)
         case .year:
-            calendar.date(byAdding: .day, value: Self.yearStartOffset, to: today)
+            today.adding(days: Self.yearStartOffset)
         }
     }
 }

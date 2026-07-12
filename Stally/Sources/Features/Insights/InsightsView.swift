@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct InsightsView: View {
-    @Environment(\.calendar)
-    private var calendar
+    @Environment(\.timeZone)
+    private var timeZone
 
     let items: [Item]
 
@@ -23,15 +23,15 @@ struct InsightsView: View {
         )
     }
 
-    private var snapshot: InsightsSnapshot {
-        InsightsOperations.snapshot(
+    var body: some View {
+        let now = Date()
+        let snapshot = InsightsOperations.snapshot(
             for: items,
             options: options,
-            calendar: calendar
+            timeZone: timeZone,
+            now: now
         )
-    }
 
-    var body: some View {
         NavigationStack {
             InsightsList(
                 snapshot: snapshot,

@@ -25,6 +25,10 @@ extension SwiftDataOperationsTests {
                 day(offset: 0)
             }
 
+            static var todayLocalDay: LocalDay {
+                localDay(offset: 0)
+            }
+
             private static var baseDay: Date {
                 let components = DateComponents(
                     calendar: calendar,
@@ -47,6 +51,17 @@ extension SwiftDataOperationsTests {
                 }
 
                 return date
+            }
+
+            static func localDay(offset: Int) -> LocalDay {
+                guard let localDay = LocalDay(
+                    containing: day(offset: offset),
+                    in: calendar.timeZone
+                ) else {
+                    preconditionFailure("Invalid fixture local day offset: \(offset)")
+                }
+
+                return localDay
             }
         }
 
@@ -115,22 +130,21 @@ extension SwiftDataOperationsTests {
             )
             try ItemOperations.mark(
                 item,
-                on: Fixtures.day(offset: -3),
-                context: context,
-                calendar: Fixtures.calendar
+                on: Fixtures.localDay(offset: -3),
+                today: Fixtures.todayLocalDay,
+                context: context
             )
 
             try ItemOperations.archive(item, on: Fixtures.today, context: context)
 
             let history = ItemOperations.historySnapshot(
                 for: item,
-                calendar: Fixtures.calendar,
-                now: Fixtures.today
+                today: Fixtures.todayLocalDay
             )
             #expect(item.note == "Still waiting for its first stretch of regular use.")
             #expect(item.photoData == photoData)
             #expect(history.totalMarks == 1)
-            #expect(history.lastMarkedDay == Fixtures.day(offset: -3))
+            #expect(history.lastMarkedDay == Fixtures.localDay(offset: -3))
         }
 
         @Test
@@ -142,18 +156,17 @@ extension SwiftDataOperationsTests {
             #expect(throws: ItemValidationError.archivedItemsCannotChangeHistory) {
                 try ItemOperations.mark(
                     item,
-                    on: Fixtures.today,
-                    context: context,
-                    calendar: Fixtures.calendar
+                    on: Fixtures.todayLocalDay,
+                    today: Fixtures.todayLocalDay,
+                    context: context
                 )
             }
 
             #expect(throws: ItemValidationError.archivedItemsCannotChangeHistory) {
                 try ItemOperations.undoMark(
                     item,
-                    on: Fixtures.today,
-                    context: context,
-                    calendar: Fixtures.calendar
+                    on: Fixtures.todayLocalDay,
+                    context: context
                 )
             }
         }

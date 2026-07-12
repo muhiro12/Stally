@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import StallyLibrary
+@testable import StallyLibrary
 import SwiftData
 import Testing
 
@@ -15,38 +15,21 @@ extension SwiftDataOperationsTests {
     struct BackupOperationsSafetyTests {
         // swiftlint:disable:next nesting
         private enum Fixtures {
-            static var calendar: Calendar {
-                var configuredCalendar = Calendar(identifier: .gregorian)
-                configuredCalendar.timeZone = TimeZone(secondsFromGMT: 0) ?? configuredCalendar.timeZone
-                return configuredCalendar
-            }
-
-            static var today: Date {
+            static var today: LocalDay {
                 day(offset: 0)
             }
 
-            private static var baseDay: Date {
-                let components = DateComponents(
-                    calendar: calendar,
-                    timeZone: calendar.timeZone,
-                    year: 2_026,
-                    month: 6,
-                    day: 26
-                )
-
-                guard let date = components.date else {
+            static func day(offset: Int) -> LocalDay {
+                guard let baseDay = LocalDay(year: 2_026, month: 6, day: 26),
+                      let resolvedDay = baseDay.adding(days: offset) else {
                     preconditionFailure("Invalid fixture base day")
                 }
 
-                return date
+                return resolvedDay
             }
 
-            static func day(offset: Int) -> Date {
-                guard let date = calendar.date(byAdding: .day, value: offset, to: baseDay) else {
-                    preconditionFailure("Invalid fixture day offset: \(offset)")
-                }
-
-                return date
+            static func timestamp(offset: Int = 0) -> Date {
+                .init(timeIntervalSinceReferenceDate: TimeInterval(offset))
             }
         }
 
@@ -61,8 +44,7 @@ extension SwiftDataOperationsTests {
 
             let preview = BackupOperations.preview(
                 snapshot: snapshot,
-                currentItems: [],
-                calendar: Fixtures.calendar
+                currentItems: []
             )
 
             #expect(!preview.canImport)
@@ -83,7 +65,7 @@ extension SwiftDataOperationsTests {
             let context = try makeContext()
             _ = try createItem(context: context, name: "Local Item")
             let snapshot = BackupSnapshot(
-                exportedAt: Fixtures.today,
+                exportedAt: Fixtures.timestamp(),
                 items: [
                     .init(
                         id: UUID(),
@@ -91,7 +73,7 @@ extension SwiftDataOperationsTests {
                         categoryRawValue: ItemCategory.other.rawValue,
                         note: "",
                         photoData: nil,
-                        createdAt: Fixtures.today,
+                        createdAt: Fixtures.timestamp(),
                         archivedAt: nil,
                         marks: []
                     )
@@ -99,20 +81,38 @@ extension SwiftDataOperationsTests {
             )
             let expectedPreview = BackupOperations.preview(
                 snapshot: snapshot,
-                currentItems: try fetchItems(context),
-                calendar: Fixtures.calendar
+                currentItems: try fetchItems(context)
             )
 
             #expect(throws: BackupError.validationFailed(expectedPreview)) {
                 try BackupOperations.replaceLibrary(
                     snapshot: snapshot,
-                    context: context,
-                    calendar: Fixtures.calendar
+                    context: context
                 )
             }
 
             let items = try fetchItems(context)
             #expect(items.map(\.name) == ["Local Item"])
+        }
+
+        @Test
+        func `replace rejects unsupported backup data before deleting local library`() throws {
+            let context = try makeContext()
+            _ = try createItem(context: context, name: "Local Item")
+            let unsupportedData = Data(#"{"schemaVersion":1}"#.utf8)
+            let expectedPreview = BackupOperations.preview(
+                data: unsupportedData,
+                currentItems: try fetchItems(context)
+            )
+
+            #expect(throws: BackupError.validationFailed(expectedPreview)) {
+                try BackupOperations.replaceLibrary(
+                    data: unsupportedData,
+                    context: context
+                )
+            }
+
+            #expect(try fetchItems(context).map(\.name) == ["Local Item"])
         }
 
         @Test
@@ -124,7 +124,9 @@ extension SwiftDataOperationsTests {
             try mark(secondItem, offsets: [-1], context: context)
             let orphanMark = ItemMark(
                 day: Fixtures.day(offset: -2),
-                createdAt: Fixtures.day(offset: -2)
+                createdAt: Fixtures.timestamp(offset: -2),
+                item: nil,
+                uuid: .init()
             )
             context.insert(orphanMark)
             try context.save()
@@ -156,7 +158,7 @@ extension SwiftDataOperationsTests {
             try ItemOperations.create(
                 context: context,
                 input: .init(name: name, category: .other),
-                createdAt: Fixtures.today
+                createdAt: Fixtures.timestamp()
             )
         }
 
@@ -169,8 +171,8 @@ extension SwiftDataOperationsTests {
                 try ItemOperations.mark(
                     item,
                     on: Fixtures.day(offset: offset),
-                    context: context,
-                    calendar: Fixtures.calendar
+                    today: Fixtures.today,
+                    context: context
                 )
             }
         }
@@ -180,7 +182,7 @@ extension SwiftDataOperationsTests {
             duplicateMarkID: UUID
         ) -> BackupSnapshot {
             .init(
-                exportedAt: Fixtures.today,
+                exportedAt: Fixtures.timestamp(),
                 items: [
                     validBackupItem(itemID: duplicateItemID, markID: duplicateMarkID),
                     unknownCategoryBackupItem(itemID: duplicateItemID, markID: duplicateMarkID),
@@ -197,10 +199,10 @@ extension SwiftDataOperationsTests {
                 categoryRawValue: ItemCategory.bags.rawValue,
                 note: "",
                 photoData: nil,
-                createdAt: Fixtures.today,
+                createdAt: Fixtures.timestamp(),
                 archivedAt: nil,
                 marks: [
-                    .init(id: markID, day: Fixtures.today, createdAt: Fixtures.today)
+                    .init(id: markID, day: Fixtures.today, createdAt: Fixtures.timestamp())
                 ]
             )
         }
@@ -212,10 +214,14 @@ extension SwiftDataOperationsTests {
                 categoryRawValue: "Gear",
                 note: "",
                 photoData: nil,
-                createdAt: Fixtures.today,
+                createdAt: Fixtures.timestamp(),
                 archivedAt: nil,
                 marks: [
-                    .init(id: markID, day: Fixtures.day(offset: -1), createdAt: Fixtures.today)
+                    .init(
+                        id: markID,
+                        day: Fixtures.day(offset: -1),
+                        createdAt: Fixtures.timestamp()
+                    )
                 ]
             )
         }
@@ -227,7 +233,7 @@ extension SwiftDataOperationsTests {
                 categoryRawValue: ItemCategory.other.rawValue,
                 note: "",
                 photoData: nil,
-                createdAt: Fixtures.today,
+                createdAt: Fixtures.timestamp(),
                 archivedAt: nil,
                 marks: []
             )

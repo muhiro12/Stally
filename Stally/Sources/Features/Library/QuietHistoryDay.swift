@@ -8,10 +8,10 @@
 import Foundation
 
 struct QuietHistoryDay: Identifiable {
-    let day: Date
+    let day: LocalDay
     let isMarked: Bool
 
-    var id: Date {
+    var id: LocalDay {
         day
     }
 }

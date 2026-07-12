@@ -15,16 +15,18 @@ struct ItemRow: View {
         static let noteLineLimit = 2
     }
 
-    @Environment(\.calendar)
-    private var calendar
+    @Environment(\.timeZone)
+    private var timeZone
 
     let item: Item
 
-    private var history: ItemHistorySnapshot {
-        ItemOperations.historySnapshot(for: item, calendar: calendar)
-    }
-
     var body: some View {
+        let now = Date()
+        let today = LocalDay(containing: now, in: timeZone)
+        let history = today.map { today in
+            ItemOperations.historySnapshot(for: item, today: today)
+        }
+
         VStack(alignment: .leading, spacing: Layout.verticalSpacing) {
             HStack(alignment: .firstTextBaseline) {
                 Text(item.name)
@@ -32,7 +34,8 @@ struct ItemRow: View {
 
                 Spacer()
 
-                if ItemOperations.isMarked(item, on: .now, calendar: calendar) {
+                if let today,
+                   ItemOperations.isMarked(item, on: today) {
                     Text("Marked")
                         .mhBadge(
                             style: .accent,
@@ -44,10 +47,12 @@ struct ItemRow: View {
             HStack(spacing: Layout.metadataSpacing) {
                 Text(item.category.title)
 
-                if history.totalMarks > 0 {
-                    Text("\(history.totalMarks) marks")
-                } else {
-                    Text("Not yet")
+                if let history {
+                    if history.totalMarks > 0 {
+                        Text("\(history.totalMarks) marks")
+                    } else {
+                        Text("Not yet")
+                    }
                 }
             }
             .mhRowOverline()

@@ -5,12 +5,10 @@
 //  Created by Codex on 2026/06/26.
 //
 
-import Foundation
-
 struct ItemRangeReading {
     let item: Item
-    let rangeMarkedDays: [Date]
-    let allMarkedDays: [Date]
+    let rangeMarkedDays: [LocalDay]
+    let allMarkedDays: [LocalDay]
 
     var rangeMarkCount: Int {
         rangeMarkedDays.count
@@ -20,7 +18,7 @@ struct ItemRangeReading {
         allMarkedDays.count
     }
 
-    var lastMarkedDay: Date? {
+    var lastMarkedDay: LocalDay? {
         allMarkedDays.last
     }
 

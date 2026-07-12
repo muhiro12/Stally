@@ -15,38 +15,52 @@ extension SwiftDataOperationsTests {
     struct InsightsOperationsTests {
         // swiftlint:disable:next nesting
         private enum Fixtures {
-            static var calendar: Calendar {
-                var configuredCalendar = Calendar(identifier: .gregorian)
-                configuredCalendar.timeZone = TimeZone(secondsFromGMT: 0) ?? configuredCalendar.timeZone
-                return configuredCalendar
+            static var utc: TimeZone {
+                guard let timeZone = TimeZone(secondsFromGMT: 0) else {
+                    preconditionFailure("UTC must be available")
+                }
+
+                return timeZone
             }
 
-            static var today: Date {
+            static var today: LocalDay {
                 day(offset: 0)
             }
 
-            private static var baseDay: Date {
-                let components = DateComponents(
-                    calendar: calendar,
-                    timeZone: calendar.timeZone,
-                    year: 2_026,
-                    month: 6,
-                    day: 26
-                )
+            static var now: Date {
+                date(offset: 0, timeZone: utc)
+            }
 
-                guard let date = components.date else {
+            private static var baseDay: LocalDay {
+                guard let day = LocalDay(year: 2_026, month: 6, day: 26) else {
                     preconditionFailure("Invalid fixture base day")
+                }
+
+                return day
+            }
+
+            static func day(offset: Int) -> LocalDay {
+                guard let day = baseDay.adding(days: offset) else {
+                    preconditionFailure("Invalid fixture day offset: \(offset)")
+                }
+
+                return day
+            }
+
+            static func date(offset: Int, timeZone: TimeZone) -> Date {
+                guard let date = day(offset: offset).date(in: timeZone) else {
+                    preconditionFailure("Invalid fixture date offset: \(offset)")
                 }
 
                 return date
             }
 
-            static func day(offset: Int) -> Date {
-                guard let date = calendar.date(byAdding: .day, value: offset, to: baseDay) else {
-                    preconditionFailure("Invalid fixture day offset: \(offset)")
+            static func timeZone(identifier: String) -> TimeZone {
+                guard let timeZone = TimeZone(identifier: identifier) else {
+                    preconditionFailure("Missing fixture timezone: \(identifier)")
                 }
 
-                return date
+                return timeZone
             }
         }
 
@@ -67,6 +81,7 @@ extension SwiftDataOperationsTests {
             #expect(snapshot.uniqueMarkedItems == 2)
             #expect(snapshot.uniqueMarkedCategories == 2)
             #expect(snapshot.topItems.map(\.item.uuid) == [coat.uuid, sneakers.uuid])
+            #expect(snapshot.topItems.first?.lastMarkedDay == Fixtures.today)
             #expect(snapshot.categoryShares.map(\.category) == [.clothing, .shoes])
             #expect(snapshot.categoryShares.map(\.markCount) == [3, 1])
         }
@@ -78,7 +93,11 @@ extension SwiftDataOperationsTests {
             let archivedItem = try createItem(context: context, name: "Travel Weekender")
             try mark(activeItem, offsets: [0], context: context)
             try mark(archivedItem, offsets: [-40], context: context)
-            try ItemOperations.archive(archivedItem, on: Fixtures.day(offset: -2), context: context)
+            try ItemOperations.archive(
+                archivedItem,
+                on: Fixtures.date(offset: -2, timeZone: Fixtures.utc),
+                context: context
+            )
 
             let activeOnlySnapshot = try insightsSnapshot(
                 context,
@@ -148,6 +167,84 @@ extension SwiftDataOperationsTests {
             )
         }
 
+        @Test
+        func `snapshot preserves a Tokyo marked day when read in Los Angeles`() throws {
+            let context = try makeContext()
+            let item = try createItem(context: context, name: "Travel Weekender")
+            let tokyo = Fixtures.timeZone(identifier: "Asia/Tokyo")
+            let losAngeles = Fixtures.timeZone(identifier: "America/Los_Angeles")
+            let tokyoInstant = Fixtures.date(offset: 0, timeZone: tokyo)
+            let markedDay = try #require(LocalDay(containing: tokyoInstant, in: tokyo))
+            let losAngelesDayAtSameInstant = try #require(
+                LocalDay(containing: tokyoInstant, in: losAngeles)
+            )
+
+            try ItemOperations.mark(
+                item,
+                on: markedDay,
+                today: Fixtures.today,
+                context: context
+            )
+
+            let snapshot = InsightsOperations.snapshot(
+                for: try fetchItems(context),
+                options: .init(range: .allTime),
+                timeZone: losAngeles,
+                now: tokyoInstant
+            )
+
+            #expect(markedDay == Fixtures.today)
+            #expect(losAngelesDayAtSameInstant == Fixtures.day(offset: -1))
+            #expect(snapshot.totalMarks == 1)
+            #expect(snapshot.topItems.first?.lastMarkedDay == markedDay)
+        }
+
+        @Test
+        func `snapshot calculates streak across daylight saving boundary`() throws {
+            let context = try makeContext()
+            let item = try createItem(context: context, name: "Canvas Tote")
+            let losAngeles = Fixtures.timeZone(identifier: "America/Los_Angeles")
+            let today = try #require(LocalDay(year: 2_026, month: 3, day: 9))
+            let firstDay = try #require(today.adding(days: -2))
+            let secondDay = try #require(today.adding(days: -1))
+            let now = try #require(today.date(in: losAngeles))
+
+            for day in [firstDay, secondDay, today] {
+                try ItemOperations.mark(
+                    item,
+                    on: day,
+                    today: today,
+                    context: context
+                )
+            }
+
+            let snapshot = InsightsOperations.snapshot(
+                for: try fetchItems(context),
+                options: .init(range: .allTime),
+                timeZone: losAngeles,
+                now: now
+            )
+
+            #expect(snapshot.currentStreak == 3)
+            #expect(snapshot.bestStreak == 3)
+        }
+
+        @Test
+        func `snapshot fails safely when now is outside LocalDay range`() throws {
+            let context = try makeContext()
+            _ = try createItem(context: context, name: "Canvas Tote")
+
+            let snapshot = InsightsOperations.snapshot(
+                for: try fetchItems(context),
+                timeZone: Fixtures.utc,
+                now: .init(timeIntervalSince1970: 253_402_300_800)
+            )
+
+            #expect(snapshot.totalMarks == 0)
+            #expect(snapshot.topItems.isEmpty)
+            #expect(snapshot.recommendations.isEmpty)
+        }
+
         private func insightsSnapshot(
             _ context: ModelContext,
             options: InsightsOptions = .default
@@ -155,8 +252,8 @@ extension SwiftDataOperationsTests {
             InsightsOperations.snapshot(
                 for: try fetchItems(context),
                 options: options,
-                calendar: Fixtures.calendar,
-                now: Fixtures.today
+                timeZone: Fixtures.utc,
+                now: Fixtures.now
             )
         }
 
@@ -183,7 +280,7 @@ extension SwiftDataOperationsTests {
                     note: note,
                     photoData: photoData
                 ),
-                createdAt: Fixtures.today
+                createdAt: Fixtures.now
             )
         }
 
@@ -196,8 +293,8 @@ extension SwiftDataOperationsTests {
                 try ItemOperations.mark(
                     item,
                     on: Fixtures.day(offset: offset),
-                    context: context,
-                    calendar: Fixtures.calendar
+                    today: Fixtures.today,
+                    context: context
                 )
             }
         }

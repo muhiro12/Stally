@@ -9,6 +9,17 @@ import Foundation
 
 /// Portable item payload stored in a Stally backup.
 public struct BackupItem: Codable, Equatable, Identifiable, Sendable {
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case name
+        case categoryRawValue
+        case note
+        case photoData
+        case createdAt
+        case archivedAt
+        case marks
+    }
+
     /// Stable item identifier.
     public let id: UUID
     /// User-facing item name.

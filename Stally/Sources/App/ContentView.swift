@@ -41,6 +41,8 @@ struct ContentView: View {
     private var routeInbox
     @Environment(StallyRoutePipeline.self)
     private var routePipeline
+    @Environment(\.timeZone)
+    private var timeZone
 
     @State private var selectedTab: StallyTab
     @State private var presentedSheet: PresentedSheet?
@@ -58,10 +60,6 @@ struct ContentView: View {
         ItemOperations.archivedItems(from: items)
     }
 
-    private var reviewSnapshot: ReviewSnapshot {
-        ReviewOperations.snapshot(for: items)
-    }
-
     private var invalidDeepLinkAlertBinding: Binding<Bool> {
         .init(
             get: {
@@ -76,6 +74,13 @@ struct ContentView: View {
     }
 
     var body: some View {
+        let now = Date()
+        let reviewSnapshot = ReviewOperations.snapshot(
+            for: items,
+            timeZone: timeZone,
+            now: now
+        )
+
         TabView(selection: $selectedTab) {
             LibraryView(
                 items: activeItems,

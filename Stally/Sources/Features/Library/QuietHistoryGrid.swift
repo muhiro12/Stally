@@ -16,28 +16,10 @@ struct QuietHistoryGrid: View {
         static let rowSpacing: CGFloat = 10
     }
 
-    @Environment(\.calendar)
-    private var calendar
+    @Environment(\.timeZone)
+    private var timeZone
 
-    let markedDays: [Date]
-
-    private var recentDays: [QuietHistoryDay] {
-        let today = calendar.startOfDay(for: .now)
-        let markedDaySet = Set(
-            markedDays.map { day in
-                calendar.startOfDay(for: day)
-            }
-        )
-
-        return (0..<Layout.recentDayCount).compactMap { offset in
-            guard let day = calendar.date(byAdding: .day, value: -offset, to: today) else {
-                return nil
-            }
-
-            return QuietHistoryDay(day: day, isMarked: markedDaySet.contains(day))
-        }
-        .reversed()
-    }
+    let markedDays: [LocalDay]
 
     private let columns = [
         GridItem(
@@ -50,10 +32,28 @@ struct QuietHistoryGrid: View {
     ]
 
     var body: some View {
+        let now = Date()
+        let today = LocalDay(containing: now, in: timeZone)
+
         LazyVGrid(columns: columns, spacing: Layout.rowSpacing) {
-            ForEach(recentDays) { day in
-                QuietHistoryDayCell(day: day)
+            if let today {
+                ForEach(recentDays(from: today)) { day in
+                    QuietHistoryDayCell(day: day)
+                }
             }
         }
+    }
+
+    private func recentDays(from today: LocalDay) -> [QuietHistoryDay] {
+        let markedDaySet = Set(markedDays)
+        let days = (0..<Layout.recentDayCount).compactMap { offset -> QuietHistoryDay? in
+            guard let day = today.adding(days: -offset) else {
+                return nil
+            }
+
+            return QuietHistoryDay(day: day, isMarked: markedDaySet.contains(day))
+        }
+
+        return days.reversed()
     }
 }

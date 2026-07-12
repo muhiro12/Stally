@@ -12,19 +12,20 @@ import SwiftData
 @Model
 public final class Item {
     /// Stable item identifier for backups, links, and cross-surface references.
-    public var uuid = UUID()
+    public internal(set) var uuid = UUID()
     /// User-facing item name.
-    public var name: String = ""
+    public internal(set) var name: String = ""
     /// Persisted raw value for `category`.
-    public var categoryRawValue: String = ItemCategory.other.rawValue
+    public internal(set) var categoryRawValue: String = ItemCategory.other.rawValue
     /// Optional user note that gives the item more context.
-    public var note: String = ""
+    public internal(set) var note: String = ""
     /// Optional visual context for recognizing the item later.
-    public var photoData: Data?
+    @Attribute(.externalStorage)
+    public internal(set) var photoData: Data?
     /// Date when the item was added.
-    public var createdAt = Date()
+    public internal(set) var createdAt = Date()
     /// Date when the item was moved into Archive.
-    public var archivedAt: Date?
+    public internal(set) var archivedAt: Date?
 
     // CloudKit requires SwiftData relationships to be optional.
     // swiftlint:disable discouraged_optional_collection
@@ -33,7 +34,7 @@ public final class Item {
     // swiftlint:enable discouraged_optional_collection
 
     /// Calendar-day marks attached to this item.
-    public var marks: [ItemMark] {
+    public internal(set) var marks: [ItemMark] {
         get {
             markRecords ?? []
         }
@@ -43,7 +44,7 @@ public final class Item {
     }
 
     /// The preserved product category for this item.
-    public var category: ItemCategory {
+    public internal(set) var category: ItemCategory {
         get {
             ItemCategory(rawValue: categoryRawValue) ?? .other
         }
@@ -83,45 +84,43 @@ public final class Item {
     }
 
     func historySnapshot(
-        calendar: Calendar,
-        now: Date
+        today: LocalDay
     ) -> ItemHistorySnapshot {
-        .init(item: self, calendar: calendar, now: now)
+        .init(item: self, today: today)
     }
 
-    func mark(on date: Date, calendar: Calendar) -> ItemMark? {
-        let day = calendar.startOfDay(for: date)
-
-        return marks.first { mark in
-            calendar.isDate(mark.day, inSameDayAs: day)
+    func mark(on day: LocalDay) -> ItemMark? {
+        marks.first { mark in
+            mark.day == day
         }
     }
 
-    func isMarked(on date: Date, calendar: Calendar) -> Bool {
-        mark(on: date, calendar: calendar) != nil
+    func isMarked(on day: LocalDay) -> Bool {
+        mark(on: day) != nil
     }
 
-    func addMark(on date: Date, calendar: Calendar) -> ItemMark? {
-        let day = calendar.startOfDay(for: date)
-
-        guard mark(on: day, calendar: calendar) == nil else {
+    func addMark(on day: LocalDay) -> ItemMark? {
+        guard mark(on: day) == nil else {
             return nil
         }
 
-        let mark = ItemMark(day: day, item: self)
+        let mark = ItemMark(
+            day: day,
+            createdAt: .now,
+            item: self,
+            uuid: .init()
+        )
         marks.append(mark)
         return mark
     }
 
-    func removeMarks(on date: Date, calendar: Calendar) -> [ItemMark] {
-        let day = calendar.startOfDay(for: date)
-
+    func removeMarks(on day: LocalDay) -> [ItemMark] {
         let existingMarks = marks.filter { mark in
-            calendar.isDate(mark.day, inSameDayAs: day)
+            mark.day == day
         }
 
         marks.removeAll { mark in
-            calendar.isDate(mark.day, inSameDayAs: day)
+            mark.day == day
         }
 
         return existingMarks

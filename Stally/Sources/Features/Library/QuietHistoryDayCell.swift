@@ -15,6 +15,9 @@ struct QuietHistoryDayCell: View {
         static let circleSize: CGFloat = 14
     }
 
+    @Environment(\.timeZone)
+    private var timeZone
+
     let day: QuietHistoryDay
 
     var body: some View {
@@ -23,13 +26,27 @@ struct QuietHistoryDayCell: View {
                 .fill(day.isMarked ? Color.accentColor : Color.secondary.opacity(Layout.unmarkedOpacity))
                 .frame(width: Layout.circleSize, height: Layout.circleSize)
 
-            Text(day.day, format: .dateTime.day())
-                .monospacedDigit()
-                .mhTextStyle(.caption, colorRole: .secondaryText)
+            if let date = day.day.date(in: timeZone) {
+                Text(date, format: .dateTime.day())
+                    .monospacedDigit()
+                    .mhTextStyle(.caption, colorRole: .secondaryText)
+            } else {
+                Text(day.day.day, format: .number)
+                    .monospacedDigit()
+                    .mhTextStyle(.caption, colorRole: .secondaryText)
+            }
         }
         .frame(maxWidth: .infinity)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(day.day, format: .dateTime.month().day().year()))
+        .accessibilityLabel(accessibilityLabel)
         .accessibilityValue(day.isMarked ? Text("Marked") : Text("Not marked"))
+    }
+
+    private var accessibilityLabel: Text {
+        if let date = day.day.date(in: timeZone) {
+            return Text(date, format: .dateTime.month().day().year())
+        }
+
+        return Text(verbatim: day.day.iso8601Date)
     }
 }

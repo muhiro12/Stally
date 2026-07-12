@@ -19,7 +19,7 @@ struct StallyPreviewContainer<Content: View>: View {
     var body: some View {
         content(StallyPreviewData.items(in: container))
             .stallyPreviewPlatformEnvironment(platformEnvironment)
-            .environment(\.calendar, StallyPreviewData.calendar)
+            .environment(\.timeZone, StallyPreviewData.timeZone)
             .mhTheme(.standard)
             .mhGlassPolicy(.automatic)
     }

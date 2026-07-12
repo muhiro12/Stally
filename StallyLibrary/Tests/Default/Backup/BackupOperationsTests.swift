@@ -15,38 +15,21 @@ extension SwiftDataOperationsTests {
     struct BackupOperationsTests {
         // swiftlint:disable:next nesting
         private enum Fixtures {
-            static var calendar: Calendar {
-                var configuredCalendar = Calendar(identifier: .gregorian)
-                configuredCalendar.timeZone = TimeZone(secondsFromGMT: 0) ?? configuredCalendar.timeZone
-                return configuredCalendar
-            }
-
-            static var today: Date {
+            static var today: LocalDay {
                 day(offset: 0)
             }
 
-            private static var baseDay: Date {
-                let components = DateComponents(
-                    calendar: calendar,
-                    timeZone: calendar.timeZone,
-                    year: 2_026,
-                    month: 6,
-                    day: 26
-                )
-
-                guard let date = components.date else {
+            static func day(offset: Int) -> LocalDay {
+                guard let baseDay = LocalDay(year: 2_026, month: 6, day: 26),
+                      let resolvedDay = baseDay.adding(days: offset) else {
                     preconditionFailure("Invalid fixture base day")
                 }
 
-                return date
+                return resolvedDay
             }
 
-            static func day(offset: Int) -> Date {
-                guard let date = calendar.date(byAdding: .day, value: offset, to: baseDay) else {
-                    preconditionFailure("Invalid fixture day offset: \(offset)")
-                }
-
-                return date
+            static func timestamp(offset: Int = 0) -> Date {
+                .init(timeIntervalSinceReferenceDate: TimeInterval(offset))
             }
         }
 
@@ -67,17 +50,16 @@ extension SwiftDataOperationsTests {
             )
             try mark(activeItem, offsets: [0], context: context)
             try mark(archivedItem, offsets: [-4], context: context)
-            try ItemOperations.archive(archivedItem, on: Fixtures.day(offset: -1), context: context)
+            try ItemOperations.archive(archivedItem, on: Fixtures.timestamp(offset: -1), context: context)
 
             let data = try BackupOperations.exportData(
                 for: try fetchItems(context),
-                exportedAt: Fixtures.today
+                exportedAt: Fixtures.timestamp()
             )
             let snapshot = try JSONDecoder().decode(BackupSnapshot.self, from: data)
             let preview = BackupOperations.preview(
                 data: data,
-                currentItems: [],
-                calendar: Fixtures.calendar
+                currentItems: []
             )
 
             #expect(BackupOperations.fileExtension == "stallybackup")
@@ -113,8 +95,7 @@ extension SwiftDataOperationsTests {
 
             let result = try BackupOperations.mergeIntoLibrary(
                 snapshot: snapshot,
-                context: context,
-                calendar: Fixtures.calendar
+                context: context
             )
             let items = try fetchItems(context)
             let mergedExistingItem = try #require(items.first { item in
@@ -135,23 +116,22 @@ extension SwiftDataOperationsTests {
             #expect(mergedExistingItem.note == "Usually comes with me when I need one extra layer.")
             let mergedHistory = ItemOperations.historySnapshot(
                 for: mergedExistingItem,
-                calendar: Fixtures.calendar
+                today: Fixtures.today
             )
             #expect(mergedHistory.totalMarks == 2)
             #expect(insertedItem.name == "Daily Field Notes")
             #expect(insertedItem.note == "Still waiting for its first stretch of regular use.")
-            #expect(ItemOperations.historySnapshot(for: insertedItem, calendar: Fixtures.calendar).totalMarks == 1)
+            #expect(ItemOperations.historySnapshot(for: insertedItem, today: Fixtures.today).totalMarks == 1)
         }
 
         @Test
         func `replace removes current library and restores backup snapshot`() throws {
             let context = try makeContext()
-            let backupItemID = UUID()
             let localItem = try createItem(context: context, name: "Local Item")
-            localItem.uuid = backupItemID
+            let backupItemID = localItem.uuid
             try mark(localItem, offsets: [-5], context: context)
             let snapshot = BackupSnapshot(
-                exportedAt: Fixtures.today,
+                exportedAt: Fixtures.timestamp(),
                 items: [
                     .init(
                         id: backupItemID,
@@ -159,13 +139,13 @@ extension SwiftDataOperationsTests {
                         categoryRawValue: ItemCategory.bags.rawValue,
                         note: "Archived because it only comes out a few times a year.",
                         photoData: Data([0x09]),
-                        createdAt: Fixtures.day(offset: -10),
-                        archivedAt: Fixtures.day(offset: -1),
+                        createdAt: Fixtures.timestamp(offset: -10),
+                        archivedAt: Fixtures.timestamp(offset: -1),
                         marks: [
                             .init(
                                 id: UUID(),
                                 day: Fixtures.day(offset: -5),
-                                createdAt: Fixtures.day(offset: -5)
+                                createdAt: Fixtures.timestamp(offset: -5)
                             )
                         ]
                     )
@@ -174,8 +154,7 @@ extension SwiftDataOperationsTests {
 
             let result = try BackupOperations.replaceLibrary(
                 snapshot: snapshot,
-                context: context,
-                calendar: Fixtures.calendar
+                context: context
             )
             let items = try fetchItems(context)
             let restoredItem = try #require(items.first)
@@ -190,7 +169,7 @@ extension SwiftDataOperationsTests {
             #expect(restoredItem.uuid == backupItemID)
             #expect(restoredItem.isArchived)
             #expect(restoredItem.photoData == Data([0x09]))
-            #expect(ItemOperations.historySnapshot(for: restoredItem, calendar: Fixtures.calendar).totalMarks == 1)
+            #expect(ItemOperations.historySnapshot(for: restoredItem, today: Fixtures.today).totalMarks == 1)
         }
 
         private func makeContext() throws -> ModelContext {
@@ -216,7 +195,7 @@ extension SwiftDataOperationsTests {
                     note: note,
                     photoData: photoData
                 ),
-                createdAt: Fixtures.today
+                createdAt: Fixtures.timestamp()
             )
         }
 
@@ -229,8 +208,8 @@ extension SwiftDataOperationsTests {
                 try ItemOperations.mark(
                     item,
                     on: Fixtures.day(offset: offset),
-                    context: context,
-                    calendar: Fixtures.calendar
+                    today: Fixtures.today,
+                    context: context
                 )
             }
         }
@@ -241,7 +220,7 @@ extension SwiftDataOperationsTests {
             newItemID: UUID
         ) -> BackupSnapshot {
             .init(
-                exportedAt: Fixtures.today,
+                exportedAt: Fixtures.timestamp(),
                 items: [
                     existingBackupItem(id: existingItemID, existingMarkID: existingMarkID),
                     newBackupItem(id: newItemID)
@@ -256,11 +235,15 @@ extension SwiftDataOperationsTests {
                 categoryRawValue: ItemCategory.shoes.rawValue,
                 note: "Remote note should not overwrite local context.",
                 photoData: nil,
-                createdAt: Fixtures.day(offset: -20),
+                createdAt: Fixtures.timestamp(offset: -20),
                 archivedAt: nil,
                 marks: [
-                    .init(id: existingMarkID, day: Fixtures.today, createdAt: Fixtures.today),
-                    .init(id: UUID(), day: Fixtures.day(offset: -2), createdAt: Fixtures.day(offset: -2))
+                    .init(id: existingMarkID, day: Fixtures.today, createdAt: Fixtures.timestamp()),
+                    .init(
+                        id: UUID(),
+                        day: Fixtures.day(offset: -2),
+                        createdAt: Fixtures.timestamp(offset: -2)
+                    )
                 ]
             )
         }
@@ -272,10 +255,14 @@ extension SwiftDataOperationsTests {
                 categoryRawValue: ItemCategory.notebooks.rawValue,
                 note: "  Still waiting for its first stretch of regular use.  ",
                 photoData: nil,
-                createdAt: Fixtures.day(offset: -3),
+                createdAt: Fixtures.timestamp(offset: -3),
                 archivedAt: nil,
                 marks: [
-                    .init(id: UUID(), day: Fixtures.day(offset: -1), createdAt: Fixtures.day(offset: -1))
+                    .init(
+                        id: UUID(),
+                        day: Fixtures.day(offset: -1),
+                        createdAt: Fixtures.timestamp(offset: -1)
+                    )
                 ]
             )
         }

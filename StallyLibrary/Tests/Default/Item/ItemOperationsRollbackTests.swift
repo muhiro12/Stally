@@ -17,14 +17,20 @@ private enum ExpectedSaveError: Error {
 extension SwiftDataOperationsTests {
     @Suite
     struct ItemOperationsRollbackTests {
-        private var testCalendar: Calendar {
-            var calendar = Calendar(identifier: .gregorian)
-            calendar.timeZone = TimeZone(secondsFromGMT: 0) ?? calendar.timeZone
-            return calendar
-        }
-
         private var testDate: Date {
             Date(timeIntervalSince1970: 1_750_000_000)
+        }
+
+        private var testLocalDay: LocalDay {
+            guard let localDay = LocalDay(containing: testDate, in: testTimeZone) else {
+                preconditionFailure("Invalid fixture local day")
+            }
+
+            return localDay
+        }
+
+        private var testTimeZone: TimeZone {
+            TimeZone(secondsFromGMT: 0) ?? .current
         }
 
         @Test
@@ -51,7 +57,12 @@ extension SwiftDataOperationsTests {
         func `rollback removes a pending mark relationship`() throws {
             let context = try makeContext()
             let item = try createItem(context: context)
-            let mark = ItemMark(day: testDate, item: item)
+            let mark = ItemMark(
+                day: testLocalDay,
+                createdAt: .now,
+                item: item,
+                uuid: .init()
+            )
             item.marks.append(mark)
             context.insert(mark)
 
@@ -67,11 +78,11 @@ extension SwiftDataOperationsTests {
             let item = try createItem(context: context)
             try ItemOperations.mark(
                 item,
-                on: testDate,
-                context: context,
-                calendar: testCalendar
+                on: testLocalDay,
+                today: testLocalDay,
+                context: context
             )
-            let marks = item.removeMarks(on: testDate, calendar: testCalendar)
+            let marks = item.removeMarks(on: testLocalDay)
 
             for mark in marks {
                 context.delete(mark)

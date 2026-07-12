@@ -9,6 +9,9 @@ import MHUI
 import SwiftUI
 
 struct InsightItemSummaryRow: View {
+    @Environment(\.timeZone)
+    private var timeZone
+
     let summary: ItemInsightSummary
 
     var body: some View {
@@ -22,7 +25,11 @@ struct InsightItemSummaryRow: View {
                 Text("\(summary.marksInRange) marks")
 
                 if let lastMarkedDay = summary.lastMarkedDay {
-                    Text(lastMarkedDay, format: .dateTime.month().day())
+                    if let date = lastMarkedDay.date(in: timeZone) {
+                        Text(date, format: .dateTime.month().day())
+                    } else {
+                        Text(verbatim: lastMarkedDay.iso8601Date)
+                    }
                 }
             }
             .mhRowOverline()

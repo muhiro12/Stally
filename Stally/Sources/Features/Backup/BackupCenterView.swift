@@ -10,9 +10,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct BackupCenterView: View {
-    @Environment(\.calendar)
-    private var calendar
-
     @Environment(\.modelContext)
     private var modelContext
 
@@ -182,8 +179,7 @@ private extension BackupCenterView {
             selectedBackupData = data
             selectedBackupPreview = BackupOperations.preview(
                 data: data,
-                currentItems: items,
-                calendar: calendar
+                currentItems: items
             )
             statusMessage = nil
         } catch {
@@ -216,8 +212,7 @@ private extension BackupCenterView {
         do {
             let result = try BackupOperations.mergeIntoLibrary(
                 data: selectedBackupData,
-                context: modelContext,
-                calendar: calendar
+                context: modelContext
             )
             selectedBackupPreview = nil
             self.selectedBackupData = nil
@@ -238,8 +233,7 @@ private extension BackupCenterView {
         do {
             let result = try BackupOperations.replaceLibrary(
                 data: selectedBackupData,
-                context: modelContext,
-                calendar: calendar
+                context: modelContext
             )
             selectedBackupPreview = nil
             self.selectedBackupData = nil

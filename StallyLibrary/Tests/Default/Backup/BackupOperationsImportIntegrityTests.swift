@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import StallyLibrary
+@testable import StallyLibrary
 import SwiftData
 import Testing
 
@@ -15,48 +15,36 @@ extension SwiftDataOperationsTests {
     struct BackupOperationsImportIntegrityTests {
         // swiftlint:disable:next nesting
         private enum Fixtures {
-            static var calendar: Calendar {
-                var configuredCalendar = Calendar(identifier: .gregorian)
-                configuredCalendar.timeZone = TimeZone(secondsFromGMT: 0) ?? configuredCalendar.timeZone
-                return configuredCalendar
-            }
-
-            static var today: Date {
-                let components = DateComponents(
-                    calendar: calendar,
-                    timeZone: calendar.timeZone,
-                    year: 2_026,
-                    month: 6,
-                    day: 26
-                )
-
-                guard let date = components.date else {
+            static var today: LocalDay {
+                guard let day = LocalDay(year: 2_026, month: 6, day: 26) else {
                     preconditionFailure("Invalid fixture day")
                 }
 
-                return date
+                return day
+            }
+
+            static func timestamp(offset: Int = 0) -> Date {
+                .init(timeIntervalSinceReferenceDate: TimeInterval(offset))
             }
         }
 
         @Test
-        func `duplicate calendar days fail closed for preview merge and replace`() throws {
+        func `duplicate local days fail closed for preview merge and replace`() throws {
             let context = try makeContext()
             _ = try createItem(context: context, name: "Local Item")
             let backupItemID = UUID()
             let firstMark = BackupMark(
                 id: UUID(),
                 day: Fixtures.today,
-                createdAt: Fixtures.today
+                createdAt: Fixtures.timestamp()
             )
             let secondMark = BackupMark(
                 id: UUID(),
-                day: try #require(
-                    Fixtures.calendar.date(byAdding: .hour, value: 12, to: Fixtures.today)
-                ),
-                createdAt: Fixtures.today
+                day: Fixtures.today,
+                createdAt: Fixtures.timestamp(offset: 1)
             )
             let snapshot = BackupSnapshot(
-                exportedAt: Fixtures.today,
+                exportedAt: Fixtures.timestamp(),
                 items: [
                     backupItem(
                         id: backupItemID,
@@ -66,8 +54,7 @@ extension SwiftDataOperationsTests {
             )
             let expectedPreview = BackupOperations.preview(
                 snapshot: snapshot,
-                currentItems: try fetchItems(context),
-                calendar: Fixtures.calendar
+                currentItems: try fetchItems(context)
             )
 
             #expect(!expectedPreview.canImport)
@@ -76,15 +63,13 @@ extension SwiftDataOperationsTests {
             #expect(throws: BackupError.validationFailed(expectedPreview)) {
                 try BackupOperations.mergeIntoLibrary(
                     snapshot: snapshot,
-                    context: context,
-                    calendar: Fixtures.calendar
+                    context: context
                 )
             }
             #expect(throws: BackupError.validationFailed(expectedPreview)) {
                 try BackupOperations.replaceLibrary(
                     snapshot: snapshot,
-                    context: context,
-                    calendar: Fixtures.calendar
+                    context: context
                 )
             }
 
@@ -102,13 +87,12 @@ extension SwiftDataOperationsTests {
             try context.save()
             let backupItemID = UUID()
             let snapshot = BackupSnapshot(
-                exportedAt: Fixtures.today,
+                exportedAt: Fixtures.timestamp(),
                 items: [backupItem(id: backupItemID, marks: [])]
             )
             let expectedPreview = BackupOperations.preview(
                 snapshot: snapshot,
-                currentItems: try fetchItems(context),
-                calendar: Fixtures.calendar
+                currentItems: try fetchItems(context)
             )
 
             #expect(!expectedPreview.canImport)
@@ -117,15 +101,13 @@ extension SwiftDataOperationsTests {
             #expect(throws: BackupError.validationFailed(expectedPreview)) {
                 try BackupOperations.mergeIntoLibrary(
                     snapshot: snapshot,
-                    context: context,
-                    calendar: Fixtures.calendar
+                    context: context
                 )
             }
             #expect(throws: BackupError.validationFailed(expectedPreview)) {
                 try BackupOperations.replaceLibrary(
                     snapshot: snapshot,
-                    context: context,
-                    calendar: Fixtures.calendar
+                    context: context
                 )
             }
 
@@ -146,7 +128,7 @@ extension SwiftDataOperationsTests {
             try ItemOperations.create(
                 context: context,
                 input: .init(name: name, category: .other),
-                createdAt: Fixtures.today
+                createdAt: Fixtures.timestamp()
             )
         }
 
@@ -157,7 +139,7 @@ extension SwiftDataOperationsTests {
                 categoryRawValue: ItemCategory.bags.rawValue,
                 note: "",
                 photoData: nil,
-                createdAt: Fixtures.today,
+                createdAt: Fixtures.timestamp(),
                 archivedAt: nil,
                 marks: marks
             )

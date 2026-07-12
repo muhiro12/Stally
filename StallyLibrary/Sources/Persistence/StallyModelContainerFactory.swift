@@ -14,10 +14,7 @@ public enum StallyModelContainerFactory {
 
     /// SwiftData schema shared by persistent, preview, and test containers.
     public static var schema: Schema {
-        Schema([
-            Item.self,
-            ItemMark.self
-        ])
+        StallyMigrationPlan.currentSchema
     }
 
     /// Creates the app's CloudKit-backed persistent model container.
@@ -29,7 +26,9 @@ public enum StallyModelContainerFactory {
     public static func persistent(syncsWithCloudKit: Bool) throws -> ModelContainer {
         try make(
             isStoredInMemoryOnly: false,
-            cloudKitDatabase: syncsWithCloudKit ? .automatic : .none
+            cloudKitDatabase: syncsWithCloudKit
+                ? .private(Self.cloudKitContainerIdentifier)
+                : .none
         )
     }
 
@@ -52,6 +51,10 @@ public enum StallyModelContainerFactory {
             cloudKitDatabase: cloudKitDatabase
         )
 
-        return try ModelContainer(for: modelSchema, configurations: [configuration])
+        return try ModelContainer(
+            for: modelSchema,
+            migrationPlan: StallyMigrationPlan.self,
+            configurations: [configuration]
+        )
     }
 }
