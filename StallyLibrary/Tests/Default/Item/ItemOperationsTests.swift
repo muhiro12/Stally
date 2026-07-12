@@ -199,6 +199,39 @@ extension SwiftDataOperationsTests {
         }
 
         @Test
+        func `undo removes every duplicate mark record for the day`() throws {
+            let context = try makeContext()
+            let item = try createItem(context: context)
+            try ItemOperations.mark(
+                item,
+                on: Fixtures.today,
+                context: context,
+                calendar: Fixtures.calendar
+            )
+            let duplicateMark = ItemMark(
+                day: Fixtures.today,
+                createdAt: Fixtures.today,
+                item: item
+            )
+            item.marks.append(duplicateMark)
+            context.insert(duplicateMark)
+            try context.save()
+
+            #expect(try fetchMarks(context).count == 2)
+
+            let didUndo = try ItemOperations.undoMark(
+                item,
+                on: Fixtures.today,
+                context: context,
+                calendar: Fixtures.calendar
+            )
+
+            #expect(didUndo)
+            #expect(item.marks.isEmpty)
+            #expect(try fetchMarks(context).isEmpty)
+        }
+
+        @Test
         func `history snapshot counts calendar windows`() throws {
             let context = try makeContext()
             let item = try createItem(context: context)
@@ -232,6 +265,10 @@ extension SwiftDataOperationsTests {
         }
 
         private func fetchItems(_ context: ModelContext) throws -> [Item] {
+            try context.fetch(.init())
+        }
+
+        private func fetchMarks(_ context: ModelContext) throws -> [ItemMark] {
             try context.fetch(.init())
         }
 

@@ -113,17 +113,17 @@ public final class Item {
         return mark
     }
 
-    func removeMark(on date: Date, calendar: Calendar) -> ItemMark? {
+    func removeMarks(on date: Date, calendar: Calendar) -> [ItemMark] {
         let day = calendar.startOfDay(for: date)
 
-        guard let existingMark = mark(on: day, calendar: calendar) else {
-            return nil
+        let existingMarks = marks.filter { mark in
+            calendar.isDate(mark.day, inSameDayAs: day)
         }
 
         marks.removeAll { mark in
             calendar.isDate(mark.day, inSameDayAs: day)
         }
 
-        return existingMark
+        return existingMarks
     }
 }

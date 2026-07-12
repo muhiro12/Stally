@@ -140,11 +140,15 @@ public enum ItemOperations {
             throw ItemValidationError.archivedItemsCannotChangeHistory
         }
 
-        guard let mark = item.removeMark(on: date, calendar: calendar) else {
+        let marks = item.removeMarks(on: date, calendar: calendar)
+
+        guard !marks.isEmpty else {
             return false
         }
 
-        context.delete(mark)
+        for mark in marks {
+            context.delete(mark)
+        }
         try context.save()
 
         return true
