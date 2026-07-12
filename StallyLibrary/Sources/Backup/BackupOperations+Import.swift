@@ -134,8 +134,10 @@ extension BackupOperations {
 private extension BackupOperations {
     static func prepareDeleteEverything(context: ModelContext) throws -> BackupResetResult {
         let items = try fetchItems(context)
-        let markCount = items.reduce(0) { count, item in
-            count + item.marks.count
+        let marks = try fetchMarks(context)
+
+        for mark in marks {
+            context.delete(mark)
         }
 
         for item in items {
@@ -144,7 +146,7 @@ private extension BackupOperations {
 
         return .init(
             deletedItemCount: items.count,
-            deletedMarkCount: markCount
+            deletedMarkCount: marks.count
         )
     }
 
@@ -203,6 +205,10 @@ private extension BackupOperations {
     }
 
     static func fetchItems(_ context: ModelContext) throws -> [Item] {
+        try context.fetch(.init())
+    }
+
+    static func fetchMarks(_ context: ModelContext) throws -> [ItemMark] {
         try context.fetch(.init())
     }
 

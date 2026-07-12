@@ -122,12 +122,19 @@ extension SwiftDataOperationsTests {
             let secondItem = try createItem(context: context, name: "White Everyday Sneakers")
             try mark(firstItem, offsets: [0], context: context)
             try mark(secondItem, offsets: [-1], context: context)
+            let orphanMark = ItemMark(
+                day: Fixtures.day(offset: -2),
+                createdAt: Fixtures.day(offset: -2)
+            )
+            context.insert(orphanMark)
+            try context.save()
 
             let result = try BackupOperations.deleteEverything(context: context)
 
             #expect(result.deletedItemCount == 2)
-            #expect(result.deletedMarkCount == 2)
+            #expect(result.deletedMarkCount == 3)
             #expect(try fetchItems(context).isEmpty)
+            #expect(try fetchMarks(context).isEmpty)
         }
 
         private func makeContext() throws -> ModelContext {
@@ -135,6 +142,10 @@ extension SwiftDataOperationsTests {
         }
 
         private func fetchItems(_ context: ModelContext) throws -> [Item] {
+            try context.fetch(.init())
+        }
+
+        private func fetchMarks(_ context: ModelContext) throws -> [ItemMark] {
             try context.fetch(.init())
         }
 
