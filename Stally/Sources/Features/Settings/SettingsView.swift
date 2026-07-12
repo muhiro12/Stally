@@ -25,11 +25,6 @@ struct SettingsView: View {
 
                 StallyStoreSection()
 
-                Section("Settings") {
-                    Text("Premium status and shareable routes live here during the rebuild.")
-                        .mhRowSupporting()
-                }
-
                 Section("Shareable Links") {
                     ForEach(StallyLinkDestination.allCases) { destination in
                         ShareLink(item: StallyLinkOperations.url(for: .destination(destination))) {
