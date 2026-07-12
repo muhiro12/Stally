@@ -1,5 +1,5 @@
 //
-//  AddItemFormFields.swift
+//  ItemFormFields.swift
 //  Stally
 //
 //  Created by Hiromu Nakano on 2026/06/25.
@@ -8,7 +8,7 @@
 import MHUI
 import SwiftUI
 
-struct AddItemFormFields: View {
+struct ItemFormFields: View {
     @Binding var name: String
     @Binding var category: ItemCategory
     @Binding var note: String

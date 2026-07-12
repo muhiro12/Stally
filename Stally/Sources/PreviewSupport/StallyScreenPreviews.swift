@@ -52,6 +52,12 @@ import SwiftUI
     }
 }
 
+#Preview("Edit Item - Existing Values") {
+    StallyPreviewContainer(.typical) { items in
+        StallyEditItemPreview(items: items)
+    }
+}
+
 #Preview("Archive - Preserved Items") {
     StallyPreviewContainer(.dense) { items in
         ArchiveView(items: ItemOperations.archivedItems(from: items))
@@ -151,4 +157,5 @@ private struct StallyScreenPreviews: View {
         }
     }
 }
+
 #endif

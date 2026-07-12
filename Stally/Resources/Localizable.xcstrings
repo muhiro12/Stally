@@ -537,6 +537,22 @@
         }
       }
     },
+    "Could Not Delete": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could Not Delete"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "削除できませんでした"
+          }
+        }
+      }
+    },
     "Could Not Save": {
       "localizations": {
         "en": {
@@ -665,6 +681,38 @@
         }
       }
     },
+    "Delete Item": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete Item"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテムを削除"
+          }
+        }
+      }
+    },
+    "Delete Item?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete Item?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテムを削除しますか？"
+          }
+        }
+      }
+    },
     "Deleted every item from the current library.\nItems: %lld. Marks: %lld.": {
       "localizations": {
         "en": {
@@ -677,6 +725,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "現在のライブラリからすべてのアイテムを削除しました。\nアイテム: %lld。マーク: %lld。"
+          }
+        }
+      }
+    },
+    "Deleting this item also removes all of its marks.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deleting this item also removes all of its marks."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このアイテムを削除すると、すべてのマークも削除されます。"
+          }
+        }
+      }
+    },
+    "Edit Item": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit Item"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテムを編集"
           }
         }
       }
@@ -1708,6 +1788,22 @@
         }
       }
     },
+    "Save": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存"
+          }
+        }
+      }
+    },
     "Scope": {
       "localizations": {
         "en": {
@@ -1960,6 +2056,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "複数デバイス間で同時に同期するためのものではありません。"
+          }
+        }
+      }
+    },
+    "This item and all of its marks will be permanently deleted. This cannot be undone.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This item and all of its marks will be permanently deleted. This cannot be undone."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このアイテムとすべてのマークは完全に削除されます。この操作は取り消せません。"
           }
         }
       }

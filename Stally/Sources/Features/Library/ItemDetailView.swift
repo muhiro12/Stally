@@ -9,6 +9,8 @@ import SwiftData
 import SwiftUI
 
 struct ItemDetailView: View {
+    @Environment(\.dismiss)
+    private var dismiss
     @Environment(\.modelContext)
     private var modelContext
     @Environment(\.timeZone)
@@ -16,17 +18,11 @@ struct ItemDetailView: View {
 
     let item: Item
 
-    @State private var saveErrorMessage: String?
-
-    private var isShowingSaveError: Binding<Bool> {
-        Binding {
-            saveErrorMessage != nil
-        } set: { isPresented in
-            if !isPresented {
-                saveErrorMessage = nil
-            }
-        }
-    }
+    @State private var itemToEdit: Item?
+    @State private var isConfirmingDeleteItem = false
+    @State private var errorTitle = ""
+    @State private var errorMessage = ""
+    @State private var isPresentingError = false
 
     var body: some View {
         let now = Date()
@@ -57,28 +53,46 @@ struct ItemDetailView: View {
 
                 QuietHistorySection(history: history)
             }
+
+            ItemDeletionSection(deleteAction: confirmDeleteItem)
         }
         .stallyListChrome()
         .navigationTitle(item.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button(action: presentEditItem) {
+                    Label("Edit Item", systemImage: "pencil")
+                }
+
                 StallyLinkShareButton(
                     link: .item(item.uuid),
                     title: "Share Item Link"
                 )
             }
         }
-        .alert("Could Not Save", isPresented: isShowingSaveError) {
-            Button("OK", role: .cancel, action: clearSaveError)
+        .sheet(item: $itemToEdit) { item in
+            EditItemView(item: item)
+        }
+        .alert("Delete Item?", isPresented: $isConfirmingDeleteItem) {
+            Button("Delete Item", role: .destructive, action: deleteItem)
+            Button("Cancel", role: .cancel, action: cancelDeleteItem)
         } message: {
-            Text(saveErrorMessage ?? "")
+            Text("This item and all of its marks will be permanently deleted. This cannot be undone.")
+        }
+        .alert(errorTitle, isPresented: $isPresentingError) {
+            Button("OK", role: .cancel, action: clearError)
+        } message: {
+            Text(errorMessage)
         }
     }
 
     private func markToday() {
         guard let today = currentDay() else {
-            saveErrorMessage = String(localized: "Could Not Save")
+            presentError(
+                title: String(localized: "Could Not Save"),
+                message: String(localized: "Could Not Save")
+            )
             return
         }
 
@@ -94,7 +108,10 @@ struct ItemDetailView: View {
 
     private func undoToday() {
         guard let today = currentDay() else {
-            saveErrorMessage = String(localized: "Could Not Save")
+            presentError(
+                title: String(localized: "Could Not Save"),
+                message: String(localized: "Could Not Save")
+            )
             return
         }
 
@@ -116,7 +133,10 @@ struct ItemDetailView: View {
         do {
             try action()
         } catch {
-            saveErrorMessage = error.localizedDescription
+            presentError(
+                title: String(localized: "Could Not Save"),
+                message: error.localizedDescription
+            )
         }
     }
 
@@ -141,7 +161,39 @@ struct ItemDetailView: View {
         }
     }
 
-    private func clearSaveError() {
-        saveErrorMessage = nil
+    private func presentEditItem() {
+        itemToEdit = item
+    }
+
+    private func confirmDeleteItem() {
+        isConfirmingDeleteItem = true
+    }
+
+    private func cancelDeleteItem() {
+        isConfirmingDeleteItem = false
+    }
+
+    private func deleteItem() {
+        do {
+            try ItemOperations.delete(item, context: modelContext)
+            dismiss()
+        } catch {
+            presentError(
+                title: String(localized: "Could Not Delete"),
+                message: error.localizedDescription
+            )
+        }
+    }
+
+    private func presentError(title: String, message: String) {
+        errorTitle = title
+        errorMessage = message
+        isPresentingError = true
+    }
+
+    private func clearError() {
+        errorTitle = ""
+        errorMessage = ""
+        isPresentingError = false
     }
 }
