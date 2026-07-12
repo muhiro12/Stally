@@ -126,6 +126,7 @@ extension SwiftDataOperationsTests {
 
             #expect(result.preview.existingItemCount == 1)
             #expect(result.preview.newItemCount == 1)
+            #expect(result.preview.marksAddedCount == result.insertedMarkCount)
             #expect(result.insertedItemCount == 1)
             #expect(result.insertedMarkCount == 2)
             #expect(!result.didReplaceLibrary)
@@ -145,8 +146,10 @@ extension SwiftDataOperationsTests {
         @Test
         func `replace removes current library and restores backup snapshot`() throws {
             let context = try makeContext()
-            _ = try createItem(context: context, name: "Local Item")
             let backupItemID = UUID()
+            let localItem = try createItem(context: context, name: "Local Item")
+            localItem.uuid = backupItemID
+            try mark(localItem, offsets: [-5], context: context)
             let snapshot = BackupSnapshot(
                 exportedAt: Fixtures.today,
                 items: [
@@ -180,6 +183,9 @@ extension SwiftDataOperationsTests {
             #expect(result.didReplaceLibrary)
             #expect(result.insertedItemCount == 1)
             #expect(result.insertedMarkCount == 1)
+            #expect(result.preview.existingItemCount == 0)
+            #expect(result.preview.newItemCount == result.insertedItemCount)
+            #expect(result.preview.marksAddedCount == result.insertedMarkCount)
             #expect(items.count == 1)
             #expect(restoredItem.uuid == backupItemID)
             #expect(restoredItem.isArchived)

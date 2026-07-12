@@ -32,26 +32,68 @@ public extension BackupOperations {
         currentItems: [Item],
         calendar: Calendar = .current
     ) -> BackupPreview {
-        let validItems = validImportItems(in: snapshot.items)
+        importPlan(
+            snapshot: snapshot,
+            currentItems: currentItems,
+            calendar: calendar
+        )
+        .preview(replacingExistingItems: false)
+    }
+}
 
-        return .init(
+extension BackupOperations {
+    static func importPlan(
+        snapshot: BackupSnapshot,
+        currentItems: [Item],
+        calendar: Calendar
+    ) -> BackupImportPlan {
+        let validItems = validImportItems(in: snapshot.items)
+        let validationIssues = validationIssues(
+            for: snapshot,
+            currentItems: currentItems,
+            calendar: calendar
+        )
+        let mergeItemPlans: [BackupItemImportPlan]
+        let replacementItemPlans: [BackupItemImportPlan]
+
+        if validationIssues.isEmpty {
+            mergeItemPlans = itemPlans(
+                from: snapshot.items,
+                currentItems: currentItems,
+                replacingExistingItems: false,
+                calendar: calendar
+            )
+            replacementItemPlans = itemPlans(
+                from: snapshot.items,
+                currentItems: [],
+                replacingExistingItems: true,
+                calendar: calendar
+            )
+        } else {
+            mergeItemPlans = []
+            replacementItemPlans = []
+        }
+
+        let preview = BackupPreview(
             itemCount: snapshot.items.count,
             archivedItemCount: archivedItemCount(in: snapshot.items),
             markCount: markCount(in: snapshot.items),
             existingItemCount: existingItemCount(in: validItems, currentItems: currentItems),
             newItemCount: newItemCount(in: validItems, currentItems: currentItems),
             skippedItemCount: snapshot.items.count - validItems.count,
-            marksAddedCount: predictedMarksAdded(
-                from: validItems,
-                currentItems: currentItems,
-                calendar: calendar
-            ),
-            validationIssues: validationIssues(for: snapshot)
+            marksAddedCount: mergeItemPlans.reduce(0) { count, itemPlan in
+                count + itemPlan.marks.count
+            },
+            validationIssues: validationIssues
+        )
+
+        return .init(
+            mergePreview: preview,
+            mergeItemPlans: mergeItemPlans,
+            replacementItemPlans: replacementItemPlans
         )
     }
-}
 
-extension BackupOperations {
     static func unreadablePreview() -> BackupPreview {
         .init(
             itemCount: 0,
@@ -65,7 +107,11 @@ extension BackupOperations {
         )
     }
 
-    static func validationIssues(for snapshot: BackupSnapshot) -> [BackupValidationIssue] {
+    static func validationIssues(
+        for snapshot: BackupSnapshot,
+        currentItems: [Item],
+        calendar: Calendar
+    ) -> [BackupValidationIssue] {
         var issues: [BackupValidationIssue] = []
 
         if snapshot.schemaVersion != BackupSnapshot.currentSchemaVersion {
@@ -79,8 +125,10 @@ extension BackupOperations {
 
         issues.append(contentsOf: duplicateItemIDIssues(in: snapshot.items))
         issues.append(contentsOf: duplicateMarkIDIssues(in: snapshot.items))
+        issues.append(contentsOf: duplicateMarkDayIssues(in: snapshot.items, calendar: calendar))
         issues.append(contentsOf: itemNameRequiredIssues(in: snapshot.items))
         issues.append(contentsOf: unknownCategoryIssues(in: snapshot.items))
+        issues.append(contentsOf: duplicateCurrentItemIDIssues(in: currentItems))
 
         return issues
     }
@@ -152,6 +200,30 @@ private extension BackupOperations {
         }
     }
 
+    static func duplicateMarkDayIssues(
+        in items: [BackupItem],
+        calendar: Calendar
+    ) -> [BackupValidationIssue] {
+        items.flatMap { item in
+            let duplicateDays = duplicateValues(item.marks.map { mark in
+                calendar.startOfDay(for: mark.day)
+            })
+
+            return duplicateDays.map { day in
+                BackupValidationIssue(
+                    kind: .duplicateMarkDay,
+                    value: "\(item.id.uuidString):\(calendarDayIdentifier(for: day, calendar: calendar))"
+                )
+            }
+        }
+    }
+
+    static func duplicateCurrentItemIDIssues(in items: [Item]) -> [BackupValidationIssue] {
+        duplicateValues(items.map(\.uuid)).map { id in
+            .init(kind: .duplicateCurrentItemID, value: id.uuidString)
+        }
+    }
+
     static func itemNameRequiredIssues(in items: [BackupItem]) -> [BackupValidationIssue] {
         items
             .filter { item in
@@ -189,48 +261,89 @@ private extension BackupOperations {
         }
     }
 
-    static func predictedMarksAdded(
-        from backupItems: [BackupItem],
-        currentItems: [Item],
-        calendar: Calendar
-    ) -> Int {
-        let currentMarkIDs = Set(currentItems.flatMap { item in
-            item.marks.map(\.uuid)
-        })
-        let existingItemsByID = Dictionary(uniqueKeysWithValues: currentItems.map { item in
-            (item.uuid, item)
-        })
+    static func calendarDayIdentifier(for date: Date, calendar: Calendar) -> String {
+        let components = calendar.dateComponents([.year, .month, .day], from: date)
+        let year = components.year ?? 0
+        let month = components.month ?? 0
+        let day = components.day ?? 0
 
-        return backupItems.reduce(0) { count, backupItem in
-            count + predictedMarksAdded(
-                from: backupItem,
-                currentMarkIDs: currentMarkIDs,
-                existingItemsByID: existingItemsByID,
-                calendar: calendar
-            )
-        }
+        return "\(year)-\(month)-\(day)"
     }
 
-    static func predictedMarksAdded(
-        from backupItem: BackupItem,
-        currentMarkIDs: Set<UUID>,
-        existingItemsByID: [UUID: Item],
+    static func itemPlans(
+        from backupItems: [BackupItem],
+        currentItems: [Item],
+        replacingExistingItems: Bool,
         calendar: Calendar
-    ) -> Int {
-        guard let existingItem = existingItemsByID[backupItem.id] else {
-            return backupItem.marks.filter { backupMark in
-                !currentMarkIDs.contains(backupMark.id)
-            }
-            .count
-        }
+    ) -> [BackupItemImportPlan] {
+        let currentItemsByID = currentItemIndex(currentItems)
+        var knownMarkIDs = Set(replacingExistingItems ? [] : currentItems.flatMap { item in
+            item.marks.map(\.uuid)
+        })
+        var itemPlans: [BackupItemImportPlan] = []
 
-        return backupItem.marks.filter { backupMark in
-            !currentMarkIDs.contains(backupMark.id) && shouldAddMark(
-                backupMark,
-                to: existingItem,
+        for backupItem in backupItems {
+            let existingItem = replacingExistingItems ? nil : currentItemsByID[backupItem.id]
+            let marks = plannedMarks(
+                from: backupItem.marks,
+                existingItem: existingItem,
+                knownMarkIDs: &knownMarkIDs,
                 calendar: calendar
             )
+            itemPlans.append(
+                .init(
+                    backupItem: backupItem,
+                    existingItem: existingItem,
+                    marks: marks
+                )
+            )
         }
-        .count
+
+        return itemPlans
+    }
+
+    static func currentItemIndex(_ items: [Item]) -> [UUID: Item] {
+        var itemsByID: [UUID: Item] = [:]
+
+        for item in items {
+            guard itemsByID[item.uuid] == nil else {
+                continue
+            }
+
+            itemsByID[item.uuid] = item
+        }
+
+        return itemsByID
+    }
+
+    static func plannedMarks(
+        from backupMarks: [BackupMark],
+        existingItem: Item?,
+        knownMarkIDs: inout Set<UUID>,
+        calendar: Calendar
+    ) -> [BackupMark] {
+        var plannedMarks: [BackupMark] = []
+
+        for backupMark in backupMarks {
+            guard !knownMarkIDs.contains(backupMark.id) else {
+                continue
+            }
+
+            if let existingItem,
+               !shouldAddMark(backupMark, to: existingItem, calendar: calendar) {
+                continue
+            }
+
+            guard !plannedMarks.contains(where: { plannedMark in
+                calendar.isDate(plannedMark.day, inSameDayAs: backupMark.day)
+            }) else {
+                continue
+            }
+
+            knownMarkIDs.insert(backupMark.id)
+            plannedMarks.append(backupMark)
+        }
+
+        return plannedMarks
     }
 }

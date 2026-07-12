@@ -21,7 +21,7 @@ public struct BackupPreview: Equatable, Sendable {
     public let skippedItemCount: Int
     /// Marks that would be added by merge import.
     public let marksAddedCount: Int
-    /// Validation issues found in the backup.
+    /// Validation issues found while preparing the import.
     public let validationIssues: [BackupValidationIssue]
 
     /// Whether the backup can be imported.

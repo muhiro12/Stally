@@ -33,22 +33,21 @@ public extension BackupOperations {
         calendar: Calendar = .current
     ) throws -> BackupImportResult {
         let currentItems = try fetchItems(context)
-        let preview = preview(
+        let importPlan = importPlan(
             snapshot: snapshot,
             currentItems: currentItems,
             calendar: calendar
         )
+        let preview = importPlan.preview(replacingExistingItems: false)
 
         guard preview.canImport else {
             throw BackupError.validationFailed(preview)
         }
 
-        let mergeResult = importItems(
-            snapshot.items,
+        let mergeResult = apply(
+            importPlan,
             into: context,
-            replacingExistingItems: false,
-            currentItems: currentItems,
-            calendar: calendar
+            replacingExistingItems: false
         )
         try saveOrRollback(context)
 
@@ -84,23 +83,22 @@ public extension BackupOperations {
         calendar: Calendar = .current
     ) throws -> BackupImportResult {
         let currentItems = try fetchItems(context)
-        let preview = preview(
+        let importPlan = importPlan(
             snapshot: snapshot,
             currentItems: currentItems,
             calendar: calendar
         )
+        let preview = importPlan.preview(replacingExistingItems: true)
 
         guard preview.canImport else {
             throw BackupError.validationFailed(preview)
         }
 
         _ = try prepareDeleteEverything(context: context)
-        let importResult = importItems(
-            snapshot.items,
+        let importResult = apply(
+            importPlan,
             into: context,
-            replacingExistingItems: true,
-            currentItems: [],
-            calendar: calendar
+            replacingExistingItems: true
         )
         try saveOrRollback(context)
 
@@ -150,92 +148,29 @@ private extension BackupOperations {
         )
     }
 
-    static func importItems(
-        _ backupItems: [BackupItem],
+    static func apply(
+        _ importPlan: BackupImportPlan,
         into context: ModelContext,
-        replacingExistingItems: Bool,
-        currentItems: [Item],
-        calendar: Calendar
+        replacingExistingItems: Bool
     ) -> BackupImportResultCounts {
-        let currentItemsByID = Dictionary(uniqueKeysWithValues: currentItems.map { item in
-            (item.uuid, item)
-        })
-        var knownMarkIDs = Set(currentItems.flatMap { item in
-            item.marks.map(\.uuid)
-        })
-        var insertedItemCount = 0
-        var insertedMarkCount = 0
+        let itemPlans = importPlan.itemPlans(replacingExistingItems: replacingExistingItems)
 
-        for backupItem in backupItems {
-            if !replacingExistingItems,
-               let existingItem = currentItemsByID[backupItem.id] {
-                insertedMarkCount += importMissingMarks(
-                    backupItem.marks,
-                    into: existingItem,
-                    context: context,
-                    knownMarkIDs: &knownMarkIDs,
-                    calendar: calendar
-                )
+        for itemPlan in itemPlans {
+            let destinationItem: Item
+
+            if let existingItem = itemPlan.existingItem {
+                destinationItem = existingItem
             } else {
-                let item = item(from: backupItem)
-                context.insert(item)
-                insertedItemCount += 1
-                insertedMarkCount += importMarks(
-                    backupItem.marks,
-                    into: item,
-                    context: context,
-                    knownMarkIDs: &knownMarkIDs,
-                    calendar: calendar
-                )
+                destinationItem = item(from: itemPlan.backupItem)
+                context.insert(destinationItem)
+            }
+
+            for backupMark in itemPlan.marks {
+                insertMark(backupMark, into: destinationItem, context: context)
             }
         }
 
-        return .init(
-            insertedItemCount: insertedItemCount,
-            insertedMarkCount: insertedMarkCount
-        )
-    }
-
-    static func importMissingMarks(
-        _ backupMarks: [BackupMark],
-        into item: Item,
-        context: ModelContext,
-        knownMarkIDs: inout Set<UUID>,
-        calendar: Calendar
-    ) -> Int {
-        var insertedMarkCount = 0
-
-        for backupMark in backupMarks where shouldAddMark(backupMark, to: item, calendar: calendar) {
-            guard knownMarkIDs.insert(backupMark.id).inserted else {
-                continue
-            }
-
-            insertMark(backupMark, into: item, context: context)
-            insertedMarkCount += 1
-        }
-
-        return insertedMarkCount
-    }
-
-    static func importMarks(
-        _ backupMarks: [BackupMark],
-        into item: Item,
-        context: ModelContext,
-        knownMarkIDs: inout Set<UUID>,
-        calendar: Calendar
-    ) -> Int {
-        var insertedMarkCount = 0
-
-        for backupMark in backupMarks where shouldAddMark(backupMark, to: item, calendar: calendar) {
-            guard knownMarkIDs.insert(backupMark.id).inserted else {
-                continue
-            }
-
-            insertMark(backupMark, into: item, context: context)
-            insertedMarkCount += 1
-        }
-
-        return insertedMarkCount
+        return importPlan.resultCounts(replacingExistingItems: replacingExistingItems)
     }
 
     static func item(from backupItem: BackupItem) -> Item {

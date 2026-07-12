@@ -7,11 +7,13 @@
 
 import Foundation
 
-/// A validation issue found while reading a backup.
+/// A validation issue found while preparing a backup import.
 public struct BackupValidationIssue: Equatable, Identifiable, Sendable {
     /// Validation issue categories.
     public enum Kind: String, Equatable, Sendable {
+        case duplicateCurrentItemID
         case duplicateItemID
+        case duplicateMarkDay
         case duplicateMarkID
         case itemNameRequired
         case unknownCategory
@@ -29,8 +31,12 @@ public struct BackupValidationIssue: Equatable, Identifiable, Sendable {
     /// User-facing issue title.
     public var title: LocalizedStringResource {
         switch kind {
+        case .duplicateCurrentItemID:
+            .init("Duplicate Current Item ID", bundle: #bundle)
         case .duplicateItemID:
             .init("Duplicate Item ID", bundle: #bundle)
+        case .duplicateMarkDay:
+            .init("Duplicate Mark Day", bundle: #bundle)
         case .duplicateMarkID:
             .init("Duplicate Mark ID", bundle: #bundle)
         case .itemNameRequired:

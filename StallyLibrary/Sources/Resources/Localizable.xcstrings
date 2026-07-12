@@ -209,6 +209,22 @@
         }
       }
     },
+    "Duplicate Current Item ID": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duplicate Current Item ID"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在のライブラリ内で重複したアイテムID"
+          }
+        }
+      }
+    },
     "Duplicate Item ID": {
       "localizations": {
         "en": {
@@ -237,6 +253,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "重複したマークID"
+          }
+        }
+      }
+    },
+    "Duplicate Mark Day": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Duplicate Mark Day"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重複したマーク日"
           }
         }
       }
