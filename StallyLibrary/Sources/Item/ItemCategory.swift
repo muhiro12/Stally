@@ -21,15 +21,15 @@ public enum ItemCategory: String, CaseIterable, Codable, Hashable, Identifiable,
     public var title: LocalizedStringResource {
         switch self {
         case .clothing:
-            "Clothing"
+            .init("Clothing", bundle: #bundle)
         case .shoes:
-            "Shoes"
+            .init("Shoes", bundle: #bundle)
         case .bags:
-            "Bags"
+            .init("Bags", bundle: #bundle)
         case .notebooks:
-            "Notebooks"
+            .init("Notebooks", bundle: #bundle)
         case .other:
-            "Other"
+            .init("Other", bundle: #bundle)
         }
     }
 }

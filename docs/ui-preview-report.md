@@ -171,10 +171,14 @@ simulator through the DEBUG screenshot launch routes.
   `docs/ui-preview-screenshots/localization-library-empty-en.jpg`
 - Japanese localization smoke:
   `docs/ui-preview-screenshots/localization-library-empty-ja.jpg`
+- Japanese package-local localization smoke:
+  `docs/ui-preview-screenshots/localization-review-ja.jpg`
 
-The localization smoke screenshots use the Library empty state because it
-exercises navigation, tab labels, empty-state copy, and a primary action while
-remaining deterministic through the in-memory preview container.
+The Library empty-state localization screenshots exercise navigation, tab
+labels, empty-state copy, and a primary action. The Japanese Review screenshot
+also proves that package-owned category, Review lane, summary, empty-state, and
+mark-count resources resolve from the `StallyLibrary` bundle. Preview item names
+and notes remain deterministic fixture data rather than localized product copy.
 
 ## Localization Baseline
 
@@ -190,7 +194,9 @@ baseline language.
 
 The app build processed the app catalogs into English and Japanese localized
 resources, copied the `StallyLibrary_StallyLibrary.bundle`, and extracted
-`Metadata.appintents`.
+`Metadata.appintents`. Package-owned `LocalizedStringResource` values explicitly
+carry the package bundle so they continue to resolve after crossing into app
+views.
 
 ## Adopted MHUI And MHDesign APIs
 

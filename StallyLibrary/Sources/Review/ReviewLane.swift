@@ -22,11 +22,11 @@ public enum ReviewLane: CaseIterable, Identifiable, Sendable {
     public var title: LocalizedStringResource {
         switch self {
         case .dormant:
-            "Dormant"
+            .init("Dormant", bundle: #bundle)
         case .needsFirstMark:
-            "Needs First Mark"
+            .init("Needs First Mark", bundle: #bundle)
         case .recoveryCandidates:
-            "Recovery Candidates"
+            .init("Recovery Candidates", bundle: #bundle)
         }
     }
 
@@ -34,11 +34,20 @@ public enum ReviewLane: CaseIterable, Identifiable, Sendable {
     public var summary: LocalizedStringResource {
         switch self {
         case .dormant:
-            "Items whose last mark feels far enough away to revisit."
+            .init(
+                "Items whose last mark feels far enough away to revisit.",
+                bundle: #bundle
+            )
         case .needsFirstMark:
-            "Items that have been waiting quietly without a first mark."
+            .init(
+                "Items that have been waiting quietly without a first mark.",
+                bundle: #bundle
+            )
         case .recoveryCandidates:
-            "Archived items whose history suggests they may deserve another turn."
+            .init(
+                "Archived items whose history suggests they may deserve another turn.",
+                bundle: #bundle
+            )
         }
     }
 
@@ -46,11 +55,11 @@ public enum ReviewLane: CaseIterable, Identifiable, Sendable {
     public var emptyMessage: LocalizedStringResource {
         switch self {
         case .dormant:
-            "Nothing currently looks dormant."
+            .init("Nothing currently looks dormant.", bundle: #bundle)
         case .needsFirstMark:
-            "Nothing in this lane right now."
+            .init("Nothing in this lane right now.", bundle: #bundle)
         case .recoveryCandidates:
-            "Nothing is asking to come back right now."
+            .init("Nothing is asking to come back right now.", bundle: #bundle)
         }
     }
 }

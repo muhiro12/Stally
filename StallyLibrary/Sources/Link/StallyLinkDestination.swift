@@ -26,19 +26,19 @@ public enum StallyLinkDestination: String, CaseIterable, Codable, Identifiable, 
     public var title: LocalizedStringResource {
         switch self {
         case .library:
-            "Library"
+            .init("Library", bundle: #bundle)
         case .archive:
-            "Archive"
+            .init("Archive", bundle: #bundle)
         case .review:
-            "Review"
+            .init("Review", bundle: #bundle)
         case .insights:
-            "Insights"
+            .init("Insights", bundle: #bundle)
         case .backupCenter:
-            "Backup Center"
+            .init("Backup Center", bundle: #bundle)
         case .createItem:
-            "Create Item"
+            .init("Create Item", bundle: #bundle)
         case .settings:
-            "Settings"
+            .init("Settings", bundle: #bundle)
         }
     }
 }

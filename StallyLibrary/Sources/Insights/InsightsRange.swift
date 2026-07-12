@@ -27,13 +27,13 @@ public enum InsightsRange: CaseIterable, Equatable, Hashable, Identifiable, Send
     public var title: LocalizedStringResource {
         switch self {
         case .allTime:
-            "All Time"
+            .init("All Time", bundle: #bundle)
         case .ninetyDays:
-            "90 Days"
+            .init("90 Days", bundle: #bundle)
         case .thirtyDays:
-            "30 Days"
+            .init("30 Days", bundle: #bundle)
         case .year:
-            "365 Days"
+            .init("365 Days", bundle: #bundle)
         }
     }
 

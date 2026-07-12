@@ -30,17 +30,17 @@ public struct BackupValidationIssue: Equatable, Identifiable, Sendable {
     public var title: LocalizedStringResource {
         switch kind {
         case .duplicateItemID:
-            "Duplicate Item ID"
+            .init("Duplicate Item ID", bundle: #bundle)
         case .duplicateMarkID:
-            "Duplicate Mark ID"
+            .init("Duplicate Mark ID", bundle: #bundle)
         case .itemNameRequired:
-            "Item name is required."
+            .init("Item name is required.", bundle: #bundle)
         case .unknownCategory:
-            "Unknown Category"
+            .init("Unknown Category", bundle: #bundle)
         case .unreadableBackup:
-            "Unreadable Backup"
+            .init("Unreadable Backup", bundle: #bundle)
         case .unsupportedSchemaVersion:
-            "Unsupported Schema Version"
+            .init("Unsupported Schema Version", bundle: #bundle)
         }
     }
 

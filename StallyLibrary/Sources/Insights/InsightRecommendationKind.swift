@@ -23,13 +23,13 @@ public enum InsightRecommendationKind: Equatable, Hashable, Identifiable, Sendab
     public var title: LocalizedStringResource {
         switch self {
         case .addContextToFrequentItems:
-            "Add context to your frequent items"
+            .init("Add context to your frequent items", bundle: #bundle)
         case .protectCurrentStreak:
-            "Protect the current streak"
+            .init("Protect the current streak", bundle: #bundle)
         case .revisitQuietFavorites:
-            "Revisit quiet favorites"
+            .init("Revisit quiet favorites", bundle: #bundle)
         case .startThisRangeWithOneMark:
-            "Start this range with one mark"
+            .init("Start this range with one mark", bundle: #bundle)
         }
     }
 
@@ -37,13 +37,19 @@ public enum InsightRecommendationKind: Equatable, Hashable, Identifiable, Sendab
     public var summary: LocalizedStringResource {
         switch self {
         case .addContextToFrequentItems:
-            "Frequent active items without notes may be easier to read later with short context."
+            .init(
+                "Frequent active items without notes may be easier to read later with short context.",
+                bundle: #bundle
+            )
         case .protectCurrentStreak:
-            "An active streak is already in motion."
+            .init("An active streak is already in motion.", bundle: #bundle)
         case .revisitQuietFavorites:
-            "Items with history but no marks in this range may deserve a gentle revisit."
+            .init(
+                "Items with history but no marks in this range may deserve a gentle revisit.",
+                bundle: #bundle
+            )
         case .startThisRangeWithOneMark:
-            "No marks in the selected range yet."
+            .init("No marks in the selected range yet.", bundle: #bundle)
         }
     }
 }

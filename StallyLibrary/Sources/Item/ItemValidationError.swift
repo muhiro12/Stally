@@ -18,10 +18,10 @@ public enum ItemValidationError: Equatable, LocalizedError, Sendable {
         case .archivedItemsCannotChangeHistory:
             String(
                 localized: "Move this item back to Library before changing its history.",
-                bundle: .module
+                bundle: #bundle
             )
         case .nameRequired:
-            String(localized: "Item name is required.", bundle: .module)
+            String(localized: "Item name is required.", bundle: #bundle)
         }
     }
 }

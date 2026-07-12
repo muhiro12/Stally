@@ -45,7 +45,7 @@ struct ItemRow: View {
                 Text(item.category.title)
 
                 if history.totalMarks > 0 {
-                    Text("\(history.totalMarks, format: .number) marks")
+                    Text("\(history.totalMarks) marks")
                 } else {
                     Text("Not yet")
                 }

@@ -19,7 +19,7 @@ struct InsightItemSummaryRow: View {
             HStack {
                 Text(summary.item.category.title)
 
-                Text("\(summary.marksInRange, format: .number) marks")
+                Text("\(summary.marksInRange) marks")
 
                 if let lastMarkedDay = summary.lastMarkedDay {
                     Text(lastMarkedDay, format: .dateTime.month().day())
