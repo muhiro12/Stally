@@ -19,19 +19,19 @@ struct ItemPhotoOperationsTests {
             width: 2_000,
             height: 1_000,
             orientation: .right,
-            includesLocationMetadata: true
+            includesSourceMetadata: true
         )
 
         let preparedData = try ItemPhotoOperations.prepare(sourceData)
-        let properties = try imageProperties(in: preparedData)
+        let properties = try TestPhotoInspection.properties(in: preparedData)
 
         #expect(properties.width == 800)
         #expect(properties.height == ItemPhotoOperations.maximumPixelDimension)
         #expect(properties.orientation == nil || properties.orientation == 1)
-        #expect(!properties.containsLocationMetadata)
+        #expect(!properties.containsSourceMetadata)
         #expect(!properties.containsAlpha)
         #expect(preparedData.count <= ItemPhotoOperations.maximumDataByteCount)
-        #expect(try imageType(in: preparedData) == UTType.jpeg.identifier)
+        #expect(properties.typeIdentifier == UTType.jpeg.identifier)
     }
 
     @Test
@@ -66,17 +66,75 @@ struct ItemPhotoOperationsTests {
 
     @Test
     func `prepare flattens source transparency into JPEG data`() throws {
-        let sourceData = try TestPhotoFixtures.pngData(
+        let sourceData = try TestPhotoFixtures.blackPNGData(
             width: 100,
             height: 50,
             alpha: 0.5
         )
 
         let preparedData = try ItemPhotoOperations.prepare(sourceData)
-        let properties = try imageProperties(in: preparedData)
+        let properties = try TestPhotoInspection.properties(in: preparedData)
+        let pixel = try TestPhotoInspection.pixel(
+            in: preparedData,
+            normalizedX: 0.5,
+            normalizedY: 0.5
+        )
 
         #expect(!properties.containsAlpha)
-        #expect(try imageType(in: preparedData) == UTType.jpeg.identifier)
+        #expect(properties.typeIdentifier == UTType.jpeg.identifier)
+        #expect(abs(pixel.red - 0.5) < 0.05)
+        #expect(abs(pixel.green - 0.5) < 0.05)
+        #expect(abs(pixel.blue - 0.5) < 0.05)
+    }
+
+    @Test
+    func `prepare preserves canonical JPEG bytes`() throws {
+        let preparedData = try TestPhotoFixtures.preparedData()
+
+        #expect(try ItemPhotoOperations.prepare(preparedData) == preparedData)
+    }
+
+    @Test
+    func `prepare applies every image orientation to pixels`() throws {
+        let referenceData = try ItemPhotoOperations.prepare(
+            TestPhotoFixtures.asymmetricJPEGData(orientation: .up)
+        )
+        let referenceCorners = try TestPhotoInspection.cornerColors(in: referenceData)
+
+        for orientation in TestPhotoInspection.orientations {
+            let preparedData = try ItemPhotoOperations.prepare(
+                TestPhotoFixtures.asymmetricJPEGData(orientation: orientation)
+            )
+            let actualCorners = try TestPhotoInspection.cornerColors(in: preparedData)
+
+            #expect(
+                actualCorners == referenceCorners.applying(orientation),
+                "Orientation raw value: \(orientation.rawValue)"
+            )
+        }
+    }
+
+    @Test
+    func `prepare rejects multiple frames and excessive source pixels`() throws {
+        let multipleFrameData = try TestPhotoFixtures.tiffData(frameCount: 2)
+        let excessiveDimensionData = try TestPhotoFixtures.jpegDataReporting(
+            width: ItemPhotoOperations.maximumSourcePixelDimension + 1,
+            height: 1
+        )
+        let excessivePixelCountData = try TestPhotoFixtures.jpegDataReporting(
+            width: 10_001,
+            height: 10_000
+        )
+
+        #expect(throws: ItemValidationError.photoUnreadable) {
+            try ItemPhotoOperations.prepare(multipleFrameData)
+        }
+        #expect(throws: ItemValidationError.photoTooLarge) {
+            try ItemPhotoOperations.prepare(excessiveDimensionData)
+        }
+        #expect(throws: ItemValidationError.self) {
+            try ItemPhotoOperations.prepare(excessivePixelCountData)
+        }
     }
 
     @Test
@@ -95,46 +153,5 @@ struct ItemPhotoOperationsTests {
         #expect(throws: ItemValidationError.photoTooLarge) {
             try ItemPhotoOperations.validate(excessiveSizeData)
         }
-    }
-}
-
-private extension ItemPhotoOperationsTests {
-    struct ImageProperties {
-        let width: Int
-        let height: Int
-        let orientation: Int?
-        let containsLocationMetadata: Bool
-        let containsAlpha: Bool
-    }
-
-    enum ImageInspectionError: Error {
-        case unreadableImage
-    }
-
-    func imageProperties(in data: Data) throws -> ImageProperties {
-        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
-              let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil)
-                as? [CFString: Any],
-              let width = properties[kCGImagePropertyPixelWidth] as? Int,
-              let height = properties[kCGImagePropertyPixelHeight] as? Int else {
-            throw ImageInspectionError.unreadableImage
-        }
-
-        return .init(
-            width: width,
-            height: height,
-            orientation: properties[kCGImagePropertyOrientation] as? Int,
-            containsLocationMetadata: properties[kCGImagePropertyGPSDictionary] != nil,
-            containsAlpha: properties[kCGImagePropertyHasAlpha] as? Bool ?? false
-        )
-    }
-
-    func imageType(in data: Data) throws -> String {
-        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
-              let type = CGImageSourceGetType(source) else {
-            throw ImageInspectionError.unreadableImage
-        }
-
-        return type as String
     }
 }

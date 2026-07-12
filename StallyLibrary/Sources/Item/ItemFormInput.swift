@@ -15,7 +15,7 @@ public struct ItemFormInput: Equatable, Sendable {
     public let category: ItemCategory
     /// Optional note that gives the item more context.
     public let note: String
-    /// Optional visual context prepared with `ItemPhotoOperations` for recognizing the item later.
+    /// Optional source image data normalized when the item is created or updated.
     public let photoData: Data?
 
     var normalizedName: String {

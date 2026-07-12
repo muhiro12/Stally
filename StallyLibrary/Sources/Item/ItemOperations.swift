@@ -23,7 +23,9 @@ public enum ItemOperations {
             throw ItemValidationError.nameRequired
         }
 
-        try ItemPhotoOperations.validate(input.photoData)
+        let photoData = try input.photoData.map { photoData in
+            try ItemPhotoOperations.prepare(photoData)
+        }
 
         let item = Item(
             name: normalizedName,
@@ -31,7 +33,7 @@ public enum ItemOperations {
             note: input.normalizedNote,
             createdAt: createdAt,
             uuid: .init(),
-            photoData: input.photoData,
+            photoData: photoData,
             archivedAt: nil
         )
         context.insert(item)
@@ -100,12 +102,14 @@ public enum ItemOperations {
             throw ItemValidationError.nameRequired
         }
 
-        try ItemPhotoOperations.validate(input.photoData)
+        let photoData = try input.photoData.map { photoData in
+            try ItemPhotoOperations.prepare(photoData)
+        }
 
         item.name = normalizedName
         item.category = input.category
         item.note = input.normalizedNote
-        item.photoData = input.photoData
+        item.photoData = photoData
         try saveOrRollback(context)
     }
 
