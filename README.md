@@ -77,3 +77,8 @@ bash ci_scripts/tasks/verify_task_completion.sh
 ```
 
 Use XcodeBuildMCP for app build, run, runtime log, and screenshot evidence.
+
+## Support and Privacy
+
+- [Support](https://muhiro12.github.io/Stally/)
+- [Privacy Policy](https://muhiro12.github.io/Stally/privacy.html)

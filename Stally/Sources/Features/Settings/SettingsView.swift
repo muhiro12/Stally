@@ -10,6 +10,15 @@ import MHUI
 import SwiftUI
 
 struct SettingsView: View {
+    private static let privacyPolicyURL: URL = {
+        guard let url = URL(
+            string: "https://muhiro12.github.io/Stally/privacy.html"
+        ) else {
+            preconditionFailure("The Stally privacy policy URL must be valid.")
+        }
+        return url
+    }()
+
     @AppStorage(\.isSubscribeOn)
     private var isSubscribeOn
     @AppStorage(\.isICloudOn)
@@ -36,6 +45,13 @@ struct SettingsView: View {
                         }
                         .mhRow()
                     }
+                }
+
+                Section("Privacy") {
+                    Link(destination: Self.privacyPolicyURL) {
+                        Label("Privacy Policy", systemImage: "hand.raised")
+                    }
+                    .mhRow()
                 }
             }
             .stallyListChrome()
