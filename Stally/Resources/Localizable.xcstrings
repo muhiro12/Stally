@@ -73,6 +73,22 @@
         }
       }
     },
+    "About": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このアプリについて"
+          }
+        }
+      }
+    },
     "Actions": {
       "localizations": {
         "en": {
@@ -1113,6 +1129,22 @@
         }
       }
     },
+    "Licenses": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licenses"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ライセンス"
+          }
+        }
+      }
+    },
     "iCloud Sync": {
       "localizations": {
         "en": {
@@ -1784,22 +1816,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "プレミアム"
-          }
-        }
-      }
-    },
-    "Privacy": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Privacy"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "プライバシー"
           }
         }
       }
