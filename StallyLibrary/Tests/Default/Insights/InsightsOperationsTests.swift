@@ -126,7 +126,7 @@ extension SwiftDataOperationsTests {
                 name: "Daily Field Notes",
                 category: .notebooks,
                 note: "Usually comes with me when I need one extra layer.",
-                photoData: Data([0x01])
+                photoData: try TestPhotoFixtures.preparedData()
             )
             try mark(quietItem, offsets: [-40], context: context)
 

@@ -68,7 +68,7 @@ extension SwiftDataOperationsTests {
         @Test
         func `create stores normalized item input`() throws {
             let context = try makeContext()
-            let photoData = Data([0x01, 0x02, 0x03])
+            let photoData = try TestPhotoFixtures.preparedData()
 
             let item = try ItemOperations.create(
                 context: context,

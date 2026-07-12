@@ -36,12 +36,13 @@ extension SwiftDataOperationsTests {
         @Test
         func `export data builds versioned preview with collection counts`() throws {
             let context = try makeContext()
+            let photoData = try TestPhotoFixtures.preparedData()
             let activeItem = try createItem(
                 context: context,
                 name: "Black Wool Coat",
                 category: .clothing,
                 note: "The one I reach for on cold mornings.",
-                photoData: Data([0x01])
+                photoData: photoData
             )
             let archivedItem = try createItem(
                 context: context,
@@ -65,7 +66,7 @@ extension SwiftDataOperationsTests {
             #expect(BackupOperations.fileExtension == "stallybackup")
             #expect(snapshot.schemaVersion == BackupSnapshot.currentSchemaVersion)
             #expect(snapshot.items.map(\.id).contains(activeItem.uuid))
-            #expect(snapshot.items.first { item in item.id == activeItem.uuid }?.photoData == Data([0x01]))
+            #expect(snapshot.items.first { item in item.id == activeItem.uuid }?.photoData == photoData)
             #expect(preview.itemCount == 2)
             #expect(preview.archivedItemCount == 1)
             #expect(preview.markCount == 2)
@@ -129,6 +130,7 @@ extension SwiftDataOperationsTests {
             let context = try makeContext()
             let localItem = try createItem(context: context, name: "Local Item")
             let backupItemID = localItem.uuid
+            let photoData = try TestPhotoFixtures.preparedData()
             try mark(localItem, offsets: [-5], context: context)
             let snapshot = BackupSnapshot(
                 exportedAt: Fixtures.timestamp(),
@@ -138,7 +140,7 @@ extension SwiftDataOperationsTests {
                         name: "Travel Weekender",
                         categoryRawValue: ItemCategory.bags.rawValue,
                         note: "Archived because it only comes out a few times a year.",
-                        photoData: Data([0x09]),
+                        photoData: photoData,
                         createdAt: Fixtures.timestamp(offset: -10),
                         archivedAt: Fixtures.timestamp(offset: -1),
                         marks: [
@@ -168,7 +170,7 @@ extension SwiftDataOperationsTests {
             #expect(items.count == 1)
             #expect(restoredItem.uuid == backupItemID)
             #expect(restoredItem.isArchived)
-            #expect(restoredItem.photoData == Data([0x09]))
+            #expect(restoredItem.photoData == photoData)
             #expect(ItemOperations.historySnapshot(for: restoredItem, today: Fixtures.today).totalMarks == 1)
         }
 

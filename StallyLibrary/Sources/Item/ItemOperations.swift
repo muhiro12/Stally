@@ -23,6 +23,8 @@ public enum ItemOperations {
             throw ItemValidationError.nameRequired
         }
 
+        try ItemPhotoOperations.validate(input.photoData)
+
         let item = Item(
             name: normalizedName,
             category: input.category,
@@ -97,6 +99,8 @@ public enum ItemOperations {
         guard !normalizedName.isEmpty else {
             throw ItemValidationError.nameRequired
         }
+
+        try ItemPhotoOperations.validate(input.photoData)
 
         item.name = normalizedName
         item.category = input.category

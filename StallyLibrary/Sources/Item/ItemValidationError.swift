@@ -12,6 +12,8 @@ public enum ItemValidationError: Equatable, LocalizedError, Sendable {
     case archivedItemsCannotChangeHistory
     case futureMarksNotAllowed
     case nameRequired
+    case photoTooLarge
+    case photoUnreadable
 
     /// User-readable validation message.
     public var errorDescription: String? {
@@ -25,6 +27,10 @@ public enum ItemValidationError: Equatable, LocalizedError, Sendable {
             String(localized: "Marks cannot be added for a future day.", bundle: #bundle)
         case .nameRequired:
             String(localized: "Item name is required.", bundle: #bundle)
+        case .photoTooLarge:
+            String(localized: "The selected photo is too large.", bundle: #bundle)
+        case .photoUnreadable:
+            String(localized: "The selected photo could not be read.", bundle: #bundle)
         }
     }
 }

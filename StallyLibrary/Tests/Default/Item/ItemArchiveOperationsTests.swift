@@ -120,7 +120,7 @@ extension SwiftDataOperationsTests {
         @Test
         func `archive preserves note photo and mark history`() throws {
             let context = try makeContext()
-            let photoData = Data([0x04, 0x05, 0x06])
+            let photoData = try TestPhotoFixtures.preparedData()
             let item = try createItem(
                 context: context,
                 name: "Daily Field Notes",

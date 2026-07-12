@@ -87,7 +87,7 @@ extension SwiftDataOperationsTests {
             let originalCreatedAt = item.createdAt
             let originalArchivedAt = item.archivedAt
             let originalMarkIDs = item.marks.map(\.uuid)
-            let replacementPhoto = Data([0x09, 0x08])
+            let replacementPhoto = try TestPhotoFixtures.preparedData()
 
             try ItemOperations.update(
                 item,
@@ -122,7 +122,31 @@ extension SwiftDataOperationsTests {
                         name: "   ",
                         category: .clothing,
                         note: "Changed",
-                        photoData: Data([0x01])
+                        photoData: try TestPhotoFixtures.preparedData()
+                    ),
+                    context: context
+                )
+            }
+
+            #expect(item.name == "Canvas Tote")
+            #expect(item.category == .bags)
+            #expect(item.note == "Usually comes with me when I need one extra layer.")
+            #expect(item.photoData == nil)
+        }
+
+        @Test
+        func `update rejects unreadable photo data without changing the item`() throws {
+            let context = try makeContext()
+            let item = try createItem(context: context)
+
+            #expect(throws: ItemValidationError.photoUnreadable) {
+                try ItemOperations.update(
+                    item,
+                    input: .init(
+                        name: "Changed Name",
+                        category: .clothing,
+                        note: "Changed note",
+                        photoData: Data([0x01, 0x02, 0x03])
                     ),
                     context: context
                 )
