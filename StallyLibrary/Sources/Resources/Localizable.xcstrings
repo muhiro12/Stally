@@ -145,6 +145,38 @@
         }
       }
     },
+    "Backup File Too Large": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup File Too Large"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バックアップファイルのサイズが大きすぎます"
+          }
+        }
+      }
+    },
+    "Backup Photo Storage Limit Exceeded": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backup Photo Storage Limit Exceeded"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バックアップ写真の合計容量が上限を超えています"
+          }
+        }
+      }
+    },
     "Bags": {
       "localizations": {
         "en": {
@@ -301,6 +333,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "インサイト"
+          }
+        }
+      }
+    },
+    "Invalid Item Photo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Invalid Item Photo"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無効なアイテム写真"
           }
         }
       }

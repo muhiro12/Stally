@@ -14,6 +14,10 @@ public extension BackupOperations {
         currentItems: [Item],
         decoder: JSONDecoder = .init()
     ) -> BackupPreview {
+        guard data.count <= maximumImportDataByteCount else {
+            return oversizedBackupPreview(dataByteCount: data.count)
+        }
+
         guard let schemaVersion = try? schemaVersion(in: data, decoder: decoder) else {
             return unreadablePreview()
         }
@@ -50,10 +54,13 @@ extension BackupOperations {
         snapshot: BackupSnapshot,
         currentItems: [Item]
     ) -> BackupImportPlan {
-        let validItems = validImportItems(in: snapshot.items)
         let validationIssues = validationIssues(
             for: snapshot,
             currentItems: currentItems
+        )
+        let validItems = validImportItems(
+            in: snapshot.items,
+            invalidPhotoIdentifiers: invalidItemPhotoIdentifiers(in: validationIssues)
         )
         let mergeItemPlans: [BackupItemImportPlan]
         let replacementItemPlans: [BackupItemImportPlan]
@@ -152,6 +159,13 @@ extension BackupOperations {
         issues.append(contentsOf: duplicateMarkDayIssues(in: snapshot.items))
         issues.append(contentsOf: itemNameRequiredIssues(in: snapshot.items))
         issues.append(contentsOf: unknownCategoryIssues(in: snapshot.items))
+
+        if let issue = photoStorageLimitIssue(in: snapshot.items) {
+            issues.append(issue)
+        } else {
+            issues.append(contentsOf: itemPhotoValidationIssues(in: snapshot.items))
+        }
+
         issues.append(contentsOf: duplicateCurrentItemIDIssues(in: currentItems))
 
         return issues
@@ -172,10 +186,14 @@ private extension BackupOperations {
         let schemaVersion: Int
     }
 
-    static func validImportItems(in items: [BackupItem]) -> [BackupItem] {
+    static func validImportItems(
+        in items: [BackupItem],
+        invalidPhotoIdentifiers: Set<String>
+    ) -> [BackupItem] {
         items.filter { item in
             ItemCategory(rawValue: item.categoryRawValue) != nil
                 && !itemFormInput(from: item).normalizedName.isEmpty
+                && !invalidPhotoIdentifiers.contains(item.id.uuidString)
         }
     }
 

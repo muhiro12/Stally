@@ -11,11 +11,14 @@ import Foundation
 public struct BackupValidationIssue: Equatable, Identifiable, Sendable {
     /// Validation issue categories.
     public enum Kind: String, Equatable, Sendable {
+        case backupFileTooLarge
         case duplicateCurrentItemID
         case duplicateItemID
         case duplicateMarkDay
         case duplicateMarkID
+        case invalidItemPhoto
         case itemNameRequired
+        case photoStorageLimitExceeded
         case unknownCategory
         case unreadableBackup
         case unsupportedSchemaVersion
@@ -31,6 +34,8 @@ public struct BackupValidationIssue: Equatable, Identifiable, Sendable {
     /// User-facing issue title.
     public var title: LocalizedStringResource {
         switch kind {
+        case .backupFileTooLarge:
+            .init("Backup File Too Large", bundle: #bundle)
         case .duplicateCurrentItemID:
             .init("Duplicate Current Item ID", bundle: #bundle)
         case .duplicateItemID:
@@ -39,8 +44,12 @@ public struct BackupValidationIssue: Equatable, Identifiable, Sendable {
             .init("Duplicate Mark Day", bundle: #bundle)
         case .duplicateMarkID:
             .init("Duplicate Mark ID", bundle: #bundle)
+        case .invalidItemPhoto:
+            .init("Invalid Item Photo", bundle: #bundle)
         case .itemNameRequired:
             .init("Item name is required.", bundle: #bundle)
+        case .photoStorageLimitExceeded:
+            .init("Backup Photo Storage Limit Exceeded", bundle: #bundle)
         case .unknownCategory:
             .init("Unknown Category", bundle: #bundle)
         case .unreadableBackup:

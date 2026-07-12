@@ -16,6 +16,12 @@ public extension BackupOperations {
         context: ModelContext,
         decoder: JSONDecoder = .init()
     ) throws -> BackupImportResult {
+        guard data.count <= maximumImportDataByteCount else {
+            throw BackupError.validationFailed(
+                oversizedBackupPreview(dataByteCount: data.count)
+            )
+        }
+
         let schemaVersion = try schemaVersion(in: data, decoder: decoder)
 
         guard schemaVersion == BackupSnapshot.currentSchemaVersion else {
@@ -68,6 +74,12 @@ public extension BackupOperations {
         context: ModelContext,
         decoder: JSONDecoder = .init()
     ) throws -> BackupImportResult {
+        guard data.count <= maximumImportDataByteCount else {
+            throw BackupError.validationFailed(
+                oversizedBackupPreview(dataByteCount: data.count)
+            )
+        }
+
         let schemaVersion = try schemaVersion(in: data, decoder: decoder)
 
         guard schemaVersion == BackupSnapshot.currentSchemaVersion else {
