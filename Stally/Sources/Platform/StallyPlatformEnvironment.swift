@@ -39,6 +39,7 @@ extension View {
         _ environment: StallyPlatformEnvironment
     ) -> some View {
         modelContainer(environment.modelContainer)
+            .tint(.teal)
             .environment(environment.logging)
             .environment(environment.routeInbox)
             .environment(environment.routePipeline)
