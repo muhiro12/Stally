@@ -86,6 +86,38 @@ public enum ItemOperations {
         }
     }
 
+    /// Updates editable item context while preserving identity and history.
+    public static func update(
+        _ item: Item,
+        input: ItemFormInput,
+        context: ModelContext
+    ) throws {
+        let normalizedName = input.normalizedName
+
+        guard !normalizedName.isEmpty else {
+            throw ItemValidationError.nameRequired
+        }
+
+        item.name = normalizedName
+        item.category = input.category
+        item.note = input.normalizedNote
+        item.photoData = input.photoData
+        try saveOrRollback(context)
+    }
+
+    /// Deletes an item and every mark attached to it.
+    public static func delete(
+        _ item: Item,
+        context: ModelContext
+    ) throws {
+        for mark in item.marks {
+            context.delete(mark)
+        }
+
+        context.delete(item)
+        try saveOrRollback(context)
+    }
+
     /// Returns archived items in newest-archived order.
     public static func archivedItems(from items: [Item]) -> [Item] {
         items
