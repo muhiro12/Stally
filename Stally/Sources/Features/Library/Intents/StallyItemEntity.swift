@@ -49,7 +49,7 @@ final class StallyItemEntity: AppEntity {
         self.init(
             uuid: model.uuid,
             name: model.name,
-            categoryName: model.category.rawValue,
+            categoryName: String(localized: model.category.title),
             isArchived: model.isArchived
         )
     }
