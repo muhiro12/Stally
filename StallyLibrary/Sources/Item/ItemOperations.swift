@@ -33,7 +33,7 @@ public enum ItemOperations {
             archivedAt: nil
         )
         context.insert(item)
-        try context.save()
+        try saveOrRollback(context)
 
         return item
     }
@@ -123,7 +123,7 @@ public enum ItemOperations {
         }
 
         context.insert(mark)
-        try context.save()
+        try saveOrRollback(context)
 
         return true
     }
@@ -149,7 +149,7 @@ public enum ItemOperations {
         for mark in marks {
             context.delete(mark)
         }
-        try context.save()
+        try saveOrRollback(context)
 
         return true
     }
@@ -166,7 +166,7 @@ public enum ItemOperations {
         }
 
         item.archivedAt = date
-        try context.save()
+        try saveOrRollback(context)
 
         return true
     }
@@ -182,7 +182,7 @@ public enum ItemOperations {
         }
 
         item.archivedAt = nil
-        try context.save()
+        try saveOrRollback(context)
 
         return true
     }
@@ -194,5 +194,23 @@ public enum ItemOperations {
         now: Date = .now
     ) -> ItemHistorySnapshot {
         .init(item: item, calendar: calendar, now: now)
+    }
+
+    private static func saveOrRollback(_ context: ModelContext) throws {
+        try saveOrRollback(context) { context in
+            try context.save()
+        }
+    }
+
+    static func saveOrRollback(
+        _ context: ModelContext,
+        saving save: (ModelContext) throws -> Void
+    ) throws {
+        do {
+            try save(context)
+        } catch {
+            context.rollback()
+            throw error
+        }
     }
 }
