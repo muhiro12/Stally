@@ -6,7 +6,8 @@
 //
 
 extension BackupOperations {
-    static func oversizedBackupPreview(dataByteCount: Int) -> BackupPreview {
+    /// Creates the validation preview for an import file rejected before decoding.
+    public static func oversizedImportPreview(dataByteCount: Int) -> BackupPreview {
         .init(
             itemCount: 0,
             archivedItemCount: 0,

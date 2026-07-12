@@ -18,7 +18,7 @@ public extension BackupOperations {
     ) throws -> BackupImportResult {
         guard data.count <= maximumImportDataByteCount else {
             throw BackupError.validationFailed(
-                oversizedBackupPreview(dataByteCount: data.count)
+                oversizedImportPreview(dataByteCount: data.count)
             )
         }
 
@@ -76,7 +76,7 @@ public extension BackupOperations {
     ) throws -> BackupImportResult {
         guard data.count <= maximumImportDataByteCount else {
             throw BackupError.validationFailed(
-                oversizedBackupPreview(dataByteCount: data.count)
+                oversizedImportPreview(dataByteCount: data.count)
             )
         }
 

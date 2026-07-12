@@ -175,7 +175,19 @@ private extension BackupCenterView {
         }
 
         do {
-            let data = try Data(contentsOf: url)
+            let resourceValues = try url.resourceValues(forKeys: [.fileSizeKey])
+
+            if let dataByteCount = resourceValues.fileSize,
+               dataByteCount > BackupOperations.maximumImportDataByteCount {
+                selectedBackupData = nil
+                selectedBackupPreview = BackupOperations.oversizedImportPreview(
+                    dataByteCount: dataByteCount
+                )
+                statusMessage = nil
+                return
+            }
+
+            let data = try Data(contentsOf: url, options: .mappedIfSafe)
             selectedBackupData = data
             selectedBackupPreview = BackupOperations.preview(
                 data: data,

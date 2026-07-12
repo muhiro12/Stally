@@ -15,7 +15,7 @@ public extension BackupOperations {
         decoder: JSONDecoder = .init()
     ) -> BackupPreview {
         guard data.count <= maximumImportDataByteCount else {
-            return oversizedBackupPreview(dataByteCount: data.count)
+            return oversizedImportPreview(dataByteCount: data.count)
         }
 
         guard let schemaVersion = try? schemaVersion(in: data, decoder: decoder) else {
