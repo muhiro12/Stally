@@ -44,6 +44,22 @@ persistent configuration by default and the CloudKit-capable persistent
 configuration only when premium iCloud sync is enabled, with a local persistent
 fallback only for recoverable CloudKit initialization failure.
 
+## Calendar And Persistence Rules
+
+Marks use `LocalDay` as a timezone-independent Gregorian calendar-day value.
+App adapters capture the current date and time zone once, then pass a resolved
+day into public Operations. Durable mark behavior must not persist a
+timezone-relative start-of-day `Date`.
+
+The rebuilt SwiftData model is the first versioned schema baseline. Future
+persisted model changes should append schema versions and migration stages;
+the removed legacy persistence model is not a migration source for this
+baseline.
+
+The current backup wire contract encodes mark days as canonical ISO 8601
+full-date strings. Unsupported backup versions must be diagnosed before any
+merge, replacement, or deletion mutates the library.
+
 ## Localization Rules
 
 English is the source language. Japanese is the required additional baseline

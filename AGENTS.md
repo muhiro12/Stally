@@ -34,13 +34,14 @@ This repository currently contains:
 - `StallyLibrary/Package.swift`, a local Swift package linked into the app
   target as the `StallyLibrary` product.
 - `StallyLibrary/Sources/`, which owns the current durable item, review,
-  insights, backup, link, subscription-state, SwiftData model, persistence
-  factory, and `*Operations` use cases, with `MHPlatformCore` used only for
-  library-safe platform primitives and preference descriptors.
+  insights, backup, link, subscription-state, timezone-independent local-day
+  mark history, versioned SwiftData model, persistence factory, and
+  `*Operations` use cases, with `MHPlatformCore` used only for library-safe
+  platform primitives and preference descriptors.
 - `StallyLibrary/Sources/Resources/`, which owns package-local localized
   library strings.
 - `StallyLibrary/Tests/`, which owns library behavior tests for the current
-  item, review, insights, backup, and link operations.
+  item, review, insights, backup, link, wire-format, and persistence contracts.
 - `ci_scripts/`, which owns repository-managed lint, rule, and library-test
   entrypoints.
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
@@ -102,6 +103,10 @@ structural work continues. Do not add Widget, Watch, external AI integration,
 ads, purchases, advanced settings, broad UI redesign work, or wider App
 Intents/CloudKit behavior unless the user explicitly asks for that phase.
 
+The current versioned SwiftData schema begins with the rebuilt model rather
+than the removed legacy persistence model. Future persisted schema changes
+must append a version and migration stage instead of rewriting that baseline.
+
 If a future task adds targets, schemes, packages, tests, scripts, or app
 surfaces, update this file in the same task with the concrete source
 boundaries and verification entrypoints that then exist. Keep Stally-specific
@@ -156,15 +161,16 @@ The app target should stay a thin adapter over the current product surface.
 
 `StallyLibrary` is the durable domain and use-case boundary.
 
-- `StallyLibrary/Sources/Item/` owns `Item`, `ItemMark`, `ItemCategory`,
-  `ItemHistorySnapshot`, `ItemFormInput`, `ItemValidationError`, and
-  `ItemOperations`.
+- `StallyLibrary/Sources/Item/` owns `Item`, `ItemMark`, `LocalDay`,
+  `ItemCategory`, `ItemHistorySnapshot`, `ItemFormInput`,
+  `ItemValidationError`, and `ItemOperations`.
 - `StallyLibrary/Sources/Review/` owns Review lane values, settings,
   snapshots, and `ReviewOperations`.
 - `StallyLibrary/Sources/Insights/` owns Insights range/options, reading
   values, recommendations, snapshots, and `InsightsOperations`.
-- `StallyLibrary/Sources/Backup/` owns versioned backup snapshots, import
-  previews/results, validation issues, reset results, and `BackupOperations`.
+- `StallyLibrary/Sources/Backup/` owns the current versioned backup wire
+  contract, import previews/results, validation issues, reset results, and
+  `BackupOperations`.
 - `StallyLibrary/Sources/Link/` owns shareable destination and item link
   values, MHPlatformCore deep-link route encoding, parsing results, and
   `StallyLinkOperations`.
@@ -172,7 +178,8 @@ The app target should stay a thin adapter over the current product surface.
   values and `SubscriptionStateOperations`.
 - `StallyLibrary/Sources/Preferences/` owns app-local preference descriptors
   used by app startup and SwiftUI settings surfaces.
-- `StallyLibrary/Sources/Persistence/` owns `StallyModelContainerFactory`.
+- `StallyLibrary/Sources/Persistence/` owns `StallyMigrationPlan` and
+  `StallyModelContainerFactory`.
 - `StallyLibrary/Sources/Resources/` owns library String Catalogs and is
   processed as a Swift Package resource bundle.
 - Public business use cases that app UI, future App Intents, widgets, or other

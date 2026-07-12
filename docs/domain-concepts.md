@@ -66,6 +66,8 @@ Preserve these mark rules:
 - A user can undo today's mark.
 - A user can add or remove a mark on another selected day.
 - A mark belongs to one item and one calendar day.
+- A marked calendar day keeps the same identity when the user changes time
+  zones.
 - The same item should not need multiple marks on the same day.
 - Mark history accumulates one day at a time.
 - Archived items keep history but should be moved back to Library before

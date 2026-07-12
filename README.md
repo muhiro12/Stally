@@ -57,8 +57,9 @@ persistence baseline, App Intents, and English/Japanese localization. The app
 target owns SwiftUI presentation, app lifecycle wiring, navigation, MHUI visual
 chrome, file import/export presentation, route handling, App Intents adapters,
 and app string catalogs. The local `StallyLibrary` package owns SwiftData
-models, the model-container factory, localized library resources, and durable
-operations for items, review lanes, insights, backups, and links.
+models, timezone-independent mark days, the versioned model-container factory,
+localized library resources, and durable operations for items, review lanes,
+insights, backups, and links.
 
 Further implementation decisions should continue to use the preserved product
 intent and owner-directed rebuild direction in `docs/`, without inferring
