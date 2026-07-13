@@ -22,6 +22,8 @@ struct AddItemView: View {
     @State private var name = ""
     @State private var category: ItemCategory = .clothing
     @State private var note = ""
+    @State private var photoData: Data?
+    @State private var isLoadingPhoto = false
     @State private var saveErrorMessage: String?
 
     private var isShowingSaveError: Binding<Bool> {
@@ -41,6 +43,8 @@ struct AddItemView: View {
                     name: $name,
                     category: $category,
                     note: $note,
+                    photoData: $photoData,
+                    isLoadingPhoto: $isLoadingPhoto,
                     noteLineLimit: Layout.noteLineLimit
                 )
             }
@@ -54,7 +58,10 @@ struct AddItemView: View {
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add", action: addItem)
-                        .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        .disabled(
+                            name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                || isLoadingPhoto
+                        )
                 }
             }
             .alert("Could Not Save", isPresented: isShowingSaveError) {
@@ -69,7 +76,12 @@ struct AddItemView: View {
         do {
             try ItemOperations.create(
                 context: modelContext,
-                input: .init(name: name, category: category, note: note)
+                input: .init(
+                    name: name,
+                    category: category,
+                    note: note,
+                    photoData: photoData
+                )
             )
             dismiss()
         } catch {

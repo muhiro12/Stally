@@ -9,6 +9,7 @@
 // swiftlint:disable no_magic_numbers
 import Foundation
 import SwiftData
+import UIKit
 
 @MainActor
 enum StallyPreviewData {
@@ -62,12 +63,30 @@ enum StallyPreviewData {
 
 private extension StallyPreviewData {
     static var placeholderPhotoData: Data? {
-        Data(
-            base64Encoded: """
-            iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=
-            """
-        )
+        let size = CGSize(width: 800, height: 600)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        let image = renderer.image { context in
+            UIColor.systemTeal.setFill()
+            context.fill(.init(origin: .zero, size: size))
+
+            let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 220, weight: .medium)
+            let symbol = UIImage(systemName: "tshirt.fill", withConfiguration: symbolConfiguration)?
+                .withTintColor(.white, renderingMode: .alwaysOriginal)
+            let symbolSize = symbol?.size ?? .zero
+            symbol?.draw(
+                at: .init(
+                    x: (size.width - symbolSize.width) / 2,
+                    y: (size.height - symbolSize.height) / 2
+                )
+            )
+        }
+        return image.pngData()
     }
+
+    static let itemNamesWithPhotos: Set<String> = [
+        "Black Wool Coat",
+        "Soft Navy Sweater With A Long Familiar Name"
+    ]
 
     static var typicalItemSeeds: [StallyPreviewItemSeed] {
         [
@@ -208,7 +227,9 @@ private extension StallyPreviewData {
                 name: itemSeed.name,
                 category: itemSeed.category,
                 note: itemSeed.note,
-                photoData: placeholderPhotoData
+                photoData: itemNamesWithPhotos.contains(itemSeed.name)
+                    ? placeholderPhotoData
+                    : nil
             ),
             createdAt: day(itemSeed.createdDaysAgo, before: now)
         )

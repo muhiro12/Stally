@@ -12,7 +12,11 @@ struct StallyEditItemPreview: View {
     let items: [Item]
 
     private var selectedItem: Item? {
-        ItemOperations.activeItems(from: items).first
+        let activeItems = ItemOperations.activeItems(from: items)
+        if let itemWithPhoto = activeItems.first(where: { $0.photoData != nil }) {
+            return itemWithPhoto
+        }
+        return activeItems.first
     }
 
     var body: some View {

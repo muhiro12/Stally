@@ -24,6 +24,8 @@ struct EditItemView: View {
     @State private var name: String
     @State private var category: ItemCategory
     @State private var note: String
+    @State private var photoData: Data?
+    @State private var isLoadingPhoto = false
     @State private var saveErrorMessage: String?
 
     private var isShowingSaveError: Binding<Bool> {
@@ -43,6 +45,8 @@ struct EditItemView: View {
                     name: $name,
                     category: $category,
                     note: $note,
+                    photoData: $photoData,
+                    isLoadingPhoto: $isLoadingPhoto,
                     noteLineLimit: Layout.noteLineLimit
                 )
             }
@@ -56,7 +60,10 @@ struct EditItemView: View {
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save", action: updateItem)
-                        .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        .disabled(
+                            name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                || isLoadingPhoto
+                        )
                 }
             }
             .alert("Could Not Save", isPresented: isShowingSaveError) {
@@ -72,6 +79,7 @@ struct EditItemView: View {
         _name = .init(initialValue: item.name)
         _category = .init(initialValue: item.category)
         _note = .init(initialValue: item.note)
+        _photoData = .init(initialValue: item.photoData)
     }
 
     private func updateItem() {
@@ -82,7 +90,7 @@ struct EditItemView: View {
                     name: name,
                     category: category,
                     note: note,
-                    photoData: item.photoData
+                    photoData: photoData
                 ),
                 context: modelContext
             )

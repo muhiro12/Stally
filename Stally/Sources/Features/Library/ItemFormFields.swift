@@ -12,6 +12,8 @@ struct ItemFormFields: View {
     @Binding var name: String
     @Binding var category: ItemCategory
     @Binding var note: String
+    @Binding var photoData: Data?
+    @Binding var isLoadingPhoto: Bool
 
     let noteLineLimit: Int
 
@@ -32,5 +34,10 @@ struct ItemFormFields: View {
             Text("A short note can make this item's history easier to read later.")
                 .mhSectionFooterText()
         }
+
+        ItemPhotoFormSection(
+            photoData: $photoData,
+            isLoadingPhoto: $isLoadingPhoto
+        )
     }
 }

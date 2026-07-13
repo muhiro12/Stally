@@ -57,6 +57,10 @@ struct ItemDetailView: View {
         }
 
         List {
+            if let photoData = item.photoData {
+                ItemDetailPhotoSection(photoData: photoData)
+            }
+
             ItemDetailHeaderSection(item: item)
 
             if !item.isArchived, let today {
