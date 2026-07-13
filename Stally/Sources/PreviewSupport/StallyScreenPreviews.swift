@@ -12,7 +12,9 @@ import SwiftUI
     StallyPreviewContainer(.empty) { items in
         LibraryView(
             items: ItemOperations.activeItems(from: items),
+            allowsSampleItems: true,
             addAction: { /* Preview action intentionally left empty. */ },
+            restoreAction: { /* Preview action intentionally left empty. */ },
             settingsAction: { /* Preview action intentionally left empty. */ }
         )
     }
@@ -22,7 +24,9 @@ import SwiftUI
     StallyPreviewContainer(.typical) { items in
         LibraryView(
             items: ItemOperations.activeItems(from: items),
+            allowsSampleItems: false,
             addAction: { /* Preview action intentionally left empty. */ },
+            restoreAction: { /* Preview action intentionally left empty. */ },
             settingsAction: { /* Preview action intentionally left empty. */ }
         )
     }
@@ -32,7 +36,9 @@ import SwiftUI
     StallyPreviewContainer(.dense) { items in
         LibraryView(
             items: ItemOperations.activeItems(from: items),
+            allowsSampleItems: false,
             addAction: { /* Preview action intentionally left empty. */ },
+            restoreAction: { /* Preview action intentionally left empty. */ },
             settingsAction: { /* Preview action intentionally left empty. */ }
         )
         .preferredColorScheme(.dark)

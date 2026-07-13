@@ -8,11 +8,11 @@
 import Foundation
 
 /// Time windows for reading collection patterns.
-public enum InsightsRange: CaseIterable, Equatable, Hashable, Identifiable, Sendable {
-    case thirtyDays
-    case ninetyDays
+public enum InsightsRange: String, CaseIterable, Equatable, Hashable, Identifiable, Sendable {
+    case thirtyDays = "thirty-days"
+    case ninetyDays = "ninety-days"
     case year
-    case allTime
+    case allTime = "all-time"
 
     private static let thirtyDayStartOffset = -29
     private static let ninetyDayStartOffset = -89

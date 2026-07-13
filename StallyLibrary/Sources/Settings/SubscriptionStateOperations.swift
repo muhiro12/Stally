@@ -1,16 +1,11 @@
-/// Resolves `SubscriptionState` from purchase and iCloud inputs.
+/// Resolves `SubscriptionState` from purchased products.
 public enum SubscriptionStateOperations {
-    /// Builds a subscription state for the given purchase set and iCloud toggle.
+    /// Builds a subscription state for the given purchase set.
     public static func calculate(
         purchasedProductIDs: Set<String>,
-        productID: String,
-        isICloudOn: Bool
+        productID: String
     ) -> SubscriptionState {
         let isSubscribeOn = purchasedProductIDs.contains(productID)
-        let resolvedICloudOn = isSubscribeOn ? isICloudOn : false
-        return .init(
-            isSubscribeOn: isSubscribeOn,
-            isICloudOn: resolvedICloudOn
-        )
+        return .init(isSubscribeOn: isSubscribeOn)
     }
 }

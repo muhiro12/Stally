@@ -27,6 +27,10 @@ public struct InsightsSnapshot {
     public let bestStreak: Int
     /// Category share of marks in the selected range.
     public let categoryShares: [CategoryShare]
+    /// Mark counts grouped by weekday in Monday-first display order.
+    public let weekdayActivity: [WeekdayActivity]
+    /// Mark counts for up to the latest twelve active months.
+    public let monthlyActivity: [MonthlyActivity]
     /// Note coverage for scoped items.
     public let noteCoverage: CollectionCoverage
     /// Photo coverage for scoped items.

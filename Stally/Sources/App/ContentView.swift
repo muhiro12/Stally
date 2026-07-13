@@ -43,6 +43,10 @@ struct ContentView: View {
     private var routePipeline
     @Environment(\.timeZone)
     private var timeZone
+    @AppStorage(\.needsFirstMarkAfterDays)
+    private var needsFirstMarkAfterDays
+    @AppStorage(\.dormantAfterDays)
+    private var dormantAfterDays
 
     @State private var selectedTab: StallyTab
     @State private var presentedSheet: PresentedSheet?
@@ -77,44 +81,16 @@ struct ContentView: View {
         let now = Date()
         let reviewSnapshot = ReviewOperations.snapshot(
             for: items,
+            settings: .init(
+                needsFirstMarkAfterDays: needsFirstMarkAfterDays,
+                dormantAfterDays: dormantAfterDays
+            ),
             timeZone: timeZone,
             now: now
         )
 
         TabView(selection: $selectedTab) {
-            LibraryView(
-                items: activeItems,
-                addAction: presentAddItem,
-                settingsAction: presentSettings
-            )
-            .tabItem {
-                Label("Library", systemImage: "tray")
-            }
-            .tag(StallyTab.library)
-
-            ReviewView(snapshot: reviewSnapshot)
-                .tabItem {
-                    Label("Review", systemImage: "text.badge.checkmark")
-                }
-                .tag(StallyTab.review)
-
-            InsightsView(items: items)
-                .tabItem {
-                    Label("Insights", systemImage: "chart.line.uptrend.xyaxis")
-                }
-                .tag(StallyTab.insights)
-
-            ArchiveView(items: archivedItems)
-                .tabItem {
-                    Label("Archive", systemImage: "archivebox")
-                }
-                .tag(StallyTab.archive)
-
-            BackupCenterView(items: items)
-                .tabItem {
-                    Label("Backup", systemImage: "externaldrive")
-                }
-                .tag(StallyTab.backup)
+            tabContent(reviewSnapshot: reviewSnapshot)
         }
         .sheet(item: $presentedSheet) { sheet in
             switch sheet {
@@ -190,12 +166,55 @@ struct ContentView: View {
     }
     #endif
 
+    @ViewBuilder
+    private func tabContent(reviewSnapshot: ReviewSnapshot) -> some View {
+        LibraryView(
+            items: activeItems,
+            allowsSampleItems: items.isEmpty,
+            addAction: presentAddItem,
+            restoreAction: presentBackupCenter,
+            settingsAction: presentSettings
+        )
+        .tabItem {
+            Label("Library", systemImage: "tray")
+        }
+        .tag(StallyTab.library)
+
+        ReviewView(snapshot: reviewSnapshot)
+            .tabItem {
+                Label("Review", systemImage: "text.badge.checkmark")
+            }
+            .tag(StallyTab.review)
+
+        InsightsView(items: items)
+            .tabItem {
+                Label("Insights", systemImage: "chart.line.uptrend.xyaxis")
+            }
+            .tag(StallyTab.insights)
+
+        ArchiveView(items: archivedItems)
+            .tabItem {
+                Label("Archive", systemImage: "archivebox")
+            }
+            .tag(StallyTab.archive)
+
+        BackupCenterView(items: items)
+            .tabItem {
+                Label("Backup", systemImage: "externaldrive")
+            }
+            .tag(StallyTab.backup)
+    }
+
     private func presentAddItem() {
         presentedSheet = .addItem
     }
 
     private func presentSettings() {
         presentedSheet = .settings
+    }
+
+    private func presentBackupCenter() {
+        selectedTab = .backup
     }
 
     private func openSupportedLink(_ link: StallyLink) {
@@ -253,7 +272,9 @@ struct ContentView: View {
             presentedSheet = .addItem
             self.pendingInitialPreviewRoute = nil
         case .itemDetail:
-            guard let item = activeItems.first ?? items.first else {
+            guard let item = activeItems.first(where: { $0.photoData != nil })
+                    ?? activeItems.first
+                    ?? items.first else {
                 return
             }
 

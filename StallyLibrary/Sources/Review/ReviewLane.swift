@@ -8,7 +8,7 @@
 import Foundation
 
 /// Product review lanes that gather items needing gentle attention.
-public enum ReviewLane: CaseIterable, Identifiable, Sendable {
+public enum ReviewLane: CaseIterable, Hashable, Identifiable, Sendable {
     case needsFirstMark
     case dormant
     case recoveryCandidates

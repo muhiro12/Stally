@@ -17,24 +17,9 @@ public enum ItemOperations {
         input: ItemFormInput,
         createdAt: Date = .now
     ) throws -> Item {
-        let normalizedName = input.normalizedName
-
-        guard !normalizedName.isEmpty else {
-            throw ItemValidationError.nameRequired
-        }
-
-        let photoData = try input.photoData.map { photoData in
-            try ItemPhotoOperations.prepare(photoData)
-        }
-
-        let item = Item(
-            name: normalizedName,
-            category: input.category,
-            note: input.normalizedNote,
-            createdAt: createdAt,
-            uuid: .init(),
-            photoData: photoData,
-            archivedAt: nil
+        let item = try makeItem(
+            input: input,
+            createdAt: createdAt
         )
         context.insert(item)
         try saveOrRollback(context)
@@ -253,5 +238,30 @@ public enum ItemOperations {
             context.rollback()
             throw error
         }
+    }
+
+    static func makeItem(
+        input: ItemFormInput,
+        createdAt: Date
+    ) throws -> Item {
+        let normalizedName = input.normalizedName
+
+        guard !normalizedName.isEmpty else {
+            throw ItemValidationError.nameRequired
+        }
+
+        let photoData = try input.photoData.map { photoData in
+            try ItemPhotoOperations.prepare(photoData)
+        }
+
+        return .init(
+            name: normalizedName,
+            category: input.category,
+            note: input.normalizedNote,
+            createdAt: createdAt,
+            uuid: .init(),
+            photoData: photoData,
+            archivedAt: nil
+        )
     }
 }

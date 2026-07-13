@@ -16,7 +16,7 @@ struct ArchiveView: View {
                 if items.isEmpty {
                     EmptyArchiveView()
                 } else {
-                    ItemLibraryList(items: items)
+                    ItemLibraryList(items: items, kind: .archive)
                 }
             }
             .navigationTitle("Archive")

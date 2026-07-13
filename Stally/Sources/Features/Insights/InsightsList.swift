@@ -23,9 +23,18 @@ struct InsightsList: View {
                 includesArchivedItems: $includesArchivedItems
             )
 
+            InsightsReportSection(
+                report: InsightsReportOperations.report(for: snapshot)
+            )
+
             InsightsActivitySection(snapshot: snapshot)
 
             InsightsConsistencySection(snapshot: snapshot)
+
+            InsightsRhythmSection(
+                weekdayActivity: snapshot.weekdayActivity,
+                monthlyActivity: snapshot.monthlyActivity
+            )
 
             InsightsCategoryShareSection(categoryShares: snapshot.categoryShares)
 

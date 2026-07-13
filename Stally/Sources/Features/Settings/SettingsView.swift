@@ -14,34 +14,65 @@ struct SettingsView: View {
     private var isSubscribeOn
     @AppStorage(\.isICloudOn)
     private var isICloudOn
+    @AppStorage(\.needsFirstMarkAfterDays)
+    private var needsFirstMarkAfterDays
+    @AppStorage(\.dormantAfterDays)
+    private var dormantAfterDays
+    @AppStorage(\.showsCompletedReviewSections)
+    private var showsCompletedReviewSections
+    @AppStorage(\.defaultInsightsRange, default: .thirtyDays)
+    private var defaultInsightsRange: InsightsRange
+    @AppStorage(\.includesArchivedItemsInInsights)
+    private var includesArchivedItemsInInsights
 
     var body: some View {
         NavigationStack {
-            List {
-                SettingsSubscriptionSection(
-                    isSubscribeOn: isSubscribeOn,
-                    isICloudOn: $isICloudOn
-                )
+            settingsList
+        }
+    }
 
-                StallyStoreSection()
+    private var settingsList: some View {
+        List {
+            settingsContent()
+        }
+        .stallyListChrome()
+        .navigationTitle("Settings")
+    }
 
-                Section("Shareable Links") {
-                    ForEach(StallyLinkDestination.allCases) { destination in
-                        ShareLink(item: StallyLinkOperations.url(for: .destination(destination))) {
-                            Label {
-                                Text(destination.title)
-                            } icon: {
-                                Image(systemName: destination.systemImageName)
-                            }
-                        }
-                        .mhRow()
+    @ViewBuilder
+    private func settingsContent() -> some View {
+        SettingsSubscriptionSection(
+            isSubscribeOn: isSubscribeOn
+        )
+
+        StallyStoreSection()
+
+        SettingsICloudSection(isICloudOn: $isICloudOn)
+
+        SettingsReviewSection(
+            needsFirstMarkAfterDays: $needsFirstMarkAfterDays,
+            dormantAfterDays: $dormantAfterDays,
+            showsCompletedSections: $showsCompletedReviewSections
+        )
+
+        SettingsInsightsSection(
+            defaultRange: $defaultInsightsRange,
+            includesArchivedItems: $includesArchivedItemsInInsights
+        )
+
+        Section("Shareable Links") {
+            ForEach(StallyLinkDestination.allCases) { destination in
+                ShareLink(item: StallyLinkOperations.url(for: .destination(destination))) {
+                    Label {
+                        Text(destination.title)
+                    } icon: {
+                        Image(systemName: destination.systemImageName)
                     }
                 }
-
-                StallyAboutSection()
+                .mhRow()
             }
-            .stallyListChrome()
-            .navigationTitle("Settings")
         }
+
+        StallyAboutSection()
     }
 }

@@ -13,8 +13,6 @@ private struct StallySubscriptionStateSyncModifier: ViewModifier {
     private var appRuntime
     @AppStorage(\.isSubscribeOn)
     private var isSubscribeOn
-    @AppStorage(\.isICloudOn)
-    private var isICloudOn
 
     func body(content: Content) -> some View {
         content
@@ -43,11 +41,9 @@ private struct StallySubscriptionStateSyncModifier: ViewModifier {
 
         let state = SubscriptionStateOperations.calculate(
             purchasedProductIDs: purchasedProductIDs,
-            productID: StallyMonetizationConfiguration.subscriptionProductID,
-            isICloudOn: isICloudOn
+            productID: StallyMonetizationConfiguration.subscriptionProductID
         )
         isSubscribeOn = state.isSubscribeOn
-        isICloudOn = state.isICloudOn
     }
 }
 

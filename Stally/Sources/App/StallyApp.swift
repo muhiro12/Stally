@@ -51,10 +51,7 @@ struct StallyApp: App {
         startupLogger.notice("startup.begin")
 
         let preferenceStore = MHPreferenceStore()
-        let isSubscriptionActive = preferenceStore.bool(for: \.isSubscribeOn)
-        let syncsWithCloudKit = isSubscriptionActive && preferenceStore.bool(
-            for: \.isICloudOn
-        )
+        let syncsWithCloudKit = preferenceStore.bool(for: \.isICloudOn)
         let modelContainer = Self.makeModelContainer(
             syncsWithCloudKit: syncsWithCloudKit,
             startupLogger: startupLogger

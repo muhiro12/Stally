@@ -9,7 +9,32 @@ import Foundation
 
 /// Cross-surface Insights use cases for collection pattern reading.
 public enum InsightsOperations {
+    private enum GregorianWeekday {
+        static let sunday = 1
+        static let monday = 2
+        static let tuesday = 3
+        static let wednesday = 4
+        static let thursday = 5
+        static let friday = 6
+        static let saturday = 7
+    }
+
+    private struct MonthKey: Hashable {
+        let year: Int
+        let month: Int
+    }
+
     private static let rankedItemLimit = 5
+    private static let monthlyActivityLimit = 12
+    private static let mondayFirstWeekdays = [
+        GregorianWeekday.monday,
+        GregorianWeekday.tuesday,
+        GregorianWeekday.wednesday,
+        GregorianWeekday.thursday,
+        GregorianWeekday.friday,
+        GregorianWeekday.saturday,
+        GregorianWeekday.sunday
+    ]
 
     /// Builds the current Insights reading.
     public static func snapshot(
@@ -59,6 +84,8 @@ public enum InsightsOperations {
             currentStreak: currentStreak,
             bestStreak: bestStreak(in: activeDays),
             categoryShares: categoryShares,
+            weekdayActivity: makeWeekdayActivity(from: readings),
+            monthlyActivity: makeMonthlyActivity(from: readings),
             noteCoverage: noteCoverage(for: scopedItems),
             photoCoverage: photoCoverage(for: scopedItems),
             recommendations: makeRecommendations(
@@ -69,8 +96,10 @@ public enum InsightsOperations {
             )
         )
     }
+}
 
-    private static func unavailableSnapshot(
+private extension InsightsOperations {
+    static func unavailableSnapshot(
         options: InsightsOptions,
         scopedItems: [Item]
     ) -> InsightsSnapshot {
@@ -85,13 +114,15 @@ public enum InsightsOperations {
             currentStreak: 0,
             bestStreak: 0,
             categoryShares: [],
+            weekdayActivity: [],
+            monthlyActivity: [],
             noteCoverage: noteCoverage(for: scopedItems),
             photoCoverage: photoCoverage(for: scopedItems),
             recommendations: []
         )
     }
 
-    private static func makeReading(
+    static func makeReading(
         for item: Item,
         startDay: LocalDay?
     ) -> ItemRangeReading {
@@ -111,7 +142,7 @@ public enum InsightsOperations {
         )
     }
 
-    private static func makeTopItems(
+    static func makeTopItems(
         from readings: [ItemRangeReading]
     ) -> [ItemInsightSummary] {
         readings
@@ -129,14 +160,14 @@ public enum InsightsOperations {
             .map(\.summary)
     }
 
-    private static func uniqueMarkedItemCount(from readings: [ItemRangeReading]) -> Int {
+    static func uniqueMarkedItemCount(from readings: [ItemRangeReading]) -> Int {
         readings.filter { reading in
             reading.rangeMarkCount > 0
         }
         .count
     }
 
-    private static func makeQuietItems(
+    static func makeQuietItems(
         from readings: [ItemRangeReading]
     ) -> [ItemInsightSummary] {
         readings
@@ -156,7 +187,7 @@ public enum InsightsOperations {
             .map(\.summary)
     }
 
-    private static func makeCategoryShares(
+    static func makeCategoryShares(
         from readings: [ItemRangeReading],
         totalMarks: Int
     ) -> [CategoryShare] {
@@ -185,7 +216,54 @@ public enum InsightsOperations {
             }
     }
 
-    private static func noteCoverage(for items: [Item]) -> CollectionCoverage {
+    static func makeWeekdayActivity(
+        from readings: [ItemRangeReading]
+    ) -> [WeekdayActivity] {
+        let counts = readings
+            .flatMap(\.rangeMarkedDays)
+            .reduce(into: [Int: Int]()) { result, day in
+                guard let weekday = weekday(for: day) else {
+                    return
+                }
+
+                result[weekday, default: 0] += 1
+            }
+
+        return mondayFirstWeekdays.compactMap { weekday in
+            guard let markCount = counts[weekday] else {
+                return nil
+            }
+
+            return .init(weekday: weekday, markCount: markCount)
+        }
+    }
+
+    static func makeMonthlyActivity(
+        from readings: [ItemRangeReading]
+    ) -> [MonthlyActivity] {
+        let counts = readings
+            .flatMap(\.rangeMarkedDays)
+            .reduce(into: [MonthKey: Int]()) { result, day in
+                result[.init(year: day.year, month: day.month), default: 0] += 1
+            }
+
+        return Array(
+            counts
+                .map { key, markCount in
+                    MonthlyActivity(
+                        year: key.year,
+                        month: key.month,
+                        markCount: markCount
+                    )
+                }
+                .sorted { lhs, rhs in
+                    lhs.id < rhs.id
+                }
+                .suffix(monthlyActivityLimit)
+        )
+    }
+
+    static func noteCoverage(for items: [Item]) -> CollectionCoverage {
         let coveredCount = items.filter { item in
             !item.note.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         }
@@ -194,7 +272,7 @@ public enum InsightsOperations {
         return .init(coveredCount: coveredCount, totalCount: items.count)
     }
 
-    private static func photoCoverage(for items: [Item]) -> CollectionCoverage {
+    static func photoCoverage(for items: [Item]) -> CollectionCoverage {
         let coveredCount = items.filter { item in
             !(item.photoData?.isEmpty ?? true)
         }
@@ -203,7 +281,7 @@ public enum InsightsOperations {
         return .init(coveredCount: coveredCount, totalCount: items.count)
     }
 
-    private static func makeRecommendations(
+    static func makeRecommendations(
         totalMarks: Int,
         topItems: [ItemInsightSummary],
         quietItems: [ItemInsightSummary],
@@ -232,7 +310,7 @@ public enum InsightsOperations {
         return recommendations
     }
 
-    private static func currentStreak(
+    static func currentStreak(
         in activeDays: Set<LocalDay>,
         today: LocalDay
     ) -> Int {
@@ -252,7 +330,7 @@ public enum InsightsOperations {
         return streak
     }
 
-    private static func bestStreak(in activeDays: Set<LocalDay>) -> Int {
+    static func bestStreak(in activeDays: Set<LocalDay>) -> Int {
         var bestStreak = 0
         var currentStreak = 0
         var previousDay: LocalDay?
@@ -270,5 +348,16 @@ public enum InsightsOperations {
         }
 
         return bestStreak
+    }
+
+    static func weekday(for day: LocalDay) -> Int? {
+        guard let timeZone = TimeZone(secondsFromGMT: 0),
+              let date = day.date(in: timeZone) else {
+            return nil
+        }
+
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        return calendar.component(.weekday, from: date)
     }
 }

@@ -15,6 +15,7 @@ struct ReviewLaneSection: View {
 
     let lane: ReviewLane
     let items: [Item]
+    let itemAction: (Item) -> Void
 
     var body: some View {
         Section {
@@ -27,6 +28,20 @@ struct ReviewLaneSection: View {
                         ItemDetailView(item: item)
                     } label: {
                         ItemRow(item: item)
+                    }
+                    .tag(item.uuid)
+                    .swipeActions {
+                        Button(
+                            action: { itemAction(item) },
+                            label: {
+                                switch lane {
+                                case .dormant, .needsFirstMark:
+                                    Label("Archive Item", systemImage: "archivebox")
+                                case .recoveryCandidates:
+                                    Label("Move Back to Library", systemImage: "tray.and.arrow.up")
+                                }
+                            }
+                        )
                     }
                 }
             }

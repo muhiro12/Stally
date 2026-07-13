@@ -1,0 +1,102 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Black Wool Coat" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Black Wool Coat"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "黒のウールコート"
+          }
+        }
+      }
+    },
+    "Canvas Tote" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Canvas Tote"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャンバストート"
+          }
+        }
+      }
+    },
+    "Easy pair for short walks and errands." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Easy pair for short walks and errands."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "近所の散歩や買い物に気軽に履ける一足。"
+          }
+        }
+      }
+    },
+    "The one I reach for on cold mornings." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The one I reach for on cold mornings."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "寒い朝につい手が伸びる一着。"
+          }
+        }
+      }
+    },
+    "Usually comes with me when I need one extra layer." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usually comes with me when I need one extra layer."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "羽織りものを一枚持ちたい日に、たいてい一緒に連れていく。"
+          }
+        }
+      }
+    },
+    "White Everyday Sneakers" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "White Everyday Sneakers"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "白の普段履きスニーカー"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

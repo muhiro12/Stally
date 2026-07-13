@@ -84,6 +84,18 @@ extension SwiftDataOperationsTests {
             #expect(snapshot.topItems.first?.lastMarkedDay == Fixtures.today)
             #expect(snapshot.categoryShares.map(\.category) == [.clothing, .shoes])
             #expect(snapshot.categoryShares.map(\.markCount) == [3, 1])
+            #expect(
+                snapshot.weekdayActivity == [
+                    .init(weekday: 5, markCount: 3),
+                    .init(weekday: 6, markCount: 1)
+                ]
+            )
+            #expect(
+                snapshot.monthlyActivity == [
+                    .init(year: 2_026, month: 5, markCount: 1),
+                    .init(year: 2_026, month: 6, markCount: 3)
+                ]
+            )
         }
 
         @Test
@@ -244,59 +256,61 @@ extension SwiftDataOperationsTests {
             #expect(snapshot.topItems.isEmpty)
             #expect(snapshot.recommendations.isEmpty)
         }
+    }
+}
 
-        private func insightsSnapshot(
-            _ context: ModelContext,
-            options: InsightsOptions = .default
-        ) throws -> InsightsSnapshot {
-            InsightsOperations.snapshot(
-                for: try fetchItems(context),
-                options: options,
-                timeZone: Fixtures.utc,
-                now: Fixtures.now
+private extension SwiftDataOperationsTests.InsightsOperationsTests {
+    func insightsSnapshot(
+        _ context: ModelContext,
+        options: InsightsOptions = .default
+    ) throws -> InsightsSnapshot {
+        InsightsOperations.snapshot(
+            for: try fetchItems(context),
+            options: options,
+            timeZone: Fixtures.utc,
+            now: Fixtures.now
+        )
+    }
+
+    func makeContext() throws -> ModelContext {
+        .init(try StallyModelContainerFactory.inMemory())
+    }
+
+    func fetchItems(_ context: ModelContext) throws -> [Item] {
+        try context.fetch(.init())
+    }
+
+    func createItem(
+        context: ModelContext,
+        name: String,
+        category: ItemCategory = .other,
+        note: String = "",
+        photoData: Data? = nil
+    ) throws -> Item {
+        try ItemOperations.create(
+            context: context,
+            input: .init(
+                name: name,
+                category: category,
+                note: note,
+                photoData: photoData
+            ),
+            createdAt: Fixtures.now
+        )
+    }
+
+    func mark(
+        _ item: Item,
+        offsets: [Int],
+        context: ModelContext
+    ) throws {
+        for offset in offsets {
+            try ItemOperations.mark(
+                item,
+                on: Fixtures.day(offset: offset),
+                today: Fixtures.today,
+                context: context
             )
-        }
-
-        private func makeContext() throws -> ModelContext {
-            .init(try StallyModelContainerFactory.inMemory())
-        }
-
-        private func fetchItems(_ context: ModelContext) throws -> [Item] {
-            try context.fetch(.init())
-        }
-
-        private func createItem(
-            context: ModelContext,
-            name: String,
-            category: ItemCategory = .other,
-            note: String = "",
-            photoData: Data? = nil
-        ) throws -> Item {
-            try ItemOperations.create(
-                context: context,
-                input: .init(
-                    name: name,
-                    category: category,
-                    note: note,
-                    photoData: photoData
-                ),
-                createdAt: Fixtures.now
-            )
-        }
-
-        private func mark(
-            _ item: Item,
-            offsets: [Int],
-            context: ModelContext
-        ) throws {
-            for offset in offsets {
-                try ItemOperations.mark(
-                    item,
-                    on: Fixtures.day(offset: offset),
-                    today: Fixtures.today,
-                    context: context
-                )
-            }
         }
     }
 }

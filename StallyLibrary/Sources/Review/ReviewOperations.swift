@@ -6,9 +6,37 @@
 //
 
 import Foundation
+import SwiftData
 
 /// Cross-surface Review use cases for attention lanes.
 public enum ReviewOperations {
+    /// Applies the lane's primary next step to one item.
+    @discardableResult
+    public static func performPrimaryAction(
+        for item: Item,
+        in lane: ReviewLane,
+        context: ModelContext,
+        on date: Date = .now
+    ) throws -> Bool {
+        try performPrimaryActions(
+            [.init(item: item, lane: lane)],
+            context: context,
+            on: date
+        ) == 1
+    }
+
+    /// Applies every requested lane action and saves them as one transaction.
+    @discardableResult
+    public static func performPrimaryActions(
+        _ requests: [ReviewActionRequest],
+        context: ModelContext,
+        on date: Date = .now
+    ) throws -> Int {
+        try performPrimaryActions(requests, on: date, context: context) { context in
+            try context.save()
+        }
+    }
+
     /// Builds the current Review lane snapshot.
     public static func snapshot(
         for items: [Item],
@@ -68,6 +96,46 @@ public enum ReviewOperations {
                     timeZone: timeZone
                 )
             }
+    }
+
+    static func performPrimaryActions(
+        _ requests: [ReviewActionRequest],
+        on date: Date,
+        context: ModelContext,
+        saving save: (ModelContext) throws -> Void
+    ) throws -> Int {
+        var changedItemIDs = Set<UUID>()
+
+        for request in requests where !changedItemIDs.contains(request.item.uuid) {
+            switch request.lane {
+            case .dormant, .needsFirstMark:
+                guard !request.item.isArchived else {
+                    continue
+                }
+
+                request.item.archivedAt = date
+            case .recoveryCandidates:
+                guard request.item.isArchived else {
+                    continue
+                }
+
+                request.item.archivedAt = nil
+            }
+
+            changedItemIDs.insert(request.item.uuid)
+        }
+
+        guard !changedItemIDs.isEmpty else {
+            return 0
+        }
+
+        do {
+            try save(context)
+            return changedItemIDs.count
+        } catch {
+            context.rollback()
+            throw error
+        }
     }
 
     private static func dormantItems(

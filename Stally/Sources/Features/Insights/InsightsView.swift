@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHPlatform
 import SwiftUI
 
 struct InsightsView: View {
@@ -13,8 +14,10 @@ struct InsightsView: View {
 
     let items: [Item]
 
-    @State private var selectedRange: InsightsRange = .thirtyDays
-    @State private var includesArchivedItems = false
+    @AppStorage(\.defaultInsightsRange, default: .thirtyDays)
+    private var selectedRange: InsightsRange
+    @AppStorage(\.includesArchivedItemsInInsights)
+    private var includesArchivedItems
 
     private var options: InsightsOptions {
         .init(

@@ -5,9 +5,13 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHPlatform
 import SwiftUI
 
 struct ReviewView: View {
+    @AppStorage(\.showsCompletedReviewSections)
+    private var showsCompletedReviewSections
+
     let snapshot: ReviewSnapshot
 
     var body: some View {
@@ -16,7 +20,10 @@ struct ReviewView: View {
                 if snapshot.isEmpty {
                     EmptyReviewView()
                 } else {
-                    ReviewLaneList(snapshot: snapshot)
+                    ReviewLaneList(
+                        snapshot: snapshot,
+                        showsCompletedSections: showsCompletedReviewSections
+                    )
                 }
             }
             .navigationTitle("Review")

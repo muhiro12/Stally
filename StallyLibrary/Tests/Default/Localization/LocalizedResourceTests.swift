@@ -12,6 +12,8 @@ struct LocalizedResourceTests {
                 == "最後のマークから少し時間が経ち、見直してもよさそうなアイテム。"
         )
         #expect(localized(InsightsRange.thirtyDays.title, locale: "ja") == "30日")
+        #expect(localized(ItemCollectionFilter.markedOnDay.title, locale: "ja") == "指定日にマーク済み")
+        #expect(localized(ItemCollectionSort.mostMarked.title, locale: "ja") == "マーク数の多い順")
         #expect(
             localized(InsightRecommendationKind.revisitQuietFavorites.title, locale: "ja")
                 == "静かなお気に入りを見直す"

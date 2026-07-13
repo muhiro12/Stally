@@ -6,9 +6,11 @@
 //
 
 import Foundation
-import StallyLibrary
+@testable import StallyLibrary
 import SwiftData
 import Testing
+
+private struct ReviewOperationsSaveError: Error {}
 
 extension SwiftDataOperationsTests {
     @Suite
@@ -171,6 +173,84 @@ extension SwiftDataOperationsTests {
             )
 
             #expect(snapshot.isEmpty)
+        }
+
+        @Test
+        func `primary action archives items from active review lanes`() throws {
+            let context = try makeContext()
+            let item = try createItem(context: context, name: "Canvas Tote")
+            let archiveDate = Fixtures.date(offset: 1)
+
+            let changed = try ReviewOperations.performPrimaryAction(
+                for: item,
+                in: .dormant,
+                context: context,
+                on: archiveDate
+            )
+
+            #expect(changed)
+            #expect(item.archivedAt == archiveDate)
+        }
+
+        @Test
+        func `primary action restores recovery candidates`() throws {
+            let context = try makeContext()
+            let item = try createItem(context: context, name: "Canvas Tote")
+            try ItemOperations.archive(item, on: Fixtures.now, context: context)
+
+            let changed = try ReviewOperations.performPrimaryAction(
+                for: item,
+                in: .recoveryCandidates,
+                context: context
+            )
+
+            #expect(changed)
+            #expect(item.archivedAt == nil)
+        }
+
+        @Test
+        func `primary actions save mixed lane changes together`() throws {
+            let context = try makeContext()
+            let activeItem = try createItem(context: context, name: "Canvas Tote")
+            let archivedItem = try createItem(context: context, name: "Travel Weekender")
+            try ItemOperations.archive(archivedItem, on: Fixtures.now, context: context)
+            let archiveDate = Fixtures.date(offset: 1)
+
+            let changedCount = try ReviewOperations.performPrimaryActions(
+                [
+                    .init(item: activeItem, lane: .dormant),
+                    .init(item: archivedItem, lane: .recoveryCandidates)
+                ],
+                context: context,
+                on: archiveDate
+            )
+
+            #expect(changedCount == 2)
+            #expect(activeItem.archivedAt == archiveDate)
+            #expect(archivedItem.archivedAt == nil)
+        }
+
+        @Test
+        func `failed primary action batch rolls back every item`() throws {
+            let context = try makeContext()
+            let firstItem = try createItem(context: context, name: "Canvas Tote")
+            let secondItem = try createItem(context: context, name: "Black Wool Coat")
+
+            #expect(throws: ReviewOperationsSaveError.self) {
+                try ReviewOperations.performPrimaryActions(
+                    [
+                        .init(item: firstItem, lane: .needsFirstMark),
+                        .init(item: secondItem, lane: .dormant)
+                    ],
+                    on: Fixtures.now,
+                    context: context
+                ) { _ in
+                    throw ReviewOperationsSaveError()
+                }
+            }
+
+            #expect(firstItem.archivedAt == nil)
+            #expect(secondItem.archivedAt == nil)
         }
 
         private func reviewSnapshot(
