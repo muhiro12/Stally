@@ -68,10 +68,12 @@ baseline rather than preserving compatibility with the removed legacy project.
 
 ## Monetization Direction
 
-Stally should align with the Incomes-style premium model: premium removes ads
-and unlocks iCloud sync. Ads and StoreKit integration belong in the app target
-through MHPlatform, while the durable subscription-state calculation belongs in
-StallyLibrary so app UI, settings, and future surfaces share the same rule.
+Stally's subscription removes ads. iCloud sync remains available without a
+subscription and must not be sold as access to iCloud storage or syncing. Ads
+and StoreKit integration belong in the app target through MHPlatform, while the
+durable subscription-state calculation belongs in StallyLibrary so app UI,
+settings, and future surfaces share the same ad-removal rule. This decision
+supersedes the earlier rebuild direction that coupled iCloud sync to premium.
 
 Do not invent production AdMob identifiers or borrow identifiers from another
 app. Use official Google test identifiers only for development and preview

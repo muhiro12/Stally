@@ -11,11 +11,11 @@ CloudKit, App Intents, monetization, and English/Japanese localization are
 baseline rebuild requirements for Stally.
 
 - CloudKit belongs in the SwiftData persistence configuration, but runtime
-  startup should select it only when the persisted premium and iCloud
-  preferences allow sync.
+  startup should select it when the persisted iCloud preference allows sync.
 - App Intents belong beside the app target as system-facing adapters.
 - StoreKit and AdMob belong in the app target through MHPlatform. Durable
-  premium/iCloud state rules belong in StallyLibrary.
+  subscription-state rules belong in StallyLibrary. iCloud sync is independent
+  from subscription state and must remain available without payment.
 - Localization belongs in String Catalogs while UI and App Intents are being
   built, not after the visible surface is complete.
 
@@ -41,7 +41,7 @@ parsing rules.
 
 Preview and tests should use in-memory containers. Runtime should use the local
 persistent configuration by default and the CloudKit-capable persistent
-configuration only when premium iCloud sync is enabled, with a local persistent
+configuration only when iCloud sync is enabled, with a local persistent
 fallback only for recoverable CloudKit initialization failure.
 
 ## Calendar And Persistence Rules

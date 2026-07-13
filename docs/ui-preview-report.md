@@ -3,13 +3,9 @@
 ## Purpose
 
 This report records the current SwiftUI preview and screenshot coverage for
-the rebuilt Stally core surfaces after the MHUI and MHDesign presentation pass
-and the CloudKit, App Intents, and localization rebuild baseline pass.
-
-The MHUI pass intentionally improved the existing UI only. The later baseline
-pass added CloudKit-aware persistence setup, App Intents adapters, and
-English/Japanese localization infrastructure without adding new product
-surfaces.
+the rebuilt Stally core surfaces. It covers the current Library browsing,
+photo, history, Review, Insights, Backup Center, Settings, CloudKit,
+App Intents, monetization, and English/Japanese localization baseline.
 
 ## HIG And MHUI Style Policy
 
@@ -42,12 +38,9 @@ Reviewed as current Stally surfaces:
 - Backup Center.
 - Settings.
 - Add Item.
-
-Not included as implemented screens:
-
-- Edit Item: no dedicated edit surface exists yet.
-- Photo-specific item UI: preview data includes placeholder photo data, but
-  the current UI does not render item photos.
+- Edit Item.
+- Adjust History.
+- Item photo selection and detail presentation.
 
 ## Audit Findings
 
@@ -71,12 +64,23 @@ Common UI kept outside MHUI:
 - Preview and screenshot launch routing stays DEBUG-only app support, not a
   reusable style-system concern.
 
-Improvement made in this pass:
+Improvements represented by the current surface:
 
 - Backup Center Safety changed from four equal supporting rows into one quiet
   MHUI row summary. This better matches the product principle that safety
   belongs near risk, gives the most important instruction clearer hierarchy,
   and avoids a heavier card or custom surface.
+- Empty Library offers clear add, sample-data, and restore paths.
+- Library and Archive provide native search and compact category, history,
+  date, and sort refinement without turning the first viewport into a filter
+  dashboard.
+- Add Item and Edit Item use a native Photos picker, while Item Detail presents
+  the chosen photo as a header and Library rows stay text-first.
+- Review supports both per-item actions and native multi-selection batch
+  actions while keeping durable lane rules in `ReviewOperations`.
+- Insights includes shareable reports and weekday/monthly rhythm readings.
+- Settings exposes Review thresholds, completed-section visibility, Insights
+  defaults, and iCloud sync independently from the ad-removal subscription.
 
 Overuse risks intentionally avoided:
 
@@ -115,6 +119,9 @@ Added or retained SwiftUI previews:
 - `Library - Dense Dark`.
 - `Item Detail - Long Text Large Type`.
 - `Add Item - Empty Form`.
+- `Edit Item - Existing Values`.
+- `Adjust History - Marked Day`.
+- `Adjust History - Unmarked Day`.
 - `Archive - Preserved Items`.
 - `Archive - Empty`.
 - `Review - Attention Lanes`.
@@ -137,6 +144,8 @@ Preview states covered:
 - Insights with active marks and category variety.
 - Backup snapshot, safety summary, and import validation issues.
 - Add Item empty form validation state.
+- Edit Item with existing text and photo data.
+- Marked and unmarked history adjustment states.
 - Dark mode for a dense Library state.
 - Large Dynamic Type for Item Detail.
 
@@ -188,6 +197,7 @@ String Catalog coverage added for this baseline:
 - `Stally/Resources/AppIntents.xcstrings`
 - `Stally/Resources/AppShortcuts.xcstrings`
 - `StallyLibrary/Sources/Resources/Localizable.xcstrings`
+- `StallyLibrary/Sources/Resources/SampleData.xcstrings`
 
 English remains the source language. Japanese is the required additional
 baseline language.
@@ -305,19 +315,23 @@ Backup Center:
 
 Settings:
 
-- Applied list chrome and row rhythm to the existing shareable-link list.
-- Kept the screen minimal because broader settings are outside this goal.
+- Applied list chrome and row rhythm to subscription, iCloud, Review,
+  Insights, shareable links, and about sections.
+- Kept controls native and persisted their product-level defaults through
+  typed MHPlatform preference descriptors.
 
 Add Item:
 
 - Applied MHUI form chrome and footer typography.
-- Kept native `Form`, `TextField`, `Picker`, toolbar cancellation, and
-  confirmation actions.
+- Kept native `Form`, `TextField`, `Picker`, `PhotosPicker`, toolbar
+  cancellation, and confirmation actions.
 
 Item Detail:
 
 - Applied list chrome and key-value overview treatment.
 - Used badges and semantic typography in the header.
+- Presents the canonical item photo when one is stored, while list rows remain
+  compact and text-first.
 - Kept Mark Today as the single primary action and Archive/Undo as quiet
   actions.
 

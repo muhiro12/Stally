@@ -34,14 +34,15 @@ This repository currently contains:
 - `StallyLibrary/Package.swift`, a local Swift package linked into the app
   target as the `StallyLibrary` product.
 - `StallyLibrary/Sources/`, which owns the current durable item, review,
-  insights, backup, link, subscription-state, timezone-independent local-day
-  mark history, versioned SwiftData model, persistence factory, and
-  `*Operations` use cases, with `MHPlatformCore` used only for library-safe
-  platform primitives and preference descriptors.
+  insights, backup, link, sample-data, subscription-state,
+  timezone-independent local-day mark history, versioned SwiftData model,
+  persistence factory, and `*Operations` use cases, with `MHPlatformCore` used
+  only for library-safe platform primitives and preference descriptors.
 - `StallyLibrary/Sources/Resources/`, which owns package-local localized
-  library strings.
+  library and sample-data strings.
 - `StallyLibrary/Tests/`, which owns library behavior tests for the current
-  item, review, insights, backup, link, wire-format, and persistence contracts.
+  item, collection browsing, sample data, review, insights reports, backup,
+  link, wire-format, and persistence contracts.
 - `ci_scripts/`, which owns repository-managed lint, rule, and library-test
   entrypoints.
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
@@ -54,7 +55,7 @@ integration, or broad advanced settings. `StallyLibrary` links
 descriptors. The app target links the full MHPlatform umbrella for app-side
 runtime, logging, routing, StoreKit, AdMob, and license integration, and MHUI
 for visual chrome and presentation styling. CloudKit is configured through the
-runtime SwiftData persistence baseline and is gated by the persisted premium
+runtime SwiftData persistence baseline and is gated only by the persisted
 iCloud preference, but real-device iCloud sync, StoreKit purchase resolution,
 production AdMob serving, and production CloudKit behavior are not proven by
 local simulator verification alone.
@@ -139,8 +140,9 @@ The app target should stay a thin adapter over the current product surface.
   Backup-owned App Intents.
 - `Stally/Sources/Features/Links/` owns app-side link-sharing presentation.
 - `Stally/Sources/Features/Settings/` owns the SwiftUI Settings surface,
-  premium/iCloud controls, StoreKit subscription section, shareable-link list
-  surface, and Settings-owned App Intents.
+  independent subscription/iCloud controls, StoreKit subscription section,
+  Review thresholds, Insights defaults, shareable-link list surface, and
+  Settings-owned App Intents.
 - `Stally/Sources/SharedUI/` owns app-local MHUI presentation adapters and
   shared visual treatment helpers, including app-local ad presentation
   wrappers. It must not contain product behavior, persistence logic, or
@@ -162,20 +164,25 @@ The app target should stay a thin adapter over the current product surface.
 `StallyLibrary` is the durable domain and use-case boundary.
 
 - `StallyLibrary/Sources/Item/` owns `Item`, `ItemMark`, `LocalDay`,
-  `ItemCategory`, `ItemHistorySnapshot`, `ItemFormInput`,
-  `ItemValidationError`, and `ItemOperations`.
-- `StallyLibrary/Sources/Review/` owns Review lane values, settings,
-  snapshots, and `ReviewOperations`.
+  `ItemCategory`, collection browsing options, `ItemHistorySnapshot`,
+  `ItemFormInput`, `ItemValidationError`, `ItemCollectionOperations`, and
+  `ItemOperations`.
+- `StallyLibrary/Sources/Review/` owns Review lane values, settings, action
+  requests, snapshots, and `ReviewOperations`.
 - `StallyLibrary/Sources/Insights/` owns Insights range/options, reading
-  values, recommendations, snapshots, and `InsightsOperations`.
+  values, recommendations, snapshots, `InsightsOperations`, and
+  `InsightsReportOperations`.
 - `StallyLibrary/Sources/Backup/` owns the current versioned backup wire
   contract, import previews/results, validation issues, reset results, and
   `BackupOperations`.
 - `StallyLibrary/Sources/Link/` owns shareable destination and item link
   values, MHPlatformCore deep-link route encoding, parsing results, and
   `StallyLinkOperations`.
-- `StallyLibrary/Sources/Settings/` owns premium/iCloud subscription-state
-  values and `SubscriptionStateOperations`.
+- `StallyLibrary/Sources/Settings/` owns the ad-removal subscription-state
+  values and `SubscriptionStateOperations`. iCloud preference state remains
+  independent from subscription state.
+- `StallyLibrary/Sources/SampleData/` owns the localized empty-Library sample
+  creation use case through `SampleDataOperations`.
 - `StallyLibrary/Sources/Preferences/` owns app-local preference descriptors
   used by app startup and SwiftUI settings surfaces.
 - `StallyLibrary/Sources/Persistence/` owns `StallyMigrationPlan` and
@@ -239,7 +246,8 @@ Treat package declaration and product linking as separate decisions.
   unless a concrete build or target-boundary need appears.
 - CloudKit is enabled through SwiftData configuration and app entitlements. It
   is not a package dependency. Runtime startup selects the CloudKit-backed
-  container only when the persisted premium and iCloud preferences are both on.
+  container when the persisted iCloud preference is on. Subscription status
+  must not gate iCloud sync.
 - Do not upgrade `StallyLibrary` to the app-facing `MHPlatform` product unless
   a concrete library-safe boundary requires it.
 - The app target intentionally adopts the `MHPlatform` umbrella now that
