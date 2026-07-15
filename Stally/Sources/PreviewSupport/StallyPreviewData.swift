@@ -67,7 +67,7 @@ private extension StallyPreviewData {
         let size = CGSize(width: 800, height: 600)
         let renderer = UIGraphicsImageRenderer(size: size)
         let image = renderer.image { context in
-            UIColor(Color.accentColor).setFill()
+            UIColor.accent.setFill()
             context.fill(.init(origin: .zero, size: size))
 
             let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 220, weight: .medium)
