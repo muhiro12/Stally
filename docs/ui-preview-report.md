@@ -15,6 +15,11 @@ sharing, sheets, dialogs, alerts, and standard controls should keep their
 native SwiftUI semantics unless a concrete product need justifies a custom
 treatment.
 
+App views should also consume semantic colors. The app accent resolves through
+the Asset Catalog to the system Mint color instead of being specified directly
+in feature code. Explicit colors remain appropriate only when they carry a
+specific meaning, such as destructive or contrast-critical treatment.
+
 MHUI and MHDesign are the shared app-family style layer on top of that
 foundation. In Stally, they should be used more actively than in Incomes where
 they improve spacing, hierarchy, typography rhythm, row rhythm, section
@@ -47,6 +52,8 @@ Reviewed as current Stally surfaces:
 Current MHUI usage:
 
 - App root and previews apply `MHTheme.standard` and `MHGlassPolicy.automatic`.
+- Native controls and semantic accent styling resolve through the Asset Catalog
+  to the system Mint color.
 - Existing `List` and `Form` surfaces use Stally-local wrappers around
   `mhListChrome`, `mhFormChrome`, and `MHKeyValueLabeledContentStyle`.
 - Rows, metadata, badges, empty states, action emphasis, destructive actions,
@@ -81,6 +88,8 @@ Improvements represented by the current surface:
 - Insights includes shareable reports and weekday/monthly rhythm readings.
 - Settings exposes Review thresholds, completed-section visibility, Insights
   defaults, and iCloud sync independently from the ad-removal subscription.
+- Tabs, primary actions, selection controls, badges, and preview photo fixtures
+  share the Mint accent without feature-level color constants.
 
 Overuse risks intentionally avoided:
 
@@ -156,7 +165,9 @@ After screenshots are stored at the root of
 preserved under `docs/ui-preview-screenshots/before/`.
 
 All saved images are 368 by 800 JPEG files captured on an iPhone 17 Pro
-simulator through the DEBUG screenshot launch routes.
+simulator through the DEBUG screenshot launch routes and supported deep links.
+The current set was refreshed after the Asset Catalog accent changed to system
+Mint.
 
 - Library empty:
   `docs/ui-preview-screenshots/library-empty.jpg`
@@ -258,8 +269,9 @@ Not adopted:
   or confirmation actions. Grouping them visually would make the first UI pass
   heavier than the current product tone needs.
 - Custom `MHDesignMetrics` or custom `MHTheme`: `MHTheme.standard` fits the
-  quiet neutral direction. Base color or metric customization should remain a
-  later owner-directed design-system decision.
+  quiet neutral direction. The app's Mint identity comes from the Asset Catalog,
+  so feature views can continue to use semantic accent styling without a custom
+  theme or app-specific color constants.
 
 ## SwiftUI Standard Behavior Preserved
 
@@ -353,6 +365,8 @@ Compared with `docs/ui-preview-screenshots/before/`:
   other screens.
 - Empty states remain native, but their spacing and primary action style match
   the MHUI pass.
+- Semantic accent styling now resolves to Mint across tabs, actions, controls,
+  badges, and the deterministic preview photo fixture.
 
 ## Runtime Capture Notes
 
@@ -371,21 +385,25 @@ Confirmed through after screenshots:
   export/import/reset entry points.
 - Settings renders shareable destination links.
 - Add Item renders the empty form with disabled Add action.
+- Mint resolves consistently from the Asset Catalog across the captured app
+  surfaces without direct feature-level color selection.
 
 Capture limits:
 
-- Direct Preview capture was not available through the current MCP tool
-  surface.
-- Earlier `snapshot_ui` attempts failed because the local Xcode beta is
-  missing `SimulatorKit.framework` at the expected private-framework path.
+- Direct Preview rendering is available through the current Xcode-native tool
+  surface, but the app-shell `ContentView` preview currently fails while Xcode
+  generates its Preview thunk because action closures resolve with conflicting
+  actor-isolation types. This is a Preview-only blocker; the app build and
+  DEBUG launch routes remain available.
 - Runtime screenshots were used as the faithful fallback where routes could
   reproduce the screen state.
+- Archive and Backup Center were opened through their supported deep links
+  after the five-tab Library shell stabilized, avoiding launch-only tab-bar
+  transition states.
 - Backup import validation is covered by SwiftUI Preview, not runtime
   screenshot, because reproducing it requires file importer interaction.
-- Destructive confirmation dialogs were not captured because semantic UI
-  automation was unavailable.
-- Some screenshots may include an iOS previous-app breadcrumb in the status
-  area. The Stally content itself is still visible.
+- Destructive confirmation dialogs were outside this refresh because the saved
+  artifact set covers stable first-viewport states.
 
 ## Future Improvement Candidates
 
@@ -398,7 +416,5 @@ Capture limits:
   surfaces that need true grouped cards.
 - Add empty-state runtime screenshots for Archive and Review if those surfaces
   become release-sensitive.
-- Consider owner-directed accent color and metrics tuning later; this pass
-  intentionally used `MHTheme.standard`.
 - Keep MHUI out of `StallyLibrary` and continue guarding the app/library
   boundary with repository rules.
