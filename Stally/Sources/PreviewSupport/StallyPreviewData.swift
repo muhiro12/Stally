@@ -9,6 +9,7 @@
 // swiftlint:disable no_magic_numbers
 import Foundation
 import SwiftData
+import SwiftUI
 import UIKit
 
 @MainActor
@@ -66,7 +67,7 @@ private extension StallyPreviewData {
         let size = CGSize(width: 800, height: 600)
         let renderer = UIGraphicsImageRenderer(size: size)
         let image = renderer.image { context in
-            UIColor.systemTeal.setFill()
+            UIColor(Color.accentColor).setFill()
             context.fill(.init(origin: .zero, size: size))
 
             let symbolConfiguration = UIImage.SymbolConfiguration(pointSize: 220, weight: .medium)
