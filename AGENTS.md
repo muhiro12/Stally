@@ -261,12 +261,17 @@ Treat package declaration and product linking as separate decisions.
 
 ## Expected Apple Implementation Contract
 
-Agents MUST prefer XcodeBuildMCP for Apple build, test, run, Simulator,
-runtime log, screenshot, and UI snapshot verification.
+Agents MUST prefer the Xcode-native integration available in the current agent
+environment for project discovery, active scheme and destination selection,
+build, test, run, runtime logs, Preview rendering, live UI inspection, and
+screenshots.
 
-Before the first XcodeBuildMCP build, test, or run call in a session, run
-XcodeBuildMCP `session_show_defaults`. If defaults do not point at this
-repository, set them for the current session before continuing.
+Before changing Xcode's active selection, discover the open projects, schemes,
+and run destinations, identify `Stally.xcodeproj`, and record the original
+active scheme and destination. Switch only to scheme and destination values
+returned by discovery. After verification, restore the original scheme first,
+rediscover its valid destinations, restore the original destination, and
+confirm the final selection. Report any selection that cannot be restored.
 
 Treat library tests, surface builds, retained repository rule checks, and
 runtime/UI evidence as separate verification capabilities. Choose the smallest
@@ -276,15 +281,17 @@ integration, or visible UI behavior are affected.
 
 Use this expected verification shape:
 
-- For app compile checks, use XcodeBuildMCP `build_sim` with the `Stally`
-  scheme.
+- For app compile checks, use the available Xcode-native build capability with
+  project `Stally.xcodeproj`, scheme `Stally`, and a discovered iOS
+  Simulator destination matching the iOS 27 baseline.
 - For shared-library logic, model, or test changes, run
   `bash ci_scripts/tasks/test_stally_library.sh`.
 - For public `StallyLibrary` APIs, `*Operations`, shared contracts, SwiftData
-  schema, or adapter-facing contracts, also use XcodeBuildMCP `build_sim` with
-  the `Stally` scheme.
-- For runtime or UI-sensitive changes, use XcodeBuildMCP `build_run_sim`,
-  `launch_app_sim`, `snapshot_ui`, and `screenshot` as appropriate.
+  schema, or adapter-facing contracts, also build `Stally.xcodeproj` with the
+  `Stally` scheme through the available Xcode-native integration.
+- For runtime or UI-sensitive changes, add a targeted Xcode-native run,
+  runtime-log review, Preview rendering when appropriate, and live UI or
+  screenshot evidence.
 
 For localization changes, run the string-catalog audit with the required
 English and Japanese locale set:
@@ -305,8 +312,8 @@ inspect logs for fatal CloudKit, SwiftData, ModelContainer, App Intents, crash,
 or exception output. A local simulator run does not prove real-device iCloud
 sync or production CloudKit environment behavior.
 
-The generated project-level `StallyLibrary` package product scheme is currently
-buildable through XcodeBuildMCP, but package tests are driven by
+The generated project-level `StallyLibrary` package product scheme remains
+available for Xcode-native builds, but package tests are driven by
 `ci_scripts/tasks/test_stally_library.sh`, which runs `xcodebuild -scheme
 StallyLibrary ... test` from the package directory.
 
@@ -324,10 +331,10 @@ bash ci_scripts/tasks/check_repository_rules.sh
 ```
 
 `check_repository_rules.sh` should own SwiftLint plus repository-specific
-static architecture checks that are not naturally covered by XcodeBuildMCP.
+static architecture checks that are not naturally covered by the available
+Xcode-native integration.
 SwiftLint should be resolved from the `SimplyDanny/SwiftLintPlugins` package
-declared in the project once package dependencies are added, not from a
-separately installed `swiftlint` binary.
+declared in the project, not from a separately installed `swiftlint` binary.
 
 UI preview reports and screenshots are implementation review artifacts. Keep
 them separate from preserved product-intent documents, and update them when a
@@ -359,13 +366,15 @@ bash ci_scripts/tasks/verify_task_completion.sh
 ```
 
 `verify_task_completion.sh` runs repository rules, StallyLibrary tests, and
-`git diff --check`. It does not replace XcodeBuildMCP app build or runtime
+`git diff --check`. It does not replace Xcode-native app build or runtime
 evidence when app lifecycle, package linking, SwiftData container wiring, or
 visible UI behavior changes.
 
-For Swift or Xcode project changes, also run XcodeBuildMCP `build_sim` with the
-`Stally` scheme. For runtime or UI-sensitive changes, run XcodeBuildMCP
-`build_run_sim`, inspect the returned runtime log, and capture a screenshot.
+For Swift or Xcode project changes, also build `Stally.xcodeproj` with the
+`Stally` scheme and a discovered iOS Simulator destination through the
+available Xcode-native integration. For runtime or UI-sensitive changes, run
+the app through that integration, inspect runtime logs, and capture live UI or
+screenshot evidence.
 
 If Xcode beta UI automation is unavailable or unreliable, fall back to
 runtime logs, screenshots, and library/domain tests. Do not treat successful

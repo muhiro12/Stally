@@ -81,16 +81,16 @@ productivity-system language.
 Choose verification by changed boundary:
 
 - SwiftData schema, persistence, public Operations, or package resources:
-  library tests, repository rules, and app `build_sim`.
-- App Intents: app `build_sim`, App Intents metadata extraction evidence, and
-  runtime route/log evidence when routing changes.
+  library tests, repository rules, and an Xcode-native app build.
+- App Intents: an Xcode-native app build, App Intents metadata extraction
+  evidence, and runtime route/log evidence when routing changes.
 - Localization: string-catalog audit, app build resource-processing evidence,
   and English/Japanese screenshots.
-- Runtime persistence or visible UI: `build_run_sim`, runtime log scan, and
-  screenshot evidence.
-- StoreKit, AdMob, or MHPlatform runtime wiring: app `build_sim`,
-  `build_run_sim`, runtime log scan for StoreKit, Google Mobile Ads, SwiftData,
-  CloudKit, fatal, exception, or crash output, and screenshot evidence.
+- Runtime persistence or visible UI: an Xcode-native run, runtime-log review,
+  and Preview, live UI, or screenshot evidence appropriate to the change.
+- StoreKit, AdMob, or MHPlatform runtime wiring: an Xcode-native app build and
+  run, runtime-log review for StoreKit, Google Mobile Ads, SwiftData, CloudKit,
+  fatal, exception, or crash output, and screenshot evidence.
 
 Real-device iCloud sync and production CloudKit environment behavior may need
 manual or hosted verification outside the local simulator. Record that

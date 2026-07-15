@@ -76,7 +76,8 @@ bash ci_scripts/tasks/test_stally_library.sh
 bash ci_scripts/tasks/verify_task_completion.sh
 ```
 
-Use XcodeBuildMCP for app build, run, runtime log, and screenshot evidence.
+Use the Xcode-native integration available in the agent environment for app
+build, run, runtime-log, Preview, live UI, and screenshot evidence.
 
 ## Support and Privacy
 
