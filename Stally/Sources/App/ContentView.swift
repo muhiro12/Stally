@@ -10,16 +10,9 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    private enum StallyTab: Hashable {
-        case library
-        case review
-        case insights
-        case archive
-        case backup
-    }
-
     private enum PresentedSheet: Identifiable {
         case addItem
+        case backupCenter
         case settings
         case item(Item)
 
@@ -27,6 +20,8 @@ struct ContentView: View {
             switch self {
             case .addItem:
                 "add-item"
+            case .backupCenter:
+                "backup-center"
             case .settings:
                 "settings"
             case .item(let item):
@@ -48,21 +43,14 @@ struct ContentView: View {
     @AppStorage(\.dormantAfterDays)
     private var dormantAfterDays
 
-    @State private var selectedTab: StallyTab
+    @State private var selectedDestination: StallyNavigationView.Destination?
+    @State private var preferredCompactColumn: NavigationSplitViewColumn
     @State private var presentedSheet: PresentedSheet?
     @State private var isPresentingMissingItemLinkAlert = false
 
     #if DEBUG
     @State private var pendingInitialPreviewRoute: StallyPreviewRoute?
     #endif
-
-    private var activeItems: [Item] {
-        ItemOperations.activeItems(from: items)
-    }
-
-    private var archivedItems: [Item] {
-        ItemOperations.archivedItems(from: items)
-    }
 
     private var invalidDeepLinkAlertBinding: Binding<Bool> {
         .init(
@@ -89,15 +77,26 @@ struct ContentView: View {
             now: now
         )
 
-        TabView(selection: $selectedTab) {
-            tabContent(reviewSnapshot: reviewSnapshot)
-        }
+        StallyNavigationView(
+            selectedDestination: $selectedDestination,
+            preferredCompactColumn: $preferredCompactColumn,
+            items: items,
+            reviewSnapshot: reviewSnapshot,
+            allowsSampleItems: items.isEmpty,
+            addAction: presentAddItem,
+            restoreAction: presentBackupCenter,
+            settingsAction: presentSettings
+        )
         .sheet(item: $presentedSheet) { sheet in
             switch sheet {
             case .addItem:
                 AddItemView()
+            case .backupCenter:
+                NavigationStack {
+                    BackupCenterView(items: items)
+                }
             case .settings:
-                SettingsView()
+                SettingsView(items: items)
             case .item(let item):
                 NavigationStack {
                     ItemDetailView(item: item)
@@ -135,75 +134,41 @@ struct ContentView: View {
 
     #if DEBUG
     init() {
-        _selectedTab = .init(initialValue: .library)
+        _selectedDestination = .init(initialValue: .library)
+        _preferredCompactColumn = .init(initialValue: .detail)
         _pendingInitialPreviewRoute = .init(initialValue: nil)
     }
 
     init(initialPreviewRoute: StallyPreviewRoute) {
-        _selectedTab = .init(initialValue: Self.tab(for: initialPreviewRoute))
+        _selectedDestination = .init(
+            initialValue: Self.navigationDestination(for: initialPreviewRoute)
+        )
+        _preferredCompactColumn = .init(initialValue: .detail)
         _pendingInitialPreviewRoute = .init(initialValue: initialPreviewRoute)
     }
     #else
     init() {
-        _selectedTab = .init(initialValue: .library)
+        _selectedDestination = .init(initialValue: .library)
+        _preferredCompactColumn = .init(initialValue: .detail)
     }
     #endif
 
     #if DEBUG
-    private static func tab(for route: StallyPreviewRoute?) -> StallyTab {
+    private static func navigationDestination(
+        for route: StallyPreviewRoute?
+    ) -> StallyNavigationView.Destination {
         switch route {
         case .archive:
             .archive
-        case .backup:
-            .backup
         case .insights:
             .insights
         case .review:
             .review
-        case .addItem, .itemDetail, .library, .settings, nil:
+        case .addItem, .backup, .itemDetail, .library, .settings, nil:
             .library
         }
     }
     #endif
-
-    @ViewBuilder
-    private func tabContent(reviewSnapshot: ReviewSnapshot) -> some View {
-        LibraryView(
-            items: activeItems,
-            allowsSampleItems: items.isEmpty,
-            addAction: presentAddItem,
-            restoreAction: presentBackupCenter,
-            settingsAction: presentSettings
-        )
-        .tabItem {
-            Label("Library", systemImage: "tray")
-        }
-        .tag(StallyTab.library)
-
-        ReviewView(snapshot: reviewSnapshot)
-            .tabItem {
-                Label("Review", systemImage: "text.badge.checkmark")
-            }
-            .tag(StallyTab.review)
-
-        InsightsView(items: items)
-            .tabItem {
-                Label("Insights", systemImage: "chart.line.uptrend.xyaxis")
-            }
-            .tag(StallyTab.insights)
-
-        ArchiveView(items: archivedItems)
-            .tabItem {
-                Label("Archive", systemImage: "archivebox")
-            }
-            .tag(StallyTab.archive)
-
-        BackupCenterView(items: items)
-            .tabItem {
-                Label("Backup", systemImage: "externaldrive")
-            }
-            .tag(StallyTab.backup)
-    }
 
     private func presentAddItem() {
         presentedSheet = .addItem
@@ -214,7 +179,7 @@ struct ContentView: View {
     }
 
     private func presentBackupCenter() {
-        selectedTab = .backup
+        presentedSheet = .backupCenter
     }
 
     private func openSupportedLink(_ link: StallyLink) {
@@ -229,15 +194,15 @@ struct ContentView: View {
     private func openDestination(_ destination: StallyLinkDestination) {
         switch destination {
         case .library:
-            selectedTab = .library
+            selectNavigationDestination(.library)
         case .archive:
-            selectedTab = .archive
+            selectNavigationDestination(.archive)
         case .review:
-            selectedTab = .review
+            selectNavigationDestination(.review)
         case .insights:
-            selectedTab = .insights
+            selectNavigationDestination(.insights)
         case .backupCenter:
-            selectedTab = .backup
+            presentedSheet = .backupCenter
         case .createItem:
             presentedSheet = .addItem
         case .settings:
@@ -253,8 +218,15 @@ struct ContentView: View {
             return
         }
 
-        selectedTab = item.isArchived ? .archive : .library
+        selectNavigationDestination(item.isArchived ? .archive : .library)
         presentedSheet = .item(item)
+    }
+
+    private func selectNavigationDestination(
+        _ destination: StallyNavigationView.Destination
+    ) {
+        selectedDestination = destination
+        preferredCompactColumn = .detail
     }
 
     private func showMissingItemLinkAlert() {
@@ -271,7 +243,11 @@ struct ContentView: View {
         case .addItem:
             presentedSheet = .addItem
             self.pendingInitialPreviewRoute = nil
+        case .backup:
+            presentedSheet = .backupCenter
+            self.pendingInitialPreviewRoute = nil
         case .itemDetail:
+            let activeItems = ItemOperations.activeItems(from: items)
             guard let item = activeItems.first(where: { $0.photoData != nil })
                     ?? activeItems.first
                     ?? items.first else {
@@ -283,7 +259,7 @@ struct ContentView: View {
         case .settings:
             presentedSheet = .settings
             self.pendingInitialPreviewRoute = nil
-        case .archive, .backup, .insights, .library, .review:
+        case .archive, .insights, .library, .review:
             self.pendingInitialPreviewRoute = nil
         }
     }

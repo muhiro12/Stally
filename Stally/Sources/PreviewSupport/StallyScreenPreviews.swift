@@ -10,38 +10,41 @@ import SwiftUI
 
 #Preview("Library - Empty") {
     StallyPreviewContainer(.empty) { items in
-        LibraryView(
-            items: ItemOperations.activeItems(from: items),
-            allowsSampleItems: true,
-            addAction: { /* Preview action intentionally left empty. */ },
-            restoreAction: { /* Preview action intentionally left empty. */ },
-            settingsAction: { /* Preview action intentionally left empty. */ }
-        )
+        NavigationStack {
+            LibraryView(
+                items: ItemOperations.activeItems(from: items),
+                allowsSampleItems: true,
+                addAction: { /* Preview action intentionally left empty. */ },
+                restoreAction: { /* Preview action intentionally left empty. */ }
+            )
+        }
     }
 }
 
 #Preview("Library - Typical") {
     StallyPreviewContainer(.typical) { items in
-        LibraryView(
-            items: ItemOperations.activeItems(from: items),
-            allowsSampleItems: false,
-            addAction: { /* Preview action intentionally left empty. */ },
-            restoreAction: { /* Preview action intentionally left empty. */ },
-            settingsAction: { /* Preview action intentionally left empty. */ }
-        )
+        NavigationStack {
+            LibraryView(
+                items: ItemOperations.activeItems(from: items),
+                allowsSampleItems: false,
+                addAction: { /* Preview action intentionally left empty. */ },
+                restoreAction: { /* Preview action intentionally left empty. */ }
+            )
+        }
     }
 }
 
 #Preview("Library - Dense Dark") {
     StallyPreviewContainer(.dense) { items in
-        LibraryView(
-            items: ItemOperations.activeItems(from: items),
-            allowsSampleItems: false,
-            addAction: { /* Preview action intentionally left empty. */ },
-            restoreAction: { /* Preview action intentionally left empty. */ },
-            settingsAction: { /* Preview action intentionally left empty. */ }
-        )
-        .preferredColorScheme(.dark)
+        NavigationStack {
+            LibraryView(
+                items: ItemOperations.activeItems(from: items),
+                allowsSampleItems: false,
+                addAction: { /* Preview action intentionally left empty. */ },
+                restoreAction: { /* Preview action intentionally left empty. */ }
+            )
+            .preferredColorScheme(.dark)
+        }
     }
 }
 
@@ -84,13 +87,17 @@ import SwiftUI
 
 #Preview("Archive - Preserved Items") {
     StallyPreviewContainer(.dense) { items in
-        ArchiveView(items: ItemOperations.archivedItems(from: items))
+        NavigationStack {
+            ArchiveView(items: ItemOperations.archivedItems(from: items))
+        }
     }
 }
 
 #Preview("Archive - Empty") {
     StallyPreviewContainer(.empty) { _ in
-        ArchiveView(items: [])
+        NavigationStack {
+            ArchiveView(items: [])
+        }
     }
 }
 
@@ -98,13 +105,15 @@ import SwiftUI
     StallyPreviewContainer(.dense) { items in
         let now = Date()
 
-        ReviewView(
-            snapshot: ReviewOperations.snapshot(
-                for: items,
-                timeZone: StallyPreviewData.timeZone,
-                now: now
+        NavigationStack {
+            ReviewView(
+                snapshot: ReviewOperations.snapshot(
+                    for: items,
+                    timeZone: StallyPreviewData.timeZone,
+                    now: now
+                )
             )
-        )
+        }
     }
 }
 
@@ -112,25 +121,31 @@ import SwiftUI
     StallyPreviewContainer(.empty) { items in
         let now = Date()
 
-        ReviewView(
-            snapshot: ReviewOperations.snapshot(
-                for: items,
-                timeZone: StallyPreviewData.timeZone,
-                now: now
+        NavigationStack {
+            ReviewView(
+                snapshot: ReviewOperations.snapshot(
+                    for: items,
+                    timeZone: StallyPreviewData.timeZone,
+                    now: now
+                )
             )
-        )
+        }
     }
 }
 
 #Preview("Insights - Typical") {
     StallyPreviewContainer(.dense) { items in
-        InsightsView(items: items)
+        NavigationStack {
+            InsightsView(items: items)
+        }
     }
 }
 
 #Preview("Backup Center - Snapshot") {
     StallyPreviewContainer(.dense) { items in
-        BackupCenterView(items: items)
+        NavigationStack {
+            BackupCenterView(items: items)
+        }
     }
 }
 
@@ -153,8 +168,8 @@ import SwiftUI
 }
 
 #Preview("Settings - Shareable Links") {
-    StallyPreviewContainer(.typical) { _ in
-        SettingsView()
+    StallyPreviewContainer(.typical) { items in
+        SettingsView(items: items)
     }
 }
 

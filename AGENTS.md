@@ -118,7 +118,7 @@ facts authoritative.
 The app target should stay a thin adapter over the current product surface.
 
 - `Stally/Sources/App/` owns app lifecycle, exported library import, and root
-  composition, including tab selection and sheet routing.
+  composition, including split-view destination selection and sheet routing.
 - `Stally/Sources/App/Intents/` owns app-wide App Shortcuts and generic route
   App Intents. Feature-specific App Intents should live under the owning
   `Features/*/Intents/` directory.

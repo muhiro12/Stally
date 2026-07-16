@@ -10,6 +10,8 @@ import MHUI
 import SwiftUI
 
 struct SettingsView: View {
+    let items: [Item]
+
     @AppStorage(\.isSubscribeOn)
     private var isSubscribeOn
     @AppStorage(\.isICloudOn)
@@ -59,6 +61,15 @@ struct SettingsView: View {
             defaultRange: $defaultInsightsRange,
             includesArchivedItems: $includesArchivedItemsInInsights
         )
+
+        Section {
+            NavigationLink {
+                BackupCenterView(items: items)
+            } label: {
+                Label("Backup Center", systemImage: "externaldrive")
+            }
+            .mhRow()
+        }
 
         Section("Shareable Links") {
             ForEach(StallyLinkDestination.allCases) { destination in

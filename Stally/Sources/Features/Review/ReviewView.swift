@@ -15,25 +15,23 @@ struct ReviewView: View {
     let snapshot: ReviewSnapshot
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if snapshot.isEmpty {
-                    EmptyReviewView()
-                } else {
-                    ReviewLaneList(
-                        snapshot: snapshot,
-                        showsCompletedSections: showsCompletedReviewSections
-                    )
-                }
+        Group {
+            if snapshot.isEmpty {
+                EmptyReviewView()
+            } else {
+                ReviewLaneList(
+                    snapshot: snapshot,
+                    showsCompletedSections: showsCompletedReviewSections
+                )
             }
-            .navigationTitle("Review")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    StallyLinkShareButton(
-                        link: .destination(.review),
-                        title: "Share Review Link"
-                    )
-                }
+        }
+        .navigationTitle("Review")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                StallyLinkShareButton(
+                    link: .destination(.review),
+                    title: "Share Review Link"
+                )
             }
         }
     }

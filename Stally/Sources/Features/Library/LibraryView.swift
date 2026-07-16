@@ -20,7 +20,6 @@ struct LibraryView: View {
     let allowsSampleItems: Bool
     let addAction: () -> Void
     let restoreAction: () -> Void
-    let settingsAction: () -> Void
 
     private var isShowingSampleError: Binding<Bool> {
         .init(
@@ -42,12 +41,6 @@ struct LibraryView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            libraryContent
-        }
-    }
-
-    private var libraryContent: some View {
         Group {
             if items.isEmpty {
                 EmptyLibraryView(
@@ -61,12 +54,6 @@ struct LibraryView: View {
         }
         .navigationTitle("Library")
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button(action: settingsAction) {
-                    Label("Settings", systemImage: "gear")
-                }
-            }
-
             ToolbarItemGroup(placement: .topBarTrailing) {
                 StallyLinkShareButton(
                     link: .destination(.library),

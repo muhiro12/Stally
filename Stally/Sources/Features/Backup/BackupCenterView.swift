@@ -33,25 +33,23 @@ struct BackupCenterView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            BackupList(
-                summary: summary,
-                preview: selectedBackupPreview,
-                statusMessage: statusMessage,
-                exportAction: exportBackup,
-                chooseBackupAction: chooseBackupFile,
-                mergeAction: confirmMerge,
-                replaceAction: confirmReplace,
-                deleteEverythingAction: confirmDeleteEverything
-            )
-            .navigationTitle("Backup Center")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    StallyLinkShareButton(
-                        link: .destination(.backupCenter),
-                        title: "Share Backup Center Link"
-                    )
-                }
+        BackupList(
+            summary: summary,
+            preview: selectedBackupPreview,
+            statusMessage: statusMessage,
+            exportAction: exportBackup,
+            chooseBackupAction: chooseBackupFile,
+            mergeAction: confirmMerge,
+            replaceAction: confirmReplace,
+            deleteEverythingAction: confirmDeleteEverything
+        )
+        .navigationTitle("Backup Center")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                StallyLinkShareButton(
+                    link: .destination(.backupCenter),
+                    title: "Share Backup Center Link"
+                )
             }
         }
         .fileExporter(

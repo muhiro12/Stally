@@ -313,22 +313,6 @@
         }
       }
     },
-    "Backup" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップ"
-          }
-        }
-      }
-    },
     "Backup action failed." : {
       "localizations" : {
         "en" : {
@@ -2555,6 +2539,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "並び順"
+          }
+        }
+      }
+    },
+    "Stally" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stally"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stally"
           }
         }
       }

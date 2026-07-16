@@ -35,20 +35,18 @@ struct InsightsView: View {
             now: now
         )
 
-        NavigationStack {
-            InsightsList(
-                snapshot: snapshot,
-                selectedRange: $selectedRange,
-                includesArchivedItems: $includesArchivedItems
-            )
-            .navigationTitle("Insights")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    StallyLinkShareButton(
-                        link: .destination(.insights),
-                        title: "Share Insights Link"
-                    )
-                }
+        InsightsList(
+            snapshot: snapshot,
+            selectedRange: $selectedRange,
+            includesArchivedItems: $includesArchivedItems
+        )
+        .navigationTitle("Insights")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                StallyLinkShareButton(
+                    link: .destination(.insights),
+                    title: "Share Insights Link"
+                )
             }
         }
     }
