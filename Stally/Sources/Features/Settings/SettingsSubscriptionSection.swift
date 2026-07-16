@@ -19,9 +19,6 @@ struct SettingsSubscriptionSection: View {
             } else {
                 Label("Premium", systemImage: "creditcard")
                     .mhRow()
-
-                Text("Subscribe to remove ads.")
-                    .mhRowSupporting()
             }
         } header: {
             Text("Subscription")

@@ -20,17 +20,11 @@ struct ArchiveActionSection: View {
                     Label("Move Back to Library", systemImage: "tray.and.arrow.up")
                 }
                 .buttonStyle(.mhPrimary)
-
-                Text("Archived items wait until you move them back to Library.")
-                    .mhSectionFooterText()
             } else {
                 Button(action: archiveAction) {
                     Label("Archive Item", systemImage: "archivebox")
                 }
                 .buttonStyle(.mhQuiet)
-
-                Text("Past favorites can stay nearby without crowding the main list.")
-                    .mhSectionFooterText()
             }
         }
     }

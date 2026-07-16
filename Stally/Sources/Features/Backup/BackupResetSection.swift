@@ -13,9 +13,6 @@ struct BackupResetSection: View {
 
     var body: some View {
         Section("Reset Tools") {
-            Text("Delete Everything intentionally creates an empty library.")
-                .mhRowSupporting()
-
             Button("Delete Every Item", role: .destructive, action: deleteEverythingAction)
                 .buttonStyle(.mhDestructive)
         }

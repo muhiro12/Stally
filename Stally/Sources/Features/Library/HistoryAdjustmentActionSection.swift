@@ -39,9 +39,6 @@ struct HistoryAdjustmentActionSection: View {
                 .buttonStyle(.mhPrimary)
                 .disabled(!isSelectionValid)
             }
-        } footer: {
-            Text("Changes apply only to the selected day.")
-                .mhSectionFooterText()
         }
         .labeledContentStyle(.mhKeyValue)
     }

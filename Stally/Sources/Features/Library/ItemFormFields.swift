@@ -5,7 +5,6 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
-import MHUI
 import SwiftUI
 
 struct ItemFormFields: View {
@@ -30,9 +29,6 @@ struct ItemFormFields: View {
 
             TextField("Note", text: $note, axis: .vertical)
                 .lineLimit(noteLineLimit, reservesSpace: true)
-        } footer: {
-            Text("A short note can make this item's history easier to read later.")
-                .mhSectionFooterText()
         }
 
         ItemPhotoFormSection(

@@ -21,9 +21,6 @@ struct BackupImportSection: View {
             }
             .buttonStyle(.mhSecondary)
 
-            Text("Merge import will preserve local items; replace import will overwrite them.")
-                .mhRowSupporting()
-
             if let preview {
                 BackupPreviewRows(preview: preview)
 

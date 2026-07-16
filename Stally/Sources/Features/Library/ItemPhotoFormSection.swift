@@ -61,8 +61,6 @@ struct ItemPhotoFormSection: View {
             }
         } header: {
             Text("Photo")
-        } footer: {
-            Text("Add one photo to make this item easier to recognize.")
         }
         .task(id: selectedPhotoItem) {
             guard let selectedPhotoItem else {

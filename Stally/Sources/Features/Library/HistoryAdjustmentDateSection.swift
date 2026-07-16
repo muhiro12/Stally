@@ -5,7 +5,6 @@
 //  Created by Codex on 2026/07/12.
 //
 
-import MHUI
 import SwiftUI
 
 struct HistoryAdjustmentDateSection: View {
@@ -22,9 +21,6 @@ struct HistoryAdjustmentDateSection: View {
                 displayedComponents: .date
             )
             .datePickerStyle(.graphical)
-        } footer: {
-            Text("Choose today or an earlier day.")
-                .mhSectionFooterText()
         }
     }
 }

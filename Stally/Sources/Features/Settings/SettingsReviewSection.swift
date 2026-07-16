@@ -41,8 +41,6 @@ struct SettingsReviewSection: View {
             Toggle("Show completed sections", isOn: $showsCompletedSections)
         } header: {
             Text("Review")
-        } footer: {
-            Text("Choose when items need attention in Review.")
         }
     }
 }

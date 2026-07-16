@@ -9,10 +9,6 @@ import MHUI
 import SwiftUI
 
 struct ReviewLaneSection: View {
-    private enum Layout {
-        static let headerSpacing: CGFloat = 4
-    }
-
     let lane: ReviewLane
     let items: [Item]
     let itemAction: (Item) -> Void
@@ -46,14 +42,7 @@ struct ReviewLaneSection: View {
                 }
             }
         } header: {
-            VStack(alignment: .leading, spacing: Layout.headerSpacing) {
-                Text(lane.title)
-                    .mhSectionHeaderTitle()
-
-                Text(lane.summary)
-                    .mhSectionHeaderSupporting()
-            }
-            .mhSectionHeader()
+            Text(lane.title)
         }
     }
 }

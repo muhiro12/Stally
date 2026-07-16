@@ -10,6 +10,7 @@ import MHPlatform
 import MHUI
 import SwiftData
 import SwiftUI
+import TipKit
 
 @main
 struct StallyApp: App {
@@ -49,6 +50,7 @@ struct StallyApp: App {
             source: #fileID
         )
         startupLogger.notice("startup.begin")
+        Self.configureTips(startupLogger: startupLogger)
 
         let preferenceStore = MHPreferenceStore()
         let syncsWithCloudKit = preferenceStore.bool(for: \.isICloudOn)
@@ -74,6 +76,20 @@ struct StallyApp: App {
 }
 
 private extension StallyApp {
+    static func configureTips(startupLogger: MHLogger) {
+        do {
+            try Tips.configure([
+                .displayFrequency(.daily)
+            ])
+            startupLogger.notice("tipkit.configured")
+        } catch {
+            startupLogger.error(
+                "tipkit.configuration_failed",
+                metadata: StallyLogging.errorMetadata(error)
+            )
+        }
+    }
+
     static func makeModelContainer(
         syncsWithCloudKit: Bool,
         startupLogger: MHLogger

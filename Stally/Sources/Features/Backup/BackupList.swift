@@ -19,8 +19,6 @@ struct BackupList: View {
 
     var body: some View {
         List {
-            BackupSafetySection()
-
             BackupSnapshotSection(summary: summary)
 
             BackupExportSection(exportAction: exportAction)

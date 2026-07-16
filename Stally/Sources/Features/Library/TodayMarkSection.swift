@@ -7,8 +7,11 @@
 
 import MHUI
 import SwiftUI
+import TipKit
 
 struct TodayMarkSection: View {
+    private let markTodayTip = MarkTodayTip()
+
     let isMarkedToday: Bool
     let markAction: () -> Void
     let undoAction: () -> Void
@@ -21,14 +24,17 @@ struct TodayMarkSection: View {
                 }
                 .buttonStyle(.mhQuiet)
             } else {
-                Button(action: markAction) {
+                Button(action: markToday) {
                     Label("Mark Today", systemImage: "checkmark.circle")
                 }
                 .buttonStyle(.mhPrimary)
+                .popoverTip(markTodayTip, arrowEdge: .top)
             }
-
-            Text("One mark is enough for today.")
-                .mhSectionFooterText()
         }
+    }
+
+    private func markToday() {
+        markAction()
+        markTodayTip.invalidate(reason: .actionPerformed)
     }
 }

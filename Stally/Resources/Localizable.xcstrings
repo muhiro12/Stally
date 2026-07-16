@@ -57,22 +57,6 @@
         }
       }
     },
-    "A short note can make this item's history easier to read later.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "A short note can make this item's history easier to read later."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "短いメモがあると、このアイテムの履歴をあとで読み返しやすくなります。"
-          }
-        }
-      }
-    },
     "About": {
       "localizations": {
         "en": {
@@ -181,22 +165,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "マークを追加"
-          }
-        }
-      }
-    },
-    "Add one photo to make this item easier to recognize.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add one photo to make this item easier to recognize."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "アイテムを見分けやすくするために写真を1枚追加できます。"
           }
         }
       }
@@ -345,22 +313,6 @@
         }
       }
     },
-    "Archived items wait until you move them back to Library.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Archived items wait until you move them back to Library."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "アーカイブしたアイテムは、ライブラリに戻すまで静かに残ります。"
-          }
-        }
-      }
-    },
     "Backup": {
       "localizations": {
         "en": {
@@ -473,18 +425,18 @@
         }
       }
     },
-    "Backup files are meant for your own archive and transfer workflow.": {
+    "Backup files are for archive and transfer, not ongoing device sync.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Backup files are meant for your own archive and transfer workflow."
+            "value": "Backup files are for archive and transfer, not ongoing device sync."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "バックアップファイルは、自分用の保存や移行のためのものです。"
+            "value": "バックアップファイルは保存や移行のためのもので、デバイス間の継続的な同期には使いません。"
           }
         }
       }
@@ -617,22 +569,6 @@
         }
       }
     },
-    "Changes apply only to the selected day.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Changes apply only to the selected day."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "変更は選択した日だけに適用されます。"
-          }
-        }
-      }
-    },
     "Choose a valid day no later than today.": {
       "localizations": {
         "en": {
@@ -693,38 +629,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "写真を選択"
-          }
-        }
-      }
-    },
-    "Choose today or an earlier day.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choose today or an earlier day."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "今日以前の日付を選んでください。"
-          }
-        }
-      }
-    },
-    "Choose when items need attention in Review.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Choose when items need attention in Review."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "アイテムをレビューに表示するタイミングを選べます。"
           }
         }
       }
@@ -985,22 +889,6 @@
         }
       }
     },
-    "Delete Everything intentionally creates an empty library.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Delete Everything intentionally creates an empty library."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "すべて削除すると、ライブラリは空になります。"
-          }
-        }
-      }
-    },
     "Delete Everything intentionally creates an empty library. Export before higher-risk changes.": {
       "localizations": {
         "en": {
@@ -1157,22 +1045,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "バックアップを書き出す"
-          }
-        }
-      }
-    },
-    "Export before higher-risk changes.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Export before higher-risk changes."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "リスクの高い変更の前に書き出しておきましょう。"
           }
         }
       }
@@ -1336,6 +1208,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "アイテム"
+          }
+        }
+      }
+    },
+    "Keep a portable snapshot": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep a portable snapshot"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "持ち運べるバックアップを残す"
           }
         }
       }
@@ -1576,22 +1464,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "統合では手元のアイテムを残し、不足している履歴を追加します。"
-          }
-        }
-      }
-    },
-    "Merge import will preserve local items; replace import will overwrite them.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Merge import will preserve local items; replace import will overwrite them."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "統合では手元のアイテムを残し、置き換えでは上書きします。"
           }
         }
       }
@@ -2028,6 +1900,22 @@
         }
       }
     },
+    "Notice what has gone quiet": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Notice what has gone quiet"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "静かになったアイテムに気づく"
+          }
+        }
+      }
+    },
     "OK": {
       "shouldTranslate": false
     },
@@ -2399,6 +2287,22 @@
         }
       }
     },
+    "Review brings together items waiting for a first mark, dormant items, and past favorites that may return.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review brings together items waiting for a first mark, dormant items, and past favorites that may return."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "レビューには、最初のマークを待つアイテム、休眠中のアイテム、もう一度出番がありそうな以前のお気に入りが集まります。"
+          }
+        }
+      }
+    },
     "Rhythm": {
       "localizations": {
         "en": {
@@ -2411,22 +2315,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "リズム"
-          }
-        }
-      }
-    },
-    "Safety": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Safety"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "安全"
           }
         }
       }
@@ -2767,22 +2655,6 @@
         }
       }
     },
-    "Subscribe to remove ads.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Subscribe to remove ads."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "購読すると広告を非表示にできます。"
-          }
-        }
-      }
-    },
     "Subscription": {
       "localizations": {
         "en": {
@@ -2795,22 +2667,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "サブスクリプション"
-          }
-        }
-      }
-    },
-    "They are not for syncing between multiple devices at once.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "They are not for syncing between multiple devices at once."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "複数デバイス間で同時に同期するためのものではありません。"
           }
         }
       }

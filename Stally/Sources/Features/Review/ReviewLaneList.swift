@@ -7,6 +7,7 @@
 
 import SwiftData
 import SwiftUI
+import TipKit
 
 struct ReviewLaneList: View {
     @Environment(\.modelContext)
@@ -14,6 +15,8 @@ struct ReviewLaneList: View {
 
     @State private var actionErrorMessage: String?
     @State private var selectedItemIDs = Set<UUID>()
+
+    private let overviewTip = ReviewOverviewTip()
 
     let snapshot: ReviewSnapshot
     let showsCompletedSections: Bool
@@ -61,6 +64,8 @@ struct ReviewLaneList: View {
 
     var body: some View {
         List(selection: $selectedItemIDs) {
+            TipView(overviewTip)
+
             ForEach(visibleLanes) { lane in
                 ReviewLaneSection(
                     lane: lane,
