@@ -10,7 +10,7 @@ App Intents, monetization, and English/Japanese localization baseline.
 ## HIG And MHUI Style Policy
 
 Apple Human Interface Guidelines and platform-native iOS behavior are the
-foundation for Stally's app UI. Navigation, tab structure, lists, forms,
+foundation for Stally's app UI. Adaptive split-view navigation, lists, forms,
 sharing, sheets, dialogs, alerts, and standard controls should keep their
 native SwiftUI semantics unless a concrete product need justifies a custom
 treatment.
@@ -46,6 +46,7 @@ Reviewed as current Stally surfaces:
 - Edit Item.
 - Adjust History.
 - Item photo selection and detail presentation.
+- Responsive iPhone and iPad navigation structure.
 
 ## Audit Findings
 
@@ -62,9 +63,10 @@ Current MHUI usage:
 
 Common UI kept outside MHUI:
 
-- `NavigationStack`, `TabView`, `NavigationLink`, toolbar buttons, sheets,
-  alerts, file import/export, confirmation dialogs, and `ShareLink` remain
-  standard SwiftUI because they already carry the correct platform behavior.
+- `NavigationSplitView`, detail-column `NavigationStack`, `NavigationLink`,
+  toolbar buttons, sheets, alerts, file import/export, confirmation dialogs,
+  and `ShareLink` remain standard SwiftUI because they already carry the
+  correct platform behavior.
 - Quiet History's dot grid remains a small app-specific data visualization.
   MHUI provides text rhythm around it, but the marked/unmarked dot state is
   product-specific.
@@ -88,8 +90,13 @@ Improvements represented by the current surface:
 - Insights includes shareable reports and weekday/monthly rhythm readings.
 - Settings exposes Review thresholds, completed-section visibility, Insights
   defaults, and iCloud sync independently from the ad-removal subscription.
-- Tabs, primary actions, selection controls, badges, and preview photo fixtures
-  share the Mint accent without feature-level color constants.
+- The five bottom tabs were replaced with four sidebar destinations. Library
+  and Archive remain collection tasks, while Review and Insights remain
+  reflection tasks.
+- Backup Center moved out of the peer navigation level. It remains available
+  from Settings, the empty-Library restore action, and supported deep links.
+- Sidebar selection, primary actions, controls, badges, and preview photo
+  fixtures share the Mint accent without feature-level color constants.
 
 Overuse risks intentionally avoided:
 
@@ -164,10 +171,10 @@ After screenshots are stored at the root of
 `docs/ui-preview-screenshots/`. Before screenshots from the pre-MHUI state are
 preserved under `docs/ui-preview-screenshots/before/`.
 
-All saved images are 368 by 800 JPEG files captured on an iPhone 17 Pro
-simulator through the DEBUG screenshot launch routes and supported deep links.
-The current set was refreshed after the Asset Catalog accent changed to system
-Mint.
+The phone images are 368 by 800 JPEG files captured on an iPhone 17 Pro
+simulator through the DEBUG screenshot launch routes.
+The iPad images are 827 by 1200 JPEG files showing the regular-width layout.
+The current set was refreshed after the app adopted split-view navigation.
 
 - Library empty:
   `docs/ui-preview-screenshots/library-empty.jpg`
@@ -193,12 +200,17 @@ Mint.
   `docs/ui-preview-screenshots/localization-library-empty-ja.jpg`
 - Japanese package-local localization smoke:
   `docs/ui-preview-screenshots/localization-review-ja.jpg`
+- iPad split-view Library:
+  `docs/ui-preview-screenshots/ipad-library.jpg`
+- iPad split-view Item Detail:
+  `docs/ui-preview-screenshots/ipad-item-detail.jpg`
 
-The Library empty-state localization screenshots exercise navigation, tab
+The Library empty-state localization screenshots exercise navigation, sidebar
 labels, empty-state copy, and a primary action. The Japanese Review screenshot
 also proves that package-owned category, Review lane, summary, empty-state, and
-mark-count resources resolve from the `StallyLibrary` bundle. Preview item names
-and notes remain deterministic fixture data rather than localized product copy.
+mark-count resources resolve from the `StallyLibrary` bundle. Preview item
+names and notes remain deterministic fixture data rather than localized
+product copy.
 
 ## Localization Baseline
 
@@ -250,9 +262,9 @@ Adopted:
 
 Not adopted:
 
-- `mhScreen`: the current app already uses native `NavigationStack` titles and
-  tab surfaces. Adding an MHUI title block would duplicate navigation meaning
-  and reduce native behavior.
+- `mhScreen`: the current app already uses native split-view and detail-stack
+  titles. Adding an MHUI title block would duplicate navigation meaning and
+  reduce native behavior.
 - `mhSection`: native `Section` remains a better fit inside `List` and `Form`
   for these screens. Full MHUI section containers can be revisited if a future
   non-list screen needs grouped surfaces.
@@ -277,21 +289,32 @@ Not adopted:
 
 Kept as standard SwiftUI:
 
-- `NavigationStack` and navigation titles.
-- `TabView`.
+- `NavigationSplitView` for adaptive sidebar and detail presentation.
+- `NavigationStack` inside the detail column and focused sheets.
 - `List` and `Form` as base containers.
 - `ContentUnavailableView` for empty states.
 - `ShareLink` for app and item links.
 - `fileImporter` and `fileExporter` for Backup Center.
 - `confirmationDialog` for merge, replace, and delete confirmations.
 - `alert` for unsupported links and save/backup errors.
-- Sheet presentation for Add Item, Settings, and Item Detail launch routes.
+- Sheet presentation for Add Item, Settings, and contextual Backup Center
+  routes. Item Detail uses the detail navigation path.
 
 The reason is deliberate: these APIs already carry the platform semantics
 Stally needs. MHUI is used as presentation chrome and hierarchy, not as a
 replacement for native interaction behavior.
 
 ## Screen Changes
+
+App shell:
+
+- Replaced five bottom tabs with a two-column `NavigationSplitView`.
+- Starts directly in Library at compact widths and exposes the four primary
+  destinations through the standard sidebar affordance.
+- Keeps the sidebar and selected detail visible together at regular widths.
+- Routes item selection and item deep links through a UUID-backed detail path
+  instead of presenting Item Detail as a sheet.
+- Places Settings in the sidebar toolbar and Backup Center under Settings.
 
 Library:
 
@@ -365,8 +388,8 @@ Compared with `docs/ui-preview-screenshots/before/`:
   other screens.
 - Empty states remain native, but their spacing and primary action style match
   the MHUI pass.
-- Semantic accent styling now resolves to Mint across tabs, actions, controls,
-  badges, and the deterministic preview photo fixture.
+- Semantic accent styling now resolves to Mint across sidebar selection,
+  actions, controls, badges, and the deterministic preview photo fixture.
 
 ## Runtime Capture Notes
 
@@ -374,9 +397,11 @@ Confirmed through after screenshots:
 
 - Library empty state renders with the documented quiet start copy.
 - Dense Library renders active items, notes, mark counts, and updated row
-  hierarchy.
+  hierarchy without a bottom tab bar.
+- iPad renders the sidebar and selected detail together without duplicating
+  toolbars or navigation titles.
 - Item Detail renders header, Mark Today, Archive, overview, and Quiet History
-  sections.
+  sections inside the detail navigation stack.
 - Archive renders preserved items without deletion language.
 - Review renders all three attention lanes with MHUI section headers.
 - Insights renders scope controls and metric rows without heavier dashboard
@@ -397,9 +422,13 @@ Capture limits:
   DEBUG launch routes remain available.
 - Runtime screenshots were used as the faithful fallback where routes could
   reproduce the screen state.
-- Archive and Backup Center were opened through their supported deep links
-  after the five-tab Library shell stabilized, avoiding launch-only tab-bar
-  transition states.
+- The Xcode device-interaction bridge could not connect to the booted
+  simulators during this refresh. Xcode Run still launched successfully, so
+  the existing DEBUG routes, `simctl` screenshots, and simulator logs were
+  used without erasing simulator data.
+- Archive, Review, Insights, Backup Center, Settings, and Add Item were
+  reproduced through their DEBUG launch routes after the split-view shell
+  stabilized.
 - Backup import validation is covered by SwiftUI Preview, not runtime
   screenshot, because reproducing it requires file importer interaction.
 - Destructive confirmation dialogs were outside this refresh because the saved
