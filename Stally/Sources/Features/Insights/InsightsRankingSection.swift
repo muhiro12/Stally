@@ -20,9 +20,9 @@ struct InsightsRankingSection: View {
                     .mhRowSupporting()
             } else {
                 ForEach(summaries, id: \.item.uuid) { summary in
-                    NavigationLink {
-                        ItemDetailView(item: summary.item)
-                    } label: {
+                    NavigationLink(
+                        value: StallyNavigationView.DetailRoute.item(summary.item.uuid)
+                    ) {
                         InsightItemSummaryRow(summary: summary)
                     }
                 }

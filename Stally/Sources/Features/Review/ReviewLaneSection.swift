@@ -20,9 +20,7 @@ struct ReviewLaneSection: View {
                     .mhRowSupporting()
             } else {
                 ForEach(items) { item in
-                    NavigationLink {
-                        ItemDetailView(item: item)
-                    } label: {
+                    NavigationLink(value: StallyNavigationView.DetailRoute.item(item.uuid)) {
                         ItemRow(item: item)
                     }
                     .tag(item.uuid)

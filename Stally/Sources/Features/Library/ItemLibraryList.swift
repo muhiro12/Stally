@@ -99,9 +99,7 @@ struct ItemLibraryList: View {
         } else {
             Section {
                 ForEach(refinedItems) { item in
-                    NavigationLink {
-                        ItemDetailView(item: item)
-                    } label: {
+                    NavigationLink(value: StallyNavigationView.DetailRoute.item(item.uuid)) {
                         ItemRow(item: item)
                     }
                 }

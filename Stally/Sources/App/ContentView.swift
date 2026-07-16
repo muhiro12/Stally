@@ -14,7 +14,6 @@ struct ContentView: View {
         case addItem
         case backupCenter
         case settings
-        case item(Item)
 
         var id: String {
             switch self {
@@ -24,8 +23,6 @@ struct ContentView: View {
                 "backup-center"
             case .settings:
                 "settings"
-            case .item(let item):
-                "item-\(item.uuid)"
             }
         }
     }
@@ -45,6 +42,7 @@ struct ContentView: View {
 
     @State private var selectedDestination: StallyNavigationView.Destination?
     @State private var preferredCompactColumn: NavigationSplitViewColumn
+    @State private var detailPath: [StallyNavigationView.DetailRoute]
     @State private var presentedSheet: PresentedSheet?
     @State private var isPresentingMissingItemLinkAlert = false
 
@@ -65,6 +63,26 @@ struct ContentView: View {
         )
     }
 
+    private var navigationDestinationBinding: Binding<StallyNavigationView.Destination?> {
+        .init(
+            get: {
+                selectedDestination
+            },
+            set: { destination in
+                guard destination != selectedDestination else {
+                    return
+                }
+
+                selectedDestination = destination
+                detailPath.removeAll()
+
+                if destination != nil {
+                    preferredCompactColumn = .detail
+                }
+            }
+        )
+    }
+
     var body: some View {
         let now = Date()
         let reviewSnapshot = ReviewOperations.snapshot(
@@ -78,8 +96,9 @@ struct ContentView: View {
         )
 
         StallyNavigationView(
-            selectedDestination: $selectedDestination,
+            selectedDestination: navigationDestinationBinding,
             preferredCompactColumn: $preferredCompactColumn,
+            detailPath: $detailPath,
             items: items,
             reviewSnapshot: reviewSnapshot,
             allowsSampleItems: items.isEmpty,
@@ -97,10 +116,6 @@ struct ContentView: View {
                 }
             case .settings:
                 SettingsView(items: items)
-            case .item(let item):
-                NavigationStack {
-                    ItemDetailView(item: item)
-                }
             }
         }
         .alert("Unsupported Link", isPresented: $isPresentingMissingItemLinkAlert) {
@@ -136,6 +151,7 @@ struct ContentView: View {
     init() {
         _selectedDestination = .init(initialValue: .library)
         _preferredCompactColumn = .init(initialValue: .detail)
+        _detailPath = .init(initialValue: [])
         _pendingInitialPreviewRoute = .init(initialValue: nil)
     }
 
@@ -144,12 +160,14 @@ struct ContentView: View {
             initialValue: Self.navigationDestination(for: initialPreviewRoute)
         )
         _preferredCompactColumn = .init(initialValue: .detail)
+        _detailPath = .init(initialValue: [])
         _pendingInitialPreviewRoute = .init(initialValue: initialPreviewRoute)
     }
     #else
     init() {
         _selectedDestination = .init(initialValue: .library)
         _preferredCompactColumn = .init(initialValue: .detail)
+        _detailPath = .init(initialValue: [])
     }
     #endif
 
@@ -202,11 +220,11 @@ struct ContentView: View {
         case .insights:
             selectNavigationDestination(.insights)
         case .backupCenter:
-            presentedSheet = .backupCenter
+            presentBackupCenter()
         case .createItem:
-            presentedSheet = .addItem
+            presentAddItem()
         case .settings:
-            presentedSheet = .settings
+            presentSettings()
         }
     }
 
@@ -219,13 +237,15 @@ struct ContentView: View {
         }
 
         selectNavigationDestination(item.isArchived ? .archive : .library)
-        presentedSheet = .item(item)
+        detailPath = [.item(item.uuid)]
     }
 
     private func selectNavigationDestination(
         _ destination: StallyNavigationView.Destination
     ) {
+        presentedSheet = nil
         selectedDestination = destination
+        detailPath.removeAll()
         preferredCompactColumn = .detail
     }
 
@@ -254,7 +274,8 @@ struct ContentView: View {
                 return
             }
 
-            presentedSheet = .item(item)
+            selectNavigationDestination(item.isArchived ? .archive : .library)
+            detailPath = [.item(item.uuid)]
             self.pendingInitialPreviewRoute = nil
         case .settings:
             presentedSheet = .settings

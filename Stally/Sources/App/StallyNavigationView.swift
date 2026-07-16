@@ -42,6 +42,10 @@ struct StallyNavigationView: View {
         }
     }
 
+    enum DetailRoute: Hashable {
+        case item(UUID)
+    }
+
     private struct Sidebar: View {
         @Binding var selection: Destination?
 
@@ -87,6 +91,8 @@ struct StallyNavigationView: View {
     }
 
     private struct Detail: View {
+        @Binding var path: [DetailRoute]
+
         let destination: Destination
         let items: [Item]
         let reviewSnapshot: ReviewSnapshot
@@ -103,6 +109,15 @@ struct StallyNavigationView: View {
         }
 
         var body: some View {
+            NavigationStack(path: $path) {
+                destinationContent
+                    .navigationDestination(for: DetailRoute.self) { route in
+                        detailDestination(for: route)
+                    }
+            }
+        }
+
+        @ViewBuilder private var destinationContent: some View {
             switch destination {
             case .library:
                 LibraryView(
@@ -119,10 +134,29 @@ struct StallyNavigationView: View {
                 InsightsView(items: items)
             }
         }
+
+        @ViewBuilder
+        private func detailDestination(for route: DetailRoute) -> some View {
+            switch route {
+            case .item(let itemID):
+                if let item = items.first(where: { $0.uuid == itemID }) {
+                    ItemDetailView(item: item)
+                } else {
+                    ContentUnavailableView(
+                        "Unsupported Link",
+                        systemImage: "link.badge.plus",
+                        description: Text(
+                            "This link is not supported by this version of Stally."
+                        )
+                    )
+                }
+            }
+        }
     }
 
     @Binding var selectedDestination: Destination?
     @Binding var preferredCompactColumn: NavigationSplitViewColumn
+    @Binding var detailPath: [DetailRoute]
 
     let items: [Item]
     let reviewSnapshot: ReviewSnapshot
@@ -139,6 +173,7 @@ struct StallyNavigationView: View {
             )
         } detail: {
             Detail(
+                path: $detailPath,
                 destination: selectedDestination ?? .library,
                 items: items,
                 reviewSnapshot: reviewSnapshot,
