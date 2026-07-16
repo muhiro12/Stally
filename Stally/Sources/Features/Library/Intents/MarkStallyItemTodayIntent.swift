@@ -11,7 +11,9 @@ import SwiftData
 
 struct MarkStallyItemTodayIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Mark Today", table: "AppIntents")
-    static let description = IntentDescription("Mark that you chose an item today.")
+    static let description = IntentDescription(
+        .init("Mark that you chose an item today.", table: "AppIntents")
+    )
 
     private static var markedDialog: IntentDialog {
         .init(.init("Marked today.", table: "AppIntents"))
@@ -21,7 +23,7 @@ struct MarkStallyItemTodayIntent: AppIntent {
         .init(.init("Already marked today.", table: "AppIntents"))
     }
 
-    @Parameter(title: "Item")
+    @Parameter(title: .init("Item", table: "AppIntents"))
     private var item: StallyItemEntity
 
     @Dependency private var modelContainer: ModelContainer

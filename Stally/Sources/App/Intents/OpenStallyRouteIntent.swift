@@ -13,7 +13,7 @@ struct OpenStallyRouteIntent: AppIntent {
     static let openAppWhenRun = true
     static let isDiscoverable = false
 
-    @Parameter(title: "URL")
+    @Parameter(title: .init("URL", table: "AppIntents"))
     private var url: URL
 
     init() {

@@ -9,7 +9,9 @@ import AppIntents
 
 struct OpenStallyBackupCenterIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Open Backup Center", table: "AppIntents")
-    static let description = IntentDescription("Open Stally to Backup Center.")
+    static let description = IntentDescription(
+        .init("Open Stally to Backup Center.", table: "AppIntents")
+    )
     static let openAppWhenRun = true
     static let isDiscoverable = false
 

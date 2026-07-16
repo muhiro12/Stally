@@ -10,15 +10,17 @@ import SwiftData
 
 struct CreateStallyItemIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Create Item", table: "AppIntents")
-    static let description = IntentDescription("Create a Stally item without opening the app.")
+    static let description = IntentDescription(
+        .init("Create a Stally item without opening the app.", table: "AppIntents")
+    )
 
-    @Parameter(title: "Name")
+    @Parameter(title: .init("Name", table: "AppIntents"))
     private var name: String
 
-    @Parameter(title: "Category")
+    @Parameter(title: .init("Category", table: "AppIntents"))
     private var category: StallyItemCategoryIntentValue
 
-    @Parameter(title: "Note")
+    @Parameter(title: .init("Note", table: "AppIntents"))
     private var note: String?
 
     @Dependency private var modelContainer: ModelContainer

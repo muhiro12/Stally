@@ -10,7 +10,9 @@ import SwiftData
 
 struct ArchiveStallyItemIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Archive Item", table: "AppIntents")
-    static let description = IntentDescription("Move an item into Archive while preserving its history.")
+    static let description = IntentDescription(
+        .init("Move an item into Archive while preserving its history.", table: "AppIntents")
+    )
     static let isDiscoverable = false
 
     private static var archivedDialog: IntentDialog {
@@ -21,7 +23,7 @@ struct ArchiveStallyItemIntent: AppIntent {
         .init(.init("Item is already archived.", table: "AppIntents"))
     }
 
-    @Parameter(title: "Item")
+    @Parameter(title: .init("Item", table: "AppIntents"))
     private var item: StallyItemEntity
 
     @Dependency private var modelContainer: ModelContainer

@@ -9,7 +9,9 @@ import AppIntents
 
 struct OpenStallyInsightsIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Open Insights", table: "AppIntents")
-    static let description = IntentDescription("Open Stally to Insights.")
+    static let description = IntentDescription(
+        .init("Open Stally to Insights.", table: "AppIntents")
+    )
     static let openAppWhenRun = true
 
     @MainActor

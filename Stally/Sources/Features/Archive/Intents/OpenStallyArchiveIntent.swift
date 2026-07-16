@@ -9,7 +9,9 @@ import AppIntents
 
 struct OpenStallyArchiveIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Open Archive", table: "AppIntents")
-    static let description = IntentDescription("Open Stally to Archive.")
+    static let description = IntentDescription(
+        .init("Open Stally to Archive.", table: "AppIntents")
+    )
     static let openAppWhenRun = true
     static let isDiscoverable = false
 

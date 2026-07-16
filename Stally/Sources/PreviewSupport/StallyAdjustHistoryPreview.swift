@@ -35,9 +35,13 @@ struct StallyAdjustHistoryPreview: View {
             )
         } else {
             ContentUnavailableView {
-                Label("No Preview Item", systemImage: "tray")
+                Label {
+                    Text(verbatim: "No Preview Item")
+                } icon: {
+                    Image(systemName: "tray")
+                }
             } description: {
-                Text("Preview data did not create an item.")
+                Text(verbatim: "Preview data did not create an item.")
             }
         }
     }

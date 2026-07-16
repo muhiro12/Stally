@@ -1,43 +1,44 @@
 {
-  "sourceLanguage": "en",
-  "strings": {
-    "Add item in ${applicationName}": {
-      "localizations": {
-        "en": {
-          "stringSet": {
-            "state": "translated",
-            "values": [
-              "Add item in ${applicationName}",
-              "Create item in ${applicationName}"
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Create item in ${applicationName}" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "Create item in ${applicationName}",
+              "Add item in ${applicationName}"
             ]
           }
         },
-        "ja": {
-          "stringSet": {
-            "state": "translated",
-            "values": [
-              "${applicationName}でアイテムを追加",
-              "${applicationName}でアイテムを作成"
+        "ja" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
+              "${applicationName}でアイテムを作成",
+              "${applicationName}でアイテムを追加"
             ]
           }
         }
       }
     },
-    "Mark item in ${applicationName}": {
-      "localizations": {
-        "en": {
-          "stringSet": {
-            "state": "translated",
-            "values": [
+    "Mark item in ${applicationName}" : {
+      "localizations" : {
+        "en" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
               "Mark item in ${applicationName}",
               "Mark today in ${applicationName}"
             ]
           }
         },
-        "ja": {
-          "stringSet": {
-            "state": "translated",
-            "values": [
+        "ja" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
               "${applicationName}でアイテムをマーク",
               "${applicationName}で今日マーク"
             ]
@@ -45,21 +46,21 @@
         }
       }
     },
-    "Open ${applicationName}": {
-      "localizations": {
-        "en": {
-          "stringSet": {
-            "state": "translated",
-            "values": [
+    "Open ${applicationName}" : {
+      "localizations" : {
+        "en" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
               "Open ${applicationName}",
               "Open Library in ${applicationName}"
             ]
           }
         },
-        "ja": {
-          "stringSet": {
-            "state": "translated",
-            "values": [
+        "ja" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
               "${applicationName}を開く",
               "${applicationName}でライブラリを開く"
             ]
@@ -67,21 +68,21 @@
         }
       }
     },
-    "Open Insights in ${applicationName}": {
-      "localizations": {
-        "en": {
-          "stringSet": {
-            "state": "translated",
-            "values": [
+    "Open Insights in ${applicationName}" : {
+      "localizations" : {
+        "en" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
               "Open Insights in ${applicationName}",
               "Read collection patterns in ${applicationName}"
             ]
           }
         },
-        "ja": {
-          "stringSet": {
-            "state": "translated",
-            "values": [
+        "ja" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
               "${applicationName}でインサイトを開く",
               "${applicationName}でコレクションの流れを読む"
             ]
@@ -89,21 +90,21 @@
         }
       }
     },
-    "Open Review in ${applicationName}": {
-      "localizations": {
-        "en": {
-          "stringSet": {
-            "state": "translated",
-            "values": [
+    "Open Review in ${applicationName}" : {
+      "localizations" : {
+        "en" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
               "Open Review in ${applicationName}",
               "Review items in ${applicationName}"
             ]
           }
         },
-        "ja": {
-          "stringSet": {
-            "state": "translated",
-            "values": [
+        "ja" : {
+          "stringSet" : {
+            "state" : "translated",
+            "values" : [
               "${applicationName}でレビューを開く",
               "${applicationName}でアイテムをレビュー"
             ]
@@ -112,5 +113,5 @@
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }

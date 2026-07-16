@@ -9,7 +9,9 @@ import AppIntents
 
 struct OpenStallySettingsIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Open Settings", table: "AppIntents")
-    static let description = IntentDescription("Open Stally to Settings.")
+    static let description = IntentDescription(
+        .init("Open Stally to Settings.", table: "AppIntents")
+    )
     static let openAppWhenRun = true
     static let isDiscoverable = false
 

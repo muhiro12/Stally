@@ -9,7 +9,9 @@ import AppIntents
 
 struct OpenStallyLibraryIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Open Library", table: "AppIntents")
-    static let description = IntentDescription("Open Stally to Library.")
+    static let description = IntentDescription(
+        .init("Open Stally to Library.", table: "AppIntents")
+    )
     static let openAppWhenRun = true
 
     @MainActor
