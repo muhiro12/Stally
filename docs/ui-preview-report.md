@@ -15,10 +15,17 @@ sharing, sheets, dialogs, alerts, and standard controls should keep their
 native SwiftUI semantics unless a concrete product need justifies a custom
 treatment.
 
-App views should also consume semantic colors. The app accent resolves through
-the Asset Catalog to the system Mint color instead of being specified directly
-in feature code. Explicit colors remain appropriate only when they carry a
-specific meaning, such as destructive or contrast-critical treatment.
+App views should also consume semantic colors. `AccentColor` resolves through
+the Asset Catalog to the system Mint color and is the only app-owned brand
+color. It is used where shape, fill, selection, or state carries meaning, such
+as primary actions, marked-state badges and dots, selected native controls,
+and deterministic preview imagery.
+
+Mint is not used as small foreground text on neutral surfaces. Text-first
+actions and metadata use MHUI `primaryText` or `secondaryText`, secondary
+actions use the MHUI secondary action style, and native toolbar symbols use
+Apple's dynamic primary foreground. This preserves contrast without adding an
+independent app palette.
 
 MHUI and MHDesign are the shared app-family style layer on top of that
 foundation. In Stally, they should be used more actively than in Incomes where
@@ -53,8 +60,15 @@ Reviewed as current Stally surfaces:
 Current MHUI usage:
 
 - App root and previews apply `MHTheme.standard` and `MHGlassPolicy.automatic`.
-- Native controls and semantic accent styling resolve through the Asset Catalog
-  to the system Mint color.
+- The app root tint and MHUI accent role resolve through `AccentColor` to the
+  system Mint color.
+- Filled primary actions, marked-state badges, history dots, and selected
+  native controls retain Mint where shape or state provides sufficient
+  separation.
+- Text-first actions and metadata use MHUI primary or secondary text roles.
+  Native toolbar actions use Apple's dynamic primary foreground because the
+  toolbar remains a native SwiftUI surface.
+- No additional app-owned color asset or fixed RGB color was added.
 - Existing `List` and `Form` surfaces use Stally-local wrappers around
   `mhListChrome`, `mhFormChrome`, and `MHKeyValueLabeledContentStyle`.
 - Rows, metadata, badges, empty states, action emphasis, destructive actions,
@@ -95,8 +109,9 @@ Improvements represented by the current surface:
   reflection tasks.
 - Backup Center moved out of the peer navigation level. It remains available
   from Settings, the empty-Library restore action, and supported deep links.
-- Sidebar selection, primary actions, controls, badges, and preview photo
-  fixtures share the Mint accent without feature-level color constants.
+- Sidebar selection, primary-action fills, marked-state badges and dots,
+  selected controls, and preview photo fixtures retain Mint. Low-contrast
+  foreground actions and metadata use MHUI or Apple semantic roles instead.
 
 Overuse risks intentionally avoided:
 
@@ -281,9 +296,9 @@ Not adopted:
   or confirmation actions. Grouping them visually would make the first UI pass
   heavier than the current product tone needs.
 - Custom `MHDesignMetrics` or custom `MHTheme`: `MHTheme.standard` fits the
-  quiet neutral direction. The app's Mint identity comes from the Asset Catalog,
-  so feature views can continue to use semantic accent styling without a custom
-  theme or app-specific color constants.
+  quiet neutral direction. The app's Mint identity comes from `AccentColor`,
+  while neutral and status colors come from MHUI semantic roles. A custom
+  theme, secondary app palette, or feature-level color constant is not needed.
 
 ## SwiftUI Standard Behavior Preserved
 
@@ -367,8 +382,8 @@ Item Detail:
 - Used badges and semantic typography in the header.
 - Presents the canonical item photo when one is stored, while list rows remain
   compact and text-first.
-- Kept Mark Today as the single primary action and Archive/Undo as quiet
-  actions.
+- Kept Mark Today as the single primary action and Archive/Undo as MHUI
+  secondary actions.
 
 ## Before And After Notes
 
@@ -388,13 +403,17 @@ Compared with `docs/ui-preview-screenshots/before/`:
   other screens.
 - Empty states remain native, but their spacing and primary action style match
   the MHUI pass.
-- Semantic accent styling now resolves to Mint across sidebar selection,
-  actions, controls, badges, and the deterministic preview photo fixture.
+- Text-first actions, toolbar symbols, and item metadata no longer rely on
+  Mint as foreground text on light surfaces.
+- Mint remains visible in primary-action fills, marked-state badges and dots,
+  selected controls, and the deterministic preview photo fixture.
 
 ## Runtime Capture Notes
 
 Confirmed through after screenshots:
 
+- The accent-legibility refresh recaptured the empty and dense Library, Item
+  Detail, and Settings screenshots after applying semantic color roles.
 - Library empty state renders with the documented quiet start copy.
 - Dense Library renders active items, notes, mark counts, and updated row
   hierarchy without a bottom tab bar.
@@ -410,8 +429,8 @@ Confirmed through after screenshots:
   export/import/reset entry points.
 - Settings renders shareable destination links.
 - Add Item renders the empty form with disabled Add action.
-- Mint resolves consistently from the Asset Catalog across the captured app
-  surfaces without direct feature-level color selection.
+- Light and dark previews keep primary and secondary actions legible while
+  preserving Mint as the app accent.
 
 Capture limits:
 
@@ -422,10 +441,9 @@ Capture limits:
   DEBUG launch routes remain available.
 - Runtime screenshots were used as the faithful fallback where routes could
   reproduce the screen state.
-- The Xcode device-interaction bridge could not connect to the booted
-  simulators during this refresh. Xcode Run still launched successfully, so
-  the existing DEBUG routes, `simctl` screenshots, and simulator logs were
-  used without erasing simulator data.
+- Xcode-native screen previews verified light and dark appearances. The
+  existing DEBUG routes and `simctl` screenshots captured stable runtime
+  states without erasing simulator data.
 - Archive, Review, Insights, Backup Center, Settings, and Add Item were
   reproduced through their DEBUG launch routes after the split-view shell
   stabilized.
