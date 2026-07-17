@@ -441,6 +441,22 @@
         }
       }
     },
+    "Backup Preview" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backup Preview"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックアップのプレビュー"
+          }
+        }
+      }
+    },
     "Backup saved." : {
       "localizations" : {
         "en" : {

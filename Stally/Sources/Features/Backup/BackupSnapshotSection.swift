@@ -12,7 +12,7 @@ struct BackupSnapshotSection: View {
     let summary: BackupCollectionSummary
 
     var body: some View {
-        Section {
+        MHGroupedRows {
             LabeledContent("Items") {
                 Text(summary.itemCount, format: .number)
             }
@@ -24,8 +24,8 @@ struct BackupSnapshotSection: View {
             LabeledContent("Marks") {
                 Text(summary.markCount, format: .number)
             }
-        } header: {
-            MHSectionHeader("Backup Snapshot")
         }
+        .labeledContentStyle(.mhKeyValue)
+        .mhSection("Backup Snapshot")
     }
 }

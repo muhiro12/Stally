@@ -30,6 +30,5 @@ struct BackupValidationIssueRow: View {
                     .mhTextStyle(.caption, colorRole: .secondaryText)
             }
         }
-        .mhRow()
     }
 }
