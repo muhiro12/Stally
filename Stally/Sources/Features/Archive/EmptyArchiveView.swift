@@ -10,11 +10,17 @@ import SwiftUI
 
 struct EmptyArchiveView: View {
     var body: some View {
-        ContentUnavailableView {
-            Label("No Archived Items", systemImage: "archivebox")
-        } description: {
-            Text("Past favorites can stay nearby without crowding the main list.")
+        List {
+            // Preserve the native list canvas behind the empty state.
         }
-        .mhEmptyStateLayout()
+        .stallyListChrome()
+        .overlay {
+            ContentUnavailableView {
+                Label("No Archived Items", systemImage: "archivebox")
+            } description: {
+                Text("Past favorites can stay nearby without crowding the main list.")
+            }
+            .mhEmptyStateLayout()
+        }
     }
 }

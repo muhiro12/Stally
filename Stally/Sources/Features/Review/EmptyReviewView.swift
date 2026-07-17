@@ -10,11 +10,17 @@ import SwiftUI
 
 struct EmptyReviewView: View {
     var body: some View {
-        ContentUnavailableView {
-            Label("Nothing Needs Review", systemImage: "checkmark.circle")
-        } description: {
-            Text("All review lanes are clear right now.")
+        List {
+            // Preserve the native list canvas behind the empty state.
         }
-        .mhEmptyStateLayout()
+        .stallyListChrome()
+        .overlay {
+            ContentUnavailableView {
+                Label("Nothing Needs Review", systemImage: "checkmark.circle")
+            } description: {
+                Text("All review lanes are clear right now.")
+            }
+            .mhEmptyStateLayout()
+        }
     }
 }

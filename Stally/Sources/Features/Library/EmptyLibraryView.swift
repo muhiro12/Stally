@@ -14,22 +14,28 @@ struct EmptyLibraryView: View {
     let restoreAction: () -> Void
 
     var body: some View {
-        ContentUnavailableView {
-            Label("Start Your Library", systemImage: "tray")
-        } description: {
-            Text("Start with a few pieces you actually reach for.")
-        } actions: {
-            Button("Add Your First Item", action: addAction)
-                .buttonStyle(.mhPrimary)
-
-            if let sampleAction {
-                Button("Try Sample Items", action: sampleAction)
-                    .buttonStyle(.mhSecondary)
-            }
-
-            Button("Restore From Backup", action: restoreAction)
-                .buttonStyle(.mhQuiet)
+        List {
+            // Preserve the native list canvas behind the empty state.
         }
-        .mhEmptyStateLayout()
+        .stallyListChrome()
+        .overlay {
+            ContentUnavailableView {
+                Label("Start Your Library", systemImage: "tray")
+            } description: {
+                Text("Start with a few pieces you actually reach for.")
+            } actions: {
+                Button("Add Your First Item", action: addAction)
+                    .buttonStyle(.mhPrimary)
+
+                if let sampleAction {
+                    Button("Try Sample Items", action: sampleAction)
+                        .buttonStyle(.mhSecondary)
+                }
+
+                Button("Restore From Backup", action: restoreAction)
+                    .buttonStyle(.mhQuiet)
+            }
+            .mhEmptyStateLayout()
+        }
     }
 }

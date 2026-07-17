@@ -20,7 +20,6 @@ struct ItemFormFields: View {
     var body: some View {
         Section {
             TextField("Name", text: $name)
-                .mhInputChrome()
 
             Picker("Category", selection: $category) {
                 ForEach(ItemCategory.allCases) { category in
@@ -32,7 +31,6 @@ struct ItemFormFields: View {
 
             TextField("Note", text: $note, axis: .vertical)
                 .lineLimit(noteLineLimit, reservesSpace: true)
-                .mhInputChrome()
         }
 
         ItemPhotoFormSection(
