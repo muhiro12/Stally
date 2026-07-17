@@ -6,6 +6,7 @@
 //
 
 import MHPlatform
+import MHUI
 import SwiftUI
 import UIKit
 
@@ -95,6 +96,7 @@ struct ItemLibraryList: View {
                         Button("Clear", action: clearRefinements)
                     }
                 }
+                .mhRow()
             }
         } else {
             Section {
@@ -102,6 +104,7 @@ struct ItemLibraryList: View {
                     NavigationLink(value: StallyNavigationView.DetailRoute.item(item.uuid)) {
                         ItemRow(item: item)
                     }
+                    .mhRow()
                 }
             }
         }

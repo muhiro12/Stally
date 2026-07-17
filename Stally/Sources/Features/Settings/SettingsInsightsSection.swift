@@ -20,8 +20,10 @@ struct SettingsInsightsSection: View {
                         .tag(range)
                 }
             }
+            .mhRow()
 
             Toggle("Include archived items", isOn: $includesArchivedItems)
+                .mhRow()
         } header: {
             MHSectionHeader("Insights")
         }

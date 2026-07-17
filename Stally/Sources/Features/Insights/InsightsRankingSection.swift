@@ -25,6 +25,7 @@ struct InsightsRankingSection: View {
                     ) {
                         InsightItemSummaryRow(summary: summary)
                     }
+                    .mhRow()
                 }
             }
         } header: {

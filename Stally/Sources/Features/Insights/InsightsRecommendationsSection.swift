@@ -16,6 +16,7 @@ struct InsightsRecommendationsSection: View {
             if recommendations.isEmpty {
                 Text("No follow-up suggestions right now.")
                     .mhRowSupporting()
+                    .mhRow()
             } else {
                 ForEach(recommendations, id: \.kind) { recommendation in
                     VStack(alignment: .leading) {

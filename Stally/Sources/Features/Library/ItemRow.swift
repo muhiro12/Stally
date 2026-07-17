@@ -63,6 +63,5 @@ struct ItemRow: View {
                     .lineLimit(Layout.noteLineLimit)
             }
         }
-        .mhRow()
     }
 }

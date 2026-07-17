@@ -29,6 +29,7 @@ struct SettingsReviewSection: View {
                     Text(needsFirstMarkAfterDays, format: .number)
                 }
             }
+            .mhRow()
 
             Stepper(
                 value: $dormantAfterDays,
@@ -38,8 +39,10 @@ struct SettingsReviewSection: View {
                     Text(dormantAfterDays, format: .number)
                 }
             }
+            .mhRow()
 
             Toggle("Show completed sections", isOn: $showsCompletedSections)
+                .mhRow()
         } header: {
             MHSectionHeader("Review")
         }

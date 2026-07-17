@@ -14,6 +14,7 @@ struct SettingsICloudSection: View {
     var body: some View {
         Section {
             Toggle("iCloud Sync", isOn: $isICloudOn)
+                .mhRow()
         } header: {
             MHSectionHeader("iCloud")
         } footer: {

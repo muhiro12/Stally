@@ -34,6 +34,5 @@ struct InsightItemSummaryRow: View {
             }
             .mhRowOverline()
         }
-        .mhRow()
     }
 }

@@ -15,6 +15,7 @@ struct BackupStatusSection: View {
         Section {
             Text(message)
                 .mhRowSupporting()
+                .mhRow()
         } header: {
             MHSectionHeader("Last Result")
         }
