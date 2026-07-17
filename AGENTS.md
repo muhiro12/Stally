@@ -181,8 +181,9 @@ The app target should stay a thin adapter over the current product surface.
 - `StallyLibrary/Sources/Settings/` owns the ad-removal subscription-state
   values and `SubscriptionStateOperations`. iCloud preference state remains
   independent from subscription state.
-- `StallyLibrary/Sources/SampleData/` owns the localized empty-Library sample
-  creation use case through `SampleDataOperations`.
+- `StallyLibrary/Sources/SampleData/` owns localized empty-Library sample
+  creation, stable sample identity, summary, and removal use cases through
+  `SampleDataOperations`.
 - `StallyLibrary/Sources/Preferences/` owns app-local preference descriptors
   used by app startup and SwiftUI settings surfaces.
 - `StallyLibrary/Sources/Persistence/` owns `StallyMigrationPlan` and

@@ -697,6 +697,22 @@
         }
       }
     },
+    "Could Not Remove Sample Items" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could Not Remove Sample Items"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルアイテムを削除できませんでした"
+          }
+        }
+      }
+    },
     "Could Not Save" : {
       "localizations" : {
         "en" : {
@@ -2111,6 +2127,38 @@
         }
       }
     },
+    "Remove Sample Items" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove Sample Items"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルアイテムを削除"
+          }
+        }
+      }
+    },
+    "Remove Sample Items?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove Sample Items?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルアイテムを削除しますか？"
+          }
+        }
+      }
+    },
     "Replace import will overwrite them." : {
       "localizations" : {
         "en" : {
@@ -2271,6 +2319,54 @@
         }
       }
     },
+    "Sample Data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sample Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルデータ"
+          }
+        }
+      }
+    },
+    "Sample Items" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sample Items"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルアイテム"
+          }
+        }
+      }
+    },
+    "Sample Marks" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sample Marks"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルのマーク"
+          }
+        }
+      }
+    },
     "Sample items can only be added when the collection is empty." : {
       "localizations" : {
         "en" : {
@@ -2283,6 +2379,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "サンプルアイテムはコレクションが空のときだけ追加できます。"
+          }
+        }
+      }
+    },
+    "Sample items use the same Library, history, Review, Insights, Archive, backup, and sync features as your own items." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sample items use the same Library, history, Review, Insights, Archive, backup, and sync features as your own items."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルアイテムは、自分で追加したアイテムと同じライブラリ、履歴、レビュー、インサイト、アーカイブ、バックアップ、同期機能を使用します。"
           }
         }
       }
@@ -2667,6 +2779,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "このリンクは、このバージョンのStallyではサポートされていません。"
+          }
+        }
+      }
+    },
+    "This removes %lld sample items and %lld marks, including edits and history you added to them. Other items stay in your Library." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This removes %lld sample items and %lld marks, including edits and history you added to them. Other items stay in your Library."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルアイテム%lld件とマーク%lld件を削除します。サンプルに加えた編集や履歴も削除されます。それ以外のアイテムはライブラリに残ります。"
           }
         }
       }

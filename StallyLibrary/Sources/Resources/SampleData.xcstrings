@@ -1,6 +1,22 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Archived because it only comes out a few times a year." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archived because it only comes out a few times a year."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "年に数回しか出番がないので、アーカイブしてある。"
+          }
+        }
+      }
+    },
     "Black Wool Coat" : {
       "localizations" : {
         "en" : {
@@ -33,6 +49,22 @@
         }
       }
     },
+    "Daily Field Notes" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily Field Notes"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日々のフィールドノート"
+          }
+        }
+      }
+    },
     "Easy pair for short walks and errands." : {
       "localizations" : {
         "en" : {
@@ -49,6 +81,22 @@
         }
       }
     },
+    "Still waiting for its first stretch of regular use." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Still waiting for its first stretch of regular use."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まだ、日常的に使うきっかけを待っている。"
+          }
+        }
+      }
+    },
     "The one I reach for on cold mornings." : {
       "localizations" : {
         "en" : {
@@ -61,6 +109,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "寒い朝につい手が伸びる一着。"
+          }
+        }
+      }
+    },
+    "Travel Weekender" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Travel Weekender"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "旅行用ボストンバッグ"
           }
         }
       }

@@ -19,7 +19,8 @@ public enum ItemOperations {
     ) throws -> Item {
         let item = try makeItem(
             input: input,
-            createdAt: createdAt
+            createdAt: createdAt,
+            uuid: .init()
         )
         context.insert(item)
         try saveOrRollback(context)
@@ -242,7 +243,8 @@ public enum ItemOperations {
 
     static func makeItem(
         input: ItemFormInput,
-        createdAt: Date
+        createdAt: Date,
+        uuid: UUID
     ) throws -> Item {
         let normalizedName = input.normalizedName
 
@@ -259,7 +261,7 @@ public enum ItemOperations {
             category: input.category,
             note: input.normalizedNote,
             createdAt: createdAt,
-            uuid: .init(),
+            uuid: uuid,
             photoData: photoData,
             archivedAt: nil
         )

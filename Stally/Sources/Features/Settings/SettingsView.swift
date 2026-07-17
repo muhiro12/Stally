@@ -7,9 +7,16 @@
 
 import MHPlatform
 import MHUI
+import SwiftData
 import SwiftUI
 
 struct SettingsView: View {
+    @Environment(\.modelContext)
+    private var modelContext
+
+    @State private var isConfirmingSampleRemoval = false
+    @State private var sampleRemovalErrorMessage: String?
+
     let items: [Item]
 
     @AppStorage(\.isSubscribeOn)
@@ -27,9 +34,54 @@ struct SettingsView: View {
     @AppStorage(\.includesArchivedItemsInInsights)
     private var includesArchivedItemsInInsights
 
+    private var sampleDataSummary: SampleDataSummary {
+        SampleDataOperations.summary(for: items)
+    }
+
+    private var isShowingSampleRemovalError: Binding<Bool> {
+        .init(
+            get: { sampleRemovalErrorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    sampleRemovalErrorMessage = nil
+                }
+            }
+        )
+    }
+
     var body: some View {
         NavigationStack {
             settingsList
+        }
+        .confirmationDialog(
+            "Remove Sample Items?",
+            isPresented: $isConfirmingSampleRemoval,
+            titleVisibility: .visible
+        ) {
+            Button("Remove Sample Items", role: .destructive) {
+                removeSampleItems()
+            }
+
+            Button("Cancel", role: .cancel) {
+                isConfirmingSampleRemoval = false
+            }
+        } message: {
+            Text(
+                // swiftlint:disable:next line_length
+                "This removes \(sampleDataSummary.itemCount) sample items and \(sampleDataSummary.markCount) marks, including edits and history you added to them. Other items stay in your Library."
+            )
+        }
+        .alert(
+            "Could Not Remove Sample Items",
+            isPresented: isShowingSampleRemovalError
+        ) {
+            Button("OK", role: .cancel) {
+                sampleRemovalErrorMessage = nil
+            }
+        } message: {
+            if let sampleRemovalErrorMessage {
+                Text(sampleRemovalErrorMessage)
+            }
         }
     }
 
@@ -62,6 +114,14 @@ struct SettingsView: View {
             includesArchivedItems: $includesArchivedItemsInInsights
         )
 
+        if !sampleDataSummary.isEmpty {
+            SettingsSampleDataSection(
+                itemCount: sampleDataSummary.itemCount,
+                markCount: sampleDataSummary.markCount,
+                removeAction: confirmSampleRemoval
+            )
+        }
+
         Section {
             NavigationLink {
                 BackupCenterView(items: items)
@@ -88,5 +148,17 @@ struct SettingsView: View {
         }
 
         StallyAboutSection()
+    }
+
+    private func confirmSampleRemoval() {
+        isConfirmingSampleRemoval = true
+    }
+
+    private func removeSampleItems() {
+        do {
+            try SampleDataOperations.removeSampleItems(in: modelContext)
+        } catch {
+            sampleRemovalErrorMessage = error.localizedDescription
+        }
     }
 }

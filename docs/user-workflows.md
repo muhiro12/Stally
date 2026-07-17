@@ -19,7 +19,9 @@ The onboarding language should keep the original product focus:
   build softly over time.
 
 Sample items should be safe exploration material for an empty library. They
-should not be treated as the user's real collection.
+use the same Library, history, Review, Insights, Archive, backup, and sync
+behavior as the user's own items, but remain removable together from Settings.
+Removing them should preserve every item the user created independently.
 
 ## Add And Describe An Item
 
