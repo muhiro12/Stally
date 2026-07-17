@@ -25,7 +25,7 @@ struct StallyApp: App {
             rootContent
                 .stallyPlatformEnvironment(platformEnvironment)
                 .mhTheme(.standard)
-                .mhGlassPolicy(.automatic)
+                .mhGlassPolicy(.disabled)
         }
     }
 

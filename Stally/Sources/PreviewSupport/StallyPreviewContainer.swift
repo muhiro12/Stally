@@ -21,7 +21,7 @@ struct StallyPreviewContainer<Content: View>: View {
             .stallyPreviewPlatformEnvironment(platformEnvironment)
             .environment(\.timeZone, StallyPreviewData.timeZone)
             .mhTheme(.standard)
-            .mhGlassPolicy(.automatic)
+            .mhGlassPolicy(.disabled)
     }
 
     init(
