@@ -72,6 +72,7 @@ struct StallyNavigationView: View {
                     Button(action: settingsAction) {
                         Label("Settings", systemImage: "gear")
                     }
+                    .stallyToolbarActionStyle()
                 }
             }
         }

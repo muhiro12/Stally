@@ -24,7 +24,7 @@ struct ArchiveActionSection: View {
                 Button(action: archiveAction) {
                     Label("Archive Item", systemImage: "archivebox")
                 }
-                .buttonStyle(.mhQuiet)
+                .buttonStyle(.mhSecondary)
             }
         } header: {
             MHSectionHeader("Archive")

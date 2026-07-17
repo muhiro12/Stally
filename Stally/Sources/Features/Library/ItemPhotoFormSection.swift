@@ -45,6 +45,7 @@ struct ItemPhotoFormSection: View {
                     Label("Choose Photo", systemImage: "photo.badge.plus")
                 }
             }
+            .mhTextStyle(.body, colorRole: .primaryText)
             .mhRow()
 
             if photoData != nil {

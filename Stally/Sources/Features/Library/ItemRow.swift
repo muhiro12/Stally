@@ -55,7 +55,7 @@ struct ItemRow: View {
                     }
                 }
             }
-            .mhRowOverline()
+            .mhTextStyle(.metadata, colorRole: .secondaryText)
 
             if !item.note.isEmpty {
                 Text(item.note)

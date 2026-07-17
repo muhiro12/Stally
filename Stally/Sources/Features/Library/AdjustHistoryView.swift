@@ -62,6 +62,7 @@ struct AdjustHistoryView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done", action: dismissSheet)
+                        .stallyToolbarActionStyle()
                 }
             }
             .alert("Could Not Update History", isPresented: $isPresentingError) {

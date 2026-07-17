@@ -18,4 +18,8 @@ extension View {
         mhFormChrome()
             .labeledContentStyle(.mhKeyValue)
     }
+
+    func stallyToolbarActionStyle() -> some View {
+        tint(.primary)
+    }
 }

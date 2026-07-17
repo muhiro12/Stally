@@ -79,6 +79,7 @@ struct SettingsView: View {
                     } icon: {
                         Image(systemName: destination.systemImageName)
                     }
+                    .mhTextStyle(.body, colorRole: .primaryText)
                 }
                 .mhRow()
             }

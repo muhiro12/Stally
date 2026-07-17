@@ -36,6 +36,10 @@ struct AddItemView: View {
         }
     }
 
+    private var isAddDisabled: Bool {
+        name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isLoadingPhoto
+    }
+
     var body: some View {
         NavigationStack {
             Form {
@@ -54,14 +58,13 @@ struct AddItemView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", role: .cancel, action: dismissSheet)
+                        .stallyToolbarActionStyle()
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Add", action: addItem)
-                        .disabled(
-                            name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                                || isLoadingPhoto
-                        )
+                        .stallyToolbarActionStyle()
+                        .disabled(isAddDisabled)
                 }
             }
             .alert("Could Not Save", isPresented: isShowingSaveError) {

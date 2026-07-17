@@ -95,6 +95,7 @@ struct ItemDetailView: View {
                 Button(action: presentEditItem) {
                     Label("Edit Item", systemImage: "pencil")
                 }
+                .stallyToolbarActionStyle()
 
                 StallyLinkShareButton(
                     link: .item(item.uuid),

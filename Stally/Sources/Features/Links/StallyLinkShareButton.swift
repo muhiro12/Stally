@@ -23,5 +23,6 @@ struct StallyLinkShareButton: View {
                 Image(systemName: "square.and.arrow.up")
             }
         }
+        .stallyToolbarActionStyle()
     }
 }

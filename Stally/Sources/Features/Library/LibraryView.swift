@@ -63,6 +63,7 @@ struct LibraryView: View {
                 Button(action: addAction) {
                     Label("Add Item", systemImage: "plus")
                 }
+                .stallyToolbarActionStyle()
             }
         }
         .alert("Could Not Add Sample Items", isPresented: isShowingSampleError) {

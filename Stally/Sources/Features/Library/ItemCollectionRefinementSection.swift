@@ -68,6 +68,7 @@ struct ItemCollectionRefinementSection: View {
                 Text(shownItemCount, format: .number)
                     .foregroundStyle(.secondary)
             }
+            .mhTextStyle(.bodyStrong, colorRole: .primaryText)
         }
     }
 }

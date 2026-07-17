@@ -22,7 +22,7 @@ struct TodayMarkSection: View {
                 Button(action: undoAction) {
                     Label("Undo Today's Mark", systemImage: "arrow.uturn.backward")
                 }
-                .buttonStyle(.mhQuiet)
+                .buttonStyle(.mhSecondary)
             } else {
                 Button(action: markToday) {
                     Label("Mark Today", systemImage: "checkmark.circle")

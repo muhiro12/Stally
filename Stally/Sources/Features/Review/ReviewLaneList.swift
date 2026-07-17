@@ -79,11 +79,13 @@ struct ReviewLaneList: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 EditButton()
+                    .stallyToolbarActionStyle()
             }
 
             if !selectedRequests.isEmpty {
                 ToolbarItem(placement: .bottomBar) {
                     Button(bulkActionTitle, action: performSelectedActions)
+                        .stallyToolbarActionStyle()
                 }
             }
         }

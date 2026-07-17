@@ -15,6 +15,7 @@ struct InsightsReportSection: View {
         Section {
             ShareLink(item: report) {
                 Label("Share Report", systemImage: "square.and.arrow.up")
+                    .mhTextStyle(.body, colorRole: .primaryText)
             }
             .mhRow()
         } header: {

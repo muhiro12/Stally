@@ -27,6 +27,7 @@ struct StallyAboutSection: View {
         Section {
             Link(destination: Self.privacyPolicyURL) {
                 Label("Privacy Policy", systemImage: "hand.raised")
+                    .mhTextStyle(.body, colorRole: .primaryText)
             }
             .mhRow()
 
