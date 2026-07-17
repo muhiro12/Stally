@@ -22,7 +22,7 @@ struct BackupExportSection: View {
             .buttonStyle(.mhSecondary)
             .popoverTip(exportTip, arrowEdge: .top)
         } header: {
-            MHSectionHeader("Export Tools")
+            StallySectionHeader("Export Tools")
         }
     }
 

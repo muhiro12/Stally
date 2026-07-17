@@ -5,7 +5,6 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
-import MHUI
 import SwiftUI
 
 struct ItemFormFields: View {
@@ -20,7 +19,6 @@ struct ItemFormFields: View {
     var body: some View {
         Section {
             TextField("Name", text: $name)
-                .mhInputChrome()
 
             Picker("Category", selection: $category) {
                 ForEach(ItemCategory.allCases) { category in
@@ -28,11 +26,9 @@ struct ItemFormFields: View {
                         .tag(category)
                 }
             }
-            .mhRow()
 
             TextField("Note", text: $note, axis: .vertical)
                 .lineLimit(noteLineLimit, reservesSpace: true)
-                .mhInputChrome()
         }
 
         ItemPhotoFormSection(

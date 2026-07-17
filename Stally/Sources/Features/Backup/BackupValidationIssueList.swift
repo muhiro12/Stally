@@ -15,7 +15,6 @@ struct BackupValidationIssueList: View {
         if issues.isEmpty {
             Text("No validation issues were found in this backup.")
                 .mhRowSupporting()
-                .mhRow()
         } else {
             ForEach(issues) { issue in
                 BackupValidationIssueRow(issue: issue)

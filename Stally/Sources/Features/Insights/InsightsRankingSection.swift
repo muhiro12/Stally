@@ -25,11 +25,10 @@ struct InsightsRankingSection: View {
                     ) {
                         InsightItemSummaryRow(summary: summary)
                     }
-                    .mhRow()
                 }
             }
         } header: {
-            MHSectionHeader(title: Text(title))
+            StallySectionHeader(title: Text(title))
         }
     }
 }

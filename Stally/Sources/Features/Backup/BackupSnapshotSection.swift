@@ -5,7 +5,6 @@
 //  Created by Codex on 2026/06/26.
 //
 
-import MHUI
 import SwiftUI
 
 struct BackupSnapshotSection: View {
@@ -25,7 +24,7 @@ struct BackupSnapshotSection: View {
                 Text(summary.markCount, format: .number)
             }
         } header: {
-            MHSectionHeader("Backup Snapshot")
+            StallySectionHeader("Backup Snapshot")
         }
     }
 }

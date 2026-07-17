@@ -35,7 +35,7 @@ struct BackupImportSection: View {
                 }
             }
         } header: {
-            MHSectionHeader("Import Tools")
+            StallySectionHeader("Import Tools")
         }
     }
 }

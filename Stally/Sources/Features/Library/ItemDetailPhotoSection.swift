@@ -5,7 +5,6 @@
 //  Created by Codex on 2026/07/13.
 //
 
-import MHUI
 import SwiftUI
 
 struct ItemDetailPhotoSection: View {
@@ -19,7 +18,6 @@ struct ItemDetailPhotoSection: View {
         Section {
             ItemPhotoImage(photoData: photoData)
                 .frame(maxHeight: Layout.maximumHeight)
-                .mhRow()
         }
     }
 }

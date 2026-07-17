@@ -5,17 +5,22 @@
 //  Created by Codex on 2026/06/27.
 //
 
-import MHUI
 import SwiftUI
+import UIKit
 
 extension View {
     func stallyListChrome() -> some View {
-        mhListChrome()
-            .labeledContentStyle(.mhKeyValue)
+        listStyle(.insetGrouped)
     }
 
     func stallyFormChrome() -> some View {
-        mhFormChrome()
-            .labeledContentStyle(.mhKeyValue)
+        scrollContentBackground(.visible)
+    }
+
+    func stallyContentBackground() -> some View {
+        background {
+            Color(uiColor: .systemGroupedBackground)
+                .ignoresSafeArea()
+        }
     }
 }

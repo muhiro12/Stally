@@ -5,7 +5,6 @@
 //  Created by Codex on 2026/06/28.
 //
 
-import MHUI
 import SwiftUI
 
 struct SettingsSubscriptionSection: View {
@@ -15,13 +14,11 @@ struct SettingsSubscriptionSection: View {
         Section {
             if isSubscribeOn {
                 Label("Ads Removed", systemImage: "checkmark.seal")
-                    .mhRow()
             } else {
                 Label("Premium", systemImage: "creditcard")
-                    .mhRow()
             }
         } header: {
-            MHSectionHeader("Subscription")
+            StallySectionHeader("Subscription")
         }
     }
 }

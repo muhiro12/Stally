@@ -16,7 +16,7 @@ struct BackupResetSection: View {
             Button("Delete Every Item", role: .destructive, action: deleteEverythingAction)
                 .buttonStyle(.mhDestructive)
         } header: {
-            MHSectionHeader("Reset Tools")
+            StallySectionHeader("Reset Tools")
         }
     }
 }

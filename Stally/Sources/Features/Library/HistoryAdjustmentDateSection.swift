@@ -5,7 +5,6 @@
 //  Created by Codex on 2026/07/12.
 //
 
-import MHUI
 import SwiftUI
 
 struct HistoryAdjustmentDateSection: View {
@@ -22,7 +21,6 @@ struct HistoryAdjustmentDateSection: View {
                 displayedComponents: .date
             )
             .datePickerStyle(.compact)
-            .mhRow()
         }
     }
 }

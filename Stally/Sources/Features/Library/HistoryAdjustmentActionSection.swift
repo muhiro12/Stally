@@ -40,6 +40,5 @@ struct HistoryAdjustmentActionSection: View {
                 .disabled(!isSelectionValid)
             }
         }
-        .labeledContentStyle(.mhKeyValue)
     }
 }

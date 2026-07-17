@@ -14,9 +14,8 @@ struct SettingsICloudSection: View {
     var body: some View {
         Section {
             Toggle("iCloud Sync", isOn: $isICloudOn)
-                .mhRow()
         } header: {
-            MHSectionHeader("iCloud")
+            StallySectionHeader("iCloud")
         } footer: {
             MHSectionFooter("iCloud sync changes take effect the next time Stally starts.")
         }

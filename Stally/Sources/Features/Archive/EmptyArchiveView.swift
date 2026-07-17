@@ -16,5 +16,6 @@ struct EmptyArchiveView: View {
             Text("Past favorites can stay nearby without crowding the main list.")
         }
         .mhEmptyStateLayout()
+        .stallyContentBackground()
     }
 }

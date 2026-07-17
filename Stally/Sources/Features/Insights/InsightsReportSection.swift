@@ -5,7 +5,6 @@
 //  Created by Codex on 2026/07/13.
 //
 
-import MHUI
 import SwiftUI
 
 struct InsightsReportSection: View {
@@ -16,9 +15,8 @@ struct InsightsReportSection: View {
             ShareLink(item: report) {
                 Label("Share Report", systemImage: "square.and.arrow.up")
             }
-            .mhRow()
         } header: {
-            MHSectionHeader("Report")
+            StallySectionHeader("Report")
         }
     }
 }
