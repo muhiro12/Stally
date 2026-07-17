@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct InsightsCollectionHealthSection: View {
@@ -16,7 +17,7 @@ struct InsightsCollectionHealthSection: View {
 
             CoverageRow(title: "Photo coverage", coverage: snapshot.photoCoverage)
         } header: {
-            StallySectionHeader("Collection Health")
+            MHSectionHeader("Collection Health")
         }
     }
 }

@@ -68,6 +68,7 @@ struct SettingsView: View {
             } label: {
                 Label("Backup Center", systemImage: "externaldrive")
             }
+            .mhRow()
         }
 
         Section {
@@ -79,9 +80,10 @@ struct SettingsView: View {
                         Image(systemName: destination.systemImageName)
                     }
                 }
+                .mhRow()
             }
         } header: {
-            StallySectionHeader("Shareable Links")
+            MHSectionHeader("Shareable Links")
         }
 
         StallyAboutSection()

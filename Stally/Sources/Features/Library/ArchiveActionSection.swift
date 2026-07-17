@@ -27,7 +27,7 @@ struct ArchiveActionSection: View {
                 .buttonStyle(.mhQuiet)
             }
         } header: {
-            StallySectionHeader("Archive")
+            MHSectionHeader("Archive")
         }
     }
 }

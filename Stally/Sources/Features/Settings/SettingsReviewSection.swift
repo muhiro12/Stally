@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/07/13.
 //
 
+import MHUI
 import SwiftUI
 
 struct SettingsReviewSection: View {
@@ -28,6 +29,7 @@ struct SettingsReviewSection: View {
                     Text(needsFirstMarkAfterDays, format: .number)
                 }
             }
+            .mhRow()
 
             Stepper(
                 value: $dormantAfterDays,
@@ -37,10 +39,12 @@ struct SettingsReviewSection: View {
                     Text(dormantAfterDays, format: .number)
                 }
             }
+            .mhRow()
 
             Toggle("Show completed sections", isOn: $showsCompletedSections)
+                .mhRow()
         } header: {
-            StallySectionHeader("Review")
+            MHSectionHeader("Review")
         }
     }
 }

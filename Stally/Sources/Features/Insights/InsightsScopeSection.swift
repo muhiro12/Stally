@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct InsightsScopeSection: View {
@@ -19,10 +20,12 @@ struct InsightsScopeSection: View {
                         .tag(range)
                 }
             }
+            .mhRow()
 
             Toggle("Include archived items", isOn: $includesArchivedItems)
+                .mhRow()
         } header: {
-            StallySectionHeader("Scope")
+            MHSectionHeader("Scope")
         }
     }
 }

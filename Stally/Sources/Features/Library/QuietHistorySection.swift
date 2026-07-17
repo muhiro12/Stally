@@ -28,7 +28,7 @@ struct QuietHistorySection: View {
                 LatestMarkedDays(days: Array(history.markedDays.prefix(Layout.latestMarkedDayLimit)))
             }
         } header: {
-            StallySectionHeader("Quiet History")
+            MHSectionHeader("Quiet History")
         }
     }
 }

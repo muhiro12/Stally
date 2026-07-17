@@ -45,8 +45,9 @@ struct HistoryOverviewSection: View {
                 }
             }
         } header: {
-            StallySectionHeader("Overview")
+            MHSectionHeader("Overview")
         }
+        .labeledContentStyle(.mhKeyValue)
     }
 
     @ViewBuilder private var lastMarkedValue: some View {

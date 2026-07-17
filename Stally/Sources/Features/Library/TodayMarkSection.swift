@@ -31,7 +31,7 @@ struct TodayMarkSection: View {
                 .popoverTip(markTodayTip, arrowEdge: .top)
             }
         } header: {
-            StallySectionHeader("Actions")
+            MHSectionHeader("Actions")
         }
     }
 

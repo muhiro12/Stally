@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct InsightsConsistencySection: View {
@@ -20,7 +21,7 @@ struct InsightsConsistencySection: View {
                 Text(snapshot.bestStreak, format: .number)
             }
         } header: {
-            StallySectionHeader("Consistency")
+            MHSectionHeader("Consistency")
         }
     }
 }

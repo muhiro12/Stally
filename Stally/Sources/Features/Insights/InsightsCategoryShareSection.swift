@@ -31,7 +31,7 @@ struct InsightsCategoryShareSection: View {
                 }
             }
         } header: {
-            StallySectionHeader("Categories")
+            MHSectionHeader("Categories")
         }
     }
 }

@@ -45,7 +45,7 @@ struct InsightsRhythmSection: View {
                 }
             }
         } header: {
-            StallySectionHeader("Rhythm")
+            MHSectionHeader("Rhythm")
         }
     }
 }

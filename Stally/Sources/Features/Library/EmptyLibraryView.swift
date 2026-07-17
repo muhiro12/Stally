@@ -31,6 +31,5 @@ struct EmptyLibraryView: View {
                 .buttonStyle(.mhQuiet)
         }
         .mhEmptyStateLayout()
-        .stallyContentBackground()
     }
 }

@@ -18,6 +18,7 @@ struct ItemDetailSummary: View {
                 metadata: Text(item.category.title),
                 supporting: item.note.isEmpty ? nil : Text(item.note)
             )
+            .mhRow()
         }
     }
 }

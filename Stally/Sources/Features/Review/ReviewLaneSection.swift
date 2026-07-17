@@ -18,11 +18,13 @@ struct ReviewLaneSection: View {
             if items.isEmpty {
                 Text(lane.emptyMessage)
                     .mhRowSupporting()
+                    .mhRow()
             } else {
                 ForEach(items) { item in
                     NavigationLink(value: StallyNavigationView.DetailRoute.item(item.uuid)) {
                         ItemRow(item: item)
                     }
+                    .mhRow()
                     .tag(item.uuid)
                     .swipeActions {
                         Button(
@@ -40,7 +42,7 @@ struct ReviewLaneSection: View {
                 }
             }
         } header: {
-            StallySectionHeader(title: Text(lane.title))
+            MHSectionHeader(title: Text(lane.title))
         }
     }
 }

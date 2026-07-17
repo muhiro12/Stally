@@ -34,7 +34,7 @@ struct InsightsActivitySection: View {
                 Text(snapshot.uniqueMarkedCategories, format: .number)
             }
         } header: {
-            StallySectionHeader("Activity")
+            MHSectionHeader("Activity")
         }
     }
 }

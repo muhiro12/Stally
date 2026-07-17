@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/07/13.
 //
 
+import MHUI
 import SwiftUI
 
 struct ItemCollectionRefinementSection: View {
@@ -19,6 +20,7 @@ struct ItemCollectionRefinementSection: View {
     var body: some View {
         Section {
             refinementMenu
+                .mhRow()
 
             if selectedFilter == .openOnDay || selectedFilter == .markedOnDay {
                 DatePicker(
@@ -27,6 +29,7 @@ struct ItemCollectionRefinementSection: View {
                     in: ...Date.now,
                     displayedComponents: .date
                 )
+                .mhRow()
             }
         }
     }

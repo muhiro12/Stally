@@ -16,6 +16,5 @@ struct EmptyReviewView: View {
             Text("All review lanes are clear right now.")
         }
         .mhEmptyStateLayout()
-        .stallyContentBackground()
     }
 }
