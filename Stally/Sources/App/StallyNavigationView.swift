@@ -65,6 +65,7 @@ struct StallyNavigationView: View {
                     }
                 }
             }
+            .stallyListChrome()
             .navigationTitle("Stally")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
