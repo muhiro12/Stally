@@ -16,10 +16,8 @@ struct ItemDetailPhotoSection: View {
     let photoData: Data
 
     var body: some View {
-        Section {
-            ItemPhotoImage(photoData: photoData)
-                .frame(maxHeight: Layout.maximumHeight)
-                .mhRow()
-        }
+        ItemPhotoImage(photoData: photoData)
+            .frame(maxHeight: Layout.maximumHeight)
+            .mhSection("Photo")
     }
 }

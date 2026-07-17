@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import MHUI
 import SwiftData
 import SwiftUI
 
@@ -40,6 +41,8 @@ struct ItemDetailView: View {
     private var modelContext
     @Environment(\.timeZone)
     private var timeZone
+    @Environment(\.mhTheme)
+    private var theme
 
     let item: Item
 
@@ -55,22 +58,27 @@ struct ItemDetailView: View {
         let history = today.map { today in
             ItemOperations.historySnapshot(for: item, today: today)
         }
+        let isMarkedToday = today.map { today in
+            ItemOperations.isMarked(item, on: today)
+        } ?? false
 
-        List {
-            ItemDetailSummary(item: item)
+        VStack(alignment: .leading, spacing: theme.spacing.section) {
+            ItemDetailSummary(
+                item: item,
+                isMarkedToday: isMarkedToday
+            )
 
             if let photoData = item.photoData {
                 ItemDetailPhotoSection(photoData: photoData)
             }
 
-            if !item.isArchived, let today {
+            if !item.isArchived {
                 TodayMarkSection(
-                    isMarkedToday: ItemOperations.isMarked(item, on: today),
+                    isMarkedToday: isMarkedToday,
                     markAction: markToday,
-                    undoAction: undoToday
+                    undoAction: undoToday,
+                    adjustAction: presentHistoryAdjustment
                 )
-
-                HistoryAdjustmentEntrySection(adjustAction: presentHistoryAdjustment)
             }
 
             ArchiveActionSection(
@@ -87,7 +95,7 @@ struct ItemDetailView: View {
 
             ItemDeletionSection(deleteAction: confirmDeleteItem)
         }
-        .stallyListChrome()
+        .mhScreen()
         .navigationTitle(item.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

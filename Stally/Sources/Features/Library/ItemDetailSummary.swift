@@ -10,15 +10,25 @@ import SwiftUI
 
 struct ItemDetailSummary: View {
     let item: Item
+    let isMarkedToday: Bool
 
     var body: some View {
-        Section {
-            MHSummary(
-                title: Text(item.name),
-                metadata: Text(item.category.title),
-                supporting: item.note.isEmpty ? nil : Text(item.note)
-            )
-            .mhRow()
+        MHSummary(
+            title: statusTitle,
+            metadata: Text(item.category.title),
+            supporting: item.note.isEmpty ? nil : Text(item.note)
+        )
+    }
+
+    private var statusTitle: Text {
+        if item.isArchived {
+            return Text("Archived")
         }
+
+        if isMarkedToday {
+            return Text("Marked Today")
+        }
+
+        return Text("Not marked")
     }
 }
