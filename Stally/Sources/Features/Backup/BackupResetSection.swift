@@ -12,9 +12,11 @@ struct BackupResetSection: View {
     let deleteEverythingAction: () -> Void
 
     var body: some View {
-        Section("Reset Tools") {
+        Section {
             Button("Delete Every Item", role: .destructive, action: deleteEverythingAction)
                 .buttonStyle(.mhDestructive)
+        } header: {
+            MHSectionHeader("Reset Tools")
         }
     }
 }

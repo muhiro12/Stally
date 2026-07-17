@@ -17,7 +17,7 @@ struct InsightsRhythmSection: View {
     let monthlyActivity: [MonthlyActivity]
 
     var body: some View {
-        Section("Rhythm") {
+        Section {
             if weekdayActivity.isEmpty, monthlyActivity.isEmpty {
                 Text("No weekday pattern yet.")
                     .mhRowSupporting()
@@ -44,6 +44,8 @@ struct InsightsRhythmSection: View {
                     }
                 }
             }
+        } header: {
+            MHSectionHeader("Rhythm")
         }
     }
 }

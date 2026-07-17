@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct InsightsScopeSection: View {
@@ -12,7 +13,7 @@ struct InsightsScopeSection: View {
     @Binding var includesArchivedItems: Bool
 
     var body: some View {
-        Section("Scope") {
+        Section {
             Picker("Default range", selection: $selectedRange) {
                 ForEach(InsightsRange.allCases) { range in
                     Text(range.title)
@@ -21,6 +22,8 @@ struct InsightsScopeSection: View {
             }
 
             Toggle("Include archived items", isOn: $includesArchivedItems)
+        } header: {
+            MHSectionHeader("Scope")
         }
     }
 }

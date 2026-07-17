@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/07/13.
 //
 
+import MHUI
 import SwiftUI
 
 struct SettingsReviewSection: View {
@@ -40,7 +41,7 @@ struct SettingsReviewSection: View {
 
             Toggle("Show completed sections", isOn: $showsCompletedSections)
         } header: {
-            Text("Review")
+            MHSectionHeader("Review")
         }
     }
 }

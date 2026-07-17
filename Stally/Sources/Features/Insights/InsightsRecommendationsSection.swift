@@ -12,7 +12,7 @@ struct InsightsRecommendationsSection: View {
     let recommendations: [InsightRecommendation]
 
     var body: some View {
-        Section("Next Moves") {
+        Section {
             if recommendations.isEmpty {
                 Text("No follow-up suggestions right now.")
                     .mhRowSupporting()
@@ -28,6 +28,8 @@ struct InsightsRecommendationsSection: View {
                     .mhRow()
                 }
             }
+        } header: {
+            MHSectionHeader("Next Moves")
         }
     }
 }

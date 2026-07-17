@@ -5,13 +5,14 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftUI
 
 struct BackupSnapshotSection: View {
     let summary: BackupCollectionSummary
 
     var body: some View {
-        Section("Backup Snapshot") {
+        Section {
             LabeledContent("Items") {
                 Text(summary.itemCount, format: .number)
             }
@@ -23,6 +24,8 @@ struct BackupSnapshotSection: View {
             LabeledContent("Marks") {
                 Text(summary.markCount, format: .number)
             }
+        } header: {
+            MHSectionHeader("Backup Snapshot")
         }
     }
 }

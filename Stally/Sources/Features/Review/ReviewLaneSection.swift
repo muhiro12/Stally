@@ -40,7 +40,7 @@ struct ReviewLaneSection: View {
                 }
             }
         } header: {
-            Text(lane.title)
+            MHSectionHeader(title: Text(lane.title))
         }
     }
 }

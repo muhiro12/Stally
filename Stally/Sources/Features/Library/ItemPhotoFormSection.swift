@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/07/13.
 //
 
+import MHUI
 import PhotosUI
 import SwiftUI
 
@@ -60,7 +61,7 @@ struct ItemPhotoFormSection: View {
                 }
             }
         } header: {
-            Text("Photo")
+            MHSectionHeader("Photo")
         }
         .task(id: selectedPhotoItem) {
             guard let selectedPhotoItem else {

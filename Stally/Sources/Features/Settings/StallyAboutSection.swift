@@ -24,7 +24,7 @@ struct StallyAboutSection: View {
     private var appRuntime
 
     var body: some View {
-        Section("About") {
+        Section {
             Link(destination: Self.privacyPolicyURL) {
                 Label("Privacy Policy", systemImage: "hand.raised")
             }
@@ -37,6 +37,8 @@ struct StallyAboutSection: View {
                 Label("Licenses", systemImage: "doc.text")
             }
             .mhRow()
+        } header: {
+            MHSectionHeader("About")
         }
     }
 }

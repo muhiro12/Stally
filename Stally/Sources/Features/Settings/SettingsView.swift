@@ -71,7 +71,7 @@ struct SettingsView: View {
             .mhRow()
         }
 
-        Section("Shareable Links") {
+        Section {
             ForEach(StallyLinkDestination.allCases) { destination in
                 ShareLink(item: StallyLinkOperations.url(for: .destination(destination))) {
                     Label {
@@ -82,6 +82,8 @@ struct SettingsView: View {
                 }
                 .mhRow()
             }
+        } header: {
+            MHSectionHeader("Shareable Links")
         }
 
         StallyAboutSection()

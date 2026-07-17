@@ -18,8 +18,7 @@ struct ItemDeletionSection: View {
             }
             .buttonStyle(.mhDestructive)
         } footer: {
-            Text("Deleting this item also removes all of its marks.")
-                .mhSectionFooterText()
+            MHSectionFooter("Deleting this item also removes all of its marks.")
         }
     }
 }

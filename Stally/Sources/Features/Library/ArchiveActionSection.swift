@@ -14,7 +14,7 @@ struct ArchiveActionSection: View {
     let moveBackAction: () -> Void
 
     var body: some View {
-        Section("Archive") {
+        Section {
             if isArchived {
                 Button(action: moveBackAction) {
                     Label("Move Back to Library", systemImage: "tray.and.arrow.up")
@@ -26,6 +26,8 @@ struct ArchiveActionSection: View {
                 }
                 .buttonStyle(.mhQuiet)
             }
+        } header: {
+            MHSectionHeader("Archive")
         }
     }
 }

@@ -12,11 +12,13 @@ struct InsightsReportSection: View {
     let report: String
 
     var body: some View {
-        Section("Report") {
+        Section {
             ShareLink(item: report) {
                 Label("Share Report", systemImage: "square.and.arrow.up")
             }
             .mhRow()
+        } header: {
+            MHSectionHeader("Report")
         }
     }
 }

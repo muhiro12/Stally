@@ -12,9 +12,11 @@ struct BackupStatusSection: View {
     let message: String
 
     var body: some View {
-        Section("Last Result") {
+        Section {
             Text(message)
                 .mhRowSupporting()
+        } header: {
+            MHSectionHeader("Last Result")
         }
     }
 }

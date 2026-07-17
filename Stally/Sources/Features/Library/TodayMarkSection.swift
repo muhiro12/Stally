@@ -17,7 +17,7 @@ struct TodayMarkSection: View {
     let undoAction: () -> Void
 
     var body: some View {
-        Section("Actions") {
+        Section {
             if isMarkedToday {
                 Button(action: undoAction) {
                     Label("Undo Today's Mark", systemImage: "arrow.uturn.backward")
@@ -30,6 +30,8 @@ struct TodayMarkSection: View {
                 .buttonStyle(.mhPrimary)
                 .popoverTip(markTodayTip, arrowEdge: .top)
             }
+        } header: {
+            MHSectionHeader("Actions")
         }
     }
 

@@ -21,7 +21,7 @@ struct SettingsSubscriptionSection: View {
                     .mhRow()
             }
         } header: {
-            Text("Subscription")
+            MHSectionHeader("Subscription")
         }
     }
 }

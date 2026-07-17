@@ -15,7 +15,7 @@ struct BackupImportSection: View {
     let replaceAction: () -> Void
 
     var body: some View {
-        Section("Import Tools") {
+        Section {
             Button(action: chooseBackupAction) {
                 Label("Choose Backup File", systemImage: "doc.badge.plus")
             }
@@ -32,6 +32,8 @@ struct BackupImportSection: View {
                     .disabled(!preview.canImport)
                     .buttonStyle(.mhDestructive)
             }
+        } header: {
+            MHSectionHeader("Import Tools")
         }
     }
 }

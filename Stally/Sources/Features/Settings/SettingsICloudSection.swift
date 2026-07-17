@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/07/13.
 //
 
+import MHUI
 import SwiftUI
 
 struct SettingsICloudSection: View {
@@ -14,9 +15,9 @@ struct SettingsICloudSection: View {
         Section {
             Toggle("iCloud Sync", isOn: $isICloudOn)
         } header: {
-            Text("iCloud")
+            MHSectionHeader("iCloud")
         } footer: {
-            Text("iCloud sync changes take effect the next time Stally starts.")
+            MHSectionFooter("iCloud sync changes take effect the next time Stally starts.")
         }
     }
 }

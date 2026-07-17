@@ -17,7 +17,7 @@ struct QuietHistorySection: View {
     let history: ItemHistorySnapshot
 
     var body: some View {
-        Section("Quiet History") {
+        Section {
             if history.markedDays.isEmpty {
                 Text("No marks yet.")
                     .mhRowSupporting()
@@ -27,6 +27,8 @@ struct QuietHistorySection: View {
 
                 LatestMarkedDays(days: Array(history.markedDays.prefix(Layout.latestMarkedDayLimit)))
             }
+        } header: {
+            MHSectionHeader("Quiet History")
         }
     }
 }

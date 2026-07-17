@@ -15,12 +15,14 @@ struct BackupExportSection: View {
     let exportAction: () -> Void
 
     var body: some View {
-        Section("Export Tools") {
+        Section {
             Button(action: exportBackup) {
                 Label("Export Backup", systemImage: "square.and.arrow.up")
             }
             .buttonStyle(.mhSecondary)
             .popoverTip(exportTip, arrowEdge: .top)
+        } header: {
+            MHSectionHeader("Export Tools")
         }
     }
 
