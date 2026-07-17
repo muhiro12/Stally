@@ -27,24 +27,15 @@ struct ItemPhotoFormSection: View {
             if let photoData {
                 ItemPhotoImage(photoData: photoData)
                     .frame(maxHeight: Layout.thumbnailMaximumHeight)
+                    .mhRow()
             }
 
-            if isLoadingPhoto {
-                ProgressView("Preparing Photo")
-            }
-
-            if let photoErrorMessage {
-                VStack(alignment: .leading) {
-                    Label("Could Not Use Photo", systemImage: "exclamationmark.triangle")
-                        .foregroundStyle(.red)
-
-                    Text(photoErrorMessage)
-                        .foregroundStyle(.secondary)
-
-                    Text("Choose another photo and try again.")
-                        .foregroundStyle(.secondary)
-                }
-                .accessibilityElement(children: .combine)
+            if isLoadingPhoto || photoErrorMessage != nil {
+                ItemPhotoFeedback(
+                    isLoading: isLoadingPhoto,
+                    errorMessage: photoErrorMessage
+                )
+                .mhRow()
             }
 
             PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
@@ -54,11 +45,13 @@ struct ItemPhotoFormSection: View {
                     Label("Choose Photo", systemImage: "photo.badge.plus")
                 }
             }
+            .mhRow()
 
             if photoData != nil {
                 Button(role: .destructive, action: removePhoto) {
                     Label("Remove Photo", systemImage: "trash")
                 }
+                .mhRow()
             }
         } header: {
             MHSectionHeader("Photo")

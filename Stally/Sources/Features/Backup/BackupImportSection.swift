@@ -24,13 +24,15 @@ struct BackupImportSection: View {
             if let preview {
                 BackupPreviewRows(preview: preview)
 
-                Button("Merge Into Library", action: mergeAction)
-                    .disabled(!preview.canImport)
-                    .buttonStyle(.mhPrimary)
+                MHActionGroup {
+                    Button("Merge Into Library", action: mergeAction)
+                        .disabled(!preview.canImport)
+                        .buttonStyle(.mhPrimary)
 
-                Button("Replace Library", role: .destructive, action: replaceAction)
-                    .disabled(!preview.canImport)
-                    .buttonStyle(.mhDestructive)
+                    Button("Replace Library", role: .destructive, action: replaceAction)
+                        .disabled(!preview.canImport)
+                        .buttonStyle(.mhDestructive)
+                }
             }
         } header: {
             MHSectionHeader("Import Tools")
