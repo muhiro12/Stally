@@ -12,11 +12,10 @@ struct InsightsRecommendationsSection: View {
     let recommendations: [InsightRecommendation]
 
     var body: some View {
-        Section {
+        MHGroupedRows {
             if recommendations.isEmpty {
                 Text("No follow-up suggestions right now.")
                     .mhRowSupporting()
-                    .mhRow()
             } else {
                 ForEach(recommendations, id: \.kind) { recommendation in
                     VStack(alignment: .leading) {
@@ -26,11 +25,9 @@ struct InsightsRecommendationsSection: View {
                         Text(recommendation.summary)
                             .mhRowSupporting()
                     }
-                    .mhRow()
                 }
             }
-        } header: {
-            MHSectionHeader("Next Moves")
         }
+        .mhSection("Next Moves")
     }
 }

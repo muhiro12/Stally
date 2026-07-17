@@ -6,18 +6,26 @@
 //
 
 import MHPlatform
+import MHUI
 import SwiftUI
 
 struct InsightsList: View {
     @AppStorage(\.isSubscribeOn)
     private var isSubscribeOn
+    @Environment(\.mhTheme)
+    private var theme
 
     let snapshot: InsightsSnapshot
     @Binding var selectedRange: InsightsRange
     @Binding var includesArchivedItems: Bool
 
     var body: some View {
-        List {
+        VStack(alignment: .leading, spacing: theme.spacing.section) {
+            InsightsSummary(
+                totalMarks: snapshot.totalMarks,
+                rangeTitle: snapshot.options.range.title
+            )
+
             InsightsScopeSection(
                 selectedRange: $selectedRange,
                 includesArchivedItems: $includesArchivedItems
@@ -27,30 +35,7 @@ struct InsightsList: View {
                 report: InsightsReportOperations.report(for: snapshot)
             )
 
-            InsightsActivitySection(snapshot: snapshot)
-
-            InsightsConsistencySection(snapshot: snapshot)
-
-            InsightsRhythmSection(
-                weekdayActivity: snapshot.weekdayActivity,
-                monthlyActivity: snapshot.monthlyActivity
-            )
-
-            InsightsCategoryShareSection(categoryShares: snapshot.categoryShares)
-
-            InsightsRankingSection(
-                title: "Top Items",
-                emptyMessage: "No activity in this window yet.",
-                summaries: snapshot.topItems
-            )
-
-            InsightsRankingSection(
-                title: "Quiet Items",
-                emptyMessage: "No quiet items in this window yet.",
-                summaries: snapshot.quietItems
-            )
-
-            InsightsCollectionHealthSection(snapshot: snapshot)
+            InsightsReadingSections(snapshot: snapshot)
 
             if !isSubscribeOn {
                 StallyAdvertisementSection(size: .medium)
@@ -58,6 +43,6 @@ struct InsightsList: View {
 
             InsightsRecommendationsSection(recommendations: snapshot.recommendations)
         }
-        .stallyListChrome()
+        .mhScreen()
     }
 }

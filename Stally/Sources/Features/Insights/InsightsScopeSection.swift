@@ -13,19 +13,20 @@ struct InsightsScopeSection: View {
     @Binding var includesArchivedItems: Bool
 
     var body: some View {
-        Section {
-            Picker("Default range", selection: $selectedRange) {
-                ForEach(InsightsRange.allCases) { range in
-                    Text(range.title)
-                        .tag(range)
+        MHGroupedRows {
+            LabeledContent("Default range") {
+                Picker("Default range", selection: $selectedRange) {
+                    ForEach(InsightsRange.allCases) { range in
+                        Text(range.title)
+                            .tag(range)
+                    }
                 }
+                .labelsHidden()
             }
-            .mhRow()
 
             Toggle("Include archived items", isOn: $includesArchivedItems)
-                .mhRow()
-        } header: {
-            MHSectionHeader("Scope")
         }
+        .labeledContentStyle(.mhKeyValue)
+        .mhSection("Scope")
     }
 }

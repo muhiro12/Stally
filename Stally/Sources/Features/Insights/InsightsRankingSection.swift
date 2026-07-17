@@ -14,7 +14,7 @@ struct InsightsRankingSection: View {
     let summaries: [ItemInsightSummary]
 
     var body: some View {
-        Section {
+        MHGroupedRows {
             if summaries.isEmpty {
                 Text(emptyMessage)
                     .mhRowSupporting()
@@ -25,11 +25,9 @@ struct InsightsRankingSection: View {
                     ) {
                         InsightItemSummaryRow(summary: summary)
                     }
-                    .mhRow()
                 }
             }
-        } header: {
-            MHSectionHeader(title: Text(title))
         }
+        .mhSection(title: Text(title))
     }
 }

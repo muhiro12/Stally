@@ -12,12 +12,12 @@ struct InsightsCollectionHealthSection: View {
     let snapshot: InsightsSnapshot
 
     var body: some View {
-        Section {
+        MHGroupedRows {
             CoverageRow(title: "Note coverage", coverage: snapshot.noteCoverage)
 
             CoverageRow(title: "Photo coverage", coverage: snapshot.photoCoverage)
-        } header: {
-            MHSectionHeader("Collection Health")
         }
+        .labeledContentStyle(.mhKeyValue)
+        .mhSection("Collection Health")
     }
 }

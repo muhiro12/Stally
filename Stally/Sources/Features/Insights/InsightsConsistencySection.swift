@@ -12,7 +12,7 @@ struct InsightsConsistencySection: View {
     let snapshot: InsightsSnapshot
 
     var body: some View {
-        Section {
+        MHGroupedRows {
             LabeledContent("Current Streak") {
                 Text(snapshot.currentStreak, format: .number)
             }
@@ -20,8 +20,8 @@ struct InsightsConsistencySection: View {
             LabeledContent("Best Streak") {
                 Text(snapshot.bestStreak, format: .number)
             }
-        } header: {
-            MHSectionHeader("Consistency")
         }
+        .labeledContentStyle(.mhKeyValue)
+        .mhSection("Consistency")
     }
 }

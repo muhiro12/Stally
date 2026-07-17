@@ -12,7 +12,7 @@ struct InsightsActivitySection: View {
     let snapshot: InsightsSnapshot
 
     var body: some View {
-        Section {
+        MHGroupedRows {
             if snapshot.totalMarks == 0 {
                 Text("No activity in this window yet.")
                     .mhRowSupporting()
@@ -33,8 +33,8 @@ struct InsightsActivitySection: View {
             LabeledContent("Unique Categories") {
                 Text(snapshot.uniqueMarkedCategories, format: .number)
             }
-        } header: {
-            MHSectionHeader("Activity")
         }
+        .labeledContentStyle(.mhKeyValue)
+        .mhSection("Activity")
     }
 }

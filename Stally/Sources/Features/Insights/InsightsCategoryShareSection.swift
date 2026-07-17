@@ -12,7 +12,7 @@ struct InsightsCategoryShareSection: View {
     let categoryShares: [CategoryShare]
 
     var body: some View {
-        Section {
+        MHGroupedRows {
             if categoryShares.isEmpty {
                 Text("No category activity in this window yet.")
                     .mhRowSupporting()
@@ -30,8 +30,8 @@ struct InsightsCategoryShareSection: View {
                     }
                 }
             }
-        } header: {
-            MHSectionHeader("Categories")
         }
+        .labeledContentStyle(.mhKeyValue)
+        .mhSection("Categories")
     }
 }
