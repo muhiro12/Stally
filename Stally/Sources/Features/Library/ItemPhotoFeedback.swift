@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/07/17.
 //
 
+import MHUI
 import SwiftUI
 
 struct ItemPhotoFeedback: View {
@@ -19,13 +20,13 @@ struct ItemPhotoFeedback: View {
 
             if let errorMessage {
                 Label("Could Not Use Photo", systemImage: "exclamationmark.triangle")
-                    .foregroundStyle(.red)
+                    .mhForegroundStyle(.destructive)
 
                 Text(errorMessage)
-                    .foregroundStyle(.secondary)
+                    .mhForegroundStyle(.secondaryText)
 
                 Text("Choose another photo and try again.")
-                    .foregroundStyle(.secondary)
+                    .mhForegroundStyle(.secondaryText)
             }
         }
         .accessibilityElement(children: .combine)

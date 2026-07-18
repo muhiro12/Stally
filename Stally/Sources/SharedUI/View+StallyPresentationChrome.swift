@@ -20,6 +20,6 @@ extension View {
     }
 
     func stallyToolbarActionStyle() -> some View {
-        tint(.primary)
+        mhTint(.primaryText)
     }
 }

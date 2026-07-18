@@ -66,7 +66,7 @@ struct ItemCollectionRefinementSection: View {
                 Spacer()
 
                 Text(shownItemCount, format: .number)
-                    .foregroundStyle(.secondary)
+                    .mhForegroundStyle(.secondaryText)
             }
             .mhTextStyle(.bodyStrong, colorRole: .primaryText)
         }

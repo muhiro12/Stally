@@ -134,21 +134,19 @@ native routes for concrete collection, selection, preference, and input
 behavior. Their native containers are deliberate exceptions rather than the
 dominant design direction.
 
-Before adopting the next MHUI revision, clean up the remaining product-source
-color shortcuts:
+MHUI 1.15 is now resolved, and Stally uses the package's semantic color
+modifiers for the remaining product-source color exceptions:
 
-1. Replace `.tint(.primary)` in
-   `View+StallyPresentationChrome.swift` with `.mhTint(.primaryText)` when a
-   neutral toolbar action is intentional, or remove the override when the app
-   accent should remain in control.
-2. Replace `.foregroundStyle(.red)` and `.foregroundStyle(.secondary)` in
-   `ItemPhotoFeedback.swift` with `.mhForegroundStyle(.destructive)` and
-   `.mhForegroundStyle(.secondaryText)`.
-3. Replace the remaining `.secondary` shortcut in
-   `ItemCollectionRefinementSection.swift` with the MHUI secondary text role.
-4. Resolve the marked and unmarked circles in `QuietHistoryDayCell.swift`
-   through `.accent` and `.secondaryText` semantic roles, keeping only opacity
-   as a code-derived treatment.
+1. `View+StallyPresentationChrome.swift` applies
+   `.mhTint(.primaryText)` where toolbar actions intentionally use a neutral
+   theme color.
+2. `ItemPhotoFeedback.swift` applies
+   `.mhForegroundStyle(.destructive)` and
+   `.mhForegroundStyle(.secondaryText)` to feedback content.
+3. `ItemCollectionRefinementSection.swift` resolves its secondary count
+   through the MHUI secondary text role.
+4. `QuietHistoryDayCell.swift` resolves marked and unmarked circles through
+   `.accent` and `.secondaryText`, keeping opacity as a code-derived treatment.
 
 These changes keep concrete color values in MHUI or app asset catalogs while
 letting source express semantic intent. The `CGColor(red:...)` values in

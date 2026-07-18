@@ -23,7 +23,8 @@ struct QuietHistoryDayCell: View {
     var body: some View {
         VStack(spacing: Layout.verticalSpacing) {
             Circle()
-                .fill(day.isMarked ? Color.accentColor : Color.secondary.opacity(Layout.unmarkedOpacity))
+                .mhForegroundStyle(day.isMarked ? .accent : .secondaryText)
+                .opacity(day.isMarked ? 1 : Layout.unmarkedOpacity)
                 .frame(width: Layout.circleSize, height: Layout.circleSize)
 
             if let date = day.day.date(in: timeZone) {
