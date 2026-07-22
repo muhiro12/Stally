@@ -405,9 +405,15 @@
     },
     "Backup files are for archiving and transfer, not ongoing sync between devices." : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backup files are for archiving and transfer, not ongoing sync between devices."
+          }
+        },
         "ja" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "バックアップファイルは保管や移行のためのもので、デバイス間の継続的な同期には使いません。"
           }
         }

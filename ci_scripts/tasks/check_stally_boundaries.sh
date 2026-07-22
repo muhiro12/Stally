@@ -22,6 +22,24 @@ record_failure() {
   failures+=("$1")
 }
 
+search_swift_sources() {
+  local rg_pattern=$1
+  local grep_pattern=$2
+  shift 2
+
+  if command -v rg >/dev/null 2>&1; then
+    rg \
+      --line-number \
+      "$rg_pattern" \
+      "$@" \
+      -g '*.swift' || true
+    return 0
+  fi
+
+  find "$@" -type f -name '*.swift' -print0 |
+    xargs -0 grep -nE "$grep_pattern" 2>/dev/null || true
+}
+
 missing_operations=$(
   test -f "$repository_root/StallyLibrary/Sources/Item/ItemOperations.swift" || printf '%s\n' "StallyLibrary/Sources/Item/ItemOperations.swift"
 )
@@ -31,11 +49,10 @@ if [[ -n "$missing_operations" ]]; then
 fi
 
 app_model_declarations=$(
-  rg \
-    --line-number \
+  search_swift_sources \
     "@Model" \
-    "${app_sources[@]}" \
-    -g '*.swift' || true
+    "@Model" \
+    "${app_sources[@]}"
 )
 
 if [[ -n "$app_model_declarations" ]]; then
@@ -44,11 +61,10 @@ $app_model_declarations"
 fi
 
 app_direct_model_mutations=$(
-  rg \
-    --line-number \
+  search_swift_sources \
     "\bitem\.(addMark|removeMark|historySnapshot|isMarked)\(" \
-    "${app_sources[@]}" \
-    -g '*.swift' || true
+    '(^|[^[:alnum:]_])item\.(addMark|removeMark|historySnapshot|isMarked)\(' \
+    "${app_sources[@]}"
 )
 
 if [[ -n "$app_direct_model_mutations" ]]; then
@@ -57,11 +73,10 @@ $app_direct_model_mutations"
 fi
 
 app_direct_item_creation=$(
-  rg \
-    --line-number \
+  search_swift_sources \
     "\bItem\(" \
-    "${app_sources[@]}" \
-    -g '*.swift' || true
+    '(^|[^[:alnum:]_])Item\(' \
+    "${app_sources[@]}"
 )
 
 if [[ -n "$app_direct_item_creation" ]]; then
@@ -70,11 +85,10 @@ $app_direct_item_creation"
 fi
 
 public_business_helpers=$(
-  rg \
-    --line-number \
+  search_swift_sources \
     "^[[:space:]]*public[[:space:]]+func[[:space:]]+(historySnapshot|mark|isMarked|addMark|removeMark)\\b" \
-    "${library_sources[@]}" \
-    -g '*.swift' || true
+    '^[[:space:]]*public[[:space:]]+func[[:space:]]+(historySnapshot|mark|isMarked|addMark|removeMark)([^[:alnum:]_]|$)' \
+    "${library_sources[@]}"
 )
 
 if [[ -n "$public_business_helpers" ]]; then

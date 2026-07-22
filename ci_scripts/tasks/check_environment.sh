@@ -91,7 +91,6 @@ check_tests_environment() {
 
 check_rules_environment() {
   check_swiftlint_environment
-  ensure_command "rg" "Install ripgrep so repository rule checks can scan source files."
 }
 
 case "$profile" in

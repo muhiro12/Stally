@@ -3,17 +3,16 @@
   "strings" : {
     "CFBundleName" : {
       "comment" : "Bundle name",
-      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "new",
+            "state" : "translated",
             "value" : "Stally"
           }
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Stally"
           }
         }
@@ -21,9 +20,15 @@
     },
     "Stally Backup" : {
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stally Backup"
+          }
+        },
         "ja" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "Stallyバックアップ"
           }
         }
