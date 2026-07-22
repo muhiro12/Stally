@@ -13,6 +13,8 @@ import SwiftUI
 struct SettingsView: View {
     @Environment(\.modelContext)
     private var modelContext
+    @Environment(\.stallyPersistenceStatus)
+    private var persistenceStatus
 
     @State private var isConfirmingSampleRemoval = false
     @State private var sampleRemovalErrorMessage: String?
@@ -101,7 +103,10 @@ struct SettingsView: View {
 
         StallyStoreSection()
 
-        SettingsICloudSection(isICloudOn: $isICloudOn)
+        SettingsICloudSection(
+            isICloudOn: $isICloudOn,
+            persistenceStatus: persistenceStatus
+        )
 
         SettingsReviewSection(
             needsFirstMarkAfterDays: $needsFirstMarkAfterDays,

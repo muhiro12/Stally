@@ -14,7 +14,8 @@ enum StallyPlatformEnvironmentFactory {
     static func make(
         modelContainer: ModelContainer,
         platformMode: StallyPlatformMode,
-        logging: MHLoggingBootstrap
+        logging: MHLoggingBootstrap,
+        persistenceStatus: StallyPlatformEnvironment.PersistenceStatus
     ) -> StallyPlatformEnvironment {
         let routeInbox = makeRouteInbox()
         let routePipeline = makeRoutePipeline(
@@ -26,6 +27,7 @@ enum StallyPlatformEnvironmentFactory {
         return .init(
             logging: logging,
             modelContainer: modelContainer,
+            persistenceStatus: persistenceStatus,
             routeInbox: routeInbox,
             routePipeline: routePipeline,
             runtimeBootstrap: makeRuntimeBootstrap(

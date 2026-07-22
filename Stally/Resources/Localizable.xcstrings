@@ -1142,6 +1142,54 @@
         }
       }
     },
+    "iCloud sync could not start. Stally is using local storage for this launch." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud sync could not start. Stally is using local storage for this launch."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud同期を開始できませんでした。この起動中、Stallyはローカルストレージを使用しています。"
+          }
+        }
+      }
+    },
+    "iCloud sync is off for this launch." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud sync is off for this launch."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この起動中、iCloud同期はオフです。"
+          }
+        }
+      }
+    },
+    "iCloud sync is on for this launch." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud sync is on for this launch."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この起動中、iCloud同期はオンです。"
+          }
+        }
+      }
+    },
     "Import Tools" : {
       "localizations" : {
         "en" : {

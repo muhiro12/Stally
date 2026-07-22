@@ -53,7 +53,8 @@ struct StallyPreviewContainer<Content: View>: View {
         StallyPlatformEnvironmentFactory.make(
             modelContainer: modelContainer,
             platformMode: .preview,
-            logging: StallyLogging.makeBootstrap()
+            logging: StallyLogging.makeBootstrap(),
+            persistenceStatus: .local
         )
     }
 }

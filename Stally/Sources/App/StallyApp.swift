@@ -14,6 +14,11 @@ import TipKit
 
 @main
 struct StallyApp: App {
+    private struct ModelContainerResolution {
+        let modelContainer: ModelContainer
+        let persistenceStatus: StallyPlatformEnvironment.PersistenceStatus
+    }
+
     #if DEBUG
     private static let previewLaunchConfiguration = StallyPreviewLaunchConfiguration.current
     #endif
@@ -54,14 +59,15 @@ struct StallyApp: App {
 
         let preferenceStore = MHPreferenceStore()
         let syncsWithCloudKit = preferenceStore.bool(for: \.isICloudOn)
-        let modelContainer = Self.makeModelContainer(
+        let modelContainerResolution = Self.makeModelContainer(
             syncsWithCloudKit: syncsWithCloudKit,
             startupLogger: startupLogger
         )
         let resolvedPlatformEnvironment = StallyPlatformEnvironmentFactory.make(
-            modelContainer: modelContainer,
+            modelContainer: modelContainerResolution.modelContainer,
             platformMode: .production,
-            logging: logging
+            logging: logging,
+            persistenceStatus: modelContainerResolution.persistenceStatus
         )
         platformEnvironment = resolvedPlatformEnvironment
         startupLogger.notice("startup.dependencies_ready")
@@ -90,14 +96,17 @@ private extension StallyApp {
         }
     }
 
-    static func makeModelContainer(
+    private static func makeModelContainer(
         syncsWithCloudKit: Bool,
         startupLogger: MHLogger
-    ) -> ModelContainer {
+    ) -> ModelContainerResolution {
         #if DEBUG
         if let modelContainer = Self.previewLaunchConfiguration.modelContainer {
             startupLogger.notice("model_container.preview_created")
-            return modelContainer
+            return .init(
+                modelContainer: modelContainer,
+                persistenceStatus: .local
+            )
         }
         #endif
 
@@ -110,7 +119,10 @@ private extension StallyApp {
                     ? "model_container.cloudkit_created"
                     : "model_container.local_created"
             )
-            return modelContainer
+            return .init(
+                modelContainer: modelContainer,
+                persistenceStatus: syncsWithCloudKit ? .cloudKit : .local
+            )
         } catch {
             guard syncsWithCloudKit else {
                 startupLogger.critical(
@@ -124,19 +136,30 @@ private extension StallyApp {
                 "model_container.cloudkit_unavailable_falling_back_local",
                 metadata: StallyLogging.errorMetadata(error)
             )
-            do {
-                let modelContainer = try StallyModelContainerFactory.persistent(
-                    syncsWithCloudKit: false
-                )
-                startupLogger.notice("model_container.local_created")
-                return modelContainer
-            } catch {
-                startupLogger.critical(
-                    "model_container.local_failed",
-                    metadata: StallyLogging.errorMetadata(error)
-                )
-                fatalError("Could not create local ModelContainer: \(error)")
-            }
+            return Self.makeLocalModelContainerAfterCloudKitFailure(
+                startupLogger: startupLogger
+            )
+        }
+    }
+
+    private static func makeLocalModelContainerAfterCloudKitFailure(
+        startupLogger: MHLogger
+    ) -> ModelContainerResolution {
+        do {
+            let modelContainer = try StallyModelContainerFactory.persistent(
+                syncsWithCloudKit: false
+            )
+            startupLogger.notice("model_container.local_created")
+            return .init(
+                modelContainer: modelContainer,
+                persistenceStatus: .cloudKitUnavailable
+            )
+        } catch {
+            startupLogger.critical(
+                "model_container.local_failed",
+                metadata: StallyLogging.errorMetadata(error)
+            )
+            fatalError("Could not create local ModelContainer: \(error)")
         }
     }
 

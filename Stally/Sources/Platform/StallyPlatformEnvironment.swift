@@ -7,41 +7,18 @@
 
 import MHPlatform
 import SwiftData
-import SwiftUI
-
-typealias StallyRouteInbox = MHObservableRouteInbox<StallyLink>
-typealias StallyRoutePipeline = MHAppRoutePipeline<StallyLink>
 
 struct StallyPlatformEnvironment {
+    enum PersistenceStatus: Equatable {
+        case local
+        case cloudKit
+        case cloudKitUnavailable
+    }
+
     let logging: MHLoggingBootstrap
     let modelContainer: ModelContainer
+    let persistenceStatus: PersistenceStatus
     let routeInbox: StallyRouteInbox
     let routePipeline: StallyRoutePipeline
     let runtimeBootstrap: MHAppRuntimeBootstrap
-}
-
-extension View {
-    func stallyPlatformEnvironment(
-        _ environment: StallyPlatformEnvironment
-    ) -> some View {
-        stallyBasePlatformEnvironment(environment)
-            .mhAppRuntimeBootstrap(environment.runtimeBootstrap)
-    }
-
-    func stallyPreviewPlatformEnvironment(
-        _ environment: StallyPlatformEnvironment
-    ) -> some View {
-        stallyBasePlatformEnvironment(environment)
-            .mhAppRuntimeEnvironment(environment.runtimeBootstrap)
-    }
-
-    private func stallyBasePlatformEnvironment(
-        _ environment: StallyPlatformEnvironment
-    ) -> some View {
-        modelContainer(environment.modelContainer)
-            .tint(.accent)
-            .environment(environment.logging)
-            .environment(environment.routeInbox)
-            .environment(environment.routePipeline)
-    }
 }
