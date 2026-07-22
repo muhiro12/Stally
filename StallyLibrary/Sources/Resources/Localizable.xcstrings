@@ -1,1302 +1,1302 @@
 {
-  "sourceLanguage": "en",
-  "strings": {
-    "30 Days": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "30 Days"
+  "sourceLanguage" : "en",
+  "strings" : {
+    "30 Days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 Days"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "30日"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30日"
           }
         }
       }
     },
-    "365 Days": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "365 Days"
+    "90 Days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "90 Days"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "365日"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "90日"
           }
         }
       }
     },
-    "90 Days": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "90 Days"
+    "365 Days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "365 Days"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "90日"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "365日"
           }
         }
       }
     },
-    "Add context to your frequent items": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add context to your frequent items"
+    "Active Days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active Days"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "よく使うアイテムに文脈を足す"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記録のある日"
           }
         }
       }
     },
-    "All Time": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "All Time"
+    "Active items only" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Active items only"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "すべての期間"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ライブラリのアイテムのみ"
           }
         }
       }
     },
-    "An active streak is already in motion.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "An active streak is already in motion."
+    "Activity" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activity"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "今も続いている流れがあります。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクティビティ"
           }
         }
       }
     },
-    "Archive": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Archive"
+    "Add context to your frequent items" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add context to your frequent items"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "アーカイブ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "よく使うアイテムに文脈を足す"
           }
         }
       }
     },
-    "Archived items whose history suggests they may deserve another turn.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Archived items whose history suggests they may deserve another turn."
+    "All" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "履歴を見ると、もう一度出番があってもよさそうなアーカイブ済みアイテム。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべて"
           }
         }
       }
     },
-    "Backup Center": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Backup Center"
+    "All items" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All items"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "バックアップセンター"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのアイテム"
           }
         }
       }
     },
-    "Backup File Too Large": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Backup File Too Large"
+    "All Time" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All Time"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "バックアップファイルのサイズが大きすぎます"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべての期間"
           }
         }
       }
     },
-    "Backup Photo Storage Limit Exceeded": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Backup Photo Storage Limit Exceeded"
+    "An active streak is already in motion." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An active streak is already in motion."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "バックアップ写真の合計容量が上限を超えています"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今も続いている流れがあります。"
           }
         }
       }
     },
-    "Bags": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bags"
+    "Archive" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archive"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "バッグ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アーカイブ"
           }
         }
       }
     },
-    "Clothing": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Clothing"
+    "Archived items whose history suggests they may deserve another turn." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archived items whose history suggests they may deserve another turn."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "服"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴を見ると、もう一度出番があってもよさそうなアーカイブ済みアイテム。"
           }
         }
       }
     },
-    "Create Item": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Create Item"
+    "Backup Center" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backup Center"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "アイテムを作成"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックアップセンター"
           }
         }
       }
     },
-    "Dormant": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dormant"
+    "Backup File Too Large" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backup File Too Large"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "休眠中"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックアップファイルのサイズが大きすぎます"
           }
         }
       }
     },
-    "Duplicate Current Item ID": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Duplicate Current Item ID"
+    "Backup Photo Storage Limit Exceeded" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Backup Photo Storage Limit Exceeded"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "現在のライブラリ内で重複したアイテムID"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックアップ写真の合計容量が上限を超えています"
           }
         }
       }
     },
-    "Duplicate Item ID": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Duplicate Item ID"
+    "Bags" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bags"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重複したアイテムID"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バッグ"
           }
         }
       }
     },
-    "Duplicate Mark ID": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Duplicate Mark ID"
+    "Best Streak" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Best Streak"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重複したマークID"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最長の連続日数"
           }
         }
       }
     },
-    "Duplicate Mark Day": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Duplicate Mark Day"
+    "Categories" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Categories"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重複したマーク日"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カテゴリ"
           }
         }
       }
     },
-    "Frequent active items without notes may be easier to read later with short context.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Frequent active items without notes may be easier to read later with short context."
+    "Category" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Category"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "よく使うアイテムに短い文脈を足すと、あとで読み返しやすくなります。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カテゴリ"
           }
         }
       }
     },
-    "Insights": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Insights"
+    "Clothing" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clothing"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "インサイト"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服"
           }
         }
       }
     },
-    "Invalid Item Photo": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Invalid Item Photo"
+    "Consistency" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consistency"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "無効なアイテム写真"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "継続性"
           }
         }
       }
     },
-    "Item name is required.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Item name is required."
+    "Create Item" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create Item"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "アイテム名が必要です。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アイテムを作成"
           }
         }
       }
     },
-    "Items that have been waiting quietly without a first mark.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Items that have been waiting quietly without a first mark."
+    "Current Streak" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Current Streak"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "最初のマークを待って静かに残っているアイテム。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在の連続日数"
           }
         }
       }
     },
-    "Items whose last mark feels far enough away to revisit.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Items whose last mark feels far enough away to revisit."
+    "Default Order" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default Order"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "最後のマークから少し時間が経ち、見直してもよさそうなアイテム。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標準順"
           }
         }
       }
     },
-    "Items with history but no marks in this range may deserve a gentle revisit.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Items with history but no marks in this range may deserve a gentle revisit."
+    "Dormant" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dormant"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "履歴はあるのにこの期間は静かなアイテムは、少し見直してもよさそうです。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "休眠中"
           }
         }
       }
     },
-    "Library": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Library"
+    "Duplicate Current Item ID" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicate Current Item ID"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ライブラリ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在のライブラリ内で重複したアイテムID"
           }
         }
       }
     },
-    "Marks cannot be added for a future day.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Marks cannot be added for a future day."
+    "Duplicate Item ID" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicate Item ID"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "未来の日にはマークを追加できません。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重複したアイテムID"
           }
         }
       }
     },
-    "Move this item back to Library before changing its history.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Move this item back to Library before changing its history."
+    "Duplicate Mark Day" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicate Mark Day"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "履歴を変更する前に、このアイテムをライブラリへ戻してください。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重複したマーク日"
           }
         }
       }
     },
-    "Needs First Mark": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Needs First Mark"
+    "Duplicate Mark ID" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duplicate Mark ID"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "最初のマーク待ち"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重複したマークID"
           }
         }
       }
     },
-    "No marks in the selected range yet.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No marks in the selected range yet."
+    "Frequent active items without notes may be easier to read later with short context." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frequent active items without notes may be easier to read later with short context."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "選択した期間にはまだマークがありません。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "よく使うアイテムに短い文脈を足すと、あとで読み返しやすくなります。"
           }
         }
       }
     },
-    "Notebooks": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Notebooks"
+    "Insights" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Insights"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ノート"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インサイト"
           }
         }
       }
     },
-    "Nothing currently looks dormant.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nothing currently looks dormant."
+    "Invalid Item Photo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid Item Photo"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "今は休眠中に見えるものはありません。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無効なアイテム写真"
           }
         }
       }
     },
-    "Nothing in this lane right now.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nothing in this lane right now."
+    "Item name is required." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Item name is required."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "今はこのレーンに何もありません。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アイテム名が必要です。"
           }
         }
       }
     },
-    "Nothing is asking to come back right now.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nothing is asking to come back right now."
+    "Items that have been waiting quietly without a first mark." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Items that have been waiting quietly without a first mark."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "今は戻したほうがよさそうなものはありません。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最初のマークを待って静かに残っているアイテム。"
           }
         }
       }
     },
-    "Other": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Other"
+    "Items whose last mark feels far enough away to revisit." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Items whose last mark feels far enough away to revisit."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "その他"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最後のマークから少し時間が経ち、見直してもよさそうなアイテム。"
           }
         }
       }
     },
-    "Protect the current streak": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Protect the current streak"
+    "Items with history but no marks in this range may deserve a gentle revisit." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Items with history but no marks in this range may deserve a gentle revisit."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "今の流れを保つ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴はあるのにこの期間は静かなアイテムは、少し見直してもよさそうです。"
           }
         }
       }
     },
-    "Recovery Candidates": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recovery Candidates"
+    "Library" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Library"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "復帰候補"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ライブラリ"
           }
         }
       }
     },
-    "Review": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Review"
+    "Marked on Day" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marked on Day"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "レビュー"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指定日にマーク済み"
           }
         }
       }
     },
-    "Revisit quiet favorites": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revisit quiet favorites"
+    "Marked Today" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marked Today"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "静かなお気に入りを見直す"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日マーク済み"
           }
         }
       }
     },
-    "Settings": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Settings"
+    "Marks" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marks"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "設定"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マーク"
           }
         }
       }
     },
-    "Shoes": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shoes"
+    "Marks cannot be added for a future day." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marks cannot be added for a future day."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "靴"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未来の日にはマークを追加できません。"
           }
         }
       }
     },
-    "Start this range with one mark": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Start this range with one mark"
+    "Months" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Months"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "この期間をひとつのマークから始める"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月ごと"
           }
         }
       }
     },
-    "The selected photo could not be read.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The selected photo could not be read."
+    "Most Marked" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Most Marked"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "選択した写真を読み込めませんでした。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マーク数の多い順"
           }
         }
       }
     },
-    "The selected photo is too large.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The selected photo is too large."
+    "Move this item back to Library before changing its history." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move this item back to Library before changing its history."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "選択した写真のサイズが大きすぎます。"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴を変更する前に、このアイテムをライブラリへ戻してください。"
           }
         }
       }
     },
-    "Active Days": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Active Days"
+    "Name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "記録のある日"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名前"
           }
         }
       }
     },
-    "Active items only": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Active items only"
+    "Needs First Mark" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Needs First Mark"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ライブラリのアイテムのみ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最初のマーク待ち"
           }
         }
       }
     },
-    "Activity": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Activity"
+    "Never Marked" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Never Marked"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "アクティビティ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未マーク"
           }
         }
       }
     },
-    "All": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "All"
+    "Next Moves" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next Moves"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "すべて"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次の一歩"
           }
         }
       }
     },
-    "All items": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "All items"
+    "No marks in the selected range yet." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No marks in the selected range yet."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "すべてのアイテム"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した期間にはまだマークがありません。"
           }
         }
       }
     },
-    "Best Streak": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Best Streak"
+    "Notebooks" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notebooks"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "最長の連続日数"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ノート"
           }
         }
       }
     },
-    "Categories": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Categories"
+    "Nothing currently looks dormant." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing currently looks dormant."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "カテゴリ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今は休眠中に見えるものはありません。"
           }
         }
       }
     },
-    "Category": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Category"
+    "Nothing in this lane right now." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing in this lane right now."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "カテゴリ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今はこのレーンに何もありません。"
           }
         }
       }
     },
-    "Consistency": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Consistency"
+    "Nothing is asking to come back right now." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing is asking to come back right now."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "継続性"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今は戻したほうがよさそうなものはありません。"
           }
         }
       }
     },
-    "Current Streak": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Current Streak"
+    "Open on Day" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open on Day"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "現在の連続日数"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指定日に未マーク"
           }
         }
       }
     },
-    "Default Order": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Default Order"
+    "Open Today" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Today"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "標準順"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "machine_translated",
+            "value" : "今日未マーク"
           }
         }
       }
     },
-    "Marked Today": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Marked Today"
+    "Other" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "今日マーク済み"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "その他"
           }
         }
       }
     },
-    "Marks": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Marks"
+    "Protect the current streak" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Protect the current streak"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "マーク"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今の流れを保つ"
           }
         }
       }
     },
-    "Most Marked": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Most Marked"
+    "Quiet item" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quiet item"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "マーク数の多い順"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "静かなアイテム"
           }
         }
       }
     },
-    "Name": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Name"
+    "Recently Marked" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recently Marked"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "名前"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近マークした順"
           }
         }
       }
     },
-    "Never Marked": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Never Marked"
+    "Recovery Candidates" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recovery Candidates"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "未マーク"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復帰候補"
           }
         }
       }
     },
-    "Next Moves": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Next Moves"
+    "Review" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "次の一歩"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レビュー"
           }
         }
       }
     },
-    "Open Today": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open Today"
+    "Revisit quiet favorites" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revisit quiet favorites"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "今日まだ開いている"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "静かなお気に入りを見直す"
           }
         }
       }
     },
-    "Quiet item": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Quiet item"
+    "Rhythm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rhythm"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "静かなアイテム"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リズム"
           }
         }
       }
     },
-    "Recently Marked": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Recently Marked"
+    "Scope" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scope"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "最近マークした順"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "範囲"
           }
         }
       }
     },
-    "Scope": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Scope"
+    "Settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "範囲"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定"
           }
         }
       }
     },
-    "Spotlight": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Spotlight"
+    "Shoes" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shoes"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "スポットライト"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "靴"
           }
         }
       }
     },
-    "Stally Insights": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stally Insights"
+    "Spotlight" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spotlight"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stallyインサイト"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スポットライト"
           }
         }
       }
     },
-    "Top item": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Top item"
+    "Stally Insights" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stally Insights"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "トップアイテム"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stallyインサイト"
           }
         }
       }
     },
-    "Unique Categories": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unique Categories"
+    "Start this range with one mark" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start this range with one mark"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "マークしたカテゴリ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この期間をひとつのマークから始める"
           }
         }
       }
     },
-    "Unique Items": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unique Items"
+    "The selected photo could not be read." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The selected photo could not be read."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "マークしたアイテム"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した写真を読み込めませんでした。"
           }
         }
       }
     },
-    "With History": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "With History"
+    "The selected photo is too large." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The selected photo is too large."
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "履歴あり"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択した写真のサイズが大きすぎます。"
           }
         }
       }
     },
-    "Without History": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Without History"
+    "Top item" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Top item"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "履歴なし"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "トップアイテム"
           }
         }
       }
     },
-    "Marked on Day": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Marked on Day"
+    "Unique Categories" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unique Categories"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "指定日にマーク済み"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マークしたカテゴリ"
           }
         }
       }
     },
-    "Open on Day": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Open on Day"
+    "Unique Items" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unique Items"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "指定日に未マーク"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マークしたアイテム"
           }
         }
       }
     },
-    "Months": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Months"
+    "Unknown Category" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown Category"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "月ごと"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不明なカテゴリ"
           }
         }
       }
     },
-    "Rhythm": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rhythm"
+    "Unreadable Backup" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unreadable Backup"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "リズム"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み込めないバックアップ"
           }
         }
       }
     },
-    "Weekdays": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weekdays"
+    "Unsupported Schema Version" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unsupported Schema Version"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "曜日ごと"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未対応のスキーマバージョン"
           }
         }
       }
     },
-    "Unknown Category": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unknown Category"
+    "Weekdays" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekdays"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "不明なカテゴリ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "曜日ごと"
           }
         }
       }
     },
-    "Unreadable Backup": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unreadable Backup"
+    "With History" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "With History"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "読み込めないバックアップ"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴あり"
           }
         }
       }
     },
-    "Unsupported Schema Version": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unsupported Schema Version"
+    "Without History" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Without History"
           }
         },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "未対応のスキーマバージョン"
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴なし"
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.3"
 }

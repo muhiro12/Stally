@@ -14,7 +14,7 @@ struct BackupExportTip: Tip {
     }
 
     var message: Text? {
-        Text("Backup files are for archive and transfer, not ongoing device sync.")
+        Text("Backup files are for archiving and transfer, not ongoing sync between devices.")
     }
 
     var options: [Option] {

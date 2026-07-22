@@ -24,12 +24,6 @@
         "ja" : {
           "variations" : {
             "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld マーク"
-                }
-              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
@@ -409,18 +403,12 @@
         }
       }
     },
-    "Backup files are for archive and transfer, not ongoing device sync." : {
+    "Backup files are for archiving and transfer, not ongoing sync between devices." : {
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup files are for archive and transfer, not ongoing device sync."
-          }
-        },
         "ja" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップファイルは保存や移行のためのもので、デバイス間の継続的な同期には使いません。"
+            "state" : "machine_translated",
+            "value" : "バックアップファイルは保管や移行のためのもので、デバイス間の継続的な同期には使いません。"
           }
         }
       }
@@ -2367,22 +2355,6 @@
         }
       }
     },
-    "Sample Marks" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sample Marks"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サンプルのマーク"
-          }
-        }
-      }
-    },
     "Sample items can only be added when the collection is empty." : {
       "localizations" : {
         "en" : {
@@ -2411,6 +2383,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "サンプルアイテムは、自分で追加したアイテムと同じライブラリ、履歴、レビュー、インサイト、アーカイブ、バックアップ、同期機能を使用します。"
+          }
+        }
+      }
+    },
+    "Sample Marks" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sample Marks"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルのマーク"
           }
         }
       }
@@ -2960,5 +2948,5 @@
       }
     }
   },
-  "version" : "1.0"
+  "version" : "1.3"
 }

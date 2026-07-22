@@ -27,12 +27,6 @@
         "ja" : {
           "variations" : {
             "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld アイテム"
-                }
-              },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",

@@ -36,10 +36,10 @@
         },
         "ja" : {
           "stringSet" : {
-            "state" : "translated",
+            "state" : "machine_translated",
             "values" : [
               "${applicationName}でアイテムをマーク",
-              "${applicationName}で今日マーク"
+              "${applicationName}で今日のマークを付ける"
             ]
           }
         }
@@ -112,5 +112,5 @@
       }
     }
   },
-  "version" : "1.0"
+  "version" : "1.3"
 }
