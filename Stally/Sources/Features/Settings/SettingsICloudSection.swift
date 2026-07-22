@@ -23,6 +23,8 @@ struct SettingsICloudSection: View {
             "iCloud sync is on for this launch."
         case .cloudKitUnavailable:
             "iCloud sync could not start. Stally is using local storage for this launch."
+        case .temporaryLocal:
+            "Persistent storage could not start. Changes made in this launch will not be saved."
         }
     }
 

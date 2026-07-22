@@ -2009,6 +2009,22 @@
         }
       }
     },
+    "Persistent storage could not start. Changes made in this launch will not be saved." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Persistent storage could not start. Changes made in this launch will not be saved."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "永続ストレージを開始できませんでした。この起動中の変更は保存されません。"
+          }
+        }
+      }
+    },
     "Photo" : {
       "localizations" : {
         "en" : {
@@ -2745,6 +2761,22 @@
         }
       }
     },
+    "Stally could not open persistent storage. Changes made in this launch will not be saved." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stally could not open persistent storage. Changes made in this launch will not be saved."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stallyは永続ストレージを開けませんでした。この起動中の変更は保存されません。"
+          }
+        }
+      }
+    },
     "Start with a few pieces you actually reach for." : {
       "localizations" : {
         "en" : {
@@ -2789,6 +2821,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "状態"
+          }
+        }
+      }
+    },
+    "Storage Is Temporary" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Storage Is Temporary"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一時ストレージで実行中"
           }
         }
       }

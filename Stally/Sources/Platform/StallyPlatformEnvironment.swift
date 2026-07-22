@@ -13,6 +13,7 @@ struct StallyPlatformEnvironment {
         case local
         case cloudKit
         case cloudKitUnavailable
+        case temporaryLocal
     }
 
     let logging: MHLoggingBootstrap

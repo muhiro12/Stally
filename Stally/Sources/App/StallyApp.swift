@@ -129,7 +129,9 @@ private extension StallyApp {
                     "model_container.local_failed",
                     metadata: StallyLogging.errorMetadata(error)
                 )
-                fatalError("Could not create local ModelContainer: \(error)")
+                return Self.makeTemporaryModelContainer(
+                    startupLogger: startupLogger
+                )
             }
 
             startupLogger.notice(
@@ -159,7 +161,28 @@ private extension StallyApp {
                 "model_container.local_failed",
                 metadata: StallyLogging.errorMetadata(error)
             )
-            fatalError("Could not create local ModelContainer: \(error)")
+            return Self.makeTemporaryModelContainer(
+                startupLogger: startupLogger
+            )
+        }
+    }
+
+    private static func makeTemporaryModelContainer(
+        startupLogger: MHLogger
+    ) -> ModelContainerResolution {
+        do {
+            let modelContainer = try StallyModelContainerFactory.inMemory()
+            startupLogger.critical("model_container.temporary_created")
+            return .init(
+                modelContainer: modelContainer,
+                persistenceStatus: .temporaryLocal
+            )
+        } catch {
+            startupLogger.critical(
+                "model_container.temporary_failed",
+                metadata: StallyLogging.errorMetadata(error)
+            )
+            fatalError("Could not create temporary ModelContainer: \(error)")
         }
     }
 

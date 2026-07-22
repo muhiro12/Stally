@@ -10,23 +10,6 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    private enum PresentedSheet: Identifiable {
-        case addItem
-        case backupCenter
-        case settings
-
-        var id: String {
-            switch self {
-            case .addItem:
-                "add-item"
-            case .backupCenter:
-                "backup-center"
-            case .settings:
-                "settings"
-            }
-        }
-    }
-
     @Query(sort: \Item.createdAt, order: .reverse)
     private var items: [Item]
     @Environment(StallyRouteInbox.self)
@@ -43,7 +26,7 @@ struct ContentView: View {
     @State private var selectedDestination: StallyNavigationView.Destination?
     @State private var preferredCompactColumn: NavigationSplitViewColumn
     @State private var detailPath: [StallyNavigationView.DetailRoute]
-    @State private var presentedSheet: PresentedSheet?
+    @State private var presentedSheet: ContentViewPresentedSheet?
     @State private var isPresentingMissingItemLinkAlert = false
 
     #if DEBUG
@@ -140,6 +123,7 @@ struct ContentView: View {
             openSupportedLink(link)
         }
         .stallySubscriptionStateSync()
+        .stallyTemporaryStorageAlert()
         #if DEBUG
         .task(id: items.count) {
             applyInitialPreviewRouteIfNeeded()
