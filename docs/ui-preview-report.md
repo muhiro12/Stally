@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This report records Stally's current MHUI adoption through version 1.16.0 and
+This report records Stally's current MHUI adoption through version 1.17.0 and
 preserves the major-screen captures used to review the result.
 
 The current review date is July 23, 2026.
@@ -18,16 +18,19 @@ The package update and the adoption advice are implemented.
   and confirmation dialogs remain intact.
 - Insights now leads with the complete MHUI hierarchy: screen title, editorial
   summary, semantic feature surfaces, then native scope and report controls.
+- Enabled primary, secondary, and destructive actions remain visually distinct
+  from disabled actions inside `MHActionGroup`.
 - The host app still owns the Mint accent through `AccentColor`.
 - English and Japanese localization remain complete for the changed surface.
 - The main iPhone gallery, targeted accessibility variants, and regular-width
   iPad evidence were refreshed from the rebuilt app.
 
-The current MHUI 1.16 follow-through is split into these commits:
+The current MHUI follow-through is split into these commits:
 
 - `3567b88` updates MHUI to 1.16.0.
 - `f2dc247` adopts the adaptive Insights feature hierarchy.
 - `29acb19` makes that hierarchy visible as the primary Insights composition.
+- `8b6a7dc` updates MHUI to 1.17.0 and adopts its action contrast restoration.
 
 ## Adoption policy
 
@@ -146,11 +149,13 @@ native routes for concrete collection, selection, preference, and input
 behavior. Their native containers are deliberate exceptions rather than the
 dominant design direction.
 
-MHUI 1.16 is now resolved. It preserves the semantic color adoption from 1.15
-and adds package-owned adaptive feature hierarchy, updated neutral surfaces,
-system typography, Dynamic Type fallback, and Liquid Glass action grouping.
-Stally continues to use the package's semantic color modifiers for the
-remaining product-source color exceptions:
+MHUI 1.17 is now resolved. It preserves the semantic color adoption and
+adaptive feature hierarchy from 1.16 while restoring enabled label and symbol
+contrast inside Liquid Glass action groups. Stally does not add a local
+foreground override or disable Glass for these controls; the package-owned
+action styles remain the presentation authority. Stally continues to use the
+package's semantic color modifiers for the remaining product-source color
+exceptions:
 
 1. `View+StallyPresentationChrome.swift` applies
    `.mhTint(.primaryText)` where toolbar actions intentionally use a neutral
@@ -290,6 +295,8 @@ No blocking visual issue was found in the captured first viewports.
 - Grouped rows read as one related surface without nested list chrome.
 - Item Detail keeps its photo and Mark Today action prominent without turning
   the screen into a dashboard.
+- Enabled Mark, history, archive, export, and destructive actions no longer
+  resemble disabled controls when composed inside `MHActionGroup`.
 - Insights presents its purpose, range summary, primary readings, scope, and
   report in a stable editorial order. Activity stays primary while
   Consistency and Collection Health reflow as supporting content.
@@ -316,10 +323,13 @@ Backup import validation remains represented by the dedicated
 `BackupImportPreviewSection`. Destructive actions remain behind native
 confirmation dialogs and were not executed for this visual audit.
 
-The updated Insights surface was captured from live iPhone and iPad Simulator
-launches. The same screen was also rendered through Xcode Preview in Japanese,
-Dark Mode, and AX3 Dynamic Type. Xcode Device Interaction did not establish a
-workspace session, so scroll automation was not used for this refresh.
+The updated action surfaces were captured from live iPhone and iPad Simulator
+launches. MHUI's dedicated action contrast regression Preview was also rendered
+in Light and Dark appearances. Xcode Device Interaction did not establish a
+workspace-backed session, so the already-built app was installed directly and
+verified through a bounded non-workspace session instead. That session captured
+the Item Detail hierarchy before and after scrolling, confirmed enabled
+44.3-point action controls without truncation or overlap, and was then stopped.
 
 The repository build, library tests, repository rules, string-catalog audit,
 and runtime-log review are recorded in the task handoff alongside this report.
