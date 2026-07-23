@@ -16,13 +16,6 @@ struct InsightsReadingSections: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.section) {
-            MHFeatureGrid {
-                InsightsActivitySection(snapshot: snapshot)
-            } supporting: {
-                InsightsConsistencySection(snapshot: snapshot)
-                InsightsCollectionHealthSection(snapshot: snapshot)
-            }
-
             InsightsRhythmSection(
                 weekdayActivity: snapshot.weekdayActivity,
                 monthlyActivity: snapshot.monthlyActivity

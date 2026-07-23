@@ -40,7 +40,6 @@ struct InsightsView: View {
             selectedRange: $selectedRange,
             includesArchivedItems: $includesArchivedItems
         )
-        .navigationTitle("Insights")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 StallyLinkShareButton(

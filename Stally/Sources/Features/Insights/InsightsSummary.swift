@@ -13,12 +13,17 @@ struct InsightsSummary: View {
     let rangeTitle: LocalizedStringResource
 
     var body: some View {
+        let supporting = totalMarks == 0
+            ? Text("No activity in this window yet.")
+            : Text("The selected range shapes every reading below.")
+
         MHSummary(
-            title: Text(totalMarks, format: .number),
-            metadata: Text("Marks")
+            title: Text(rangeTitle),
+            metadata: Text("Scope"),
+            supporting: supporting
         ) {
-            Text(rangeTitle)
-                .mhBadge(style: .neutral)
+            Text("\(totalMarks) marks")
+                .mhBadge(style: .accent)
         }
     }
 }

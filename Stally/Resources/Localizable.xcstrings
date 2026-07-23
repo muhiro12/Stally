@@ -115,6 +115,22 @@
         }
       }
     },
+    "Activity, consistency, and collection health at a glance." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activity, consistency, and collection health at a glance."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アクティビティ、継続性、コレクションの状態をひと目で確認できます。"
+          }
+        }
+      }
+    },
     "Add" : {
       "localizations" : {
         "en" : {
@@ -2297,6 +2313,22 @@
         }
       }
     },
+    "Read the collection as a pattern, not just a list." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read the collection as a pattern, not just a list."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コレクションを単なる一覧ではなく、パターンとして読み解きます。"
+          }
+        }
+      }
+    },
     "Report" : {
       "localizations" : {
         "en" : {
@@ -2853,6 +2885,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "サブスクリプション"
+          }
+        }
+      }
+    },
+    "The selected range shapes every reading below." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The selected range shapes every reading below."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以下の読み取りには、選択した期間が反映されます。"
           }
         }
       }

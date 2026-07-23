@@ -26,6 +26,8 @@ struct InsightsList: View {
                 rangeTitle: snapshot.options.range.title
             )
 
+            InsightsHighlightsSection(snapshot: snapshot)
+
             InsightsScopeSection(
                 selectedRange: $selectedRange,
                 includesArchivedItems: $includesArchivedItems
@@ -43,6 +45,9 @@ struct InsightsList: View {
 
             InsightsRecommendationsSection(recommendations: snapshot.recommendations)
         }
-        .mhScreen()
+        .mhScreen(
+            "Insights",
+            subtitle: "Read the collection as a pattern, not just a list."
+        )
     }
 }
