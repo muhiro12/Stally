@@ -16,9 +16,12 @@ struct InsightsReadingSections: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.section) {
-            InsightsActivitySection(snapshot: snapshot)
-
-            InsightsConsistencySection(snapshot: snapshot)
+            MHFeatureGrid {
+                InsightsActivitySection(snapshot: snapshot)
+            } supporting: {
+                InsightsConsistencySection(snapshot: snapshot)
+                InsightsCollectionHealthSection(snapshot: snapshot)
+            }
 
             InsightsRhythmSection(
                 weekdayActivity: snapshot.weekdayActivity,
@@ -38,8 +41,6 @@ struct InsightsReadingSections: View {
                 emptyMessage: "No quiet items in this window yet.",
                 summaries: snapshot.quietItems
             )
-
-            InsightsCollectionHealthSection(snapshot: snapshot)
         }
     }
 }
