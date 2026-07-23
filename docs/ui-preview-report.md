@@ -16,8 +16,8 @@ The package update and the adoption advice are implemented.
   `List` or `Form` bridges where platform behavior is part of the screen.
 - Native navigation, sheets, file import and export, sharing, TipKit, alerts,
   and confirmation dialogs remain intact.
-- Insights now uses `MHFeatureGrid` to distinguish Activity from the smaller
-  Consistency and Collection Health readings.
+- Insights now leads with the complete MHUI hierarchy: screen title, editorial
+  summary, semantic feature surfaces, then native scope and report controls.
 - The host app still owns the Mint accent through `AccentColor`.
 - English and Japanese localization remain complete for the changed surface.
 - The main iPhone gallery, targeted accessibility variants, and regular-width
@@ -27,6 +27,7 @@ The current MHUI 1.16 follow-through is split into these commits:
 
 - `3567b88` updates MHUI to 1.16.0.
 - `f2dc247` adopts the adaptive Insights feature hierarchy.
+- `29acb19` makes that hierarchy visible as the primary Insights composition.
 
 ## Adoption policy
 
@@ -73,7 +74,14 @@ MHUI for the screens where custom composition adds meaningful hierarchy.
 ### Insights
 
 - Replaced the list container with `mhScreen`.
-- Added an `MHSummary` lead for total marks and the selected range.
+- Moved Insights into the MHUI screen title and subtitle hierarchy instead of
+  repeating a native navigation title.
+- Made the selected range the `MHSummary` context and total marks an accent
+  badge.
+- Added app-owned Activity, Consistency, and Collection Health feature tiles
+  using MHUI typography, insets, key-value rows, and semantic surface roles.
+- Positioned the feature hierarchy before controls so the first viewport
+  communicates the screen's purpose.
 - Converted scope controls and report sharing to compact MHUI groups.
 - Promoted Activity as the primary reading and grouped Consistency with
   Collection Health as concise supporting readings through `MHFeatureGrid`.
@@ -217,9 +225,9 @@ Dense collection:
 ## Regular-width iPad screens
 
 The iPad captures confirm that the split-view sidebar remains native while
-signature screens use a constrained readable content width. Insights respects
-that constrained detail width and lets `MHFeatureGrid` choose its compact
-fallback.
+signature screens use a constrained readable content width. Insights uses the
+regular-width `MHFeatureGrid` split: the elevated Activity feature leads, with
+the two muted supporting features beneath it.
 
 ### Library
 
@@ -235,12 +243,13 @@ fallback.
 
 ## Targeted adaptive evidence
 
-### Insights supporting hierarchy
+### Insights feature hierarchy
 
-Activity remains the primary reading. Consistency and Collection Health form a
-concise two-column supporting set on iPhone and stay readable in Japanese.
+The regular-width capture isolates the app-owned feature content that MHUI
+arranges. Activity remains primary, while Consistency and Collection Health
+form a concise supporting pair and stay readable in Japanese.
 
-![Insights supporting hierarchy](ui-preview-screenshots/insights-supporting.jpg)
+![Insights feature hierarchy](ui-preview-screenshots/insights-supporting.jpg)
 
 ### Insights in Dark Mode
 
@@ -281,9 +290,9 @@ No blocking visual issue was found in the captured first viewports.
 - Grouped rows read as one related surface without nested list chrome.
 - Item Detail keeps its photo and Mark Today action prominent without turning
   the screen into a dashboard.
-- Insights presents range, report, and readings in a stable editorial order.
-  Activity stays primary while Consistency and Collection Health reflow as
-  supporting content.
+- Insights presents its purpose, range summary, primary readings, scope, and
+  report in a stable editorial order. Activity stays primary while
+  Consistency and Collection Health reflow as supporting content.
 - Backup Center separates safe, import, and destructive tasks clearly.
 - Native collection, selection, editor, and system-presentation behavior is
   unchanged.
@@ -306,6 +315,11 @@ Backup import validation remains represented by the dedicated
 `Backup Center - Import Preview` SwiftUI preview and by the compiled
 `BackupImportPreviewSection`. Destructive actions remain behind native
 confirmation dialogs and were not executed for this visual audit.
+
+The updated Insights surface was captured from live iPhone and iPad Simulator
+launches. The same screen was also rendered through Xcode Preview in Japanese,
+Dark Mode, and AX3 Dynamic Type. Xcode Device Interaction did not establish a
+workspace session, so scroll automation was not used for this refresh.
 
 The repository build, library tests, repository rules, string-catalog audit,
 and runtime-log review are recorded in the task handoff alongside this report.
