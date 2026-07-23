@@ -1,12 +1,11 @@
-# MHUI 1.13 Adoption and UI Capture Report
+# MHUI Adoption and UI Capture Report
 
 ## Purpose
 
-This report records the Stally follow-through after updating MHUI from 1.12.0
-to 1.13.0 and applying the package-side adoption review. It also preserves the
-current major-screen captures used to review the result.
+This report records Stally's current MHUI adoption through version 1.16.0 and
+preserves the major-screen captures used to review the result.
 
-The review date is July 18, 2026.
+The current review date is July 23, 2026.
 
 ## Outcome
 
@@ -17,17 +16,17 @@ The package update and the adoption advice are implemented.
   `List` or `Form` bridges where platform behavior is part of the screen.
 - Native navigation, sheets, file import and export, sharing, TipKit, alerts,
   and confirmation dialogs remain intact.
+- Insights now uses `MHFeatureGrid` to distinguish Activity from the smaller
+  Consistency and Collection Health readings.
 - The host app still owns the Mint accent through `AccentColor`.
 - English and Japanese localization remain complete for the changed surface.
 - The main iPhone gallery, targeted accessibility variants, and regular-width
   iPad evidence were refreshed from the rebuilt app.
 
-The implementation is split into these commits:
+The current MHUI 1.16 follow-through is split into these commits:
 
-- `b6019d6` updates MHUI to 1.13.0.
-- `8238d1d` adopts signature composition for Item Detail.
-- `d0393f1` adopts signature composition for Insights.
-- `ae2b9a4` adopts signature composition for Backup Center.
+- `3567b88` updates MHUI to 1.16.0.
+- `f2dc247` adopts the adaptive Insights feature hierarchy.
 
 ## Adoption policy
 
@@ -41,6 +40,8 @@ screens:
   section rhythm.
 - `MHSummary` provides an editorial lead when a screen has a representative
   state or metric.
+- `MHFeatureGrid` preserves one primary feature and a concise supporting set
+  across available widths and Dynamic Type sizes.
 - `MHGroupedRows` presents compact related values without nesting a `List`.
 - `MHActionGroup` makes primary, secondary, and destructive actions explicit.
 - `mhSection` provides consistent section hierarchy and separation.
@@ -74,6 +75,8 @@ MHUI for the screens where custom composition adds meaningful hierarchy.
 - Replaced the list container with `mhScreen`.
 - Added an `MHSummary` lead for total marks and the selected range.
 - Converted scope controls and report sharing to compact MHUI groups.
+- Promoted Activity as the primary reading and grouped Consistency with
+  Collection Health as concise supporting readings through `MHFeatureGrid`.
 - Converted Activity, Consistency, Rhythm, Categories, rankings, collection
   health, and recommendations to signature sections.
 - Kept item navigation and `ShareLink` native.
@@ -98,6 +101,7 @@ The changed screens now use:
 - `MHTheme.standard` and `MHGlassPolicy.automatic` at the app root.
 - `mhScreen` for Item Detail, Insights, and Backup Center.
 - `MHSummary` for Item Detail and Insights.
+- `MHFeatureGrid` for the adaptive Insights reading hierarchy.
 - `MHGroupedRows` for details, metrics, history, validation, and status.
 - `MHActionGroup` for focused safe and destructive action clusters.
 - `mhSection` for signature section hierarchy.
@@ -109,7 +113,7 @@ or MHUI dependency to `StallyLibrary`.
 
 ## Root-first styling and asset ownership follow-up
 
-The July 18 package review confirms that Stally already has the preferred
+The July 23 package review confirms that Stally already has the preferred
 root shape:
 
 ```swift
@@ -134,8 +138,11 @@ native routes for concrete collection, selection, preference, and input
 behavior. Their native containers are deliberate exceptions rather than the
 dominant design direction.
 
-MHUI 1.15 is now resolved, and Stally uses the package's semantic color
-modifiers for the remaining product-source color exceptions:
+MHUI 1.16 is now resolved. It preserves the semantic color adoption from 1.15
+and adds package-owned adaptive feature hierarchy, updated neutral surfaces,
+system typography, Dynamic Type fallback, and Liquid Glass action grouping.
+Stally continues to use the package's semantic color modifiers for the
+remaining product-source color exceptions:
 
 1. `View+StallyPresentationChrome.swift` applies
    `.mhTint(.primaryText)` where toolbar actions intentionally use a neutral
@@ -157,7 +164,7 @@ artifacts, not runtime app resources.
 ## Capture environment
 
 - App configuration: Debug.
-- Xcode: 27.0 beta, build `27A5218g`.
+- Xcode: 27.0 beta, build `27A5228h`.
 - iPhone: iPhone 17 Pro for Stally, iOS 27 Simulator.
 - iPad: iPad Pro 11-inch (M5) for Stally, iOS 27 Simulator.
 - Main gallery locale: Japanese app localization with deterministic preview
@@ -210,7 +217,9 @@ Dense collection:
 ## Regular-width iPad screens
 
 The iPad captures confirm that the split-view sidebar remains native while
-signature screens use a constrained readable content width.
+signature screens use a constrained readable content width. Insights respects
+that constrained detail width and lets `MHFeatureGrid` choose its compact
+fallback.
 
 ### Library
 
@@ -220,7 +229,18 @@ signature screens use a constrained readable content width.
 
 ![iPad Item Detail](ui-preview-screenshots/ipad-item-detail.jpg)
 
+### Insights
+
+![iPad Insights](ui-preview-screenshots/ipad-insights.jpg)
+
 ## Targeted adaptive evidence
+
+### Insights supporting hierarchy
+
+Activity remains the primary reading. Consistency and Collection Health form a
+concise two-column supporting set on iPhone and stay readable in Japanese.
+
+![Insights supporting hierarchy](ui-preview-screenshots/insights-supporting.jpg)
 
 ### Insights in Dark Mode
 
@@ -262,6 +282,8 @@ No blocking visual issue was found in the captured first viewports.
 - Item Detail keeps its photo and Mark Today action prominent without turning
   the screen into a dashboard.
 - Insights presents range, report, and readings in a stable editorial order.
+  Activity stays primary while Consistency and Collection Health reflow as
+  supporting content.
 - Backup Center separates safe, import, and destructive tasks clearly.
 - Native collection, selection, editor, and system-presentation behavior is
   unchanged.
