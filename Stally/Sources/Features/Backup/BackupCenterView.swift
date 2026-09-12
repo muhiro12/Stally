@@ -124,10 +124,21 @@ struct BackupCenterView: View {
 
 private extension BackupCenterView {
     private func exportBackup() {
+        exportDocument = nil
+        statusMessage = nil
+
         do {
             let data = try BackupOperations.exportData(for: items)
             exportDocument = .init(data: data)
             isPresentingExporter = true
+        } catch BackupError.validationFailed(let preview) {
+            presentError(
+                title: String(localized: "Backup could not be exported."),
+                message: preview.validationIssues.map { issue in
+                    String(localized: issue.title)
+                }
+                .joined(separator: "\n")
+            )
         } catch {
             presentError(
                 title: String(localized: "Backup could not be exported."),

@@ -42,7 +42,8 @@ This repository currently contains:
   library and sample-data strings.
 - `StallyLibrary/Tests/`, which owns library behavior tests for the current
   item, collection browsing, sample data, review, insights reports, backup,
-  link, wire-format, and persistence contracts.
+  link, wire-format, and persistence contracts, including export rejection
+  without source mutation and export-to-restore round trips.
 - `ci_scripts/`, which owns repository-managed lint, rule, and library-test
   entrypoints.
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
@@ -174,7 +175,9 @@ The app target should stay a thin adapter over the current product surface.
   `InsightsReportOperations`.
 - `StallyLibrary/Sources/Backup/` owns the current versioned backup wire
   contract, import previews/results, validation issues, reset results, and
-  `BackupOperations`.
+  `BackupOperations`. Export must satisfy the current import validation and
+  encoded-size limits before presenting a restorable backup; failures must
+  preserve source records and surface their validation reasons.
 - `StallyLibrary/Sources/Link/` owns shareable destination and item link
   values, MHPlatformCore deep-link route encoding, parsing results, and
   `StallyLinkOperations`.

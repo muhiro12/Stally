@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// A validation issue found while preparing a backup import.
+/// A validation issue found while preparing a backup export or import.
 public struct BackupValidationIssue: Equatable, Identifiable, Sendable {
     /// Validation issue categories.
     public enum Kind: String, Equatable, Sendable {

@@ -23,13 +23,30 @@ public extension BackupOperations {
         )
     }
 
-    /// Encodes a backup snapshot as portable JSON data.
+    /// Encodes a backup that satisfies the current import validation and size limits.
+    /// Throws `BackupError.validationFailed` without changing the source items when
+    /// the snapshot cannot be restored by the current backup contract.
     static func exportData(
         for items: [Item],
         exportedAt: Date = .now,
         encoder: JSONEncoder = .init()
     ) throws -> Data {
-        try encoder.encode(snapshot(for: items, exportedAt: exportedAt))
+        let snapshot = snapshot(for: items, exportedAt: exportedAt)
+        let preview = preview(snapshot: snapshot, currentItems: [])
+
+        guard preview.canImport else {
+            throw BackupError.validationFailed(preview)
+        }
+
+        let data = try encoder.encode(snapshot)
+
+        guard data.count <= maximumImportDataByteCount else {
+            throw BackupError.validationFailed(
+                oversizedImportPreview(dataByteCount: data.count)
+            )
+        }
+
+        return data
     }
 }
 
@@ -38,7 +55,7 @@ private extension BackupOperations {
         .init(
             id: item.uuid,
             name: item.name,
-            categoryRawValue: item.category.rawValue,
+            categoryRawValue: item.categoryRawValue,
             note: item.note,
             photoData: item.photoData,
             createdAt: item.createdAt,
