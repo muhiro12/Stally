@@ -333,3 +333,54 @@ the Item Detail hierarchy before and after scrolling, confirmed enabled
 
 The repository build, library tests, repository rules, string-catalog audit,
 and runtime-log review are recorded in the task handoff alongside this report.
+
+## September 13 Backup Export Verification
+
+This targeted check uses the existing `typical` in-memory launch fixture on
+iPhone 18 Pro, iOS 27.0, built with Xcode 27.0 (`27A266a`). It records current
+runtime evidence for backup validation hardening, not a new visual baseline
+or acceptance of a broader redesign. Product copy and MHUI composition were
+preserved.
+
+The Japanese Backup Center showed 5 items, 1 archived item, and 23 marks.
+Export opened the native Files exporter with the Stally backup filename.
+Dismissing that sheet without saving returned to the same collection counts.
+
+![Backup Center before export][release-backup]
+![Native Files exporter][release-exporter]
+![Backup Center after dismissing the exporter][release-dismissed]
+
+The same fixture also verified navigation from Library to Item Detail and
+from the root to Insights and Settings. No overlapping or unreadably clipped
+text was observed in the captured viewports. Fixture item names and notes are
+intentionally English; the current captures verify Japanese interface chrome.
+
+![Library][release-library]
+![Item Detail][release-detail]
+![Insights][release-insights]
+![Settings][release-settings]
+
+Both app runs logged preview-container creation and startup readiness. No app
+crash, fatal error, or SwiftData, ModelContainer, or CloudKit failure was
+observed. Simulator logs did contain CoreTelephony XPC, PointerUI, duplicate
+accessibility-class, and Files symbol-lookup diagnostics; the log stream was
+not warning-free.
+
+The Files remote accessibility hierarchy did not match its Cancel hit point.
+The sheet was dismissed with a downward swipe, so the Cancel button itself
+was not verified. No file was saved or imported, and no destructive action or
+settings mutation was performed. Malformed-export alerts remain covered at
+the library validation boundary and by the compiled alert adapter; no existing
+safe launch fixture exercised that alert on screen. Real-device CloudKit,
+StoreKit purchase resolution, and production advertising remain separate.
+
+The verification runs and device session were stopped. The original Stally
+scheme and My Mac destination were restored and confirmed.
+
+[release-backup]: ui-preview-screenshots/release-2026-09-13/backup-center.png
+[release-exporter]: ui-preview-screenshots/release-2026-09-13/backup-exporter.png
+[release-dismissed]: ui-preview-screenshots/release-2026-09-13/backup-export-cancelled.png
+[release-library]: ui-preview-screenshots/release-2026-09-13/library.png
+[release-detail]: ui-preview-screenshots/release-2026-09-13/item-detail.png
+[release-insights]: ui-preview-screenshots/release-2026-09-13/insights.png
+[release-settings]: ui-preview-screenshots/release-2026-09-13/settings.png

@@ -82,6 +82,11 @@ owner-directed rebuild constraints while the implementation is rebuilt.
 - `docs/rebuild-implementation-principles.md` records current rebuild
   baseline implementation principles.
 
+Temporary release evidence and integration decision inputs live in
+`docs/release-readiness.md` and `docs/fluel-integration-assessment.md`.
+Use them alongside the current near-term development brief; proposals in
+these reports do not authorize model integration or release.
+
 When editing product-intent documents, preserve the existing English voice,
 avoid speculation, and keep the distinction between product intent and
 discarded implementation details explicit. Keep owner-directed
