@@ -891,7 +891,7 @@
         },
         "ja" : {
           "stringUnit" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "value" : "今日未マーク"
           }
         }

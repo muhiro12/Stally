@@ -36,7 +36,7 @@
         },
         "ja" : {
           "stringSet" : {
-            "state" : "machine_translated",
+            "state" : "translated",
             "values" : [
               "${applicationName}でアイテムをマーク",
               "${applicationName}で今日のマークを付ける"
