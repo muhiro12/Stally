@@ -5,6 +5,13 @@
 
 ## Current Outcome
 
+The optional-start and non-Mark integration is now implemented locally with a
+V1-to-V2 store migration and v2/v3 backup compatibility. Its current results,
+synthetic disk fixtures, and screen comparison are recorded in
+[item-tracking-verification.md](item-tracking-verification.md). The earlier
+backup-only evidence below describes its own unchanged-schema scope, not the
+current schema. External gates below remain pre-distribution checks.
+
 Stally builds against the installed iOS 27 SDK. Backup export now checks the
 same content constraints as import and enforces the encoded-file limit before
 presenting a backup to save. It reports localized validation reasons and

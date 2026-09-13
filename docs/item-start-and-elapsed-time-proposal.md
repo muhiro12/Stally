@@ -1,8 +1,9 @@
 # Optional Item Starts and Elapsed Time
 
-> Status: Implementation proposal for review, September 13, 2026.
-> Source baseline: `56675db`. No model, schema, migration, backup codec, or
-> application behavior is changed by this document.
+> Status: Accepted and implemented locally, September 13, 2026.
+> Original proposal baseline: `56675db`; original fixture writer: `36a00d0`.
+> See [implementation evidence and screen comparison](item-tracking-verification.md).
+> Production CloudKit and distribution remain separate checks.
 
 ## Scope and Recommendation
 
@@ -217,11 +218,11 @@ retain their current values and ordering.
 
 ## SwiftData Versioning and Migration
 
-Current `StallyMigrationPlan` exposes only V1 and no stages. Critically, V1's
-model list references the live top-level `Item` and `ItemMark`. Adding fields
+At the proposal baseline, `StallyMigrationPlan` exposed only V1 and no stages.
+V1's model list referenced the live top-level `Item` and `ItemMark`. Adding fields
 to that `Item` while leaving V1 pointing at it would redefine the baseline.
 
-After design acceptance, use this order:
+The implementation followed this order:
 
 1. Generate synthetic disk fixtures with the current, unchanged V1 writer.
    Record entity/property/relationship metadata using the public Schema
@@ -242,8 +243,8 @@ After design acceptance, use this order:
    in-memory test or a compiler result migration proof.
 
 Apple's [SchemaMigrationPlan][migration-plan] and [MigrationStage][stage]
-provide the version/stage mechanism. Lightweight suitability for these exact
-models is an implementation hypothesis to verify, not a completed result.
+provide the version/stage mechanism. The original disk fixtures now verify the
+lightweight stage for these exact models; this does not prove CloudKit sync.
 
 Every migrated Item must have `recordsMarks = true` and unknown start.
 Existing Item and Mark UUIDs, Mark day keys and creation timestamps, item
@@ -268,8 +269,8 @@ initial release verification.
 
 ## Backup v3 and Existing Files
 
-The current portable format is v2; it accepts only that version and already
-rejects the earlier timestamp-based v1 Marks. Advance new exports to v3 and
+The proposal baseline's portable format was v2; it accepted only that version
+and rejected the earlier timestamp-based v1 Marks. New exports use v3 and
 add these item-level wire fields:
 
 ```json
@@ -327,8 +328,9 @@ Clock-dependent future-start checks do not apply to backup restoration.
 
 ## Implementation and Regression Test Plan
 
-These are proposed tests, not results from this design pass. Reuse the existing
-StallyLibrary test target and repository verification entrypoints.
+This checklist records the intended coverage. Actual results and remaining
+interaction/distribution limits are in [implementation evidence](item-tracking-verification.md).
+The implementation reuses the StallyLibrary target and repository entrypoints.
 
 1. **Pure values and readings:** unknown/day/month/year round trips; malformed
    strings; years 1/9999; 1900 versus 2000 leap days; month lengths; same-day
@@ -384,10 +386,10 @@ copy, and targeted runtime checks for the implemented UI. No new UI test target
 or Fluel importer is needed. Update `AGENTS.md` when these source boundaries
 actually exist.
 
-## New Choices Presented for Review
+## Accepted Implementation Choices
 
-The three accepted product decisions are not open questions. The recommended
-implementation adds these choices for review before changing storage:
+The three product decisions remain settled. Implementation was authorized with
+the following recommended choices before changing storage:
 
 - One Item aggregate, a Mark Boolean, and one partial-date scalar.
 - No automatic start backfill; starts and Marks remain chronologically
@@ -424,7 +426,7 @@ external state was not re-investigated for this proposal.
   the distributed build. Confirm additive schema promotion before release.
 
 No purchase, URL publication, signing-asset change, CloudKit deployment, data
-reset, or real-device write is authorized or performed by this design pass.
+reset, or real-device write was performed by this implementation.
 
 ## Inspected Stally Boundaries
 
@@ -432,7 +434,7 @@ reset, or real-device write is authorized or performed by this design pass.
 - [LocalDay calendar contract](../StallyLibrary/Sources/Item/LocalDay.swift)
 - [Review selection and bulk writes](../StallyLibrary/Sources/Review/ReviewOperations.swift)
 - [Insights scope and recommendations](../StallyLibrary/Sources/Insights/InsightsOperations.swift)
-- [Current V1 schema reference](../StallyLibrary/Sources/Persistence/StallyMigrationPlan.swift)
+- [Versioned migration plan](../StallyLibrary/Sources/Persistence/StallyMigrationPlan.swift)
 - [Backup preview and import planning](../StallyLibrary/Sources/Backup/BackupOperations+Preview.swift)
 - [Existing disk reopen test](../StallyLibrary/Tests/Default/Persistence/StallyPersistenceTests.swift)
 - [Existing wire-format golden tests](../StallyLibrary/Tests/Default/Backup/BackupWireFormatTests.swift)

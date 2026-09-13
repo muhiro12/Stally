@@ -7,6 +7,10 @@ through version 1.17.0 and subsequent targeted runtime checks.
 
 The initial review date is July 23, 2026. Later checks are dated separately.
 
+The September 13 optional-start integration has a separate
+[screen comparison and coverage ledger](item-tracking-verification.md), including
+actual Simulator captures, native Preview/session failures, and adapter checks.
+
 ## Current MHUI 1.18 Adoption
 
 The September 13 review confirms that the latest published
