@@ -117,6 +117,25 @@ extension SwiftDataOperationsTests {
             }
         }
 
+        @Test
+        func `rollback restores tracking metadata and photo bytes together`() throws {
+            let context = try makeContext()
+            let item = try createItem(context: context)
+            let originalName = item.name
+            let originalID = item.uuid
+            item.startRawValue = "2020-09"
+            item.recordsMarks = false
+            item.name = "Changed"
+            item.photoData = try TestPhotoFixtures.preparedData()
+            rejectSave(in: context)
+            let verificationContext = ModelContext(context.container)
+            let restored = try #require(try ItemOperations.item(context: verificationContext, uuid: originalID))
+            #expect(restored.name == originalName)
+            #expect(restored.recordsMarks)
+            #expect(restored.startRawValue == nil)
+            #expect(restored.photoData == nil)
+        }
+
         private func makeContext() throws -> ModelContext {
             .init(try StallyModelContainerFactory.inMemory())
         }

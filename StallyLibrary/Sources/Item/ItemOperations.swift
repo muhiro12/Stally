@@ -82,21 +82,29 @@ public enum ItemOperations {
         input: ItemFormInput,
         context: ModelContext
     ) throws {
+        let tracking = try trackingInput(for: item)
+        try validateMarkPolicy(tracking.recordsMarks, for: item)
+        try applyFormInput(input, to: item)
+        try saveOrRollback(context)
+    }
+
+    static func applyFormInput(_ input: ItemFormInput, to item: Item) throws {
         let normalizedName = input.normalizedName
 
         guard !normalizedName.isEmpty else {
             throw ItemValidationError.nameRequired
         }
 
-        let photoData = try input.photoData.map { photoData in
-            try ItemPhotoOperations.prepare(photoData)
-        }
+        let photoData = input.photoData == item.photoData
+            ? item.photoData
+            : try input.photoData.map { data in
+                try ItemPhotoOperations.prepare(data)
+            }
 
         item.name = normalizedName
         item.category = input.category
         item.note = input.normalizedNote
         item.photoData = photoData
-        try saveOrRollback(context)
     }
 
     /// Deletes an item and every mark attached to it.
@@ -139,8 +147,8 @@ public enum ItemOperations {
         today: LocalDay,
         context: ModelContext
     ) throws -> Bool {
-        guard !item.isArchived else {
-            throw ItemValidationError.archivedItemsCannotChangeHistory
+        if let error = historyChangeError(for: item) {
+            throw error
         }
 
         guard day <= today else {
@@ -164,8 +172,8 @@ public enum ItemOperations {
         on day: LocalDay,
         context: ModelContext
     ) throws -> Bool {
-        guard !item.isArchived else {
-            throw ItemValidationError.archivedItemsCannotChangeHistory
+        if let error = historyChangeError(for: item) {
+            throw error
         }
 
         let marks = item.removeMarks(on: day)
@@ -223,7 +231,7 @@ public enum ItemOperations {
         .init(item: item, today: today)
     }
 
-    private static func saveOrRollback(_ context: ModelContext) throws {
+    static func saveOrRollback(_ context: ModelContext) throws {
         try saveOrRollback(context) { context in
             try context.save()
         }

@@ -2,6 +2,16 @@
 public enum ItemTimeOperations {
     private static let monthsPerYear = 12
 
+    /// Reads persisted start knowledge while distinguishing unknown and malformed values.
+    public static func snapshot(for item: Item, today: LocalDay) -> ItemTimeSnapshot {
+        do {
+            let tracking = try ItemOperations.trackingInput(for: item)
+            return snapshot(start: tracking.start, today: today)
+        } catch {
+            return .invalidStart
+        }
+    }
+
     /// Reads the range supported by start precision. The starting day is day zero.
     public static func snapshot(start: ItemStart?, today: LocalDay) -> ItemTimeSnapshot {
         guard let start else {

@@ -22,6 +22,10 @@ public struct BackupValidationIssue: Equatable, Identifiable, Sendable {
         case unknownCategory
         case unreadableBackup
         case unsupportedSchemaVersion
+        case invalidItemStart
+        case nonMarkHistoryConflict
+        case markPolicyMergeConflict
+        case unsupportedTrackingFields
     }
 
     /// Stable issue identity.
@@ -56,6 +60,14 @@ public struct BackupValidationIssue: Equatable, Identifiable, Sendable {
             .init("Unreadable Backup", bundle: #bundle)
         case .unsupportedSchemaVersion:
             .init("Unsupported Schema Version", bundle: #bundle)
+        case .invalidItemStart:
+            .init("Invalid Item Start", bundle: #bundle)
+        case .nonMarkHistoryConflict:
+            .init("Enable Marks to Preserve Existing History", bundle: #bundle)
+        case .markPolicyMergeConflict:
+            .init("Merge Requires Marks Enabled for This Item", bundle: #bundle)
+        case .unsupportedTrackingFields:
+            .init("Tracking Fields Require Backup Version 3", bundle: #bundle)
         }
     }
 

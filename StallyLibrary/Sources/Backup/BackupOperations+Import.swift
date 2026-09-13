@@ -24,7 +24,7 @@ public extension BackupOperations {
 
         let schemaVersion = try schemaVersion(in: data, decoder: decoder)
 
-        guard schemaVersion == BackupSnapshot.currentSchemaVersion else {
+        guard BackupSnapshot.supports(schemaVersion: schemaVersion) else {
             throw BackupError.validationFailed(unsupportedSchemaPreview(schemaVersion))
         }
 
@@ -82,7 +82,7 @@ public extension BackupOperations {
 
         let schemaVersion = try schemaVersion(in: data, decoder: decoder)
 
-        guard schemaVersion == BackupSnapshot.currentSchemaVersion else {
+        guard BackupSnapshot.supports(schemaVersion: schemaVersion) else {
             throw BackupError.validationFailed(unsupportedSchemaPreview(schemaVersion))
         }
 
@@ -193,7 +193,7 @@ private extension BackupOperations {
     static func item(from backupItem: BackupItem) -> Item {
         let input = itemFormInput(from: backupItem)
 
-        return .init(
+        let item = Item(
             name: input.normalizedName,
             category: ItemCategory(rawValue: backupItem.categoryRawValue) ?? .other,
             note: input.normalizedNote,
@@ -202,6 +202,9 @@ private extension BackupOperations {
             photoData: backupItem.photoData,
             archivedAt: backupItem.archivedAt
         )
+        item.recordsMarks = backupItem.recordsMarks
+        item.startRawValue = backupItem.startRawValue
+        return item
     }
 
     static func insertMark(

@@ -7,25 +7,27 @@
 
 struct BackupImportPlan {
     let mergePreview: BackupPreview
+    let replacementValidationIssues: [BackupValidationIssue]
     let mergeItemPlans: [BackupItemImportPlan]
     let replacementItemPlans: [BackupItemImportPlan]
 
     func preview(replacingExistingItems: Bool) -> BackupPreview {
-        guard replacingExistingItems, mergePreview.canImport else {
+        guard replacingExistingItems else {
             return mergePreview
         }
 
         let counts = resultCounts(replacingExistingItems: true)
+        let canReplace = replacementValidationIssues.isEmpty
 
         return .init(
             itemCount: mergePreview.itemCount,
             archivedItemCount: mergePreview.archivedItemCount,
             markCount: mergePreview.markCount,
-            existingItemCount: 0,
-            newItemCount: counts.insertedItemCount,
+            existingItemCount: canReplace ? 0 : mergePreview.existingItemCount,
+            newItemCount: canReplace ? counts.insertedItemCount : mergePreview.newItemCount,
             skippedItemCount: mergePreview.skippedItemCount,
-            marksAddedCount: counts.insertedMarkCount,
-            validationIssues: mergePreview.validationIssues
+            marksAddedCount: canReplace ? counts.insertedMarkCount : mergePreview.marksAddedCount,
+            validationIssues: replacementValidationIssues
         )
     }
 

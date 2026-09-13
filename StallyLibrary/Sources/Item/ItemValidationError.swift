@@ -8,29 +8,45 @@
 import Foundation
 
 /// Validation failures for item input.
-public enum ItemValidationError: Equatable, LocalizedError, Sendable {
+public enum ItemValidationError: Equatable, LocalizedError, CustomLocalizedStringResourceConvertible, Sendable {
     case archivedItemsCannotChangeHistory
     case futureMarksNotAllowed
     case nameRequired
     case photoTooLarge
     case photoUnreadable
+    case invalidStart
+    case futureStartNotAllowed
+    case marksNotEnabled
+    case existingMarksRequireRecording
 
     /// User-readable validation message.
     public var errorDescription: String? {
+        String(localized: localizedStringResource)
+    }
+
+    public var localizedStringResource: LocalizedStringResource {
         switch self {
         case .archivedItemsCannotChangeHistory:
-            String(
-                localized: "Move this item back to Library before changing its history.",
+            .init(
+                "Move this item back to Library before changing its history.",
                 bundle: #bundle
             )
         case .futureMarksNotAllowed:
-            String(localized: "Marks cannot be added for a future day.", bundle: #bundle)
+            .init( "Marks cannot be added for a future day.", bundle: #bundle)
         case .nameRequired:
-            String(localized: "Item name is required.", bundle: #bundle)
+            .init( "Item name is required.", bundle: #bundle)
         case .photoTooLarge:
-            String(localized: "The selected photo is too large.", bundle: #bundle)
+            .init( "The selected photo is too large.", bundle: #bundle)
         case .photoUnreadable:
-            String(localized: "The selected photo could not be read.", bundle: #bundle)
+            .init( "The selected photo could not be read.", bundle: #bundle)
+        case .invalidStart:
+            .init( "The stored start is invalid. Edit or clear it before saving.", bundle: #bundle)
+        case .futureStartNotAllowed:
+            .init( "Choose a start no later than today.", bundle: #bundle)
+        case .marksNotEnabled:
+            .init( "This item does not record Marks.", bundle: #bundle)
+        case .existingMarksRequireRecording:
+            .init( "Keep Marks enabled to preserve this item's existing history.", bundle: #bundle)
         }
     }
 }

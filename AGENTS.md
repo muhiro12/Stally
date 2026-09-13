@@ -188,7 +188,10 @@ The app target should stay a thin adapter over the current product surface.
   `InsightsReportOperations`.
 - `StallyLibrary/Sources/Backup/` owns the current versioned backup wire
   contract, import previews/results, validation issues, reset results, and
-  `BackupOperations`. Export must satisfy the current import validation and
+  `BackupOperations`. New exports use v3 with explicit Mark policy and nullable
+  start knowledge; v2 imports preserve the original Mark-enabled, unknown-start
+  defaults. Merge keeps existing item metadata, while replacement has its own
+  preview validation. Export must satisfy the current import validation and
   encoded-size limits before presenting a restorable backup; failures must
   preserve source records and surface their validation reasons.
 - `StallyLibrary/Sources/Link/` owns shareable destination and item link

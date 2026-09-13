@@ -70,7 +70,9 @@ private extension BackupOperations {
                         day: mark.day,
                         createdAt: mark.createdAt
                     )
-                }
+                },
+            recordsMarks: item.recordsMarks,
+            startRawValue: item.startRawValue
         )
     }
 }

@@ -12,6 +12,7 @@ public extension BackupOperations {
     static func preview(
         data: Data,
         currentItems: [Item],
+        replacingExistingItems: Bool = false,
         decoder: JSONDecoder = .init()
     ) -> BackupPreview {
         guard data.count <= maximumImportDataByteCount else {
@@ -22,7 +23,7 @@ public extension BackupOperations {
             return unreadablePreview()
         }
 
-        guard schemaVersion == BackupSnapshot.currentSchemaVersion else {
+        guard BackupSnapshot.supports(schemaVersion: schemaVersion) else {
             return unsupportedSchemaPreview(schemaVersion)
         }
 
@@ -32,20 +33,22 @@ public extension BackupOperations {
 
         return preview(
             snapshot: snapshot,
-            currentItems: currentItems
+            currentItems: currentItems,
+            replacingExistingItems: replacingExistingItems
         )
     }
 
     /// Previews an import before applying it to the local library.
     static func preview(
         snapshot: BackupSnapshot,
-        currentItems: [Item]
+        currentItems: [Item],
+        replacingExistingItems: Bool = false
     ) -> BackupPreview {
         importPlan(
             snapshot: snapshot,
             currentItems: currentItems
         )
-        .preview(replacingExistingItems: false)
+        .preview(replacingExistingItems: replacingExistingItems)
     }
 }
 
@@ -58,6 +61,10 @@ extension BackupOperations {
             for: snapshot,
             currentItems: currentItems
         )
+        let mergeIssues = validationIssues + markPolicyMergeIssues(
+            in: snapshot.items,
+            currentItems: currentItems
+        )
         let validItems = validImportItems(
             in: snapshot.items,
             invalidPhotoIdentifiers: invalidItemPhotoIdentifiers(in: validationIssues)
@@ -65,19 +72,22 @@ extension BackupOperations {
         let mergeItemPlans: [BackupItemImportPlan]
         let replacementItemPlans: [BackupItemImportPlan]
 
-        if validationIssues.isEmpty {
+        if mergeIssues.isEmpty {
             mergeItemPlans = itemPlans(
                 from: snapshot.items,
                 currentItems: currentItems,
                 replacingExistingItems: false
             )
+        } else {
+            mergeItemPlans = []
+        }
+        if validationIssues.isEmpty {
             replacementItemPlans = itemPlans(
                 from: snapshot.items,
                 currentItems: [],
                 replacingExistingItems: true
             )
         } else {
-            mergeItemPlans = []
             replacementItemPlans = []
         }
 
@@ -91,11 +101,12 @@ extension BackupOperations {
             marksAddedCount: mergeItemPlans.reduce(0) { count, itemPlan in
                 count + itemPlan.marks.count
             },
-            validationIssues: validationIssues
+            validationIssues: mergeIssues
         )
 
         return .init(
             mergePreview: preview,
+            replacementValidationIssues: validationIssues,
             mergeItemPlans: mergeItemPlans,
             replacementItemPlans: replacementItemPlans
         )
@@ -145,7 +156,7 @@ extension BackupOperations {
     ) -> [BackupValidationIssue] {
         var issues: [BackupValidationIssue] = []
 
-        if snapshot.schemaVersion != BackupSnapshot.currentSchemaVersion {
+        if !BackupSnapshot.supports(schemaVersion: snapshot.schemaVersion) {
             issues.append(
                 .init(
                     kind: .unsupportedSchemaVersion,
@@ -159,6 +170,7 @@ extension BackupOperations {
         issues.append(contentsOf: duplicateMarkDayIssues(in: snapshot.items))
         issues.append(contentsOf: itemNameRequiredIssues(in: snapshot.items))
         issues.append(contentsOf: unknownCategoryIssues(in: snapshot.items))
+        issues.append(contentsOf: trackingIssues(in: snapshot))
 
         if let issue = photoStorageLimitIssue(in: snapshot.items) {
             issues.append(issue)
@@ -167,6 +179,11 @@ extension BackupOperations {
         }
 
         issues.append(contentsOf: duplicateCurrentItemIDIssues(in: currentItems))
+        issues.append(contentsOf: currentItems.compactMap { item -> BackupValidationIssue? in
+            ItemOperations.hasNonMarkHistoryConflict(item)
+                ? .init(kind: .nonMarkHistoryConflict, value: item.uuid.uuidString)
+                : nil
+        })
 
         return issues
     }
