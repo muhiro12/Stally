@@ -178,8 +178,9 @@ The app target should stay a thin adapter over the current product surface.
 
 - `StallyLibrary/Sources/Item/` owns `Item`, `ItemMark`, `LocalDay`,
   `ItemCategory`, collection browsing options, `ItemHistorySnapshot`,
-  `ItemFormInput`, `ItemValidationError`, `ItemCollectionOperations`, and
-  `ItemOperations`.
+  `ItemFormInput`, `ItemTrackingInput`, precision-preserving `ItemStart`,
+  `ItemTimeSnapshot`, `ItemTimeOperations`, `ItemValidationError`,
+  `ItemCollectionOperations`, and `ItemOperations`.
 - `StallyLibrary/Sources/Review/` owns Review lane values, settings, action
   requests, snapshots, and `ReviewOperations`.
 - `StallyLibrary/Sources/Insights/` owns Insights range/options, reading
