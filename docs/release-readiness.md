@@ -10,8 +10,9 @@ same content constraints as import and enforces the encoded-file limit before
 presenting a backup to save. It reports localized validation reasons and
 preserves source data on failure.
 
-The current scope leaves persisted schema version 1, backup format version 2,
+The backup-safety scope left persisted schema version 1, backup format version 2,
 mark semantics, CloudKit identity, package pins, and navigation unchanged.
+The subsequent MHPlatform dependency update is recorded separately below.
 The accepted Stally-hosted product semantics and remaining model-design
 boundary are recorded in the
 [Fluel integration assessment](fluel-integration-assessment.md).
@@ -23,7 +24,7 @@ assets. Physical-device runtime verification is blocked by device connection.
 
 ## Shared Foundation Assessment
 
-The app pins MHPlatform 1.12.0 and MHUI 1.17.0. The library uses
+The app now pins MHPlatform 1.13.0 and MHUI 1.18.0. The library uses
 `MHPlatformCore`; the app uses the full `MHPlatform` product. Inspection of
 the resolved package and Stally's current adapters found no missing shared
 capability required by the backup correction or integration assessment.
@@ -147,9 +148,9 @@ Its content and approval remain unresolved; an alternative URL was not guessed.
 
 ## Follow-up Evidence
 
-This pass changes only the app privacy manifest and documentation. It does not
-change persisted models, schema versions, migration stages, backup format,
-Mark behavior, or app navigation. Fluel remains read-only.
+The privacy follow-up changed only the app privacy manifest and documentation.
+It did not change persisted models, schema versions, migration stages, backup
+format, Mark behavior, or app navigation. Fluel remains read-only.
 
 - The app uses standard-domain UserDefaults through app-owned preference
   descriptors and `@AppStorage`, but the initial archive contained only the
@@ -199,6 +200,87 @@ and obtaining the missing distribution signing assets. Two-device sync testing
 also needs an explicit test environment and permission to create identifiable
 synthetic records there; a fixture-only device launch would not prove sync.
 
+## MHPlatform 1.13 Adoption
+
+The dependency update is committed as `fccbbe9`; the runtime adapter correction
+is committed as `2417907`. The following evidence applies to that source.
+
+The published [MHPlatform 1.13 release][mhplatform-release] resolves to
+`7c6eb2b9ae9c12ba7f486af136ed85505c5d3975`. Stally's app and library lockfiles
+now select the same MHPlatform and transitive runtime versions:
+
+| Dependency | Before | After |
+| --- | --- | --- |
+| MHPlatform | 1.12.0 | 1.13.0 |
+| StoreKitWrapper | 1.2.0 | 1.4.0 |
+| GoogleMobileAdsWrapper | 1.3.0 | 1.4.0 |
+| Google Mobile Ads SDK | 12.14.0 | 13.9.0 |
+
+MHUI 1.18.0, User Messaging Platform 3.1.0, LicenseList 2.5.0, and
+SwiftLintPlugins 0.65.0 remain at their existing app revisions. StallyLibrary
+requires MHPlatform 1.13 or later within 1.x and still links only
+`MHPlatformCore`; no app runtime or advertising import was added to it.
+
+The release's StoreKit bridge now reports verified purchased product IDs
+independently of product metadata, and its startup callback is MainActor
+isolated. Runtime verification exposed that Stally was still constructing a
+runtime-only bootstrap, which omits StoreKit, advertising, and license
+adapters and reports an empty purchased-ID set. The app now uses MHPlatform's
+default `configuration:` bootstrap so these existing surfaces receive their
+package-owned adapters and verified entitlement updates.
+
+Stally consumes `premiumStatus` on the main actor. Its subscription-state
+adapter preserves cached state while the runtime is unknown and does not
+inspect product price or catalog availability, so that mapping remains intact.
+
+`StallyAdvertisementSection` now accepts `MHNativeAdSize` directly. The app
+no longer duplicates the package's small/medium enum and conversion. SDK size
+mapping remains inside MHPlatform. The existing runtime availability condition
+still excludes the entire ad section when ads are unconfigured or disabled by
+premium; Library and Insights retain their persisted subscription guard.
+
+Production Release native ad requests remain disabled. The example app's local
+StoreKit catalog and test IDs were not copied into release configuration. No
+production advertising IDs, new purchase products, CloudKit setting, model, or
+migration were added.
+
+Verification completed at the changed boundary:
+
+- SwiftPM resolved the library and official `xcodebuild` resolved the app's
+  graph; the app's actual checkout state matches the committed pins.
+- The first native build retained the old graph. After explicit resolution,
+  a stale Google Mobile Ads precompiled module failed; cleaning Stally's
+  generated build products and rebuilding through Xcode succeeded.
+- The existing iOS 27 library suite passed all 114 tests in 25 suites.
+- The retained formatter and repository rules passed after both adapter edits.
+- After the native connection closed, official `xcodebuild` built the final
+  corrected app in isolated DerivedData. The license plugin required the
+  standard SourcePackages layout, and refreshing stale package repository
+  caches resolved the pinned revisions without changing the lockfiles.
+- A dedicated iOS 27 Simulator loaded the small Google test ad in Library.
+  Insights and Settings initial viewports were captured. StoreKit reported
+  that no auto-renewable product resolved, and Settings showed an empty
+  subscription card; this is not a passed purchase-screen check.
+- Mac lock and native transport failure prevented scrolling to the medium ad,
+  opening Licenses, and confirming restoration of Stally / My Mac. The last
+  confirmed native selection was Stally / iPhone 18 Pro. See the dated
+  [UI report](ui-preview-report.md) for captures and exact coverage.
+- A new local Release archive of the corrected app succeeded, and
+  `codesign --verify --deep --strict` passed. The archive contains Google
+  Mobile Ads 13.9.0 and UMP 3.1.0. The app privacy manifest matches source;
+  both SDK privacy manifests match the earlier archive's declarations.
+
+The new archive is still development-signed and contains Google's sample
+application ID. The earlier App Store export failed on missing distribution
+signing assets; no new assets were created, export was not retried, and nothing
+was uploaded. StoreKit product resolution and the empty purchase card,
+purchase/restore, production advertising and consent, approved Privacy/Support
+destinations, real-device CloudKit, and the shipping-toolchain distribution
+check remain release gates.
+
+Detailed command logs and dependency review are retained under the ignored
+`.build/ci/mhplatform-1.13-adoption/` directory.
+
 ## Next Decision
 
 Fluel's assessment and domain contract are complete and reconciled in the
@@ -211,3 +293,5 @@ correction local to its demonstrated owner and verify the affected library,
 adapter, runtime, or distribution boundary.
 
 [reasons]: https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api
+
+[mhplatform-release]: https://github.com/muhiro12/MHPlatform/releases/tag/1.13

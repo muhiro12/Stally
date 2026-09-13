@@ -2,10 +2,10 @@
 
 ## Purpose
 
-This report records Stally's current MHUI adoption through version 1.17.0 and
-preserves the major-screen captures used to review the result.
+This report preserves the major-screen captures from Stally's MHUI adoption
+through version 1.17.0 and subsequent targeted runtime checks.
 
-The current review date is July 23, 2026.
+The initial review date is July 23, 2026. Later checks are dated separately.
 
 ## Outcome
 
@@ -384,3 +384,53 @@ scheme and My Mac destination were restored and confirmed.
 [release-detail]: ui-preview-screenshots/release-2026-09-13/item-detail.png
 [release-insights]: ui-preview-screenshots/release-2026-09-13/insights.png
 [release-settings]: ui-preview-screenshots/release-2026-09-13/settings.png
+
+## September 13 MHPlatform 1.13 Verification
+
+This check uses MHPlatform 1.13.0, MHUI 1.18.0, and Google Mobile Ads SDK
+13.9.0 on a dedicated iPhone 18 Pro Simulator running iOS 27.0. Each route
+uses the existing `typical` in-memory fixture. It checks the app's correction
+from a runtime-only bootstrap to MHPlatform's standard runtime adapters.
+
+| Surface | Observed result | Remaining boundary |
+| --- | --- | --- |
+| Library | Small test ad loaded | Spacing after scrolling |
+| Insights | Initial viewport | Medium ad loading and layout |
+| Settings | Empty subscription card | Product resolution and transactions |
+
+![Library with the loaded small test ad][platform-library]
+![Insights initial viewport][platform-insights]
+![Settings with the unresolved subscription card][platform-settings]
+
+The small ad shows the test-mode title, Ad label, icon, and CTA. Its
+description is ellipsized and its Japanese CTA wraps within the compact layout.
+The initial capture shows the ad near the floating search bar; it does not
+establish the full scrolling layout. No ad was clicked.
+
+All three launches logged `model_container.preview_created` and
+`startup.ready`. The scoped runtime review found no app crash, fatal
+SwiftData or CloudKit error, or unsatisfiable layout-constraint diagnostic.
+The logs were not warning-free: Simulator service and rendering diagnostics
+were present, and StoreKit reported a missing auto-renewable subscription and
+a subscription-status timeout. The empty Settings card remains an observed
+release issue until the intended product environment is verified; a sample
+StoreKit catalog was not substituted for it.
+
+The Xcode-native build passed before the bootstrap correction. When the native
+transport closed, the final corrected app was built with official `xcodebuild`
+and installed with `simctl`. The existing shared Simulator was left to the
+other active app. A new official bridge required Xcode agent authorization,
+and computer interaction was unavailable while the Mac was locked. These
+limits prevented scrolling, opening Licenses, and confirming restoration of
+the original Stally / My Mac selection. The last confirmed native selection
+was Stally / iPhone 18 Pro.
+
+The dedicated Simulator was shut down after the captures. Fixtures remained
+in memory. No persistent domain or cloud data was changed, and no purchase,
+ad interaction, or manual settings change was performed.
+Detailed build, console, and OSLog evidence is retained in the ignored
+`.build/ci/mhplatform-1.13-adoption/` directory.
+
+[platform-library]: ui-preview-screenshots/mhplatform-1.13/library.png
+[platform-insights]: ui-preview-screenshots/mhplatform-1.13/insights.png
+[platform-settings]: ui-preview-screenshots/mhplatform-1.13/settings.png
