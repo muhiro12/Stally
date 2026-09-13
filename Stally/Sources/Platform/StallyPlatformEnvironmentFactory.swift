@@ -132,7 +132,7 @@ enum StallyPlatformEnvironmentFactory {
         routePipeline: StallyRoutePipeline
     ) -> MHAppRuntimeBootstrap {
         .init(
-            runtimeOnlyConfiguration: configuration,
+            configuration: configuration,
             routePipeline: routePipeline,
             lifecyclePlan: .init(
                 commonTasks: [

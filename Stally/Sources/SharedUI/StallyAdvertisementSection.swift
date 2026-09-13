@@ -10,36 +10,20 @@ import MHUI
 import SwiftUI
 
 struct StallyAdvertisementSection: View {
-    enum Size {
-        case small
-        case medium
-    }
-
     @Environment(MHAppRuntime.self)
     private var appRuntime
     @Environment(\.mhDesignMetrics)
     private var designMetrics
 
-    let size: Size
+    let size: MHNativeAdSize
 
     var body: some View {
         if appRuntime.adsAvailability == .available {
             Section {
-                appRuntime.nativeAdView(size: size.runtimeSize)
+                appRuntime.nativeAdView(size: size)
                     .frame(maxWidth: .infinity)
                     .padding(designMetrics.spacing.inline)
             }
-        }
-    }
-}
-
-private extension StallyAdvertisementSection.Size {
-    var runtimeSize: MHNativeAdSize {
-        switch self {
-        case .small:
-            .small
-        case .medium:
-            .medium
         }
     }
 }
