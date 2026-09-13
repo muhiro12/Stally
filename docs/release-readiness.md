@@ -1,6 +1,6 @@
 # iOS 27 Release Readiness
 
-> Status: Working release evidence, September 13, 2026. This is not release
+> Status: Working release evidence, September 14, 2026. This is not release
 > approval. The integration decision is settled; distribution verification
 > remains separate.
 
@@ -39,7 +39,8 @@ declaration. Its local Release archive contains the manifest and passed
 signature verification, but predates the item-tracking integration. No current
 integration distribution build is verified. The last export attempt lacked
 distribution signing assets, and the last physical-device attempt failed to
-connect; neither external condition was rechecked in the local audit.
+connect. The September 14 read-only check below still found no distribution
+signing assets and found the paired physical devices disconnected.
 
 ## Shared Foundation Assessment
 
@@ -152,7 +153,7 @@ Implemented changes still require their own local verification evidence.
    removal of ads that are not served. Do not enable production ads merely
    because the SDK links successfully.
 5. **Privacy and support:** the Settings Privacy Policy destination returned
-   HTTP 404 again on September 13. The README Support URL also returns 404.
+   HTTP 404 again on September 14. The README Support URL also returns 404.
    Publish or select the approved policy and support destination and verify
    the actual link before release. The inspected About section contains
    Privacy Policy and Licenses but no support entry point. Confirm the support
@@ -331,6 +332,45 @@ destinations, and distribution signing assets. After those choices, verify the
 shipping build, purchase/restore, and explicitly selected synthetic cloud test
 accounts/devices. Production CloudKit promotion, real-data operations, and
 publication require their own authorization. None is part of this local audit.
+
+## September 14 Read-Only Distribution Check
+
+These checks refreshed external and local setup without changing account
+configuration, installing on a physical device, exporting a build, or publishing.
+They do not invalidate the completed integration or its migration evidence.
+
+| Gate | Current observation | Required next action |
+| --- | --- | --- |
+| Advertising offer | Release has no native ad unit; Info.plist still contains Google's sample app ID. The monthly ad-removal product remains configured | Choose the existing ads/subscription offer and supply Stally-owned IDs, or approve an ads-free, purchase-free first release and remove the test configuration and offer together |
+| Advertising consent | No consent update, ad-request consent gate, or privacy-options presentation was found in Stally or the resolved MHPlatform/GoogleMobileAdsWrapper sources | If advertising is selected, configure the intended privacy messages and complete the app consent flow before enabling production ad requests |
+| Public destinations | Both the intended Privacy Policy and Support URLs returned HTTP 404. The repository Pages API returned Not Found | Approve the destinations and contact method, prepare the final policy/support pages, then authorize publication and verify HTTP/content and app navigation |
+| Distribution signing | A development identity and development profiles are present; no Apple Distribution identity or matching App Store profile was found | Supply the distribution identity with private key and the matching App Store profile, or authorize the account workflow that creates them |
+| Physical devices | The paired phone and tablet were disconnected in the current device inventory | Connect and unlock the selected isolated test device; confirm synthetic-data and cloud-environment boundaries before installation or execution |
+| Store product | The product identifier is present in source; App Store Connect product state was not queried in this continuation | Confirm the offer first, then inspect the corresponding product and run purchase/restore in the selected test environment |
+
+Google's [UMP integration guidance][ump-privacy] requires refreshing consent
+information, presenting required messages, gating ad requests with consent
+availability, and exposing privacy options when required. Linking the UMP
+framework does not implement these steps. This source review identifies a
+precondition for an advertising release; it does not enable advertising or
+authorize a shared-package change.
+
+The policy and App Store privacy answers must match the chosen shipped
+configuration. Google's [SDK disclosure guidance][admob-disclosure] lists
+possible IP/location, diagnostic, identifier, advertising, and interaction
+data use. Do not claim that an advertising build collects no data merely
+because Stally stores its domain records locally or in the user's iCloud.
+Final manifest, consent, and privacy answers still require the shipping
+artifact and intended account settings.
+
+Raw identity/profile and device inventory evidence stays in ignored local
+artifacts under `.build/ci/stally-readiness-continuation-20260914/`. It must not
+be copied into public documentation. No signing assets were created, private
+keys exported, production CloudKit changed, or real collection opened.
+
+[ump-privacy]: https://developers.google.com/admob/ios/privacy
+
+[admob-disclosure]: https://developers.google.com/admob/ios/privacy/data-disclosure
 
 [reasons]: https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api
 
