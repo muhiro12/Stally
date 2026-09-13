@@ -1,0 +1,2 @@
+Item: archivedAt, categoryRawValue, createdAt, markRecords, name, note, photoData, uuid
+ItemMark: createdAt, dayKey, item, uuid

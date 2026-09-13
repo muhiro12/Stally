@@ -1,0 +1,132 @@
+import CoreGraphics
+import Foundation
+import ImageIO
+@testable import StallyLibrary
+import SwiftData
+import Testing
+import UniformTypeIdentifiers
+
+extension SwiftDataOperationsTests {
+    @Suite
+    struct CaptureV1FixtureTests {
+        @Test
+        func captureOriginalV1() throws {
+            let directory = URL(fileURLWithPath: "/tmp", isDirectory: true)
+                .appendingPathComponent("StallyOriginalV1-\(UUID().uuidString)")
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            try writeFixture(directory: directory)
+            let emptyDirectory = directory.appendingPathComponent("Empty")
+            try FileManager.default.createDirectory(at: emptyDirectory, withIntermediateDirectories: true)
+            try writeEmptyFixture(directory: emptyDirectory)
+            print("STALLY_ORIGINAL_V1_FIXTURE=\(directory.path)")
+        }
+
+        private func writeEmptyFixture(directory: URL) throws {
+            let schema = StallyModelContainerFactory.schema
+            let container = try ModelContainer(
+                for: schema,
+                migrationPlan: StallyMigrationPlan.self,
+                configurations: [ModelConfiguration(
+                    schema: schema,
+                    url: directory.appendingPathComponent("Stally.store"),
+                    cloudKitDatabase: .none
+                )]
+            )
+            let context = ModelContext(container)
+            try context.save()
+        }
+
+        private func writeFixture(directory: URL) throws {
+            let schema = StallyModelContainerFactory.schema
+            let container = try ModelContainer(
+                for: schema,
+                migrationPlan: StallyMigrationPlan.self,
+                configurations: [ModelConfiguration(
+                    schema: schema,
+                    url: directory.appendingPathComponent("Stally.store"),
+                    cloudKitDatabase: .none
+                )]
+            )
+            let context = ModelContext(container)
+            context.autosaveEnabled = false
+            let photoData = try photo()
+            var items: [Item] = []
+            for index in 1...4 {
+                let item = Item(
+                    name: "V1 Fixture \(index)",
+                    category: index == 1 ? .clothing : .other,
+                    note: index == 2 ? "Preserved archive note 日本語" : "",
+                    createdAt: Date(timeIntervalSince1970: 1_700_000_000 + Double(index)),
+                    uuid: try #require(UUID(uuidString: "11111111-1111-4111-8111-11111111111\(index)")),
+                    photoData: index == 2 ? photoData : nil,
+                    archivedAt: index == 2 ? Date(timeIntervalSince1970: 1_750_000_000) : nil
+                )
+                context.insert(item)
+                if index <= 2 {
+                    for markIndex in 1...2 {
+                        let mark = ItemMark(
+                            day: try #require(LocalDay(year: 2_024, month: 2, day: 27 + markIndex)),
+                            createdAt: Date(timeIntervalSince1970: 1_710_000_000 + Double(markIndex)),
+                            item: item,
+                            uuid: try #require(UUID(uuidString: "22222222-2222-4222-8222-2222222222\(index)\(markIndex)"))
+                        )
+                        context.insert(mark)
+                        item.marks.append(mark)
+                    }
+                }
+                items.append(item)
+            }
+            try context.save()
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+            let backup = try BackupOperations.exportData(
+                for: items,
+                exportedAt: Date(timeIntervalSince1970: 1_780_000_000),
+                encoder: encoder
+            )
+            try backup.write(to: directory.appendingPathComponent("backup-v2.stallybackup"))
+            try photoData.write(to: directory.appendingPathComponent("photo.jpg"))
+            let links = items.map { item in
+                StallyLinkOperations.url(for: .item(item.uuid)).absoluteString
+            }
+            try encoder.encode(links).write(to: directory.appendingPathComponent("links.json"))
+            let metadata = schema.entities.map { entity in
+                "\(entity.name): \(entity.properties.map(\.name).sorted().joined(separator: ", "))"
+            }.sorted().joined(separator: "\n")
+            try metadata.write(to: directory.appendingPathComponent("schema.txt"), atomically: true, encoding: .utf8)
+        }
+
+        private func photo() throws -> Data {
+            let dimension = 1_024
+            var state: UInt32 = 42
+            let pixels: [UInt8] = (0..<(dimension * dimension * 4)).map { offset in
+                if offset % 4 == 3 {
+                    return 255
+                }
+                state = state &* 1_664_525 &+ 1_013_904_223
+                return UInt8(truncatingIfNeeded: state >> 24)
+            }
+            let provider = try #require(CGDataProvider(data: Data(pixels) as CFData))
+            let image = try #require(CGImage(
+                width: dimension,
+                height: dimension,
+                bitsPerComponent: 8,
+                bitsPerPixel: 32,
+                bytesPerRow: dimension * 4,
+                space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue),
+                provider: provider,
+                decode: nil,
+                shouldInterpolate: false,
+                intent: .defaultIntent
+            ))
+            let data = NSMutableData()
+            let destination = try #require(CGImageDestinationCreateWithData(
+                data, UTType.jpeg.identifier as CFString, 1, nil
+            ))
+            CGImageDestinationAddImage(destination, image, [kCGImageDestinationLossyCompressionQuality: 0.9] as CFDictionary)
+            #expect(CGImageDestinationFinalize(destination))
+            return data as Data
+        }
+    }
+}

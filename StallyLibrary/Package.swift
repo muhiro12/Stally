@@ -38,7 +38,10 @@ let package = Package( // swiftlint:disable:this prefixed_toplevel_constant
         .testTarget(
             name: "StallyLibraryTests",
             dependencies: ["StallyLibrary"],
-            path: "Tests/Default"
+            path: "Tests/Default",
+            resources: [
+                .copy("Fixtures")
+            ]
         )
     ]
 )

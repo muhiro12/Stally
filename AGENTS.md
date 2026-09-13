@@ -44,6 +44,10 @@ This repository currently contains:
   item, collection browsing, sample data, review, insights reports, backup,
   link, wire-format, and persistence contracts, including export rejection
   without source mutation and export-to-restore round trips.
+- `StallyLibrary/Tests/Default/Fixtures/V1/`, copied as test resources, retains
+  original synthetic V1 disk stores, external photo storage, v2 backup, links,
+  capture provenance, and checksums. Migration tests must open disposable
+  copies with CloudKit disabled; never regenerate these with a newer model.
 - `ci_scripts/`, which owns repository-managed lint, rule, and library-test
   entrypoints.
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
