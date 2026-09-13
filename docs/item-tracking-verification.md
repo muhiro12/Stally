@@ -1,7 +1,8 @@
 # Item Tracking Implementation Evidence
 
 > September 13, 2026. Local implementation evidence, not distribution approval.
-> App implementation: `a8ac948`. Original V1 writer: `36a00d0`.
+> App integration: `a8ac948`; follow-up UI correction: `54f29dc`.
+> Original V1 writer: `36a00d0`.
 
 ## Implemented Contract
 
@@ -138,10 +139,201 @@ out. A link-opening confirmation interrupted one capture; the dedicated
 Simulator was restarted without erasing data before obtaining the clean frame.
 
 Touch-based Cancel/Save, picker interaction, VoiceOver, Dynamic Type variation,
-the native file-import confirmation flow, and Siri/Shortcuts UI remain
-unverified in this run. Draft non-mutation, validation, import mode behavior,
-and Intent execution are covered by the separate code-level checks above.
-Screenshots do not substitute for those interaction checks.
+the native file-import confirmation flow, and Siri/Shortcuts UI were unverified
+in the initial integration run. Draft non-mutation, validation, import mode
+behavior, and Intent execution have the separate code-level checks above.
+The follow-up audit below records additional evidence without converting
+screenshots into interaction checks.
+
+## Follow-up Interaction and Accessibility Audit
+
+The follow-up used a newly created iPhone 18 Pro Simulator named
+`Stally Tracking Interaction Audit`, iOS 27.0, portrait, with Xcode `27A266a`.
+It installed only the Debug app and launched the existing `integration` and
+`timeTogether` scenarios in memory. App logs confirm preview-container creation
+and startup readiness; no app fatal error was observed. No backup import,
+collection replacement, account sign-in, or cloud operation was performed.
+
+### Confirmed Defect and Bounded Correction
+
+At the standard `large` text size in English, Edit Month displayed the selected
+precision as `Year...onth`, obscuring `Year and Month`. The same synthetic Item
+and launch route reproduce it. The inherited MHUI key-value layout constrained
+the interactive Picker's value column.
+
+Only the Precision Picker now opts into SwiftUI's automatic labeled-content
+style. It retains the native control, strings, binding, selection, and
+validation.
+This follows the pinned MHUI guidance to apply key-value styling selectively and
+let specialized native controls retain their own layout. No shared package,
+persisted model, Operations, backup codec, or App Intent changed.
+
+| Before: standard English size | After: same size and Item |
+| --- | --- |
+| ![Truncated selected precision](ui-preview-screenshots/item-tracking-interaction/edit-month-large-en.png) | ![Complete selected precision](ui-preview-screenshots/item-tracking-interaction/edit-month-large-en-after.png) |
+
+The post-fix native build passed with zero errors. Formatter, SwiftLint and
+repository boundary checks passed. This presentation-only change does not
+alter the prior 143 library, 115 original-reader, or three app-adapter tests;
+those suites were not rerun or counted as new evidence for the layout fix.
+
+The full selected value is visible at `large` and `extra-extra-extra-large`.
+Year Only, Japanese month precision, and the Add form's Not Set value were also
+rechecked. Maximum accessibility size places the precision control below the
+initial viewport, so its readability there remains a manual check.
+
+| Retained comparison | Coverage |
+| --- | --- |
+| [Larger month editor](ui-preview-screenshots/item-tracking-interaction/edit-month-xxxl-en-after.png), [Japanese month editor](ui-preview-screenshots/item-tracking-interaction/edit-month-large-ja-after.png) | Complete selected precision after the fix |
+| [Year editor](ui-preview-screenshots/item-tracking-interaction/edit-year-large-en-after.png), [Add form](ui-preview-screenshots/item-tracking-interaction/add-large-en-after.png) | Neighboring year/unknown states after the fix |
+| [Maximum-size Add](ui-preview-screenshots/item-tracking-interaction/add-axxxxl-en.png), [maximum-size Edit](ui-preview-screenshots/item-tracking-interaction/edit-year-axxxxl-en.png) | Initial viewport only; controls below the viewport are unverified |
+| [Maximum-size month detail](ui-preview-screenshots/item-tracking-interaction/month-detail-axxxxl-en.png), [Japanese year detail](ui-preview-screenshots/item-tracking-interaction/year-detail-axxxxl-ja.png) | Start and approximate elapsed values reflow |
+| [Maximum-size Insights](ui-preview-screenshots/item-tracking-interaction/insights-axxxxl-en.png) | Non-Mark scope explanation reflows |
+| [Dark and increased contrast](ui-preview-screenshots/item-tracking-interaction/month-detail-large-en-dark-contrast.png) | Month-detail initial viewport |
+
+### Audited Coverage and Limits
+
+| Capability | Result |
+| --- | --- |
+| Real Simulator rendering | Standard and maximum Dynamic Type captures inspected; exact month/year readings and non-Mark Insights scope wrap in the visible viewport |
+| Maximum-size forms | Add/Edit controls reflow in the initial viewport; start fields fall below it, so their scrolling/reachability remains unverified |
+| Dark appearance and Increase Contrast | Month detail inspected with both settings enabled; text/actions visible without overlap, with no measured contrast-ratio claim |
+| Touch/keyboard workflows | Unverified: the native session failed before any tap, picker, scroll, Save/Cancel, or keyboard event |
+| Accessibility hierarchy | Unverified: no hierarchy was returned by the failed interaction session or desktop fallback |
+| VoiceOver operation | Unverified and unavailable on Simulator according to Apple; manual physical-device check is separate |
+| Files and Shortcuts UI | Unverified: no file-import/export confirmation or system Intent UI was operated in this follow-up |
+| Other device sizes/orientations | Not audited; this targeted run covers the isolated portrait iPhone only |
+
+The native session initially timed out. A single retry after the dedicated
+Simulator had fully booted still could not connect; capture/end reported that
+the session did not exist. Desktop Simulator access also timed out (`-10005`)
+by both display name and the discovered bundle identifier. These are environment
+failures, not app failures. Standalone Xcode-native builds and official `simctl`
+installation, launch, display settings, screenshots, and logs remained usable.
+No UI test target or new fixture launch hook was introduced as a workaround.
+
+The captures are actual unedited Simulator images. Initial-viewport evidence
+does not establish successful scrolling, activation, focus order, or completion
+of the interaction matrix below. Apart from the reproduced precision label,
+no additional defect was established in the inspected coverage.
+
+The original Xcode scheme `Stally` and destination
+`Stally MHPlatform 1.13 Audit` were restored and confirmed. The dedicated
+Simulator's settings were restored
+to `large`, light appearance, and disabled Increase Contrast; the app and then
+the dedicated Simulator were stopped. No device was erased. The full session
+ledger, 18 raw screenshots, two native build logs, app runtime logs, repository
+rules, and retained-image checksums are local ignored evidence under
+`.build/ci/item-tracking-interaction/`. Twelve inspected comparison images are
+retained above. The earlier verification artifacts remain unchanged.
+
+## Manual Completion Steps
+
+These are remaining checks, not completed results. Use a separate iOS 27
+Simulator with no account sign-in, and the existing Debug in-memory scenarios.
+Keep the original V1 fixture directory read-only. Never perform this checklist
+against a normal launch, real collection, cloud container, or distribution
+build.
+Stopping the preview process discards its synthetic edits.
+
+### Safe Setup
+
+Build the Debug `Stally` scheme for a dedicated iOS 27 Simulator. Discover its
+UDID, set `AUDIT_SIMULATOR_UDID` to that value, and use it in every command,
+rather than `booted`. Install the resulting Debug app using Xcode or
+`simctl install`, then launch:
+
+```sh
+xcrun simctl launch --terminate-running-process "$AUDIT_SIMULATOR_UDID" \
+  com.muhiro12.Stally \
+  --stally-preview-scenario integration \
+  --stally-preview-route library
+```
+
+Verify `model_container.preview_created` in the app log and the synthetic Home,
+Window Plant, and ordinary choice items in Library. Stop if either check fails.
+Use the normal Library navigation for save/cancel round trips, keeping the
+process alive throughout. The direct `editYear`/`editMonth` hosts are useful for
+layout inspection but do not prove presentation and dismissal from Library.
+Record before/after values, screenshots, and accessibility observations for each
+case; do not infer completion from an enabled button.
+
+### Interaction Matrix
+
+| Check | Steps in the isolated in-memory app | Required observation |
+| --- | --- | --- |
+| Add and cancel | Open Add Item; type a unique synthetic name, disable Record Marks, select Year Only and enter `2020`; cancel. Reopen Add, repeat, and tap Add | Cancel leaves the collection unchanged and the new form at its defaults; Add creates exactly one item with year-only start and no Mark controls |
+| Edit and cancel | Open Home from Library and Edit Item; change name/start/Mark policy, then Cancel. Reopen Edit, make one valid change, Save, and reopen detail/edit | Cancel preserves all original values; Save changes only the chosen fields and retains item identity, existing note/photo, and navigation |
+| Precision refinement | In Home's editor change Year Only to Year and Month, then Exact Day without filling new components | No month/day is inferred; Save stays disabled until each required component is explicitly selected |
+| Calendar validation | Select exact `2020-02-29`; change year to `2021`, then choose a valid day. Try an empty year and a start later than today | The invalid day is cleared; incomplete input cannot save; a future start shows the localized error without changing the Item |
+| Precision reduction | From a complete exact date select Year Only, then Exact Day again; finally select Not Set and save | Removed month/day components are not restored automatically; Not Set clears only the start and elapsed reading |
+| Mark eligibility | On an unmarked synthetic item disable Marks and save; inspect detail, Library, Review, and Insights. Re-enable, Mark Today, and reopen Edit | Non-Mark controls/count prompts disappear; an item with history cannot disable Marks and has an explanatory footer; existing Marks remain |
+| Archive and restore | Open Archived Plant; note its exact start and elapsed days. Move Back, archive again, and reopen it from Archive | Start/elapsed stay unchanged across those actions and Mark controls remain absent; Archive changes collection visibility only |
+| Foreground/time refresh | Keep the same exact-day item across local midnight, background and foreground the app, then reopen detail | Elapsed days refresh without resetting at Archive or creating a Mark; do not change the host clock to simulate this |
+| Backup cancellation and v3 | Export to a local Files folder; cancel once and confirm collection values. Choose the saved v3 file, inspect Merge, change to Replace, open each confirmation and cancel | Preview and enabled action match the selected method; Cancel changes no records; Replace is visibly destructive and separately confirmed |
+| Old backup and conflict | Import a disposable copy of the original v2 fixture with Replace in the synthetic container; verify four fixture items. Export a v3 copy, edit an unmarked fixture to non-Mark, and export that state. Restore the first v3 copy, add one Mark to that same fixture item, and export the marked copy. Restore the non-Mark copy, then select the marked copy | Merge reports the policy conflict and cannot apply it; Replace has its own valid preview. Cancelling keeps the non-Mark item unchanged. Confirming Replace only in this synthetic container restores the marked copy |
+
+For the v2 case, copy
+`StallyLibrary/Tests/Default/Fixtures/V1/backup-v2.stallybackup` to a disposable
+local directory. If it is not reachable from Simulator Files,
+serve only that directory with a loopback-only local HTTP server, download the
+copy in Simulator Safari, and select it from Files Downloads. Do not sign in to
+iCloud or expose the repository, original store, or private files through the
+server. Stop the server after the check. Keep both synthetic v3 exports outside
+the repository and never overwrite the original v2 file.
+
+For example, from the repository root, prepare only the disposable backup copy:
+
+```sh
+AUDIT_FIXTURE_DIRECTORY="$(mktemp -d /tmp/stally-backup-ui.XXXXXX)"
+cp StallyLibrary/Tests/Default/Fixtures/V1/backup-v2.stallybackup \
+  "$AUDIT_FIXTURE_DIRECTORY/"
+python3 -m http.server 8765 --bind 127.0.0.1 \
+  --directory "$AUDIT_FIXTURE_DIRECTORY"
+```
+
+In Simulator Safari, open `http://127.0.0.1:8765/backup-v2.stallybackup` and
+download it. If that port is already in use, choose another unused port for
+both the server and URL. Stop this foreground server with Control-C when done.
+
+### Accessibility and System Surfaces
+
+Apple's [accessibility testing guidance][accessibility-testing] distinguishes
+visual settings from actual assistive-technology operation. It explicitly
+requires a physical device for VoiceOver; a Simulator hierarchy or screenshot
+does not verify spoken output, focus navigation, or activation.
+
+1. On the dedicated Simulator, inspect the Accessibility Inspector hierarchy
+   for Add/Edit and detail. Confirm localized names, roles, and current values
+   for Record Marks, Precision, Year, Month, Day, Cancel, Add/Save, Edit Item,
+   and the start/elapsed rows. Check that disabled Save and the history-locked
+   toggle expose their disabled state. Inspect both English and Japanese.
+2. Repeat the interaction matrix at the largest accessibility text size. Scroll
+   every form and detail section; open the precision/month/day menus and
+   keyboard. Verify that values, validation text, photo controls, and toolbar
+   actions remain readable and reachable without overlap. Check light/dark
+   appearance and Increase Contrast. An initial viewport alone cannot pass this.
+3. For actual VoiceOver, use a separately authorized isolated physical device
+   with synthetic data and no cloud writes. Enable VoiceOver in Settings >
+   Accessibility, then navigate the form and detail using next/previous focus
+   and activation gestures. Confirm label/value/role, focus order, Save/Cancel
+   completion, validation announcements, and absence of Mark actions on a
+   non-Mark item. Record spoken output as well as the result. This device step
+   is outside the current Simulator-only task.
+4. For Shortcuts/Siri UI, first establish that the running Debug app and its
+   dependency container remain the same in-memory session. If the system
+   cold-launches without preview arguments, stop; do not fall back to a normal
+   persistent/cloud launch. In a supported session, inspect Mark Today choices,
+   save a shortcut for a never-marked item, then disable its Mark policy in the
+   app and run that saved shortcut. Expect a localized refusal and no history
+   mutation. Re-enable and check Mark/dedup and app-side Undo. Generic entity
+   identity and hidden Open/Undo Intents already have code-level evidence;
+   hidden actions are not expected to appear in the new-action browser.
+
+Stop the audit app and restore Simulator accessibility settings and the original
+Xcode scheme/destination after manual verification. Do not erase other devices.
+
+[accessibility-testing]: https://developer.apple.com/documentation/accessibility/performing-accessibility-testing-for-your-app
 
 ## Separate Pre-Distribution Checks
 

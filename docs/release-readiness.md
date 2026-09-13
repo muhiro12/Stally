@@ -13,6 +13,14 @@ synthetic disk fixtures, and screen comparison are recorded in
 backup-only evidence below describes its own unchanged-schema scope, not the
 current schema. External gates below remain pre-distribution checks.
 
+The isolated Simulator follow-up corrected one reproduced precision-label
+truncation (`54f29dc`) and verified the native build, repository rules, and
+targeted Dynamic Type/appearance captures. Touch, accessibility hierarchy,
+native import confirmation, and system Intent UI remain unverified because
+the operation tools could not connect. The verification record contains exact
+manual steps; VoiceOver requires a separate physical-device check. This is not
+an interaction/accessibility completion claim or release clearance.
+
 Stally builds against the installed iOS 27 SDK. Backup export now checks the
 same content constraints as import and enforces the encoded-file limit before
 presenting a backup to save. It reports localized validation reasons and
@@ -312,8 +320,8 @@ documentation review adds no new runtime or distribution evidence. See the
 
 The [optional start design][start-proposal] is accepted and implemented through
 Operations, V1-to-V2 migration, v2/v3 backups, screens, and App Intents. Do not
-repeat the Stally/Fluel product investigation or ask for the same model approval.
-Use [item tracking verification](item-tracking-verification.md) for completed
+repeat the Stally/Fluel product investigation or ask for the same model
+approval. Use [item tracking verification](item-tracking-verification.md) for completed
 evidence and the remaining interaction/accessibility checks. Fix only defects
 established by those checks; do not extend the integrated feature set.
 
