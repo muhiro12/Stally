@@ -7,7 +7,44 @@ through version 1.17.0 and subsequent targeted runtime checks.
 
 The initial review date is July 23, 2026. Later checks are dated separately.
 
-## Outcome
+## Current MHUI 1.18 Adoption
+
+The September 13 review confirms that the latest published
+[MHUI 1.18 release][mhui-1-18] is already installed by `ea9b314`. The app's
+lockfile and both verified build checkouts match the published revision
+`5e9841f77b770184ea560cec4831adacc1e0fdb6`.
+
+The release makes native `List` and `Form` composition complete adoption paths
+alongside stack-based composition. Current Stally already follows that guidance:
+
+- `3b5d353` composes Item Detail with native list sections. Its
+  `scrollEdgeEffectStyle` and bottom `safeAreaBar` precede `mhListChrome`,
+  keeping the reading surface and floating Mark/history actions in the same
+  adaptive layout scope.
+- `c337a60` preserves native item-editor fields and photo rows while keeping
+  explicit destructive styling for Remove Photo. Native row treatment is
+  selective; applying `mhRow` to every field is not required.
+- Mark, history, and backup buttons use MHUI's semantic button styles. The
+  release's capsule glass effect includes the padded label and disables glass
+  interaction for disabled actions inside the package. Stally does not layer
+  a competing glass effect or pressed-state workaround over those buttons.
+- Insights retains its deliberate stack-based reading hierarchy. The release
+  does not require moving every screen to one container style or changing
+  app-owned theme tokens.
+
+No further app-source migration is required for 1.18. The prior July 23 policy
+and gallery below are historical; their stack-based Item Detail does not
+describe the current native-list implementation.
+
+The final Debug build and development-signed Release archive recorded in the
+MHPlatform 1.13 check already included this exact MHUI revision and the current
+app source. This review rechecked their resolved dependency state and found no
+subsequent app, project, or library-source change. Builds and tests were not
+repeated for this documentation-only reconciliation. The package release's
+own visual validation does not substitute for Stally interaction evidence;
+the capture and tool-access limits in the dated checks below still apply.
+
+## July 23 Outcome
 
 The package update and the adoption advice are implemented.
 
@@ -434,3 +471,5 @@ Detailed build, console, and OSLog evidence is retained in the ignored
 [platform-library]: ui-preview-screenshots/mhplatform-1.13/library.png
 [platform-insights]: ui-preview-screenshots/mhplatform-1.13/insights.png
 [platform-settings]: ui-preview-screenshots/mhplatform-1.13/settings.png
+
+[mhui-1-18]: https://github.com/muhiro12/MHUI/releases/tag/1.18

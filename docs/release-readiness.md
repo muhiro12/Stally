@@ -281,6 +281,17 @@ check remain release gates.
 Detailed command logs and dependency review are retained under the ignored
 `.build/ci/mhplatform-1.13-adoption/` directory.
 
+## MHUI 1.18 Adoption Review
+
+A subsequent release check confirmed that MHUI 1.18 remains the latest
+published version and already matches Stally's `ea9b314` lockfile update.
+The current native Item Detail, floating action placement, selective native
+form styling, and semantic button styles follow the release's adoption guide.
+No additional source migration or dependency update was needed. The existing
+Debug build and Release archive above include that exact revision; this
+documentation review adds no new runtime or distribution evidence. See the
+[current UI adoption report](ui-preview-report.md) for the source comparison.
+
 ## Next Decision
 
 Fluel's assessment and domain contract are complete and reconciled in the
