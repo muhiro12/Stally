@@ -9,6 +9,10 @@
 public struct InsightsSnapshot {
     /// Scope used to build the reading.
     public let options: InsightsOptions
+    /// Mark-enabled items in the selected collection scope, including unmarked items.
+    public let choiceItemCount: Int
+    /// Inconsistent non-Mark records with history; choice readings are incomplete when nonzero.
+    public let nonMarkHistoryConflictCount: Int
     /// Total marks in the selected range.
     public let totalMarks: Int
     /// Number of calendar days with at least one mark in the selected range.

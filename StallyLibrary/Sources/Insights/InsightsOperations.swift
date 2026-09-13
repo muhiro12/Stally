@@ -44,6 +44,7 @@ public enum InsightsOperations {
         now: Date = .now
     ) -> InsightsSnapshot {
         let scopedItems = options.includesArchivedItems ? items : ItemOperations.activeItems(from: items)
+        let choiceItems = scopedItems.filter(\.recordsMarks)
 
         guard let today = LocalDay(containing: now, in: timeZone) else {
             return unavailableSnapshot(options: options, scopedItems: scopedItems)
@@ -55,7 +56,7 @@ public enum InsightsOperations {
             return unavailableSnapshot(options: options, scopedItems: scopedItems)
         }
 
-        let readings = scopedItems.map { item in
+        let readings = choiceItems.map { item in
             makeReading(
                 for: item,
                 startDay: startDay
@@ -75,6 +76,8 @@ public enum InsightsOperations {
 
         return .init(
             options: options,
+            choiceItemCount: choiceItems.count,
+            nonMarkHistoryConflictCount: scopedItems.filter(ItemOperations.hasNonMarkHistoryConflict).count,
             totalMarks: totalMarks,
             activeDays: activeDays.count,
             uniqueMarkedItems: uniqueMarkedItemCount(from: readings),
@@ -88,7 +91,7 @@ public enum InsightsOperations {
             monthlyActivity: makeMonthlyActivity(from: readings),
             noteCoverage: noteCoverage(for: scopedItems),
             photoCoverage: photoCoverage(for: scopedItems),
-            recommendations: makeRecommendations(
+            recommendations: choiceItems.isEmpty ? [] : makeRecommendations(
                 totalMarks: totalMarks,
                 topItems: topItems,
                 quietItems: quietItems,
@@ -105,6 +108,8 @@ private extension InsightsOperations {
     ) -> InsightsSnapshot {
         .init(
             options: options,
+            choiceItemCount: scopedItems.filter(\.recordsMarks).count,
+            nonMarkHistoryConflictCount: scopedItems.filter(ItemOperations.hasNonMarkHistoryConflict).count,
             totalMarks: 0,
             activeDays: 0,
             uniqueMarkedItems: 0,

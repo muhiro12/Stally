@@ -52,28 +52,31 @@ public enum ReviewOperations {
             )
         }
 
+        let choiceItems = items.filter(\.recordsMarks)
         return .init(
             needsFirstMark: needsFirstMarkItems(
-                from: items,
+                from: choiceItems,
                 settings: settings,
                 today: today,
                 timeZone: timeZone
             ),
             dormant: dormantItems(
-                from: items,
+                from: choiceItems,
                 settings: settings,
                 today: today,
                 timeZone: timeZone
             ),
             recoveryCandidates: recoveryCandidates(
-                from: items,
+                from: choiceItems,
                 settings: settings,
                 today: today,
                 timeZone: timeZone
             )
         )
     }
+}
 
+extension ReviewOperations {
     private static func needsFirstMarkItems(
         from items: [Item],
         settings: ReviewSettings,
@@ -107,6 +110,9 @@ public enum ReviewOperations {
         var changedItemIDs = Set<UUID>()
 
         for request in requests where !changedItemIDs.contains(request.item.uuid) {
+            guard request.item.recordsMarks else {
+                continue
+            }
             switch request.lane {
             case .dormant, .needsFirstMark:
                 guard !request.item.isArchived else {

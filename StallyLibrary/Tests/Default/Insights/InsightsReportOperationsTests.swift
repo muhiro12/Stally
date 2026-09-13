@@ -23,6 +23,8 @@ struct InsightsReportOperationsTests {
         )
         let snapshot = InsightsSnapshot(
             options: .init(range: .thirtyDays),
+            choiceItemCount: 1,
+            nonMarkHistoryConflictCount: 0,
             totalMarks: 3,
             activeDays: 2,
             uniqueMarkedItems: 1,
@@ -63,6 +65,8 @@ struct InsightsReportOperationsTests {
     func `report resolves Japanese presentation strings`() {
         let snapshot = InsightsSnapshot(
             options: .init(range: .allTime, includesArchivedItems: true),
+            choiceItemCount: 0,
+            nonMarkHistoryConflictCount: 0,
             totalMarks: 0,
             activeDays: 0,
             uniqueMarkedItems: 0,

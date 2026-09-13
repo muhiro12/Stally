@@ -45,12 +45,51 @@ public enum InsightsReportOperations {
         appendCategories(snapshot.categoryShares, to: &lines, locale: locale)
         appendSpotlight(snapshot, to: &lines, locale: locale)
         appendRecommendations(snapshot.recommendations, to: &lines, locale: locale)
+        appendTrackingScope(snapshot, to: &lines, locale: locale)
 
         return lines.joined(separator: "\n")
     }
 }
 
 private extension InsightsReportOperations {
+    static func appendTrackingScope(
+        _ snapshot: InsightsSnapshot,
+        to lines: inout [String],
+        locale: Locale
+    ) {
+        lines.append("")
+        lines.append(metric(
+            .init("Mark-enabled Items", bundle: #bundle),
+            value: snapshot.choiceItemCount,
+            locale: locale
+        ))
+        if snapshot.choiceItemCount == 0 {
+            lines.append(localized(.init("No items in this scope record Marks.", bundle: #bundle), locale: locale))
+        }
+        if snapshot.nonMarkHistoryConflictCount > 0 {
+            lines.append(localized(
+                .init("Choice readings are incomplete. Enable Marks on items with existing history.", bundle: #bundle),
+                locale: locale
+            ))
+        }
+        lines.append(localized(.init("Context coverage includes all scoped items.", bundle: #bundle), locale: locale))
+        lines.append(metric(
+            .init("Items with Notes", bundle: #bundle),
+            value: snapshot.noteCoverage.coveredCount,
+            locale: locale
+        ))
+        lines.append(metric(
+            .init("Items with Photos", bundle: #bundle),
+            value: snapshot.photoCoverage.coveredCount,
+            locale: locale
+        ))
+        lines.append(metric(
+            .init("Scoped Items", bundle: #bundle),
+            value: snapshot.noteCoverage.totalCount,
+            locale: locale
+        ))
+    }
+
     static func localized(
         _ value: LocalizedStringResource,
         locale: Locale

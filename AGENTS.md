@@ -182,10 +182,13 @@ The app target should stay a thin adapter over the current product surface.
   `ItemTimeSnapshot`, `ItemTimeOperations`, `ItemValidationError`,
   `ItemCollectionOperations`, and `ItemOperations`.
 - `StallyLibrary/Sources/Review/` owns Review lane values, settings, action
-  requests, snapshots, and `ReviewOperations`.
+  requests, snapshots, and `ReviewOperations`. All lanes and bulk actions
+  exclude items that do not record Marks.
 - `StallyLibrary/Sources/Insights/` owns Insights range/options, reading
   values, recommendations, snapshots, `InsightsOperations`, and
-  `InsightsReportOperations`.
+  `InsightsReportOperations`. Choice metrics use Mark-enabled items; note and
+  photo coverage use the whole selected scope. Non-Mark history conflicts
+  remain visible as incomplete readings without discarding any history.
 - `StallyLibrary/Sources/Backup/` owns the current versioned backup wire
   contract, import previews/results, validation issues, reset results, and
   `BackupOperations`. New exports use v3 with explicit Mark policy and nullable
