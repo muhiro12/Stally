@@ -23,7 +23,7 @@ struct MarkStallyItemTodayIntent: AppIntent {
         .init(.init("Already marked today.", table: "AppIntents"))
     }
 
-    @Parameter(title: .init("Item", table: "AppIntents"))
+    @Parameter(title: .init("Item", table: "AppIntents"), optionsProvider: StallyMarkItemOptionsProvider())
     private var item: StallyItemEntity
 
     @Dependency private var modelContainer: ModelContainer

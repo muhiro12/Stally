@@ -27,6 +27,7 @@ struct BackupCenterView: View {
     @State private var alertTitle = ""
     @State private var alertMessage = ""
     @State private var isPresentingAlert = false
+    @State private var isReplacingExistingItems = false
 
     private var summary: BackupCollectionSummary {
         .init(items: items)
@@ -36,6 +37,7 @@ struct BackupCenterView: View {
         BackupList(
             summary: summary,
             preview: selectedBackupPreview,
+            isReplacingExistingItems: $isReplacingExistingItems,
             statusMessage: statusMessage,
             exportAction: exportBackup,
             chooseBackupAction: chooseBackupFile,
@@ -44,6 +46,9 @@ struct BackupCenterView: View {
             deleteEverythingAction: confirmDeleteEverything
         )
         .navigationTitle("Backup Center")
+        .onChange(of: isReplacingExistingItems) {
+            refreshSelectedPreview()
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 StallyLinkShareButton(
@@ -200,7 +205,8 @@ private extension BackupCenterView {
             selectedBackupData = data
             selectedBackupPreview = BackupOperations.preview(
                 data: data,
-                currentItems: items
+                currentItems: items,
+                replacingExistingItems: isReplacingExistingItems
             )
             statusMessage = nil
         } catch {
@@ -214,15 +220,34 @@ private extension BackupCenterView {
     }
 
     private func confirmMerge() {
+        refreshSelectedPreview()
+        guard selectedBackupPreview?.canImport == true else {
+            return
+        }
         isConfirmingMerge = true
     }
 
     private func confirmReplace() {
+        refreshSelectedPreview()
+        guard selectedBackupPreview?.canImport == true else {
+            return
+        }
         isConfirmingReplace = true
     }
 
     private func confirmDeleteEverything() {
         isConfirmingDeleteEverything = true
+    }
+
+    private func refreshSelectedPreview() {
+        guard let selectedBackupData else {
+            return
+        }
+        selectedBackupPreview = BackupOperations.preview(
+            data: selectedBackupData,
+            currentItems: items,
+            replacingExistingItems: isReplacingExistingItems
+        )
     }
 
     private func mergeIntoLibrary() {

@@ -36,6 +36,10 @@ struct ItemDetailSummary: View {
             return Text("Archived")
         }
 
+        if !item.recordsMarks {
+            return Text("Time Together")
+        }
+
         if isMarkedToday {
             return Text("Marked Today")
         }

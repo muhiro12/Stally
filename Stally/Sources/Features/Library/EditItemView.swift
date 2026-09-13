@@ -18,6 +18,8 @@ struct EditItemView: View {
 
     @Environment(\.modelContext)
     private var modelContext
+    @Environment(\.timeZone)
+    private var timeZone
 
     let item: Item
 
@@ -27,6 +29,7 @@ struct EditItemView: View {
     @State private var photoData: Data?
     @State private var isLoadingPhoto = false
     @State private var saveErrorMessage: String?
+    @State private var tracking: ItemTrackingFormState
 
     private var isShowingSaveError: Binding<Bool> {
         .init {
@@ -39,7 +42,8 @@ struct EditItemView: View {
     }
 
     private var isSaveDisabled: Bool {
-        name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isLoadingPhoto
+        name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            || isLoadingPhoto || (try? tracking.input()) == nil
     }
 
     var body: some View {
@@ -51,23 +55,16 @@ struct EditItemView: View {
                     note: $note,
                     photoData: $photoData,
                     isLoadingPhoto: $isLoadingPhoto,
-                    noteLineLimit: Layout.noteLineLimit
+                    tracking: $tracking,
+                    noteLineLimit: Layout.noteLineLimit,
+                    allowsDisablingMarks: ItemOperations.canDisableMarkRecording(item)
                 )
             }
             .stallyFormChrome()
             .navigationTitle("Edit Item")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", role: .cancel, action: dismissSheet)
-                        .stallyToolbarActionStyle()
-                }
-
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save", action: updateItem)
-                        .stallyToolbarActionStyle()
-                        .disabled(isSaveDisabled)
-                }
+                toolbarItems
             }
             .alert("Could Not Save", isPresented: isShowingSaveError) {
                 Button("OK", role: .cancel, action: clearSaveError)
@@ -77,16 +74,34 @@ struct EditItemView: View {
         }
     }
 
+    @ToolbarContentBuilder private var toolbarItems: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            Button("Cancel", role: .cancel, action: dismissSheet)
+                .stallyToolbarActionStyle()
+        }
+
+        ToolbarItem(placement: .confirmationAction) {
+            Button("Save", action: updateItem)
+                .stallyToolbarActionStyle()
+                .disabled(isSaveDisabled)
+        }
+    }
+
     init(item: Item) {
         self.item = item
         _name = .init(initialValue: item.name)
         _category = .init(initialValue: item.category)
         _note = .init(initialValue: item.note)
         _photoData = .init(initialValue: item.photoData)
+        _tracking = .init(initialValue: .init(item: item))
     }
 
     private func updateItem() {
         do {
+            let now = Date()
+            guard let today = LocalDay(containing: now, in: timeZone) else {
+                throw CocoaError(.coderInvalidValue)
+            }
             try ItemOperations.update(
                 item,
                 input: .init(
@@ -95,6 +110,8 @@ struct EditItemView: View {
                     note: note,
                     photoData: photoData
                 ),
+                tracking: try tracking.input(),
+                today: today,
                 context: modelContext
             )
             dismiss()

@@ -193,6 +193,11 @@ private extension StallyPreviewData {
             try seed(typicalItemSeeds, in: context)
         case .dense:
             try seed(typicalItemSeeds + denseItemSeeds, in: context)
+        case .integration:
+            try seed(typicalItemSeeds, in: context)
+            try StallyTrackingPreviewData.seed(in: context)
+        case .timeTogether:
+            try StallyTrackingPreviewData.seed(in: context)
         }
     }
 

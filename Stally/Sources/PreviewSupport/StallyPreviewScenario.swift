@@ -10,5 +10,7 @@ enum StallyPreviewScenario: String, CaseIterable {
     case empty
     case typical
     case dense
+    case integration
+    case timeTogether
 }
 #endif

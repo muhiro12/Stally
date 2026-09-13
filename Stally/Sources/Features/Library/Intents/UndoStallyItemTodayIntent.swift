@@ -24,7 +24,7 @@ struct UndoStallyItemTodayIntent: AppIntent {
         .init(.init("No mark for today.", table: "AppIntents"))
     }
 
-    @Parameter(title: .init("Item", table: "AppIntents"))
+    @Parameter(title: .init("Item", table: "AppIntents"), optionsProvider: StallyMarkItemOptionsProvider())
     private var item: StallyItemEntity
 
     @Dependency private var modelContainer: ModelContainer

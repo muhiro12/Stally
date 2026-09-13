@@ -36,7 +36,12 @@ struct StallyApp: App {
 
     @ViewBuilder private var rootContent: some View {
         #if DEBUG
-        if let route = Self.previewLaunchConfiguration.route {
+        if let screen = Self.previewLaunchConfiguration.trackingScreen {
+            StallyTrackingPreviewHost(
+                screen: screen,
+                items: StallyPreviewData.items(in: platformEnvironment.modelContainer)
+            )
+        } else if let route = Self.previewLaunchConfiguration.route {
             ContentView(initialPreviewRoute: route)
         } else {
             ContentView()

@@ -13,8 +13,10 @@ struct ItemFormFields: View {
     @Binding var note: String
     @Binding var photoData: Data?
     @Binding var isLoadingPhoto: Bool
+    @Binding var tracking: ItemTrackingFormState
 
     let noteLineLimit: Int
+    let allowsDisablingMarks: Bool
 
     var body: some View {
         Section {
@@ -30,6 +32,8 @@ struct ItemFormFields: View {
             TextField("Note", text: $note, axis: .vertical)
                 .lineLimit(noteLineLimit, reservesSpace: true)
         }
+
+        ItemTrackingFormSection(state: $tracking, allowsDisablingMarks: allowsDisablingMarks)
 
         ItemPhotoFormSection(
             photoData: $photoData,

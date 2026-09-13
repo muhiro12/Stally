@@ -139,7 +139,10 @@ The app target should stay a thin adapter over the current product surface.
   domain use cases.
 - `Stally/Sources/Features/Library/` owns the current SwiftUI Library, Add
   Item, Item Detail, Mark Today, Undo Today's Mark, Quiet History views, and
-  Library-owned App Intents and App Entities.
+  Library-owned App Intents and App Entities. Add/Edit retain unsaved start
+  precision and Mark-policy selections; detail derives time through Operations.
+  Action-specific Mark suggestions filter eligibility without narrowing generic
+  entity identity or name resolution.
 - `Stally/Sources/Features/Archive/` owns the SwiftUI Archive surface and
   Archive-owned App Intents.
 - `Stally/Sources/Features/Review/` owns the SwiftUI Review lane surface and
@@ -161,6 +164,10 @@ The app target should stay a thin adapter over the current product surface.
 - `Stally/Sources/PreviewSupport/` owns DEBUG-only preview data, in-memory
   preview containers, screenshot launch routes, and screen-level previews for
   UI review. It must not become product behavior or shared-library logic.
+  Tracking scenarios include mixed collections and non-Mark-only collections.
+  `--stally-preview-tracking-screen` selects `yearDetail`, `monthDetail`,
+  `archivedDetail`, `editYear`, or `editMonth` using the real screens and an
+  in-memory container. These arguments and hosts are absent from Release builds.
 - `Stally/Resources/` owns app-target String Catalogs for SwiftUI, App
   Intents, and App Shortcuts strings, plus the app privacy manifest. Its
   required-reason API entries describe app-owned preference use; dependency

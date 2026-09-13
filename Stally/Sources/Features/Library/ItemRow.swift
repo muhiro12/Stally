@@ -34,7 +34,7 @@ struct ItemRow: View {
 
                 Spacer()
 
-                if let today,
+                if item.recordsMarks, let today,
                    ItemOperations.isMarked(item, on: today) {
                     Text("Marked")
                         .mhBadge(
@@ -47,7 +47,7 @@ struct ItemRow: View {
             HStack(spacing: Layout.metadataSpacing) {
                 Text(item.category.title)
 
-                if let history {
+                if let history, item.recordsMarks {
                     if history.totalMarks > 0 {
                         Text("\(history.totalMarks) marks")
                     } else {

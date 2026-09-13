@@ -8,6 +8,7 @@
 import MHUI
 import SwiftData
 import SwiftUI
+import UIKit
 
 struct ItemDetailView: View {
     private struct HistoryAdjustmentContext: Identifiable {
@@ -43,6 +44,8 @@ struct ItemDetailView: View {
     private var timeZone
     @Environment(\.mhTheme)
     private var theme
+    @Environment(\.scenePhase)
+    private var scenePhase
 
     let item: Item
 
@@ -51,9 +54,10 @@ struct ItemDetailView: View {
     @State private var errorTitle = ""
     @State private var errorMessage = ""
     @State private var isPresentingError = false
+    @State private var readingDate = Date()
 
     var body: some View {
-        let now = Date()
+        let now = readingDate
         let today = LocalDay(containing: now, in: timeZone)
         let history = today.map { today in
             ItemOperations.historySnapshot(for: item, today: today)
@@ -74,7 +78,17 @@ struct ItemDetailView: View {
                 ItemDetailPhotoSection(photoData: photoData)
             }
 
-            if let history {
+            if let today {
+                ItemTimeSection(snapshot: ItemTimeOperations.snapshot(for: item, today: today))
+            }
+
+            if ItemOperations.hasNonMarkHistoryConflict(item) {
+                Section {
+                    Text("Keep Marks enabled to preserve this item's existing history.")
+                }
+            }
+
+            if let history, item.recordsMarks || ItemOperations.hasNonMarkHistoryConflict(item) {
                 HistoryOverviewSection(history: history)
 
                 QuietHistorySection(history: history)
@@ -90,7 +104,7 @@ struct ItemDetailView: View {
         }
         .scrollEdgeEffectStyle(.soft, for: .bottom)
         .safeAreaBar(edge: .bottom) {
-            if !item.isArchived {
+            if ItemOperations.historyChangeError(for: item) == nil {
                 TodayMarkSection(
                     isMarkedToday: isMarkedToday,
                     markAction: markToday,
@@ -105,6 +119,17 @@ struct ItemDetailView: View {
         .mhListChrome()
         .navigationTitle(item.name)
         .navigationBarTitleDisplayMode(.inline)
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
+            readingDate = .now
+        }
+        .onChange(of: timeZone) {
+            readingDate = .now
+        }
+        .onChange(of: scenePhase) {
+            if scenePhase == .active {
+                readingDate = .now
+            }
+        }
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button(action: presentEditItem) {
@@ -143,8 +168,10 @@ struct ItemDetailView: View {
             Text(errorMessage)
         }
     }
+}
 
-    private func markToday() {
+private extension ItemDetailView {
+    func markToday() {
         guard let today = currentDay() else {
             presentError(
                 title: String(localized: "Could Not Save"),
@@ -223,6 +250,10 @@ struct ItemDetailView: View {
     }
 
     private func presentHistoryAdjustment() {
+        if let error = ItemOperations.historyChangeError(for: item) {
+            presentError(title: String(localized: "Could Not Update History"), message: error.localizedDescription)
+            return
+        }
         let capturedTimeZone = timeZone
         let now = Date()
 

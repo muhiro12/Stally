@@ -23,7 +23,9 @@ struct InsightsList: View {
         VStack(alignment: .leading, spacing: theme.spacing.section) {
             InsightsSummary(
                 totalMarks: snapshot.totalMarks,
-                rangeTitle: snapshot.options.range.title
+                rangeTitle: snapshot.options.range.title,
+                choiceItemCount: snapshot.choiceItemCount,
+                hasHistoryConflict: snapshot.nonMarkHistoryConflictCount > 0
             )
 
             InsightsHighlightsSection(snapshot: snapshot)
@@ -32,6 +34,9 @@ struct InsightsList: View {
                 selectedRange: $selectedRange,
                 includesArchivedItems: $includesArchivedItems
             )
+
+            Text("Choice readings include only items that record Marks. Context coverage includes all scoped items.")
+                .mhTextStyle(.supporting, colorRole: .secondaryText)
 
             InsightsReportSection(
                 report: InsightsReportOperations.report(for: snapshot)

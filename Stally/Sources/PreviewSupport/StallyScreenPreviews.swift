@@ -155,6 +155,7 @@ import SwiftUI
             BackupList(
                 summary: .init(items: items),
                 preview: StallyPreviewData.backupValidationPreview,
+                isReplacingExistingItems: .constant(false),
                 statusMessage: "Backup saved.",
                 exportAction: { /* Preview action intentionally left empty. */ },
                 chooseBackupAction: { /* Preview action intentionally left empty. */ },

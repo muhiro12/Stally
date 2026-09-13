@@ -14,6 +14,7 @@ struct BackupList: View {
 
     let summary: BackupCollectionSummary
     let preview: BackupPreview?
+    @Binding var isReplacingExistingItems: Bool
     let statusMessage: String?
     let exportAction: () -> Void
     let chooseBackupAction: () -> Void
@@ -34,6 +35,7 @@ struct BackupList: View {
             if let preview {
                 BackupImportPreviewSection(
                     preview: preview,
+                    isReplacingExistingItems: $isReplacingExistingItems,
                     mergeAction: mergeAction,
                     replaceAction: replaceAction
                 )

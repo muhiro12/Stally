@@ -15,6 +15,7 @@ struct StallyPreviewLaunchConfiguration {
 
     let scenario: StallyPreviewScenario?
     let route: StallyPreviewRoute?
+    let trackingScreen: StallyTrackingPreviewScreen?
 
     var modelContainer: ModelContainer? {
         guard let resolvedScenario else {
@@ -29,6 +30,10 @@ struct StallyPreviewLaunchConfiguration {
             return scenario
         }
 
+        if trackingScreen != nil {
+            return .integration
+        }
+
         guard route != nil else {
             return nil
         }
@@ -39,6 +44,8 @@ struct StallyPreviewLaunchConfiguration {
     init(arguments: [String]) {
         scenario = Self.scenario(from: arguments)
         route = Self.route(from: arguments)
+        trackingScreen = Self.value(after: "--stally-preview-tracking-screen", in: arguments)
+            .flatMap(StallyTrackingPreviewScreen.init(rawValue:))
     }
 
     private static func scenario(from arguments: [String]) -> StallyPreviewScenario? {
