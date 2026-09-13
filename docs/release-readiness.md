@@ -12,8 +12,14 @@ preserves source data on failure.
 
 The current scope leaves persisted schema version 1, backup format version 2,
 mark semantics, CloudKit identity, package pins, and navigation unchanged.
-Model integration is held by the
+The accepted Stally-hosted product semantics and remaining model-design
+boundary are recorded in the
 [Fluel integration assessment](fluel-integration-assessment.md).
+
+The follow-up adds the app's missing UserDefaults required-reason declaration.
+The final local Release archive contains this manifest and passes signature
+verification. App Store export is blocked by missing distribution signing
+assets. Physical-device runtime verification is blocked by device connection.
 
 ## Shared Foundation Assessment
 
@@ -116,28 +122,92 @@ These are distinct evidence layers.
    `Stally/Configurations/Info.plist` still embeds Google's sample application
    identifier. Before distribution, provide Stally-owned production
    configuration or complete and verify an ads-disabled configuration that
-   contains no test advertising identifiers. Do not enable production ads
-   merely because the SDK links successfully.
+   contains no test advertising identifiers. An ads-disabled first release
+   must also resolve the new ad-removal subscription offer; it cannot sell
+   removal of ads that are not served. Do not enable production ads merely
+   because the SDK links successfully.
 5. **Privacy and support:** the Settings Privacy Policy destination returned
-   HTTP 404 on September 13. Publish or select the approved policy and verify
+   HTTP 404 again on September 13. The README Support URL also returns 404.
+   Publish or select the approved policy and support destination and verify
    the actual link before release. The inspected About section contains
    Privacy Policy and Licenses but no support entry point. Confirm the support
    destination and store metadata, and audit the distribution artifact's
    privacy manifests and dependency licenses against actual enabled behavior.
-6. **Distribution:** produce the intended signed archive and export with the
-   shipping toolchain, check embedded entitlements and identifiers, and verify
-   the distributed build. Local Debug builds and library tests do not prove
+6. **Distribution:** the local Release archive now succeeds; App Store export
+   fails because a distribution certificate with its private key and an App
+   Store provisioning profile are unavailable. Establish the required signing
+   assets, produce the export with the shipping toolchain, check its final
+   entitlements and identifiers, and verify the distributed build. Local Debug
+   builds and library tests do not prove
    App Store metadata, signing, production CloudKit, or purchase readiness.
 
 The privacy destination inspected was the
 [Stally privacy policy](https://muhiro12.github.io/Stally/privacy.html).
 Its content and approval remain unresolved; an alternative URL was not guessed.
 
+## Follow-up Evidence
+
+This pass changes only the app privacy manifest and documentation. It does not
+change persisted models, schema versions, migration stages, backup format,
+Mark behavior, or app navigation. Fluel remains read-only.
+
+- The app uses standard-domain UserDefaults through app-owned preference
+  descriptors and `@AppStorage`, but the initial archive contained only the
+  Google Mobile Ads and User Messaging Platform privacy manifests. Added
+  `Stally/Resources/PrivacyInfo.xcprivacy` with
+  `NSPrivacyAccessedAPICategoryUserDefaults` reason `CA92.1` for the app's own
+  settings. This is not a completed store data-collection declaration or a
+  published privacy policy. See Apple's [required-reason API guidance][reasons].
+- Final Xcode-native iOS 27 physical-device Debug build passed. Its bundled
+  app manifest matches the source. No Swift or library behavior changed, so
+  the earlier library tests were not rerun as new evidence.
+- Final local Release archive passed with Xcode `27A266a`, and the archived
+  app manifest matches the source. `codesign --verify --deep --strict` passed.
+  The native tool inventory has no archive/export action, so these checks
+  used official `xcodebuild`. The first archive attempt was blocked by sandbox
+  cache access; the retry with that access completed.
+- The archive is development-signed: it has development push entitlement
+  and `get-task-allow`. This is not a production distribution signature. It
+  still contains Google's sample App ID despite Release ad requests being
+  disabled; distribution remains gated on the advertising decision above.
+- App Store export used local `destination=export` without provisioning
+  updates or upload. It failed on the missing distribution certificate/private
+  key and App Store profile. No signing assets were created and no build was
+  uploaded. Shipping-toolchain and distributed-build evidence remain open.
+- Physical-device interaction is not supported by the current native session
+  API. A bounded official CoreDevice fallback could discover the device, but
+  installation failed with `Connection reset by peer`. No fixture launch,
+  physical-device screenshot, or runtime log was obtained. Reconnect and unlock
+  the device before retrying; CloudKit and StoreKit remain unverified.
+- The app's generated license catalog includes Google Mobile Ads, User
+  Messaging Platform, GoogleMobileAdsWrapper, LicenseList, and SwiftLintPlugins.
+  License text is compiled from generated Swift, so absence of standalone
+  license files in the archive is not evidence of absent notices. Full
+  dependency attribution and the reachable Licenses screen remain review gates.
+- Plist validation, repository rules, local Markdown links, and patch
+  whitespace checks passed. A Markdown lint CLI was not available; changed
+  prose was checked for heading, list, and line-wrap consistency.
+  Xcode's original `Stally / My Mac` selection was restored and confirmed.
+
+Private signing, device, command logs, and manifest inventories are retained
+under the ignored `.build/ci/release-followup-20260913/` directory. No
+persistent domain or cloud records were created, edited, imported, or deleted.
+
+External decisions are the Stally-owned production ad configuration versus an
+ads-disabled initial offer, approved Privacy/Support URLs and public contact,
+and obtaining the missing distribution signing assets. Two-device sync testing
+also needs an explicit test environment and permission to create identifiable
+synthetic records there; a fixture-only device launch would not prove sync.
+
 ## Next Decision
 
 Fluel's assessment and domain contract are complete and reconciled in the
-host-side assessment. Confirm real-data requirements and the accepted combined
-journeys before any model decision. In parallel, address the concrete release
-configuration and external evidence gaps above. Keep each correction local
-to its demonstrated owner and verify the affected library, adapter, runtime,
-or distribution boundary.
+host-side assessment. The initial scope requires no Fluel data transfer,
+includes records without Marks outside choice-oriented Review and Insights,
+and keeps time running while archived. Translate these accepted constraints
+into a bounded implementation before changing models. In parallel, address the
+concrete release configuration and external evidence gaps above. Keep each
+correction local to its demonstrated owner and verify the affected library,
+adapter, runtime, or distribution boundary.
+
+[reasons]: https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api
