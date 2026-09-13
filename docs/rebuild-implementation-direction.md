@@ -66,6 +66,33 @@ compatibility work unless a later product decision requires it.
 When the project is created, use the Xcode and iOS SDK that match the iOS 27
 baseline rather than preserving compatibility with the removed legacy project.
 
+## Fluel Integration Direction
+
+Stally remains the product and delivery host. Fluel stays a read-only domain
+and implementation reference while its accepted behavior is brought into
+Stally; do not duplicate its app shell or release infrastructure.
+
+The accepted experience includes things and places that are not marked on
+particular days. Those records can retain start knowledge and show time
+together without entering Mark-prompting Review lanes or choice-count
+Insights. Relationship time must not fabricate Marks or use record creation
+time as an inferred relationship start. Preserve day, month, and year
+precision, including an unknown start for existing Stally Items.
+
+Archive means putting a record aside. It preserves history and does not stop
+relationship time. Ending a relationship is a separate concept; this decision
+does not prescribe an end-date field, control, or new workflow. In particular,
+do not copy Fluel's archive-based elapsed-time cap into Stally.
+
+The initial integration scope does not require a Fluel user-data importer.
+This does not authorize clearing either app's storage or replacing Stally's
+versioned schema baseline. Existing Stally mark and backup compatibility must
+remain explicit acceptance requirements when implementation is selected.
+
+These are product constraints, not a persisted-model or migration design.
+Choose the bounded implementation separately, retaining the existing
+Operations boundary, routes, and English/Japanese product language.
+
 ## Monetization Direction
 
 Stally's subscription removes ads. iCloud sync remains available without a

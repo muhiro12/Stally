@@ -1,12 +1,12 @@
 # Fluel Integration Assessment
 
-> Status: Stally-side evidence, September 13, 2026. Model integration remains
-> undecided after reconciling the Fluel investigation with the decisions below.
+> Status: Stally-side evidence, September 13, 2026. Host and product semantics
+> are accepted below. Persisted-model and migration design remain unselected.
 
 ## Scope
 
 This assessment follows `AGENTS.md`, the near-term development brief, and the
-preserved rebuild documents. It evaluates Stally as the potential delivery
+preserved rebuild documents. It evaluates Stally as the selected delivery
 host. It does not authorize a persisted schema, navigation, branding, or
 data-transfer change.
 
@@ -27,9 +27,9 @@ establish a shared domain or a transferable identity.
 - Fluel's completed assessment is `Fluel@9492897`,
   `docs/stally-integration-assessment.md`; its reusable domain contract is
   `Fluel@19c858d`, `docs/domain-behavior-contract.md`. Both were read and
-  reconciled with this host-side assessment. Distribution and real-data
-  continuity remain unconfirmed. Repository descriptions of an unreleased
-  product do not prove that no installed or distributed data needs protection.
+  reconciled with this host-side assessment. The accepted initial scope has
+  no required Fluel user-data transfer. This scope decision does not change
+  either store or establish production distribution evidence.
 
 ## Semantic Conflicts
 
@@ -58,7 +58,8 @@ These conflicts have practical consequences:
   range. Unknown start must also remain possible for existing Stally items.
 - A start edit must not add a Mark. Importing an old relationship must not
   invent daily choices or make an elapsed-time reading an Insights count.
-- Archive needs an explicit combined meaning. Fluel caps elapsed time at
+- Archive now has an accepted host meaning: put a record aside while time
+  together continues. Ending a relationship remains separate. Fluel caps time at
   `archivedAt`; Stally uses Archive to put favorites aside and later restore
   them. Fluel resumes elapsed time from the original start after restoration;
   archived intervals are not subtracted. Stally has no interval history, and
@@ -74,21 +75,26 @@ These conflicts have practical consequences:
 The smallest candidate worth evaluating is optional start knowledge and a
 time-together reading in Item Detail. It could complement Mark Today without
 adding a second primary collection or making dates mandatory during creation.
-This is a proposal for comparison with Fluel's findings, not approved UI scope.
+The product semantics below are accepted; detail and form composition still
+need a bounded implementation decision.
 
 Evaluate the following journeys before selecting an implementation:
 
 1. An existing Stally Item with marks and no known start keeps all readings.
 2. An Item known only since a particular year shows that uncertainty clearly.
 3. Refining a start from year to month changes elapsed text, not mark history.
-4. Archiving and restoring an Item has a stated, understandable time meaning.
+4. Archiving and restoring an Item leaves time together running and retains
+   mark history; Archive never implies the relationship ended.
 5. A user can still add and mark an Item without learning Fluel terminology.
+6. A home or plant without daily choices can retain a start and time-together
+   reading without entering Mark-prompting Review or choice-count Insights.
 
 Milestones need a separate value decision after those journeys are understood.
-Dashboard, Timeline, Presets, places, and a second app shell are outside the
-  candidate slice. A separate Fluel domain model remains an alternative until
-the evidence settles ownership. Physical package extraction can wait until
-integrated behavior demonstrates a need.
+Dashboard, Timeline, Presets, and a second app shell remain outside the
+candidate slice. Places without Marks are now included in the product scope.
+A separate Fluel domain model remains an alternative until the evidence
+settles ownership. Physical package extraction can wait until integrated
+behavior demonstrates a need.
 
 ## Persistence And Transfer Gate
 
@@ -101,7 +107,11 @@ The configured CloudKit containers are also separate:
 `iCloud.com.muhiro12.Stally` and `iCloud.com.muhiro12.Fluel`. A Stally migration
 must not be assumed to discover or import Fluel's store automatically.
 
-Before either persisted model changes, the combined decision must record:
+No Fluel user-data importer is required by the accepted initial scope. Preserve
+both repositories and stores; this is not permission to reset or delete data.
+If a later continuity requirement appears, reopen the transfer gate below.
+
+For any future transfer requirement, first record:
 
 - Which distributed versions and local or cloud stores contain real data.
 - Which data must survive, including original identifiers, precision, photos,
@@ -109,8 +119,10 @@ Before either persisted model changes, the combined decision must record:
 - Whether the requirement is no transfer, explicit user import, or continuity
   with a distributed version, supported by evidence rather than inference.
 - Conflict, duplicate, retry, partial-failure, and source-preservation rules.
-- The next Stally schema and migration stage, backup compatibility, and
-  fixtures proving existing Stally marks survive opening and restoring.
+
+For the selected no-transfer scope, a persisted change still requires the
+next Stally schema and migration stage, backup compatibility, and fixtures
+proving existing rebuilt Stally marks survive opening and restoring.
 
 The removed legacy schemas remain outside the rebuilt migration baseline.
 Do not delete or archive the Fluel repository as part of this evaluation.
@@ -122,7 +134,7 @@ resolution stable. Fluel uses a separate `fluel` grammar and `EntryEntity`.
 Neither is automatically an alias for a Stally Item. Existing shortcuts and
 links need a documented compatibility requirement before any forwarding.
 
-If accepted, start and time-together use cases should enter through a
+When implemented, start and time-together use cases should enter through a
 Stally-owned Operations boundary; the app's feature adapters would expose
 them. Do not copy Fluel's App Shortcuts catalog, runtime bootstrap, or app-wide
 navigation. Preserve the meanings of Item, Mark, Library, Archive, Review,
@@ -130,8 +142,8 @@ and Insights in English and Japanese. Review candidate time-together language
 alongside them before expanding the catalogs.
 
 One delivery host could reuse Stally's settings, backup entry point, runtime,
-licenses, and subscription integration. It would still incur date semantics,
-migration, transfer, accessibility, localization, and real-device testing
+licenses, and subscription integration. It still incurs date semantics,
+host migration, accessibility, localization, and real-device testing
 costs. Two apps would retain two app shells, identities, CloudKit environments,
 store/support surfaces, and release verification paths. Neither cost should be
 estimated from overlapping field counts alone.
@@ -151,19 +163,37 @@ or affect collection readings with the wrong meaning. Its activity history and
 custom presets remain preserved source knowledge even if a first host slice
 defers them. A product omission is not permission to discard required data.
 
-The host-side result is to keep model integration undecided. The remaining
-inputs are the real-data/distribution confirmation, accepted combined journeys
-(especially places without Marks), archive semantics, and a bounded cost
-comparison for that scope. Source evidence does not settle those product and
-continuity questions.
+## Accepted Product Decisions
+
+The selected host is Stally. The initial scope requires no transfer of Fluel
+user data. Things and places without daily Marks are included, with start
+knowledge and time-together readings, and are excluded from Mark-prompting
+Review lanes and choice-count Insights. Archive is a way to put records aside;
+elapsed time continues. Relationship ending is a separate concept whose
+implementation is not selected here.
+
+These constraints are recorded in
+[rebuild-implementation-direction.md](rebuild-implementation-direction.md#fluel-integration-direction).
+The answers resolve the three product questions without requiring a disposable
+screen prototype. No new schema, field, migration, or navigation was selected
+or implemented during this decision pass.
+
+Remaining engineering work is a bounded host slice, explicit behavior for
+unmarked records across Operations and system surfaces, and a cost comparison
+for that scope. Preserve existing Stally IDs, links, marks, and backup behavior
+when choosing the next schema and migration stage. A relationship-ending
+workflow, milestones, activity presentation, and presets are not implicitly
+authorized by the accepted Archive meaning.
 
 Stally owns the host-side conflict analysis and integration acceptance cases.
 Use the completed Fluel assessment and domain contract as the other side of
-the decision. Resolve the remaining inputs above before choosing whether or
-how to combine models.
+the decision. The accepted host semantics supersede their historical open
+questions; keep Fluel itself read-only. Select the implementation for these
+constraints before combining models.
 
-The resulting decision must name the accepted journeys, information
-architecture, domain ownership, archive semantics, routes and App Intents,
-product language, release identity, and transfer requirement. Until then,
-continue Stally work that survives either outcome, including backup safety
-and the release evidence gaps in [release-readiness.md](release-readiness.md).
+The implementation handoff must connect the accepted journeys and Archive
+meaning to information architecture, domain ownership, routes and App Intents,
+product language, and backup evolution under the selected Stally identity.
+Continue Stally work that remains valuable for this scope, including backup
+safety and the release evidence gaps in
+[release-readiness.md](release-readiness.md).
