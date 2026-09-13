@@ -1,7 +1,8 @@
 # iOS 27 Release Readiness
 
 > Status: Working release evidence, September 13, 2026. This is not release
-> approval. Revisit after the product decision and distribution verification.
+> approval. The integration decision is settled; distribution verification
+> remains separate.
 
 ## Current Outcome
 
@@ -20,14 +21,17 @@ preserves source data on failure.
 The backup-safety scope left persisted schema version 1, backup format version 2,
 mark semantics, CloudKit identity, package pins, and navigation unchanged.
 The subsequent MHPlatform dependency update is recorded separately below.
-The accepted Stally-hosted product semantics and remaining model-design
-boundary are recorded in the
-[Fluel integration assessment](fluel-integration-assessment.md).
+The accepted Stally-hosted product semantics are recorded in the
+[Fluel integration assessment](fluel-integration-assessment.md). The accepted
+[start design][start-proposal] and its implementation evidence supersede that
+assessment's earlier model-design gate.
 
-The follow-up adds the app's missing UserDefaults required-reason declaration.
-The final local Release archive contains this manifest and passes signature
-verification. App Store export is blocked by missing distribution signing
-assets. Physical-device runtime verification is blocked by device connection.
+The earlier follow-up added the app's missing UserDefaults required-reason
+declaration. Its local Release archive contains the manifest and passed
+signature verification, but predates the item-tracking integration. No current
+integration distribution build is verified. The last export attempt lacked
+distribution signing assets, and the last physical-device attempt failed to
+connect; neither external condition was rechecked in the local audit.
 
 ## Shared Foundation Assessment
 
@@ -77,7 +81,7 @@ on a new backup for Replace Library or Delete Everything. Raw snapshot
 construction remains available for diagnosis; automatic repair is outside this
 change.
 
-## Completed Local Checks
+## Backup-Safety Baseline Checks
 
 - Toolchain: Xcode 27.0, build `27A266a`; selected developer directory is the
   installed Xcode beta application. This identifies local evidence only.
@@ -306,17 +310,19 @@ documentation review adds no new runtime or distribution evidence. See the
 
 ## Next Decision
 
-Review the [optional start and elapsed-time proposal][start-proposal] before
-changing saved models. It treats the accepted no-transfer, non-Mark, and
-Archive semantics as fixed inputs and specifies the recommended Item fields,
-Operations contracts, calendar precision, store/backup compatibility, and
-migration/regression tests. No Fluel changes or renewed product investigation
-are needed for that design.
+The [optional start design][start-proposal] is accepted and implemented through
+Operations, V1-to-V2 migration, v2/v3 backups, screens, and App Intents. Do not
+repeat the Stally/Fluel product investigation or ask for the same model approval.
+Use [item tracking verification](item-tracking-verification.md) for completed
+evidence and the remaining interaction/accessibility checks. Fix only defects
+established by those checks; do not extend the integrated feature set.
 
-After that implementation choice is accepted, progress through its isolated
-library, migration, backup, and adapter stages. Track the external checks above
-in parallel and require them before distribution; they are not prerequisites
-for resolving the domain design.
+The next owner decisions are pre-distribution configuration: Stally-owned ads
+and product settings versus an ads-disabled offer, approved Privacy/Support
+destinations, and distribution signing assets. After those choices, verify the
+shipping build, purchase/restore, and explicitly selected synthetic cloud test
+accounts/devices. Production CloudKit promotion, real-data operations, and
+publication require their own authorization. None is part of this local audit.
 
 [reasons]: https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api
 

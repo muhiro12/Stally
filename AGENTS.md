@@ -88,9 +88,12 @@ owner-directed rebuild constraints while the implementation is rebuilt.
 
 Temporary release evidence and integration decision inputs live in
 `docs/release-readiness.md` and `docs/fluel-integration-assessment.md`.
-The concrete design proposal is `docs/item-start-and-elapsed-time-proposal.md`.
-Use them alongside the current near-term development brief; these proposals
-do not authorize model integration or release.
+The accepted, implemented design is
+`docs/item-start-and-elapsed-time-proposal.md`; current integration evidence and
+remaining manual checks are in `docs/item-tracking-verification.md`.
+Use them alongside `docs/near-term-development-brief.md`. Earlier assessment
+approval gates are historical; implementation evidence does not authorize
+production CloudKit changes, real-data operations, or release.
 
 When editing product-intent documents, preserve the existing English voice,
 avoid speculation, and keep the distinction between product intent and
