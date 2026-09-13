@@ -157,7 +157,9 @@ The app target should stay a thin adapter over the current product surface.
   preview containers, screenshot launch routes, and screen-level previews for
   UI review. It must not become product behavior or shared-library logic.
 - `Stally/Resources/` owns app-target String Catalogs for SwiftUI, App
-  Intents, and App Shortcuts strings.
+  Intents, and App Shortcuts strings, plus the app privacy manifest. Its
+  required-reason API entries describe app-owned preference use; dependency
+  manifests and store privacy disclosures require separate review.
 - App views may use SwiftData environment values and `@Query` for the current
   app surface, but durable business behavior should enter through public
   `*Operations`.
