@@ -62,23 +62,22 @@ struct ItemDetailView: View {
             ItemOperations.isMarked(item, on: today)
         } ?? false
 
-        VStack(alignment: .leading, spacing: theme.spacing.section) {
-            ItemDetailSummary(
-                item: item,
-                isMarkedToday: isMarkedToday
-            )
+        List {
+            Section {
+                ItemDetailSummary(
+                    item: item,
+                    isMarkedToday: isMarkedToday
+                )
+            }
 
             if let photoData = item.photoData {
                 ItemDetailPhotoSection(photoData: photoData)
             }
 
-            if !item.isArchived {
-                TodayMarkSection(
-                    isMarkedToday: isMarkedToday,
-                    markAction: markToday,
-                    undoAction: undoToday,
-                    adjustAction: presentHistoryAdjustment
-                )
+            if let history {
+                HistoryOverviewSection(history: history)
+
+                QuietHistorySection(history: history)
             }
 
             ArchiveActionSection(
@@ -87,15 +86,23 @@ struct ItemDetailView: View {
                 moveBackAction: moveBackToLibrary
             )
 
-            if let history {
-                HistoryOverviewSection(history: history)
-
-                QuietHistorySection(history: history)
-            }
-
             ItemDeletionSection(deleteAction: confirmDeleteItem)
         }
-        .mhScreen()
+        .scrollEdgeEffectStyle(.soft, for: .bottom)
+        .safeAreaBar(edge: .bottom) {
+            if !item.isArchived {
+                TodayMarkSection(
+                    isMarkedToday: isMarkedToday,
+                    markAction: markToday,
+                    undoAction: undoToday,
+                    adjustAction: presentHistoryAdjustment
+                )
+                .frame(maxWidth: theme.layout.readableContentWidth)
+                .padding(.horizontal, theme.spacing.content)
+                .padding(.vertical, theme.spacing.inline)
+            }
+        }
+        .mhListChrome()
         .navigationTitle(item.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

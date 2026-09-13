@@ -12,15 +12,13 @@ struct ItemDeletionSection: View {
     let deleteAction: () -> Void
 
     var body: some View {
-        MHActionGroup {
+        Section {
             Button(role: .destructive, action: deleteAction) {
                 Label("Delete Item", systemImage: "trash")
+                    .mhForegroundStyle(.destructive)
             }
-            .buttonStyle(.mhDestructive)
+        } footer: {
+            Text("Deleting this item also removes all of its marks.")
         }
-        .mhSection(
-            "Delete Item",
-            supporting: "Deleting this item also removes all of its marks."
-        )
     }
 }

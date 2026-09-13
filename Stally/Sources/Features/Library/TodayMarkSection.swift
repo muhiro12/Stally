@@ -37,7 +37,6 @@ struct TodayMarkSection: View {
             }
             .buttonStyle(.mhSecondary)
         }
-        .mhSection("Actions")
     }
 
     private func markToday() {

@@ -15,7 +15,7 @@ struct HistoryOverviewSection: View {
     let history: ItemHistorySnapshot
 
     var body: some View {
-        MHGroupedRows {
+        Section("Overview") {
             LabeledContent("Total marks") {
                 Text(history.totalMarks, format: .number)
             }
@@ -45,8 +45,6 @@ struct HistoryOverviewSection: View {
                 }
             }
         }
-        .labeledContentStyle(.mhKeyValue)
-        .mhSection("Overview")
     }
 
     @ViewBuilder private var lastMarkedValue: some View {
