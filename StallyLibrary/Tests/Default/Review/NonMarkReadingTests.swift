@@ -118,6 +118,34 @@ extension SwiftDataOperationsTests {
                         .contains("Choice readings are incomplete."))
         }
 
+        @Test
+        func `unavailable dates preserve collection scope and localized conflict reporting`() throws {
+            let context = ModelContext(try StallyModelContainerFactory.inMemory())
+            let choice = try createItem(context: context)
+            let nonMark = try createItem(context: context)
+            let day = try #require(LocalDay(year: 2_026, month: 9, day: 13))
+            try ItemOperations.mark(nonMark, on: day, today: day, context: context)
+            nonMark.recordsMarks = false
+            nonMark.note = "Retained context"
+            try context.save()
+            let zone = try #require(TimeZone(secondsFromGMT: 0))
+            let outsideSupportedYears = Date(timeIntervalSince1970: 253_402_300_800)
+            #expect(LocalDay(containing: outsideSupportedYears, in: zone) == nil)
+            let snapshot = InsightsOperations.snapshot(
+                for: [choice, nonMark], timeZone: zone, now: outsideSupportedYears
+            )
+            #expect(snapshot.choiceItemCount == 1)
+            #expect(snapshot.nonMarkHistoryConflictCount == 1)
+            #expect(snapshot.noteCoverage == .init(coveredCount: 1, totalCount: 2))
+            #expect(snapshot.totalMarks == 0)
+            #expect(snapshot.recommendations.isEmpty)
+            #expect(InsightsReportOperations.report(for: snapshot, locale: .init(identifier: "en"))
+                        .contains("Choice readings are incomplete."))
+            #expect(InsightsReportOperations.report(for: snapshot, locale: .init(identifier: "ja"))
+                        .contains("選択の集計が不完全です。"))
+            #expect(nonMark.marks.count == 1)
+        }
+
         private func createItem(context: ModelContext) throws -> Item {
             try ItemOperations.create(
                 context: context,

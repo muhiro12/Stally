@@ -321,6 +321,38 @@
         }
       }
     },
+    "Choice readings are incomplete. Enable Marks on items with existing history." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choice readings are incomplete. Enable Marks on items with existing history."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択の集計が不完全です。履歴があるアイテムのマーク記録を有効にしてください。"
+          }
+        }
+      }
+    },
+    "Choose a start no later than today." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a start no later than today."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始日は今日以前の日付を選んでください。"
+          }
+        }
+      }
+    },
     "Clothing" : {
       "localizations" : {
         "en" : {
@@ -349,6 +381,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "継続性"
+          }
+        }
+      }
+    },
+    "Context coverage includes all scoped items." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Context coverage includes all scoped items."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メモ・写真の充足率には範囲内のすべてのアイテムを含みます。"
           }
         }
       }
@@ -481,6 +529,22 @@
         }
       }
     },
+    "Enable Marks to Preserve Existing History" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable Marks to Preserve Existing History"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "既存の履歴を保持するにはマーク記録を有効にしてください"
+          }
+        }
+      }
+    },
     "Frequent active items without notes may be easier to read later with short context." : {
       "localizations" : {
         "en" : {
@@ -525,6 +589,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無効なアイテム写真"
+          }
+        }
+      }
+    },
+    "Invalid Item Start" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid Item Start"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アイテムの開始日が無効です"
           }
         }
       }
@@ -593,6 +673,54 @@
         }
       }
     },
+    "Items with Notes" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Items with Notes"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メモのあるアイテム"
+          }
+        }
+      }
+    },
+    "Items with Photos" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Items with Photos"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真のあるアイテム"
+          }
+        }
+      }
+    },
+    "Keep Marks enabled to preserve this item's existing history." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep Marks enabled to preserve this item's existing history."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このアイテムの履歴を保持するため、マークの記録を有効にしてください。"
+          }
+        }
+      }
+    },
     "Library" : {
       "localizations" : {
         "en" : {
@@ -605,6 +733,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ライブラリ"
+          }
+        }
+      }
+    },
+    "Mark-enabled Items" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark-enabled Items"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マークを記録するアイテム"
           }
         }
       }
@@ -669,6 +813,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未来の日にはマークを追加できません。"
+          }
+        }
+      }
+    },
+    "Merge Requires Marks Enabled for This Item" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Merge Requires Marks Enabled for This Item"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "結合するにはこのアイテムのマーク記録を有効にしてください"
           }
         }
       }
@@ -781,6 +941,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "次の一歩"
+          }
+        }
+      }
+    },
+    "No items in this scope record Marks." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No items in this scope record Marks."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この範囲にはマークを記録するアイテムがありません。"
           }
         }
       }
@@ -1041,6 +1217,22 @@
         }
       }
     },
+    "Scoped Items" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scoped Items"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "範囲内のアイテム"
+          }
+        }
+      }
+    },
     "Settings" : {
       "localizations" : {
         "en" : {
@@ -1153,6 +1345,38 @@
         }
       }
     },
+    "The stored start is invalid. Edit or clear it before saving." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The stored start is invalid. Edit or clear it before saving."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存された開始日が無効です。編集またはクリアしてから保存してください。"
+          }
+        }
+      }
+    },
+    "This item does not record Marks." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This item does not record Marks."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このアイテムはマークを記録しません。"
+          }
+        }
+      }
+    },
     "Top item" : {
       "localizations" : {
         "en" : {
@@ -1165,6 +1389,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "トップアイテム"
+          }
+        }
+      }
+    },
+    "Tracking Fields Require Backup Version 3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tracking Fields Require Backup Version 3"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始日とマーク設定にはバックアップ形式3が必要です"
           }
         }
       }
