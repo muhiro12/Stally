@@ -107,6 +107,11 @@ These are distinct evidence layers.
 
 ## Remaining Release Evidence
 
+External product configuration, public destinations, signing assets, and
+account/device verification are pre-distribution checks. They do not block
+the accepted integration design or isolated domain/migration fixture work.
+Implemented changes still require their own local verification evidence.
+
 1. **Visual acceptance:** retain the representative Library, Item Detail,
    Insights, Backup Center, and Settings evidence in
    [ui-preview-report.md](ui-preview-report.md). A technical capture is not
@@ -294,15 +299,20 @@ documentation review adds no new runtime or distribution evidence. See the
 
 ## Next Decision
 
-Fluel's assessment and domain contract are complete and reconciled in the
-host-side assessment. The initial scope requires no Fluel data transfer,
-includes records without Marks outside choice-oriented Review and Insights,
-and keeps time running while archived. Translate these accepted constraints
-into a bounded implementation before changing models. In parallel, address the
-concrete release configuration and external evidence gaps above. Keep each
-correction local to its demonstrated owner and verify the affected library,
-adapter, runtime, or distribution boundary.
+Review the [optional start and elapsed-time proposal][start-proposal] before
+changing saved models. It treats the accepted no-transfer, non-Mark, and
+Archive semantics as fixed inputs and specifies the recommended Item fields,
+Operations contracts, calendar precision, store/backup compatibility, and
+migration/regression tests. No Fluel changes or renewed product investigation
+are needed for that design.
+
+After that implementation choice is accepted, progress through its isolated
+library, migration, backup, and adapter stages. Track the external checks above
+in parallel and require them before distribution; they are not prerequisites
+for resolving the domain design.
 
 [reasons]: https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api
 
 [mhplatform-release]: https://github.com/muhiro12/MHPlatform/releases/tag/1.13
+
+[start-proposal]: item-start-and-elapsed-time-proposal.md

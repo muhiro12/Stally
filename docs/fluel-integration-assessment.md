@@ -3,6 +3,12 @@
 > Status: Stally-side evidence, September 13, 2026. Host and product semantics
 > are accepted below. Persisted-model and migration design remain unselected.
 
+The concrete [optional start and elapsed-time proposal][start-proposal] builds
+on these accepted decisions. It covers Operations, non-Mark scopes, calendar
+precision, V1 preservation, backup compatibility, and planned regression
+evidence. It is an implementation recommendation awaiting review, not an
+implemented schema or a request to repeat the completed Fluel investigation.
+
 ## Scope
 
 This assessment follows `AGENTS.md`, the near-term development brief, and the
@@ -197,3 +203,5 @@ product language, and backup evolution under the selected Stally identity.
 Continue Stally work that remains valuable for this scope, including backup
 safety and the release evidence gaps in
 [release-readiness.md](release-readiness.md).
+
+[start-proposal]: item-start-and-elapsed-time-proposal.md

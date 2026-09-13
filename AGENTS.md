@@ -84,8 +84,9 @@ owner-directed rebuild constraints while the implementation is rebuilt.
 
 Temporary release evidence and integration decision inputs live in
 `docs/release-readiness.md` and `docs/fluel-integration-assessment.md`.
-Use them alongside the current near-term development brief; proposals in
-these reports do not authorize model integration or release.
+The concrete design proposal is `docs/item-start-and-elapsed-time-proposal.md`.
+Use them alongside the current near-term development brief; these proposals
+do not authorize model integration or release.
 
 When editing product-intent documents, preserve the existing English voice,
 avoid speculation, and keep the distinction between product intent and
