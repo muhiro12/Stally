@@ -27,7 +27,6 @@ struct ItemPhotoFormSection: View {
             if let photoData {
                 ItemPhotoImage(photoData: photoData)
                     .frame(maxHeight: Layout.thumbnailMaximumHeight)
-                    .mhRow()
             }
 
             if isLoadingPhoto || photoErrorMessage != nil {
@@ -35,7 +34,6 @@ struct ItemPhotoFormSection: View {
                     isLoading: isLoadingPhoto,
                     errorMessage: photoErrorMessage
                 )
-                .mhRow()
             }
 
             PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
@@ -46,16 +44,15 @@ struct ItemPhotoFormSection: View {
                 }
             }
             .mhTextStyle(.body, colorRole: .primaryText)
-            .mhRow()
 
             if photoData != nil {
                 Button(role: .destructive, action: removePhoto) {
                     Label("Remove Photo", systemImage: "trash")
+                        .mhForegroundStyle(.destructive)
                 }
-                .mhRow()
             }
         } header: {
-            MHSectionHeader("Photo")
+            Text("Photo")
         }
         .task(id: selectedPhotoItem) {
             guard let selectedPhotoItem else {
