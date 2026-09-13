@@ -24,6 +24,7 @@ struct ItemTrackingFormSection: View {
                     Text(precision.title).tag(precision)
                 }
             }
+            .labeledContentStyle(.automatic)
             if state.requiresStartRepair {
                 startRepairControls
             }
