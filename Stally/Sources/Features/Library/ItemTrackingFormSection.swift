@@ -33,19 +33,21 @@ struct ItemTrackingFormSection: View {
             }
             if state.precision == .month || state.precision == .day {
                 Picker("Month", selection: $state.month) {
-                    Text("Choose Month").tag(Int?.none)
+                    Text("Not Set").tag(Int?.none)
                     ForEach(Self.months, id: \.self) { month in
                         Text(month, format: .number).tag(Optional(month))
                     }
                 }
+                .labeledContentStyle(.automatic)
             }
             if state.precision == .day {
                 Picker("Day", selection: $state.day) {
-                    Text("Choose Day").tag(Int?.none)
+                    Text("Not Set").tag(Int?.none)
                     ForEach(1...state.maximumDay, id: \.self) { day in
                         Text(day, format: .number).tag(Optional(day))
                     }
                 }
+                .labeledContentStyle(.automatic)
             }
         } header: {
             Text("Start")

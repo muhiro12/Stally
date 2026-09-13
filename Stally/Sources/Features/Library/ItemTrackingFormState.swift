@@ -19,7 +19,7 @@ struct ItemTrackingFormState {
             case .year:
                 "Year Only"
             case .month:
-                "Year and Month"
+                "Month"
             case .day:
                 "Exact Day"
             }
