@@ -203,7 +203,8 @@ The app target should stay a thin adapter over the current product surface.
 - `StallyLibrary/Sources/Preferences/` owns app-local preference descriptors
   used by app startup and SwiftUI settings surfaces.
 - `StallyLibrary/Sources/Persistence/` owns `StallyMigrationPlan` and
-  `StallyModelContainerFactory`.
+  `StallyModelContainerFactory`, including frozen `StallySchemaV1` definitions
+  and the additive V2 migration for Mark policy and optional start knowledge.
 - `StallyLibrary/Sources/Resources/` owns library String Catalogs and is
   processed as a Swift Package resource bundle.
 - Public business use cases that app UI, future App Intents, widgets, or other

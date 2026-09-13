@@ -26,6 +26,10 @@ public final class Item {
     public internal(set) var createdAt = Date()
     /// Date when the item was moved into Archive.
     public internal(set) var archivedAt: Date?
+    /// Whether this item participates in choice recording and Mark-based readings.
+    public internal(set) var recordsMarks: Bool = true
+    /// Optional canonical partial Gregorian date, independent of creation and Marks.
+    public internal(set) var startRawValue: String?
 
     // CloudKit requires SwiftData relationships to be optional.
     // swiftlint:disable discouraged_optional_collection
