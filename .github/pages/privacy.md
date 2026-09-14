@@ -4,17 +4,18 @@ title: Stally Privacy Policy
 
 # Stally Privacy Policy
 
-Effective: July 12, 2026
+Last updated: September 14, 2026
 
-Stally is designed to keep a private history of the personal items you choose
-over time. This policy explains what data Stally handles, why it is handled,
-and the choices available to you.
+Stally keeps a collection of the things you choose, care for, and spend time
+with. This policy explains what data Stally handles, why it is handled, and the
+choices available to you.
 
 ## Data Stally Handles
 
 Stally stores the information you enter, including item names, categories,
-notes, item photos, and choice history. Preferences such as whether iCloud
-sync is enabled are also stored.
+notes, item photos, optional start dates and their precision, Mark-recording
+settings, archive status, and choice history. Preferences such as whether
+iCloud sync is enabled are also stored.
 
 Item photos selected through the system photo picker are copied into Stally
 only after you choose them. Before storage, Stally resizes the selected image,
@@ -30,8 +31,9 @@ stores and processes that synced data under its terms and privacy policy.
 Stally's developer does not operate a separate account or content server for
 your library.
 
-Stally uses the synced content only to provide app functionality. It is not
-used for tracking, advertising, or marketing.
+Stally uses the synced content only to provide app functionality. It does not
+provide your collection content to advertising SDKs or a developer-operated
+analytics service. iCloud sync is independent of subscription status.
 
 ## Backups and Shared Links
 
@@ -51,7 +53,7 @@ store your payment card details.
 ## Advertising Components
 
 The app bundle includes Google Mobile Ads and Google's User Messaging Platform
-components. The current release does not start production advertising or ask
+components. Stally currently does not start production advertising or ask
 for permission to track you across other companies' apps and websites. If
 production advertising is enabled in a future release, this policy and the
 App Store privacy disclosures will be updated before that release.
@@ -67,6 +69,19 @@ are synchronized through CloudKit. You can turn off iCloud Sync in Stally's
 settings. You can also manage Stally's iCloud data through Apple's iCloud
 settings. Exported backup files remain wherever you chose to save them until
 you delete them there.
+
+Archive keeps an item and its information while hiding it from Library. It does
+not delete data or stop elapsed time.
+
+## Website and Support
+
+GitHub Pages hosts the Stally website and this policy. GitHub processes website
+requests under the
+[GitHub General Privacy Statement](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement).
+
+Support uses GitHub Issues. Information you post there is public and is handled
+by GitHub. Do not include collection backups, private photos, account details,
+or other personal information in an issue.
 
 ## Your Choices
 
