@@ -44,6 +44,8 @@ struct ItemDetailView: View {
     private var timeZone
     @Environment(\.mhTheme)
     private var theme
+    @Environment(\.locale)
+    private var locale
     @Environment(\.scenePhase)
     private var scenePhase
 
@@ -79,7 +81,7 @@ struct ItemDetailView: View {
             }
 
             if let today {
-                ItemTimeSection(snapshot: ItemTimeOperations.snapshot(for: item, today: today))
+                timeSection(today: today)
             }
 
             if ItemOperations.hasNonMarkHistoryConflict(item) {
@@ -171,6 +173,14 @@ struct ItemDetailView: View {
 }
 
 private extension ItemDetailView {
+    private func timeSection(today: LocalDay) -> some View {
+        ItemTimeSection(
+            snapshot: ItemTimeOperations.snapshot(for: item, today: today),
+            milestone: ItemTimeOperations.milestone(for: item, today: today),
+            report: ItemTimeOperations.report(for: item, today: today, locale: locale)
+        )
+    }
+
     func markToday() {
         guard let today = currentDay() else {
             presentError(

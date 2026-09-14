@@ -1,22 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "%lld days" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld days"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld日"
-          }
-        }
-      }
-    },
     "%lld marks" : {
       "localizations" : {
         "en" : {
@@ -67,18 +51,34 @@
         }
       }
     },
-    "1 day" : {
+    "%lld years together" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1 day"
+            "value" : "%lld years together"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1日"
+            "value" : "一緒に過ごして%lld年"
+          }
+        }
+      }
+    },
+    "1 year together" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 year together"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一緒に過ごして1年"
           }
         }
       }
@@ -95,102 +95,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "このアプリについて"
-          }
-        }
-      }
-    },
-    "About %lld months" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "About %lld months"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "約%lldか月"
-          }
-        }
-      }
-    },
-    "About %lld years" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "About %lld years"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "約%lld年"
-          }
-        }
-      }
-    },
-    "About %lld–%lld months" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "About %1$lld–%2$lld months"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "約%1$lld〜%2$lldか月"
-          }
-        }
-      }
-    },
-    "About %lld–%lld years" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "About %1$lld–%2$lld years"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "約%1$lld〜%2$lld年"
-          }
-        }
-      }
-    },
-    "About a month" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "About a month"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "約1か月"
-          }
-        }
-      }
-    },
-    "About a year" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "About a year"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "約1年"
           }
         }
       }
@@ -1671,38 +1575,6 @@
         }
       }
     },
-    "Less than a month" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Less than a month"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1か月未満"
-          }
-        }
-      }
-    },
-    "Less than a year" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Less than a year"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1年未満"
-          }
-        }
-      }
-    },
     "Library" : {
       "localizations" : {
         "en" : {
@@ -2295,22 +2167,6 @@
         }
       }
     },
-    "Not Started" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Not Started"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "開始前"
-          }
-        }
-      }
-    },
     "Not yet" : {
       "localizations" : {
         "en" : {
@@ -2422,6 +2278,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "概要"
+          }
+        }
+      }
+    },
+    "Partial dates are ordered by their earliest possible day. Unknown starts appear last." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partial dates are ordered by their earliest possible day. Unknown starts appear last."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "年・月までの開始日は、その期間の最初の日で並びます。開始日が未設定の項目は最後に表示します。"
           }
         }
       }
@@ -3146,6 +3018,22 @@
         }
       }
     },
+    "Share Time Together" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Time Together"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一緒に過ごした時間を共有"
+          }
+        }
+      }
+    },
     "Shareable Links" : {
       "localizations" : {
         "en" : {
@@ -3306,22 +3194,6 @@
         }
       }
     },
-    "Starts Today" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Starts Today"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今日から"
-          }
-        }
-      }
-    },
     "Status" : {
       "localizations" : {
         "en" : {
@@ -3382,6 +3254,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "サポート"
+          }
+        }
+      }
+    },
+    "The milestone falls within the known month or year; its exact day is unknown." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The milestone falls within the known month or year; its exact day is unknown."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "節目は分かっている月または年の中にあります。正確な日は分かりません。"
           }
         }
       }
@@ -3654,6 +3542,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "年のみ"
+          }
+        }
+      }
+    },
+    "Yearly Milestone" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yearly Milestone"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "年ごとの節目"
           }
         }
       }

@@ -57,11 +57,25 @@ struct ItemRow: View {
             }
             .mhTextStyle(.metadata, colorRole: .secondaryText)
 
+            startMetadata
+
             if !item.note.isEmpty {
                 Text(item.note)
                     .mhRowSupporting()
                     .lineLimit(Layout.noteLineLimit)
             }
+        }
+    }
+
+    @ViewBuilder private var startMetadata: some View {
+        if let tracking = try? ItemOperations.trackingInput(for: item), let start = tracking.start {
+            VStack(alignment: .leading, spacing: .zero) {
+                Text("Start")
+                ItemStartDateText(start: start)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .mhTextStyle(.metadata, colorRole: .secondaryText)
+            .accessibilityElement(children: .combine)
         }
     }
 }

@@ -21,10 +21,12 @@ enum ItemCollectionKind {
                 .openOnDay,
                 .markedOnDay,
                 .neverMarked,
-                .withHistory
+                .withHistory,
+                .withoutMarks,
+                .withStart
             ]
         case .archive:
-            [.all, .withHistory, .withoutHistory]
+            [.all, .withHistory, .withoutHistory, .withoutMarks, .withStart]
         }
     }
 

@@ -31,6 +31,10 @@ struct ItemCollectionRefinementSection: View {
                 )
                 .mhRow()
             }
+        } footer: {
+            if selectedSort == .earliestStart || selectedSort == .latestStart {
+                Text("Partial dates are ordered by their earliest possible day. Unknown starts appear last.")
+            }
         }
     }
 
