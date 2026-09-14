@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Mark-history filters available while browsing an item collection.
+/// History and tracking filters available while browsing an item collection.
 public enum ItemCollectionFilter: CaseIterable, Identifiable, Sendable {
     case all
     case openToday
@@ -17,6 +17,8 @@ public enum ItemCollectionFilter: CaseIterable, Identifiable, Sendable {
     case neverMarked
     case withHistory
     case withoutHistory
+    case withoutMarks
+    case withStart
 
     public var id: Self {
         self
@@ -41,6 +43,10 @@ public enum ItemCollectionFilter: CaseIterable, Identifiable, Sendable {
             .init("With History", bundle: #bundle)
         case .withoutHistory:
             .init("Without History", bundle: #bundle)
+        case .withoutMarks:
+            .init("Does Not Record Marks", bundle: #bundle)
+        case .withStart:
+            .init("With Start", bundle: #bundle)
         }
     }
 }

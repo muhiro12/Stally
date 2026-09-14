@@ -10,7 +10,8 @@ import Foundation
 /// Cross-surface use cases for searching, filtering, and sorting item collections.
 public enum ItemCollectionOperations {
     /// Applies the selected browse options while preserving the input order as
-    /// the stable fallback for equal sort values.
+    /// the stable fallback for equal sort values. Start sorts compare the earliest
+    /// possible day, then the latest; unknown or invalid starts remain last.
     public static func items(
         from items: [Item],
         options: ItemCollectionOptions,
@@ -60,6 +61,10 @@ private extension ItemCollectionOperations {
         var latestMarkedDay: LocalDay? {
             markedDays.max()
         }
+
+        var start: ItemStart? {
+            item.startRawValue.flatMap(ItemStart.init(rawValue:))
+        }
     }
 
     static func matchesSearch(
@@ -95,17 +100,23 @@ private extension ItemCollectionOperations {
         case .all:
             return true
         case .openToday:
-            return today.map { !item.markedDays.contains($0) } ?? false
+            return item.item.recordsMarks && (today.map { !item.markedDays.contains($0) } ?? false)
         case .markedToday:
             return today.map(item.markedDays.contains) ?? false
         case .openOnDay:
-            return selectedDay.map { !item.markedDays.contains($0) } ?? false
+            return item.item.recordsMarks && (selectedDay.map { !item.markedDays.contains($0) } ?? false)
         case .markedOnDay:
             return selectedDay.map(item.markedDays.contains) ?? false
-        case .neverMarked, .withoutHistory:
+        case .neverMarked:
+            return item.item.recordsMarks && item.markedDays.isEmpty
+        case .withoutHistory:
             return item.markedDays.isEmpty
         case .withHistory:
             return !item.markedDays.isEmpty
+        case .withoutMarks:
+            return !item.item.recordsMarks
+        case .withStart:
+            return item.start != nil
         }
     }
 
@@ -139,9 +150,32 @@ private extension ItemCollectionOperations {
                 return (lhsIndex ?? ItemCategory.allCases.count)
                     < (rhsIndex ?? ItemCategory.allCases.count)
             }
+        case .earliestStart, .latestStart:
+            return orderedByStart(lhs, rhs, ascending: sort == .earliestStart)
         }
 
         return lhs.offset < rhs.offset
+    }
+
+    static func orderedByStart(_ lhs: PositionedItem, _ rhs: PositionedItem, ascending: Bool) -> Bool {
+        guard lhs.start != rhs.start else {
+            return lhs.offset < rhs.offset
+        }
+        return compareStarts(lhs.start, rhs.start, ascending: ascending)
+    }
+
+    static func compareStarts(_ lhs: ItemStart?, _ rhs: ItemStart?, ascending: Bool) -> Bool {
+        switch (lhs, rhs) {
+        case let (.some(lhs), .some(rhs)):
+            if lhs.earliestDay != rhs.earliestDay {
+                return ascending ? lhs.earliestDay < rhs.earliestDay : lhs.earliestDay > rhs.earliestDay
+            }
+            return ascending ? lhs.latestDay < rhs.latestDay : lhs.latestDay > rhs.latestDay
+        case (.some, .none):
+            return true
+        case (.none, .some), (.none, .none):
+            return false
+        }
     }
 
     static func compareOptionalDays(

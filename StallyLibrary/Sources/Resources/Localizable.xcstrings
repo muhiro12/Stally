@@ -1,6 +1,38 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%lld days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld days"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld日"
+          }
+        }
+      }
+    },
+    "1 day" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 day"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1日"
+          }
+        }
+      }
+    },
     "30 Days" : {
       "localizations" : {
         "en" : {
@@ -45,6 +77,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "365日"
+          }
+        }
+      }
+    },
+    "About %lld months" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About %lld months"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "約%lldか月"
+          }
+        }
+      }
+    },
+    "About %lld years" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About %lld years"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "約%lld年"
+          }
+        }
+      }
+    },
+    "About %lld–%lld months" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About %1$lld–%2$lld months"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "約%1$lld〜%2$lldか月"
+          }
+        }
+      }
+    },
+    "About %lld–%lld years" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About %1$lld–%2$lld years"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "約%1$lld〜%2$lld年"
+          }
+        }
+      }
+    },
+    "About a month" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About a month"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "約1か月"
+          }
+        }
+      }
+    },
+    "About a year" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About a year"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "約1年"
           }
         }
       }
@@ -205,6 +333,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "履歴を見ると、もう一度出番があってもよさそうなアーカイブ済みアイテム。"
+          }
+        }
+      }
+    },
+    "Archived. Elapsed time continues." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archived. Elapsed time continues."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アーカイブ中も経過時間は進みます。"
+          }
+        }
+      }
+    },
+    "As of" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As of"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "確認日"
           }
         }
       }
@@ -449,6 +609,22 @@
         }
       }
     },
+    "Does Not Record Marks" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Does Not Record Marks"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Markしない項目"
+          }
+        }
+      }
+    },
     "Dormant" : {
       "localizations" : {
         "en" : {
@@ -525,6 +701,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重複したマークID"
+          }
+        }
+      }
+    },
+    "Earliest Start" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Earliest Start"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始日が古い順"
+          }
+        }
+      }
+    },
+    "Elapsed Time" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elapsed Time"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "経過時間"
           }
         }
       }
@@ -717,6 +925,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "このアイテムの履歴を保持するため、マークの記録を有効にしてください。"
+          }
+        }
+      }
+    },
+    "Latest Start" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Latest Start"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始日が新しい順"
+          }
+        }
+      }
+    },
+    "Less than a month" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Less than a month"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1か月未満"
+          }
+        }
+      }
+    },
+    "Less than a year" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Less than a year"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1年未満"
           }
         }
       }
@@ -973,6 +1229,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選択した期間にはまだマークがありません。"
+          }
+        }
+      }
+    },
+    "Not Set" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not Set"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定"
+          }
+        }
+      }
+    },
+    "Not Started" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not Started"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始前"
           }
         }
       }
@@ -1297,6 +1585,22 @@
         }
       }
     },
+    "Start" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始日"
+          }
+        }
+      }
+    },
     "Start this range with one mark" : {
       "localizations" : {
         "en" : {
@@ -1309,6 +1613,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "この期間をひとつのマークから始める"
+          }
+        }
+      }
+    },
+    "Starts Today" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Starts Today"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日から"
           }
         }
       }
@@ -1517,6 +1837,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "履歴あり"
+          }
+        }
+      }
+    },
+    "With Start" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "With Start"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始日あり"
           }
         }
       }

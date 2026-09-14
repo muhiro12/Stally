@@ -14,6 +14,8 @@ public enum ItemCollectionSort: CaseIterable, Identifiable, Sendable {
     case mostMarked
     case name
     case category
+    case earliestStart
+    case latestStart
 
     public var id: Self {
         self
@@ -32,6 +34,10 @@ public enum ItemCollectionSort: CaseIterable, Identifiable, Sendable {
             .init("Name", bundle: #bundle)
         case .category:
             .init("Category", bundle: #bundle)
+        case .earliestStart:
+            .init("Earliest Start", bundle: #bundle)
+        case .latestStart:
+            .init("Latest Start", bundle: #bundle)
         }
     }
 }
