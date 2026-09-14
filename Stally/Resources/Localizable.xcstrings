@@ -3354,6 +3354,22 @@
         }
       }
     },
+    "Support" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Support"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サポート"
+          }
+        }
+      }
+    },
     "The selected range shapes every reading below." : {
       "localizations" : {
         "en" : {
