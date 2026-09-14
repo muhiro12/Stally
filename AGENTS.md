@@ -52,6 +52,9 @@ This repository currently contains:
   entrypoints.
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
   manifest.
+- `.github/pages/`, the product/support and privacy page sources, with
+  `.github/workflows/deploy-pages.yml` for GitHub Pages publication. Local
+  source updates do not establish that the public destinations are live.
 - Preserved product-intent documentation under `docs/`.
 
 This repository does not currently contain Widget, Watch, external AI
@@ -159,7 +162,7 @@ The app target should stay a thin adapter over the current product surface.
 - `Stally/Sources/Features/Settings/` owns the SwiftUI Settings surface,
   independent subscription/iCloud controls, StoreKit subscription section,
   Review thresholds, Insights defaults, shareable-link list surface, and
-  Settings-owned App Intents.
+  Settings-owned App Intents, plus native Support and Privacy links.
 - `Stally/Sources/SharedUI/` owns app-local MHUI presentation adapters and
   shared visual treatment helpers, including app-local ad presentation
   wrappers. It must not contain product behavior, persistence logic, or

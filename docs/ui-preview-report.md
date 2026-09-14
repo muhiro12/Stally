@@ -507,3 +507,57 @@ were also exercised with disposable synthetic files. The native exporter Save
 control remains inaccessible through the returned system hierarchy, so no
 app-generated exported-file round trip is claimed. These checks do not imply
 VoiceOver operation, system Shortcuts execution, or distribution approval.
+
+## September 14 Support Link Preparation
+
+Commit `2c5b790` adds a native Support link to Settings About, alongside Privacy
+Policy and Licenses. The approved destination is the Stally GitHub Pages root.
+The existing English/Japanese catalogs supply `Support` / `サポート`.
+No shared component, data model, Operations, or monetization behavior changed.
+
+This check used the isolated iPhone 18 Pro / iOS 27 Simulator and explicit Debug
+in-memory `integration` / `settings` launch arguments. The native build passed
+with zero errors and Stally App Intents metadata extraction. A workspace session
+lost its identity; one device-specific session against the running app recovered
+actual taps, scrolling, screenshots, and accessibility hierarchies.
+
+| Surface | Observed evidence |
+| --- | --- |
+| English About | Support and Privacy Policy have named link traits; all three rows are readable after actual scrolling at standard and maximum text size |
+| Japanese About | Localized labels remain complete at standard and maximum accessibility text size |
+| Support activation | Actual tap opened `https://muhiro12.github.io/Stally/` in Safari; URL inspected directly. The page returned HTTP 404, so live content remains unverified until publication |
+| Same-process return | Unverified: the return automation cold-launched a different process without preview arguments; the process was stopped immediately |
+
+| English | Japanese |
+| --- | --- |
+| ![English About with Support](ui-preview-screenshots/support-preparation/about-en-large.png) | ![Japanese About with Support](ui-preview-screenshots/support-preparation/about-ja-large.png) |
+
+The [Japanese maximum-text capture](ui-preview-screenshots/support-preparation/about-ja-axxxxl.png)
+and [English maximum-text capture](ui-preview-screenshots/support-preparation/about-en-axxxxl.png)
+show the native labels reflowing after scrolling.
+The [Safari URL capture](ui-preview-screenshots/support-preparation/support-safari-url.png)
+records the approved destination. These are unedited Simulator captures.
+
+The unexpected return is retained as a verification boundary incident. The
+original app process logged `model_container.preview_created`; the unexpected
+process logged `model_container.local_created` and displayed an empty Library.
+It received no further screen actions before termination. No real collection
+or CloudKit startup was observed, but an empty local store may have been created
+in the dedicated Simulator and was left untouched. Japanese checks then used a
+fresh explicit preview launch and verified `preview_created` before interaction.
+Do not count every launch in this audit as in-memory or treat the return as a
+passed round trip.
+
+After authorized page publication, manually verify both live page contents,
+the Issues destination, and return to Stally while retaining the preview process.
+Stop if a normal cold launch occurs. Physical VoiceOver and the previous
+integration's separate manual checks remain outstanding.
+
+The final preview app and interaction sessions were stopped. Large text size,
+light appearance, and disabled Increase Contrast were restored before shutting
+down only the dedicated Simulator. Xcode's original Stally scheme was restored
+first, its destinations rediscovered, and Stally MHPlatform 1.13 Audit restored
+and confirmed. Runtime review found no fatal, crash, or exception output; the
+unexpected local-container launch remains explicitly recorded above. Logs,
+hierarchies, PID records, and the session ledger are retained in ignored
+`.build/ci/stally-launch-preparation-20260914/runtime/`.

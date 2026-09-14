@@ -4,6 +4,11 @@
 > approval. The integration decision is settled; distribution verification
 > remains separate.
 
+The September 14 owner response confirms native advertising with optional
+monthly ad removal, following Incomes. Initial advertising setup may be staged
+around the first App Store publication. The existing Stally GitHub Pages URLs
+and GitHub Issues contact are approved; their publication remains pending.
+
 ## Current Outcome
 
 The optional-start and non-Mark integration is now implemented locally with a
@@ -37,14 +42,15 @@ The accepted Stally-hosted product semantics are recorded in the
 [start design][start-proposal] and its implementation evidence supersede that
 assessment's earlier model-design gate.
 
-The September 14 local Release archive includes the integration and both current
-presentation corrections through `a9c61e6`. Its signature verifies, the app
+The September 14 local Release archive includes the integration and both
+tracking presentation corrections through `a9c61e6`. Its signature verifies, the app
 privacy manifest matches source, and no Debug preview launch markers or fixture
 files were found in the app. It uses the installed Xcode 27 beta toolchain and
 development signing and still contains Google's sample advertising app ID.
 No App Store export or distributed build is verified. The read-only check below
 found no distribution signing assets and found paired physical devices
-disconnected; the current archive does not clear those gates.
+disconnected; the archive does not clear those gates. The later Settings Support
+link is verified separately and is not included in that retained archive.
 
 ## Shared Foundation Assessment
 
@@ -151,17 +157,16 @@ Implemented changes still require their own local verification evidence.
 4. **Advertising configuration:** Release native ads are disabled, but
    `Stally/Configurations/Info.plist` still embeds Google's sample application
    identifier. Before distribution, provide Stally-owned production
-   configuration or complete and verify an ads-disabled configuration that
-   contains no test advertising identifiers. An ads-disabled first release
-   must also resolve the new ad-removal subscription offer; it cannot sell
-   removal of ads that are not served. Do not enable production ads merely
-   because the SDK links successfully.
+   configuration. If account setup blocks the first release, prepare and verify
+   a temporarily ads-disabled configuration without test identifiers and defer
+   ad-removal sales with it. This preserves the accepted long-term offer.
+   Ad-readiness review after store publication is distinct from ID creation;
+   it does not automatically require removing the advertising integration.
 5. **Privacy and support:** the Settings Privacy Policy destination returned
    HTTP 404 again on September 14. The README Support URL also returns 404.
-   Publish or select the approved policy and support destination and verify
-   the actual link before release. The inspected About section contains
-   Privacy Policy and Licenses but no support entry point. Confirm the support
-   destination and store metadata, and audit the distribution artifact's
+   Publish the approved Stally GitHub Pages destinations and verify their actual
+   content before release. The local About section now includes Support beside
+   Privacy Policy and Licenses. Confirm the store metadata and audit the artifact's
    privacy manifests and dependency licenses against actual enabled behavior.
 6. **Distribution:** the current local Release archive succeeds; the earlier
    App Store export failed because a distribution certificate with its private
@@ -225,8 +230,8 @@ Private signing, device, command logs, and manifest inventories are retained
 under the ignored `.build/ci/release-followup-20260913/` directory. No
 persistent domain or cloud records were created, edited, imported, or deleted.
 
-External decisions are the Stally-owned production ad configuration versus an
-ads-disabled initial offer, approved Privacy/Support URLs and public contact,
+At that checkpoint, external decisions were the Stally-owned production ad
+configuration versus an ads-disabled initial offer, Privacy/Support and contact,
 and obtaining the missing distribution signing assets. Two-device sync testing
 also needs an explicit test environment and permission to create identifiable
 synthetic records there; a fixture-only device launch would not prove sync.
@@ -323,7 +328,7 @@ Debug build and Release archive above include that exact revision; this
 documentation review adds no new runtime or distribution evidence. See the
 [current UI adoption report](ui-preview-report.md) for the source comparison.
 
-## Next Decision
+## Next Action
 
 The [optional start design][start-proposal] is accepted and implemented through
 Operations, V1-to-V2 migration, v2/v3 backups, screens, and App Intents. Do not
@@ -332,15 +337,13 @@ approval. Use [item tracking verification](item-tracking-verification.md) for
 completed evidence and the remaining interaction/accessibility checks. Fix only
 defects established by those checks; do not extend the integrated feature set.
 
-The pending owner inputs are the advertising/subscription offer and the
-approved Privacy/Support destinations and contact method. Read-only setup
-checks below identify the exact missing account, signing, and device evidence.
-A private bilingual page draft is prepared for review; no policy or contact
-placeholder has been published. Finalize those inputs before changing offer
-configuration or external settings. Then obtain the signing/account access and
-selected synthetic test devices needed for shipping-build, purchase/restore,
-and sync verification. Production CloudKit promotion, real-data operations,
-and publication require their own authorization. None is part of this local audit.
+The offer, page destinations, and GitHub Issues contact are accepted. Continue
+with Stally-specific AdMob setup, consent preparation, and the page-publication
+review described below; do not ask for the same product choices again. Obtain
+the account/signing access and selected synthetic test devices needed for
+shipping-build, purchase/restore, and sync verification. Production CloudKit
+promotion, real-data operations, external account changes, and publication
+remain outside the completed local preparation.
 
 ## September 14 Read-Only Distribution Check
 
@@ -350,12 +353,12 @@ They do not invalidate the completed integration or its migration evidence.
 
 | Gate | Current observation | Required next action |
 | --- | --- | --- |
-| Advertising offer | Release has no native ad unit; Info.plist still contains Google's sample app ID. The monthly ad-removal product remains configured | Choose the existing ads/subscription offer and supply Stally-owned IDs, or approve an ads-free, purchase-free first release and remove the test configuration and offer together |
-| Advertising consent | No consent update, ad-request consent gate, or privacy-options presentation was found in Stally or the resolved MHPlatform/GoogleMobileAdsWrapper sources | If advertising is selected, configure the intended privacy messages and complete the app consent flow before enabling production ad requests |
-| Public destinations | Both the intended Privacy Policy and Support URLs returned HTTP 404. The repository Pages API returned Not Found | Approve the destinations and contact method, prepare the final policy/support pages, then authorize publication and verify HTTP/content and app navigation |
+| Advertising offer | Native ads with monthly ad removal are accepted. Release still has no native ad unit and contains Google's sample app ID | Prepare Stally-owned app/unit IDs using unpublished-app setup; follow the staged first-release sequence below if setup is blocked |
+| Advertising consent | No consent update, ad-request consent gate, or privacy-options presentation was found in Stally or the resolved MHPlatform/GoogleMobileAdsWrapper sources | Configure the intended privacy messages and complete the app consent flow before enabling production ad requests |
+| Public destinations | Both approved Stally Pages URLs still return HTTP 404. Their tracked source and deployment workflow already exist; GitHub Issues returns HTTP 200 | Review the updated page sources, authorize publication, then verify live content and app navigation |
 | Distribution signing | A development identity and development profiles are present; no Apple Distribution identity or matching App Store profile was found | Supply the distribution identity with private key and the matching App Store profile, or authorize the account workflow that creates them |
 | Physical devices | The paired phone and tablet were disconnected in the current device inventory | Connect and unlock the selected isolated test device; confirm synthetic-data and cloud-environment boundaries before installation or execution |
-| Store product | The product identifier is present in source; browser access reached App Store Connect sign-in, so product state remains unverified | Confirm the offer, sign in to the intended account, then inspect the product and run purchase/restore in the selected test environment |
+| Store product | The monthly offer is accepted; browser access reached App Store Connect sign-in, so product state remains unverified | Sign in to the intended account, inspect the Stally product, and run purchase/restore in the selected test environment |
 
 Google's [UMP integration guidance][ump-privacy] requires refreshing consent
 information, presenting required messages, gating ad requests with consent
@@ -377,7 +380,7 @@ artifacts under `.build/ci/stally-readiness-continuation-20260914/`. It must not
 be copied into public documentation. No signing assets were created, private
 keys exported, production CloudKit changed, or real collection opened.
 
-## September 14 Current Release Archive
+## September 14 Integration Release Archive
 
 After native Simulator verification and restoration of Xcode's original
 selection, official `xcodebuild archive` built the current `Stally` scheme at
@@ -406,9 +409,129 @@ inspection JSON are retained in ignored
 `.build/ci/stally-readiness-continuation-20260914/`. These private operational
 artifacts are not repository publication inputs.
 
+## Accepted First-Release Sequence
+
+The owner retained native advertising and monthly ad removal, following
+Incomes, with flexibility for first-release setup timing. This is not a change
+to a permanently free, ads-disabled product. Incomes remains a read-only
+reference; its production app/unit identifiers must never be copied to Stally.
+
+1. **Prepare the app and unit:** Google's [unpublished-app setup][admob-setup]
+   allows adding an iOS app before its store listing is public. After adding
+   Stally, use the [native-unit setup][admob-native] to obtain its own app ID
+   and ad unit ID. An absent public listing alone does not establish that IDs
+   cannot be prepared. Account access and actual setup success remain unverified.
+2. **Prepare the advertising build:** replace sample identifiers only with
+   verified Stally identifiers, complete consent handling, and verify test-device
+   ads and StoreKit purchase/restore. Reconcile the privacy page and App Store
+   disclosures with that artifact before production ad requests are enabled.
+3. **Complete the public prerequisites:** publish the approved product/support
+   and privacy pages, set the store marketing URL, and confirm the publisher
+   entry used by app-ads.txt. Google's [crawler documentation][app-ads-setup]
+   uses the website hostname, so the relevant file is
+   `https://muhiro12.github.io/app-ads.txt`, not a file under `/Stally/`.
+   A read-only check returned HTTP 200 for the existing root file and found
+   the publisher used by Incomes. Confirm that Stally uses that same AdMob
+   account before relying on the entry; no website-root edit was made.
+4. **Link after publication:** Google's [readiness process][admob-readiness]
+   requires a public supported-store listing and its AdMob link. Verify
+   app-ads.txt and the actual readiness status after the first publication.
+   Limited or absent fill during this phase is separate from obtaining IDs
+   and must not be treated as a compile-time configuration failure.
+5. **If account setup really blocks the first release:** retain the planned
+   offer but prepare a temporary candidate with production ads disabled and
+   ad-removal sales deferred together. Remove test IDs and verify startup,
+   purchase presentation, and the final policy for that candidate. Activate
+   ads and the offer in a later verified release. This fallback is conditional;
+   no monetization, signing, or account configuration was changed in this task.
+
+The remaining consent boundary is concrete: the shared runtime owns ad startup
+and the native-ad factory, but currently exposes no verified consent flow.
+Prepare a shared startup gate and privacy-options presentation before enabling
+Stally production ads, preserving the public MHPlatform boundary. Do not copy
+SDK startup into a Stally screen or assume that Incomes already supplies consent.
+Changes to sibling packages require their own authorized scope.
+
+## Accepted Public Pages and Support
+
+The approved destinations are
+[Stally Support](https://muhiro12.github.io/Stally/) and
+[Stally Privacy](https://muhiro12.github.io/Stally/privacy.html), with
+[GitHub Issues](https://github.com/muhiro12/Stally/issues) as the contact channel.
+Both Pages URLs still returned HTTP 404 in the latest check; Issues returned
+HTTP 200. No message or issue was submitted.
+
+Stally already had `.github/pages/index.md`, `.github/pages/privacy.md`, and
+`.github/workflows/deploy-pages.yml`; the earlier publication gap was not an
+absence of source files. The existing workflow follows the same Jekyll Pages
+structure as Incomes. The local sources now describe optional starts, non-Mark
+items, Archive continuity, independent iCloud access, backup handling, and the
+public nature of Issues. No new hosting stack or workflow was added.
+
+The Settings About section now has a native Support link, localized as
+`Support` / `サポート`, beside Privacy Policy and Licenses. No account data,
+Item model, Operations, package pin, or monetization behavior changed.
+Incomes currently lists X as its privacy contact; Stally keeps the explicitly
+selected GitHub Issues contact rather than changing it to match that detail.
+
+The page source still accurately describes disabled production advertising.
+It must be updated for the actual advertising configuration before advertising
+is enabled. This preparation does not claim consent messages are implemented.
+Publishing the Pages workflow, pushing commits, editing account settings, or
+releasing an app remains a separate action from these local changes.
+
+### Local Preparation Checks
+
+The native Stally build passed with zero errors and extracted app-owned
+App Intents metadata. Formatter, SwiftLint/repository boundaries, all six
+English/Japanese catalogs, and patch whitespace checks passed. The only new
+catalog entry is `Support` / `サポート`; the existing stale `Actions` key and
+intentional product-name source copies remain. No domain, schema, backup, or
+App Intent behavior changed, so unchanged library suites were not rerun.
+
+The page sources have valid front matter, no unfinished placeholders, and
+resolving local links, including the Jekyll `privacy.html` output mapping.
+Jekyll is not installed in the local environment, so the hosted Jekyll build
+and live page-content verification remain unexecuted. No deployment was run.
+The earlier private bilingual brainstorming draft is marked superseded by the
+accepted choices and the current tracked page sources.
+
+In the isolated Simulator, actual scrolling reached the English About rows and
+Support opened the approved URL in Safari. The page returned the expected
+pre-publication 404, so this proves destination routing, not working page content.
+The Safari return automation unexpectedly cold-launched Stally without preview
+arguments: logs show a new local container and an empty Library. That process
+was immediately stopped without further screen actions. No real collection or
+CloudKit startup was observed, but local-store creation cannot be excluded.
+The isolated store was left untouched. Same-process return remains unverified;
+no app behavior was changed to work around the tool's launch behavior.
+
+Fresh explicit preview launch logs were checked before the subsequent Japanese
+and English maximum-text About inspection. Both localized screens were readable
+after actual scrolling. The [UI report](ui-preview-report.md) retains the
+captures and the exact cold-launch limitation. Support is committed as
+`2c5b790`; the page-source update is `329dc5a`.
+
+The audit app/session were stopped, Simulator display settings restored, and
+only the dedicated Simulator shut down. Xcode's original scheme/destination
+was restored and confirmed. The full runtime review found no fatal, crash, or
+exception output; it retains the local-container incident rather than claiming
+all launches were in memory.
+
+Current preparation logs and URL responses remain in ignored
+`.build/ci/stally-launch-preparation-20260914/`.
+
 [ump-privacy]: https://developers.google.com/admob/ios/privacy
 
 [admob-disclosure]: https://developers.google.com/admob/ios/privacy/data-disclosure
+
+[admob-setup]: https://support.google.com/admob/answer/9989980?hl=en
+
+[admob-native]: https://support.google.com/admob/answer/7187428?hl=en
+
+[admob-readiness]: https://support.google.com/admob/answer/10564477?hl=en
+
+[app-ads-setup]: https://support.google.com/admob/answer/9363762?hl=en
 
 [reasons]: https://developer.apple.com/documentation/bundleresources/describing-use-of-required-reason-api
 

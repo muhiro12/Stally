@@ -31,9 +31,15 @@ those decisions or expand the integration into additional Fluel features.
    identity, photo, link, and Mark behavior. The immutable V1 fixtures must
    never be regenerated with the current schema; use disposable copies.
 4. Keep local completion separate from [release readiness](release-readiness.md).
-   Obtain concrete decisions on advertising/product settings, approved
-   Privacy/Support destinations, and distribution signing before acting on
-   those external settings. Do not ship test advertising identifiers.
+   The accepted offer remains native ads with optional monthly ad removal,
+   following Incomes. Prepare Stally's AdMob app and unit before publication
+   when possible; store linking and ad-readiness approval follow publication.
+   If setup is blocked, retain the offer direction and prepare a temporarily
+   ads-disabled candidate with ad-removal sales deferred. Do not ship test IDs
+   or sell removal while advertising is deliberately disabled.
+   The approved destinations are the existing Stally GitHub Pages URLs with
+   GitHub Issues for support. Verify the final pages before authorized
+   publication; account, signing, and device steps remain separate.
 5. In a separately authorized distribution task, verify the shipping build,
    purchase/restore, real-device sync and startup recovery with selected test
    accounts/devices. No production CloudKit promotion, real-data operation,
@@ -77,9 +83,10 @@ accessibility evidence for affected UI. Documentation-only alignment does not
 require repeating unchanged library tests. Commit fixes and verification/docs
 in meaningful units, preserving unrelated work.
 
-The September 14 current Release archive passes local build, signature, manifest,
-and Debug-fixture exclusion checks. It remains development-signed and contains
-the sample advertising app ID; it is not a cleared distribution artifact.
+The September 14 integration Release archive passes local build, signature,
+manifest, and Debug-fixture exclusion checks. It predates the subsequent Support
+link and remains development-signed with the sample advertising app ID; it is
+not a cleared distribution artifact.
 
 Do not report integration-wide interaction or accessibility completion while
 the verification ledger still has gaps. Local evidence does not establish

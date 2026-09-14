@@ -531,8 +531,8 @@ The September 14 read-only refresh is recorded in
 
 | Required decision or evidence | Concrete alternatives / next check |
 | --- | --- |
-| Ads and subscription offer | Use Stally-owned production AdMob/product settings, or choose an ads-disabled release and resolve the ad-removal offer accordingly |
-| Privacy and Support | Approve and publish the intended URLs/contact, or supply existing approved destinations; verify links and add Support navigation |
+| Ads and subscription offer | The accepted direction is native ads with monthly ad removal; prepare Stally-owned IDs before publication when possible and handle post-publication readiness separately. If initial setup is blocked, defer ads and ad-removal sales together without changing the long-term offer |
+| Privacy and Support | Stally GitHub Pages and GitHub Issues are approved destinations. The page sources and Settings Support link are prepared locally; publication and successful live-page verification remain separate |
 | Signing and distribution | Supply the distribution certificate/private key and provisioning profile; export and inspect the shipping build |
 | Devices and CloudKit | Select synthetic test accounts/devices/environment before cloud writes; verify upgraded-device sync, offline/concurrent edits, repair, relaunch, and schema promotion |
 | Store/runtime acceptance | Verify purchase/restore and the distributed build; complete the interaction/accessibility checks listed above |
