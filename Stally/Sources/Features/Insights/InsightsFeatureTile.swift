@@ -30,6 +30,7 @@ struct InsightsFeatureTile<Details: View>: View {
                 Text(title)
                     .mhTextStyle(.bodyStrong)
             }
+            .fixedSize(horizontal: false, vertical: true)
 
             Divider()
                 .accessibilityHidden(true)

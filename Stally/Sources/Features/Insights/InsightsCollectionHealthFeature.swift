@@ -14,7 +14,10 @@ struct InsightsCollectionHealthFeature: View {
     var body: some View {
         InsightsFeatureTile(
             metadata: "Collection Health",
-            value: Text(snapshot.noteCoverage.fraction, format: .percent),
+            value: Text(
+                snapshot.noteCoverage.fraction,
+                format: .percent.precision(.fractionLength(0...1))
+            ),
             title: "Note coverage",
             surfaceRole: .muted
         ) {

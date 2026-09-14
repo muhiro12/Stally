@@ -15,7 +15,7 @@ struct CoverageRow: View {
     var body: some View {
         LabeledContent {
             VStack(alignment: .trailing) {
-                Text(coverage.fraction, format: .percent)
+                Text(coverage.fraction, format: .percent.precision(.fractionLength(0...1)))
 
                 Text("\(coverage.coveredCount) of \(coverage.totalCount)")
                     .mhTextStyle(.caption, colorRole: .secondaryText)
