@@ -13,34 +13,38 @@ synthetic disk fixtures, and screen comparison are recorded in
 backup-only evidence below describes its own unchanged-schema scope, not the
 current schema. External gates below remain pre-distribution checks.
 
-The isolated Simulator follow-up corrected one reproduced precision-label
-truncation (`54f29dc`) and verified the native build, repository rules, and
-targeted Dynamic Type/appearance captures. Touch, accessibility hierarchy,
-native import confirmation, and system Intent UI remain unverified because
-the operation tools could not connect. The verification record contains exact
-manual steps; VoiceOver requires a separate physical-device check. This is not
-an interaction/accessibility completion claim or release clearance.
+The September 14 isolated Simulator continuation recovered actual touch and
+accessibility-hierarchy access. Add/Edit, precision validation, Archive,
+Review/Insights scope, maximum-text forms, and v2/v3 import confirmations and
+conflict protection now have runtime evidence. Reproduced tracking-label
+truncation was corrected in `fcdc218`, and clipped Insights headings/percentages
+in `a9c61e6`. Remaining manual checks include actual exporter Save,
+physical-device VoiceOver, system Shortcuts/Siri, local-midnight
+foreground refresh, and other device sizes. The verification record gives
+concrete procedures and distinguishes these gaps from completed checks.
 
 Stally builds against the installed iOS 27 SDK. Backup export now checks the
 same content constraints as import and enforces the encoded-file limit before
 presenting a backup to save. It reports localized validation reasons and
 preserves source data on failure.
 
-The backup-safety scope left persisted schema version 1, backup format version 2,
-mark semantics, CloudKit identity, package pins, and navigation unchanged.
+The earlier backup-safety scope left persisted schema version 1, backup format
+version 2, mark semantics, CloudKit identity, package pins, and navigation
+unchanged.
 The subsequent MHPlatform dependency update is recorded separately below.
 The accepted Stally-hosted product semantics are recorded in the
 [Fluel integration assessment](fluel-integration-assessment.md). The accepted
 [start design][start-proposal] and its implementation evidence supersede that
 assessment's earlier model-design gate.
 
-The earlier follow-up added the app's missing UserDefaults required-reason
-declaration. Its local Release archive contains the manifest and passed
-signature verification, but predates the item-tracking integration. No current
-integration distribution build is verified. The last export attempt lacked
-distribution signing assets, and the last physical-device attempt failed to
-connect. The September 14 read-only check below still found no distribution
-signing assets and found the paired physical devices disconnected.
+The September 14 local Release archive includes the integration and both current
+presentation corrections through `a9c61e6`. Its signature verifies, the app
+privacy manifest matches source, and no Debug preview launch markers or fixture
+files were found in the app. It uses the installed Xcode 27 beta toolchain and
+development signing and still contains Google's sample advertising app ID.
+No App Store export or distributed build is verified. The read-only check below
+found no distribution signing assets and found paired physical devices
+disconnected; the current archive does not clear those gates.
 
 ## Shared Foundation Assessment
 
@@ -159,9 +163,11 @@ Implemented changes still require their own local verification evidence.
    Privacy Policy and Licenses but no support entry point. Confirm the support
    destination and store metadata, and audit the distribution artifact's
    privacy manifests and dependency licenses against actual enabled behavior.
-6. **Distribution:** the local Release archive now succeeds; App Store export
-   fails because a distribution certificate with its private key and an App
-   Store provisioning profile are unavailable. Establish the required signing
+6. **Distribution:** the current local Release archive succeeds; the earlier
+   App Store export failed because a distribution certificate with its private
+   key and an App Store provisioning profile were unavailable. The read-only
+   refresh still found those assets missing, so export was not retried.
+   Establish the required signing
    assets, produce the export with the shipping toolchain, check its final
    entitlements and identifiers, and verify the distributed build. Local Debug
    builds and library tests do not prove
@@ -322,16 +328,19 @@ documentation review adds no new runtime or distribution evidence. See the
 The [optional start design][start-proposal] is accepted and implemented through
 Operations, V1-to-V2 migration, v2/v3 backups, screens, and App Intents. Do not
 repeat the Stally/Fluel product investigation or ask for the same model
-approval. Use [item tracking verification](item-tracking-verification.md) for completed
-evidence and the remaining interaction/accessibility checks. Fix only defects
-established by those checks; do not extend the integrated feature set.
+approval. Use [item tracking verification](item-tracking-verification.md) for
+completed evidence and the remaining interaction/accessibility checks. Fix only
+defects established by those checks; do not extend the integrated feature set.
 
-The next owner decisions are pre-distribution configuration: Stally-owned ads
-and product settings versus an ads-disabled offer, approved Privacy/Support
-destinations, and distribution signing assets. After those choices, verify the
-shipping build, purchase/restore, and explicitly selected synthetic cloud test
-accounts/devices. Production CloudKit promotion, real-data operations, and
-publication require their own authorization. None is part of this local audit.
+The pending owner inputs are the advertising/subscription offer and the
+approved Privacy/Support destinations and contact method. Read-only setup
+checks below identify the exact missing account, signing, and device evidence.
+A private bilingual page draft is prepared for review; no policy or contact
+placeholder has been published. Finalize those inputs before changing offer
+configuration or external settings. Then obtain the signing/account access and
+selected synthetic test devices needed for shipping-build, purchase/restore,
+and sync verification. Production CloudKit promotion, real-data operations,
+and publication require their own authorization. None is part of this local audit.
 
 ## September 14 Read-Only Distribution Check
 
@@ -346,7 +355,7 @@ They do not invalidate the completed integration or its migration evidence.
 | Public destinations | Both the intended Privacy Policy and Support URLs returned HTTP 404. The repository Pages API returned Not Found | Approve the destinations and contact method, prepare the final policy/support pages, then authorize publication and verify HTTP/content and app navigation |
 | Distribution signing | A development identity and development profiles are present; no Apple Distribution identity or matching App Store profile was found | Supply the distribution identity with private key and the matching App Store profile, or authorize the account workflow that creates them |
 | Physical devices | The paired phone and tablet were disconnected in the current device inventory | Connect and unlock the selected isolated test device; confirm synthetic-data and cloud-environment boundaries before installation or execution |
-| Store product | The product identifier is present in source; App Store Connect product state was not queried in this continuation | Confirm the offer first, then inspect the corresponding product and run purchase/restore in the selected test environment |
+| Store product | The product identifier is present in source; browser access reached App Store Connect sign-in, so product state remains unverified | Confirm the offer, sign in to the intended account, then inspect the product and run purchase/restore in the selected test environment |
 
 Google's [UMP integration guidance][ump-privacy] requires refreshing consent
 information, presenting required messages, gating ad requests with consent
@@ -367,6 +376,35 @@ Raw identity/profile and device inventory evidence stays in ignored local
 artifacts under `.build/ci/stally-readiness-continuation-20260914/`. It must not
 be copied into public documentation. No signing assets were created, private
 keys exported, production CloudKit changed, or real collection opened.
+
+## September 14 Current Release Archive
+
+After native Simulator verification and restoration of Xcode's original
+selection, official `xcodebuild archive` built the current `Stally` scheme at
+`a9c61e6` with Release configuration and the generic iOS destination. The native
+build capability exposes no archive action, so this bounded CLI step supplies
+the missing artifact check. Existing resolved package versions and existing
+development signing were used; provisioning updates were not enabled.
+
+| Artifact check | Result |
+| --- | --- |
+| Build | Archive succeeded with Xcode 27.0 `27A266a` and `iphoneos27.0` |
+| Signature | `codesign --verify --deep --strict` passed; development task access and development push environment remain |
+| App privacy manifest | Byte-identical to the checked-in UserDefaults declaration |
+| Dependency manifests | Google Mobile Ads 13.9.0 and User Messaging Platform 3.1.0 frameworks include their privacy manifests |
+| Debug isolation | No preview scenario/route/tracking arguments or preview-host/configuration markers found in the app binary; no fixture stores or backup files bundled |
+| Advertising configuration | Google's sample app ID remains in Info.plist; Release native ad requests remain disabled by source configuration |
+
+This refresh replaces the old pre-integration archive as local compile/artifact
+evidence. It does not prove StoreKit transactions, actual production ads or
+consent, public URL content, real-device sync, shipping-toolchain acceptance,
+or distribution signing. The archived app was not launched, exported, uploaded,
+or installed on a physical device. No production CloudKit setting changed.
+
+The archive, build log, signature result, private entitlement output, and
+inspection JSON are retained in ignored
+`.build/ci/stally-readiness-continuation-20260914/`. These private operational
+artifacts are not repository publication inputs.
 
 [ump-privacy]: https://developers.google.com/admob/ios/privacy
 
