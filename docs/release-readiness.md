@@ -16,6 +16,21 @@ readings; it does not clear or alter those external gates. A final distribution
 candidate must include and verify these later changes; the retained development
 archive predates them.
 
+## Xcode 27 CI Baseline
+
+Local and Cloud builds now use the Xcode 27 family. The configured Cloud
+baseline is Xcode 27 RC; local verification uses Xcode 27.0 build `27A266a`.
+Check each Cloud run's actual version and result. Earlier references to the
+shipping toolchain require verification of the intended Xcode 27 candidate,
+not a return to Xcode 26. Build/CI evidence remains separate from App Store
+distribution approval and the external gates below.
+
+Repository pushes may run Xcode Cloud CI. GitHub Pages deployment is explicitly
+manual through `workflow_dispatch`, so publishing source or running Cloud CI
+does not also publish the prepared product/support and privacy pages. The
+observed Pages failure was a missing site configuration, not an app CI failure.
+Page enablement and deployment remain a separate publication action.
+
 ## Current Outcome
 
 The optional-start and non-Mark integration is now implemented locally with a

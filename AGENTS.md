@@ -53,8 +53,9 @@ This repository currently contains:
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
   manifest.
 - `.github/pages/`, the product/support and privacy page sources, with
-  `.github/workflows/deploy-pages.yml` for GitHub Pages publication. Local
-  source updates do not establish that the public destinations are live.
+  `.github/workflows/deploy-pages.yml` for manually requested GitHub Pages
+  publication. Source pushes do not deploy the site, and local updates do not
+  establish that the public destinations are live.
 - Preserved product-intent documentation under `docs/`.
 
 This repository does not currently contain Widget, Watch, external AI
@@ -249,6 +250,10 @@ product-specific behavior.
 
 The project should target the iOS 27 family as the minimum supported iOS
 version unless the user explicitly changes that decision.
+
+Use the Xcode 27 family for local and Xcode Cloud builds. Record the exact
+toolchain used for verification; match distribution checks to the candidate's
+actual Cloud build rather than requiring the previous Xcode major version.
 
 Use the same package family as Incomes when packages are added unless the user
 explicitly changes that direction. The current reference package set is
