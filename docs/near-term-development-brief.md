@@ -1,6 +1,6 @@
 # Near-Term Development Brief
 
-> Status: Temporary execution brief, September 13, 2026. The bounded integration
+> Status: Temporary execution brief, September 14, 2026. The bounded integration
 > is implemented. Use the current verification record before further work;
 > distribution readiness remains a separate gate.
 
@@ -19,9 +19,11 @@ those decisions or expand the integration into additional Fluel features.
 ## Order of Work
 
 1. Start from [item tracking verification](item-tracking-verification.md).
-   Complete pending interaction and accessibility checks with an isolated
-   iOS 27 Simulator and synthetic data. Keep unsupported checks explicit and
-   leave reproducible manual steps instead of treating screenshots as a pass.
+   The isolated iOS 27 run now verifies actual Add/Edit, validation,
+   precision changes, Archive, Review/Insights scope, maximum-text interaction,
+   localized accessibility hierarchies, and v2/v3 import confirmations and
+   conflict protection. Continue only the explicitly remaining checks; do not
+   repeat completed cases without a changed boundary or new failure.
 2. Fix only confirmed integration defects and repeat the affected checks.
    Keep app-specific composition and product language in Stally. Do not change
    a shared package without a demonstrated package defect and authorization.
@@ -48,7 +50,9 @@ those decisions or expand the integration into additional Fluel features.
 - Frozen V1 disk fixtures verify the additive V2 migration. Backup v3 exports
   coexist with the frozen v2 reader, and the old app safely rejects v3.
 - Operations, screens, and App Intents are implemented. The verification
-  report separates completed tests/captures from pending interaction checks.
+  report separates completed domain/adapter tests and actual interaction from
+  remaining exporter Save, physical VoiceOver, system Shortcuts/Siri,
+  local-midnight foreground refresh, and other device-size checks.
 
 The [accepted design](item-start-and-elapsed-time-proposal.md) is the contract.
 Milestones, activity timelines, presets, broader navigation, and a Fluel
@@ -72,6 +76,10 @@ repository rules and app build for Swift changes, and runtime interaction or
 accessibility evidence for affected UI. Documentation-only alignment does not
 require repeating unchanged library tests. Commit fixes and verification/docs
 in meaningful units, preserving unrelated work.
+
+The September 14 current Release archive passes local build, signature, manifest,
+and Debug-fixture exclusion checks. It remains development-signed and contains
+the sample advertising app ID; it is not a cleared distribution artifact.
 
 Do not report integration-wide interaction or accessibility completion while
 the verification ledger still has gaps. Local evidence does not establish

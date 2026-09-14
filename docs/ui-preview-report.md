@@ -480,3 +480,30 @@ Detailed build, console, and OSLog evidence is retained in the ignored
 [platform-settings]: ui-preview-screenshots/mhplatform-1.13/settings.png
 
 [mhui-1-18]: https://github.com/muhiro12/MHUI/releases/tag/1.18
+
+## September 14 Tracking Interaction Continuation
+
+The isolated iPhone 18 Pro on iOS 27 now supports actual native touch,
+keyboard, menu, scrolling, and accessibility-hierarchy inspection against the
+existing Debug in-memory scenarios. The
+[tracking verification record](item-tracking-verification.md) retains the
+before/after comparisons and separates successful interaction from pending
+system and physical-device checks.
+
+Two confirmed presentation problems received bounded app corrections:
+
+- Tracking month/day placeholders and the month-precision title truncated in
+  English, including at maximum text size. Native automatic picker layout and
+  existing localized `Not Set`/`Month` labels retain readable selections.
+- Insights supporting-card headings and repeating-decimal coverage values
+  truncated at standard text size. The headers now wrap vertically and the
+  percentages show at most one fractional digit; the six-item coverage scope
+  and choice calculations are unchanged.
+
+The retained captures are actual, unedited Simulator images. Maximum-text
+evidence follows real scrolling and control activation. Backup v2/v3 import,
+confirmation cancellation, replacement, and blocked conflict-merge behavior
+were also exercised with disposable synthetic files. The native exporter Save
+control remains inaccessible through the returned system hierarchy, so no
+app-generated exported-file round trip is claimed. These checks do not imply
+VoiceOver operation, system Shortcuts execution, or distribution approval.

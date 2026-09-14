@@ -1,7 +1,7 @@
 # Item Tracking Implementation Evidence
 
-> September 13, 2026. Local implementation evidence, not distribution approval.
-> App integration: `a8ac948`; follow-up UI correction: `54f29dc`.
+> Updated September 14, 2026. Local implementation evidence, not distribution approval.
+> App integration: `a8ac948`; UI corrections: `54f29dc`, `fcdc218`, `a9c61e6`.
 > Original V1 writer: `36a00d0`.
 
 ## Implemented Contract
@@ -147,7 +147,7 @@ screenshots into interaction checks.
 
 ## Follow-up Interaction and Accessibility Audit
 
-The follow-up used a newly created iPhone 18 Pro Simulator named
+The September 13 follow-up used a newly created iPhone 18 Pro Simulator named
 `Stally Tracking Interaction Audit`, iOS 27.0, portrait, with Xcode `27A266a`.
 It installed only the Debug app and launched the existing `integration` and
 `timeTogether` scenarios in memory. App logs confirm preview-container creation
@@ -227,14 +227,175 @@ rules, and retained-image checksums are local ignored evidence under
 `.build/ci/item-tracking-interaction/`. Twelve inspected comparison images are
 retained above. The earlier verification artifacts remain unchanged.
 
-## Manual Completion Steps
+## September 14 Interaction Continuation
 
-These are remaining checks, not completed results. Use a separate iOS 27
-Simulator with no account sign-in, and the existing Debug in-memory scenarios.
+The same isolated iOS 27 Simulator now supports a device-specific native
+interaction session against the explicitly launched Debug in-memory app.
+Fresh hierarchies and settled screenshots accompany actual taps, keyboard
+entry, scrolling, menus, and Save/Cancel. The earlier transport failure no
+longer blocks these app interactions.
+
+### Confirmed Operations
+
+| Workflow | Observed result |
+| --- | --- |
+| Add and cancel | A named non-Mark/year-only draft was cancelled; Library stayed at six active items and the next Add form restored empty/default values |
+| Add and reopen | Repeating the input and tapping Add created exactly one item; its detail showed start `2020`, approximate elapsed time, and no Mark/Undo/history controls |
+| Edit and validation | Missing year/month/day disabled Save; February 29, 2020 was accepted; changing to 2021 cleared the invalid day; future year 9999 produced the localized save error |
+| Cancel after validation | Cancelling the modified editor restored the original year-only start and non-Mark policy |
+| Precision reduction | Exact day to month precision cleared the day; year precision cleared month and day; refinement did not restore removed values and Save remained disabled |
+| Clear start and enable Marks | A valid Save removed the start/elapsed reading and enabled Mark Today; recording one Mark displayed one history entry |
+| Existing history protection | Edit exposed Record Marks as on and disabled, with the history-preservation explanation; the Mark remained present |
+| Maximum text interaction | Actual scrolling reached month/day menus, the validation footer, and Choose Photo; explicit February 1, 2020 was saved and detail showed 2,417 elapsed days |
+| Maximum text keyboard | Editing Year from 2020 to 2021 kept the settled value/caret above the numeric keyboard and Cancel/Save reachable; Cancel restored the original 2020 start |
+| Archive and restore | Archiving that non-Mark item and moving it back preserved the exact start and elapsed display; Mark controls remained absent |
+| Review and Insights scope | After disabling Marks on the unmarked Daily Field Notes item, Library stayed at six active items. Needs First Mark and Dormant were empty; Recovery contained only Travel Weekender. The 30-day Insights choice scope had 15 Marks, 13 active days, three unique items/categories; photo coverage retained the whole six-item scope |
+| File selection cancellation | A fresh native session recovered the system picker; actual Cancel returned without a false failure alert and preserved eight total items, two archived items, and 23 Marks |
+| Original v2 merge | Downloading the byte-identical disposable fixture and selecting it through Files opened a valid preview; confirming Merge added four items/four Marks and produced 12 total items, three archived items, and 27 Marks |
+| Original v2 replacement | Changing mode selected a separate destructive action; cancelling retained 12/3/27 counts. Explicitly confirming Replace produced the original four items, one archived item, and four Marks |
+| Legacy defaults in UI | The restored, unmarked V1 Fixture 3 showed Start Not Set, zero Marks, and enabled Mark Today/history controls |
+| Existing photo and history | A start-only edit of archived V1 Fixture 2 saved `2020` and the approximate elapsed reading while retaining its synthetic photo, Japanese note, archive state, and two Marks |
+| v3 conflict protection | Replacing with the synthetic non-Mark v3 fixture produced 4/1/4 counts. Selecting the marked v3 fixture in Merge displayed the policy-conflict reason, zero added Marks, and a disabled Merge action; tapping it changed nothing |
+| v3 replacement | The same marked v3 input had a valid, separate Replace preview; explicitly confirming Replace produced four items, one archived item, and five Marks |
+
+Accessibility hierarchies expose named controls and current values for the
+tracking fields, combined start/elapsed detail values, disabled Add/Save, and
+the history-locked switch. This is hierarchy evidence, not VoiceOver speech
+or focus-navigation evidence. The Year field accepted input after tapping its
+visible value region; its broad hierarchy hit point falls in the label region.
+The settled standard-size field remained visible above the keyboard.
+
+### Additional Confirmed Label Corrections
+
+Actual precision refinement revealed truncated `Choose Month` and `Choose Day`
+values at the standard English size. Both native Pickers now opt into automatic
+labeled-content styling, matching the earlier Precision correction. At maximum
+accessibility size, `Choose Month` still exceeded the native selected-value
+width, and the month-precision title `Year and Month` was also truncated.
+
+Correction `fcdc218` uses the existing localized `Not Set` value; the Month and Day
+row labels supply the context. The month-precision option uses the existing
+`Month` label. English and Japanese values are already translated. Only the
+three replaced, unreferenced catalog keys were removed. Required components,
+calendar validation, bindings, selection values, and the native menus are
+unchanged; no model, migration, Operations, or backup codec changed.
+
+| Standard English before | Standard English after |
+| --- | --- |
+| ![Truncated month and day values](ui-preview-screenshots/item-tracking-continuation/month-day-placeholders-before.png) | ![Complete month and day values](ui-preview-screenshots/item-tracking-continuation/month-day-placeholders-after.png) |
+
+The [maximum-size month/day capture](ui-preview-screenshots/item-tracking-continuation/month-day-maximum-text-after.png)
+shows complete unset values after actual scrolling, with Save disabled.
+The [Japanese maximum-size capture](ui-preview-screenshots/item-tracking-continuation/month-day-maximum-text-ja.png)
+shows the corresponding localized values. Actual month/day menu selection
+enabled Save in both languages, and Year Only/Month refinement retained the
+required-component checks.
+
+| Maximum English precision before | Maximum English precision after |
+| --- | --- |
+| ![Truncated month precision](ui-preview-screenshots/item-tracking-continuation/month-precision-maximum-text-before.png) | ![Complete month precision](ui-preview-screenshots/item-tracking-continuation/month-precision-maximum-text-after.png) |
+
+The final Xcode-native build passed with zero errors and extracted Stally
+App Intents metadata. Formatter, SwiftLint, repository boundary checks, and
+the six-catalog English/Japanese audit passed. The three obsolete UI labels
+were the only removed keys; the existing `Actions` stale marker and intentional
+product-name source copies remain. All original V1 fixture checksums still
+match, including the disk stores, external photo, backup, and links.
+
+No domain behavior changed, so the earlier 143 library, 115 original-reader,
+and three app-adapter tests were not rerun or counted as new evidence for this
+presentation correction. The native runtime interactions above are additional
+evidence; they do not replace the original migration/backup tests.
+
+### Insights Readability Correction
+
+The mixed-scope check exposed a second presentation defect at standard English
+text size: the supporting cards truncated `Collection Health`, `Current Streak`,
+`Note coverage`, and a repeating-decimal percentage. The app now formats note
+and photo percentages with at most one fractional digit and allows the card
+header to take its required vertical height. The existing MHUI grid, native
+scrolling, coverage counts, and choice calculations are unchanged. The correction
+is committed as `a9c61e6`.
+
+| Standard English before | Standard English after |
+| --- | --- |
+| ![Truncated Insights headings and percentage](ui-preview-screenshots/item-tracking-continuation/insights-coverage-before.png) | ![Wrapped headings and readable coverage](ui-preview-screenshots/item-tracking-continuation/insights-coverage-after.png) |
+
+Both captures use six active items with Daily Field Notes set to non-Mark.
+Note coverage is four of six, now displayed as `66.7%`; photo coverage is one
+of six, now `16.7%`. The
+[maximum-text capture](ui-preview-screenshots/item-tracking-continuation/insights-coverage-maximum-text-after.png)
+follows actual scrolling through the single-column layout and retains the
+percentage and count. Freshly launched preview data crossed the UTC date
+boundary between runs: the later 30-day choice snapshot reads 16 Marks and
+14 active days, compared with the earlier 15/13. This is a different time-based
+seed, not evidence of a changed aggregation rule; coverage denominators match.
+
+The [Japanese standard-size capture](ui-preview-screenshots/item-tracking-continuation/insights-coverage-ja-after.png)
+and [Japanese maximum-size capture](ui-preview-screenshots/item-tracking-continuation/insights-coverage-maximum-text-ja-after.png)
+also show complete localized headings and the same coverage values after actual
+scrolling. The final native build passed with zero errors and Stally App Intents
+metadata extraction. Formatter and repository rules passed for the three-file
+presentation correction.
+
+### File-Flow Evidence Boundary
+
+The v2 UI input was a byte-identical disposable copy of the frozen backup.
+Two explicitly synthetic v3 wire inputs retained its IDs, photos, notes, and
+history. One changed only the unmarked Fixture 3 to non-Mark with a `2020-02`
+start; the other enabled Marks and added one uniquely identified synthetic
+Mark to that item. Provenance, assertions, and checksums are retained locally.
+The files were downloaded through actual Simulator Safari and selected in Files
+while the same in-memory Stally process remained alive. The loopback-only
+server exposed only these disposable files and was stopped after download.
+
+These inputs verify the native importer, mode-specific preview, confirmation,
+and conflict behavior. They are not app-generated exports. Export opened the
+native On My iPhone Save panel, but its remote hierarchy omitted Save, filename,
+and location controls and supplied a misleading Cancel hit point. A fresh
+session did not repair that hierarchy, and desktop Simulator access timed out
+with `-10005`. No screenshot-only tap was substituted for the missing control.
+Saving an actual v3 export and selecting that same saved file remains unverified
+at the system UI boundary; library export-to-restore tests remain separate.
+
+### Runtime and Cleanup
+
+Retained app-process logs contain `model_container.preview_created` and
+`startup.ready` for the import session and both final English/Japanese Insights
+launches. The scoped review found no app fatal, exception, CloudKit, or
+ModelContainer failure. The logs include Simulator/service diagnostics; this
+is not a warning-free claim. The native tool's empty per-action log files were
+not substituted for app runtime evidence.
+
+The interaction session and app were stopped. The dedicated Simulator returned
+to `large`, light appearance, and disabled Increase Contrast, then shut down.
+Xcode's original `Stally` scheme was restored first; its destinations were
+rediscovered and `Stally MHPlatform 1.13 Audit` was restored and read back.
+No device was erased, no original fixture was changed, and no physical device,
+real collection, cloud account, signing configuration, or public setting was
+modified. Raw screenshots/hierarchies, the session ledger, native build logs,
+and app logs remain in ignored `.build/ci/item-tracking-continuation-20260914/`.
+Curated unedited screen comparisons are retained above.
+
+### Remaining Manual Evidence
+
+| Pending check | Reason and next step |
+| --- | --- |
+| Actual exporter Save and exported-v3 round trip | The system exporter hierarchy is incomplete. Use the safe setup below, save to On My iPhone through the visible native panel, then select that exact file and complete the cancellation/merge/replacement cases |
+| VoiceOver speech, focus, and activation | Simulator hierarchy evidence is insufficient. Use a separately authorized isolated physical device and the concrete VoiceOver sequence below |
+| Siri/Shortcuts UI | Current code-level adapter evidence does not prove system presentation or dependency injection. Establish that the system uses the same explicit in-memory session before running the steps below; stop on a cold normal launch |
+| Local-midnight foreground refresh | The elapsed-day tests cover calendar behavior, but no detail stayed open across local midnight in this run. Keep the isolated exact-day detail open across local midnight and follow the foreground/time-refresh case below |
+| Other sizes and orientations | This targeted interaction run covers portrait iPhone 18 Pro only. Repeat the affected forms/detail flows on the intended remaining device sizes before distribution |
+
+## Interaction Procedures and Remaining Checks
+
+The procedures below remain reproducible. The dated continuation above records
+completed cases; checks without a completed observation remain unverified.
+Use a separate iOS 27 Simulator with no account sign-in and the existing Debug
+in-memory scenarios.
 Keep the original V1 fixture directory read-only. Never perform this checklist
 against a normal launch, real collection, cloud container, or distribution
-build.
-Stopping the preview process discards its synthetic edits.
+build. Stopping the preview process discards its synthetic edits.
 
 ### Safe Setup
 
@@ -264,7 +425,7 @@ case; do not infer completion from an enabled button.
 | --- | --- | --- |
 | Add and cancel | Open Add Item; type a unique synthetic name, disable Record Marks, select Year Only and enter `2020`; cancel. Reopen Add, repeat, and tap Add | Cancel leaves the collection unchanged and the new form at its defaults; Add creates exactly one item with year-only start and no Mark controls |
 | Edit and cancel | Open Home from Library and Edit Item; change name/start/Mark policy, then Cancel. Reopen Edit, make one valid change, Save, and reopen detail/edit | Cancel preserves all original values; Save changes only the chosen fields and retains item identity, existing note/photo, and navigation |
-| Precision refinement | In Home's editor change Year Only to Year and Month, then Exact Day without filling new components | No month/day is inferred; Save stays disabled until each required component is explicitly selected |
+| Precision refinement | In Home's editor change Year Only to Month, then Exact Day without filling new components | No month/day is inferred; Save stays disabled until each required component is explicitly selected |
 | Calendar validation | Select exact `2020-02-29`; change year to `2021`, then choose a valid day. Try an empty year and a start later than today | The invalid day is cleared; incomplete input cannot save; a future start shows the localized error without changing the Item |
 | Precision reduction | From a complete exact date select Year Only, then Exact Day again; finally select Not Set and save | Removed month/day components are not restored automatically; Not Set clears only the start and elapsed reading |
 | Mark eligibility | On an unmarked synthetic item disable Marks and save; inspect detail, Library, Review, and Insights. Re-enable, Mark Today, and reopen Edit | Non-Mark controls/count prompts disappear; an item with history cannot disable Marks and has an explanatory footer; existing Marks remain |
@@ -288,13 +449,41 @@ For example, from the repository root, prepare only the disposable backup copy:
 AUDIT_FIXTURE_DIRECTORY="$(mktemp -d /tmp/stally-backup-ui.XXXXXX)"
 cp StallyLibrary/Tests/Default/Fixtures/V1/backup-v2.stallybackup \
   "$AUDIT_FIXTURE_DIRECTORY/"
-python3 -m http.server 8765 --bind 127.0.0.1 \
-  --directory "$AUDIT_FIXTURE_DIRECTORY"
+python3 - "$AUDIT_FIXTURE_DIRECTORY" <<'PY'
+from functools import partial
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
+import sys
+
+
+class BackupHandler(SimpleHTTPRequestHandler):
+    def guess_type(self, path):
+        if path.endswith('.stallybackup'):
+            return 'application/octet-stream'
+        return super().guess_type(path)
+
+    def end_headers(self):
+        if self.path.split('?')[0] == '/backup-v2.stallybackup':
+            self.send_header(
+                'Content-Disposition',
+                'attachment; filename="backup-v2.stallybackup"'
+            )
+            self.send_header('Cache-Control', 'no-store')
+        super().end_headers()
+
+
+server = ThreadingHTTPServer(
+    ('127.0.0.1', 8765),
+    partial(BackupHandler, directory=sys.argv[1])
+)
+server.serve_forever()
+PY
 ```
 
 In Simulator Safari, open `http://127.0.0.1:8765/backup-v2.stallybackup` and
-download it. If that port is already in use, choose another unused port for
-both the server and URL. Stop this foreground server with Control-C when done.
+download it. The attachment headers matter: the default Python server rendered
+the JSON inline during this audit. If that port is already in use, choose
+another unused port for both the server and URL. Stop this foreground server
+with Control-C when done.
 
 ### Accessibility and System Surfaces
 
@@ -337,8 +526,8 @@ Xcode scheme/destination after manual verification. Do not erase other devices.
 
 ## Separate Pre-Distribution Checks
 
-External state was not re-queried for this integration. The last recorded
-gates remain in [release-readiness.md](release-readiness.md):
+The September 14 read-only refresh is recorded in
+[release-readiness.md](release-readiness.md). Distribution gates remain separate:
 
 | Required decision or evidence | Concrete alternatives / next check |
 | --- | --- |
