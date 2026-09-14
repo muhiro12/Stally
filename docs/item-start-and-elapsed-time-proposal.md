@@ -5,6 +5,11 @@
 > See [implementation evidence and screen comparison](item-tracking-verification.md).
 > Production CloudKit and distribution remain separate checks.
 
+The later [read-only follow-up](fluel-integration-assessment.md#september-14-follow-up-integration)
+adds start browsing, yearly milestone readings, and time sharing/Shortcuts from
+these existing fields. It supplements the initial surface scope below without
+changing this persisted-model or backup contract.
+
 ## Scope and Recommendation
 
 The accepted constraints are inputs: Stally is the host, no Fluel data transfer

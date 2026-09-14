@@ -1,13 +1,61 @@
 # Fluel Integration Assessment
 
-> Status: Stally-side evidence, September 13, 2026. Host and product semantics
-> are accepted below. Persisted-model and migration design remain unselected.
+> Status: Historical comparison from September 13, 2026, with the September 14
+> follow-up decision below. The initial integration is implemented; the original
+> schema-selection questions in the historical sections are resolved.
 
-The concrete [optional start and elapsed-time proposal][start-proposal] builds
-on these accepted decisions. It covers Operations, non-Mark scopes, calendar
-precision, V1 preservation, backup compatibility, and planned regression
-evidence. It is an implementation recommendation awaiting review, not an
-implemented schema or a request to repeat the completed Fluel investigation.
+The [accepted start design][start-proposal] and
+[item tracking verification](item-tracking-verification.md) own the implemented
+baseline. The earlier comparison below is retained as decision evidence, not a
+request to repeat accepted questions.
+
+## September 14 Follow-up Integration
+
+After the initial integration, a further read-only comparison identified three
+useful journeys already supported by Fluel's Operations and adapters. These fit
+Stally's existing Item aggregate and native navigation:
+
+| Journey | Stally follow-up | Compatibility boundary |
+| --- | --- | --- |
+| Find a long-running relationship | Library/Archive start filters, earliest/latest start ordering, and precision-preserving start metadata | Default ordering and UUIDs stay stable; unknown or invalid starts sort last |
+| Read a yearly milestone | Item Detail derives the current or next yearly milestone from the saved start | No milestone record or reminder; Archive does not stop the reading |
+| Reuse a time reading | Share plain text from Item Detail or run Check Time Together in Shortcuts | Read-only Operations; existing links, entity identity, Create/Mark shortcuts, and saved formats remain intact |
+
+Mark-prompting collection filters exclude non-Mark Items. The explicit
+non-Mark filter finds them without treating missing Marks as unfinished work;
+history filters still describe the history actually present. Start sorts use
+the earliest possible day, then the latest, with stable input order for ties.
+This is a browse order, not a claim that overlapping approximate periods can
+be ranked by exact relationship duration. The refinement footer explains it.
+
+A milestone retains day/month/year precision. A known month or year stays the
+current milestone period until its last day passes. Exact-day anniversaries
+include today; February 29 uses February 28 in non-leap years. The first
+milestone is one year after the known start period. Unknown, invalid, wholly
+future starts, and dates outside the supported year range yield no milestone.
+No normalized January 1 or month-first day is presented as an exact anniversary.
+
+Time text is shared by app and system adapters through ItemTimeOperations.
+The share report contains the name, start knowledge, elapsed reading, reading
+day, and Archive continuity where applicable. It excludes notes, photos,
+identifiers, and Mark history. Sharing presents the native sheet; reading or
+opening the sheet does not send content or write collection data.
+
+### Remaining Fluel Capabilities
+
+| Capability | Disposition and reason |
+| --- | --- |
+| Dashboard or a separate Milestones destination | Do not duplicate the app shell; start browsing and Item Detail serve the demonstrated journeys |
+| Activity timeline | Defer: repeated edits and historical titles require a new durable event model; no required history transfer or demonstrated review need justifies it |
+| Custom presets and default selections | Defer: no repeated registration workflow has established value sufficient to add saved templates and reconciliation state |
+| Relationship ending | Defer: separate from Archive, and not implemented by copying Fluel's archive cutoff; end-date precision, restoration, and Mark rules need their own concrete use case |
+| Fluel URL aliases, importer, Git history, categories, and duplicate platform services | No continuity requirement or product need; retain Stally identity and current app-owned boundaries |
+
+These are evaluated omissions, not promises to copy every Fluel feature.
+No persisted schema, backup version, V1 fixture, CloudKit setting, or Fluel
+source changes are needed for this follow-up. The migration and backup suites
+remain regression checks. Distribution prerequisites are tracked separately in
+[issue #8](https://github.com/muhiro12/Stally/issues/8).
 
 ## Scope
 

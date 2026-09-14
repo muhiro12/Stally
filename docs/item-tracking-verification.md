@@ -2,6 +2,7 @@
 
 > Updated September 14, 2026. Local implementation evidence, not distribution approval.
 > App integration: `a8ac948`; UI corrections: `54f29dc`, `fcdc218`, `a9c61e6`.
+> Read-only follow-up: `dae979e` (Operations), `3f6fff1` (Intent), `0f91a4f` (UI).
 > Original V1 writer: `36a00d0`.
 
 ## Implemented Contract
@@ -28,6 +29,46 @@ Insights reports, Backup Center, and existing App Intents. Fluel was untouched.
 No production CloudKit deployment, real-data migration/reset, purchase,
 signing change, push, or publication was performed.
 
+## Read-Only Fluel Follow-up
+
+The [follow-up assessment](fluel-integration-assessment.md#september-14-follow-up-integration)
+adds collection start sorting/filtering, derived yearly milestones, and a shared
+localized time report for Item Detail and Check Time Together. These operations
+read the existing V2 fields. They do not add storage, milestone events, Marks,
+notifications, a backup version, or a second collection.
+
+The library change at `dae979e` passed 151 tests in 35 suites on the isolated
+iOS 27 Simulator, including all retained V1 disk migration, photo/link identity,
+and v2/v3 backup tests. New cases cover non-Mark collection filters, stable
+partial-date ordering, unknown/invalid starts, yearly periods, February 29,
+year limits, Archive continuity, English/Japanese formatting, and report reads
+without mutation or inclusion of unrelated private fields. The native Stally
+build passed with zero errors and extracted app-owned App Intents metadata.
+
+The test log contains expected malformed-photo/failed-store diagnostics from
+negative tests and disposable-store cleanup warnings. The runner reported all
+151 tests passing; those diagnostics are not a production-runtime check.
+
+The Check Time Together adapter in `3f6fff1` passed two additional in-memory
+probes against copied current app sources with only an injection helper
+appended. They executed the actual Check Time Together perform method for
+Mark/non-Mark Items, active/archived
+states, unknown starts, and a missing saved entity. Returned reports matched the
+library reading and left Mark IDs and ModelContext changes untouched. Source
+hashes, the helper, and results remain in ignored follow-up artifacts. This is
+adapter execution evidence, not Shortcuts/Siri system UI or authentication
+presentation evidence. The new intent retains the existing UUID entity contract
+and requires authentication; it has no write or route action.
+
+The `0f91a4f` app changes adapt those readings and correct the confirmed
+maximum-text truncation of exact starts in collection rows. Detailed app adapter
+and screen evidence is recorded with the follow-up in
+[the UI report](ui-preview-report.md#september-14-read-only-time-follow-up).
+The existing manual Files, VoiceOver,
+Shortcuts/Siri system UI, midnight refresh, and device-size checks remain
+separate from package test results. External prerequisites are tracked in
+[issue #8](https://github.com/muhiro12/Stally/issues/8).
+
 ## Persistence and Backup Evidence
 
 The original writer produced the checked-in
@@ -51,7 +92,7 @@ V1 copy/v2 backup, while post-conversion recovery needs the new binary and v3.
 
 | Verification layer | Result and scope |
 | --- | --- |
-| Current library | 143 tests in 30 suites passed using `test_stally_library.sh` |
+| Initial integration library | 143 tests in 30 suites passed using `test_stally_library.sh`; the later 151-test run is recorded above |
 | Original reader | Original `36a00d0` source plus one isolated probe: 115 tests in 26 suites passed |
 | Old-reader refusal | A v3 payload is rejected before merge and replacement; original records, photo, Marks, and pending-change state remain identical |
 | App adapter probe | 3 tests passed using copies of current app source and explicit in-memory dependency injection |
@@ -518,6 +559,23 @@ does not verify spoken output, focus navigation, or activation.
    mutation. Re-enable and check Mark/dedup and app-side Undo. Generic entity
    identity and hidden Open/Undo Intents already have code-level evidence;
    hidden actions are not expected to appear in the new-action browser.
+5. Under the same isolated-session prerequisite, add Check Time Together in
+   Shortcuts, select Home or Window Plant, and inspect the English/Japanese
+   parameter summary and returned text. Compare the start precision, elapsed
+   value, and reading day with Item Detail. Repeat for Archived Plant and an
+   unknown-start item; verify the Archive note and absence of invented dates.
+   Save the shortcut, remove only its synthetic item, and expect the localized
+   missing-item error on the next run. Verify the authentication requirement
+   before reading from a locked device. Code-level probes do not establish any
+   of these system presentation or authentication outcomes.
+
+For the follow-up surfaces, include Start row metadata, Refine's two new filters
+and start sorts, Yearly Milestone, and Share Time Together in the VoiceOver and
+device-size sequence. Confirm that approximate milestones announce only the
+known month/year, the explanatory footer remains reachable, and the native
+share sheet can be dismissed without sending or copying the report. Check dark
+appearance and Increase Contrast separately; the follow-up's light portrait
+captures do not extend the earlier appearance evidence to the new controls.
 
 Stop the audit app and restore Simulator accessibility settings and the original
 Xcode scheme/destination after manual verification. Do not erase other devices.

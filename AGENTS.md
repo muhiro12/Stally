@@ -148,7 +148,9 @@ The app target should stay a thin adapter over the current product surface.
   Library-owned App Intents and App Entities. Add/Edit retain unsaved start
   precision and Mark-policy selections; detail derives time through Operations.
   Action-specific Mark suggestions filter eligibility without narrowing generic
-  entity identity or name resolution.
+  entity identity or name resolution. Library/Archive start browsing, derived
+  yearly milestones, native time sharing, and Check Time Together adapt these
+  read-only Operations without adding persisted events or a second app shell.
 - `Stally/Sources/Features/Archive/` owns the SwiftUI Archive surface and
   Archive-owned App Intents.
 - `Stally/Sources/Features/Review/` owns the SwiftUI Review lane surface and
@@ -192,8 +194,10 @@ The app target should stay a thin adapter over the current product surface.
 - `StallyLibrary/Sources/Item/` owns `Item`, `ItemMark`, `LocalDay`,
   `ItemCategory`, collection browsing options, `ItemHistorySnapshot`,
   `ItemFormInput`, `ItemTrackingInput`, precision-preserving `ItemStart`,
-  `ItemTimeSnapshot`, `ItemTimeOperations`, `ItemValidationError`,
-  `ItemCollectionOperations`, and `ItemOperations`.
+  `ItemTimeSnapshot`, `ItemMilestone`, `ItemTimeOperations`, `ItemValidationError`,
+  `ItemCollectionOperations`, and `ItemOperations`. Time Operations also own
+  precision-preserving annual milestones and localized read-only time reports;
+  collection Operations own start sorting and tracking-policy filters.
 - `StallyLibrary/Sources/Review/` owns Review lane values, settings, action
   requests, snapshots, and `ReviewOperations`. All lanes and bulk actions
   exclude items that do not record Marks.

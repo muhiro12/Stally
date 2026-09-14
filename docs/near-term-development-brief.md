@@ -13,8 +13,11 @@ MHPlatform runtime. Current pins are MHPlatform 1.13.0 and MHUI 1.18.0.
 
 Stally is the release product. The accepted integration adds optional starts,
 calendar date precision, elapsed time, and items that do not record Marks.
-Fluel data migration is unnecessary; Fluel remains unchanged. Do not reopen
-those decisions or expand the integration into additional Fluel features.
+Fluel data migration is unnecessary; Fluel remains unchanged. The subsequent
+[follow-up comparison](fluel-integration-assessment.md#september-14-follow-up-integration)
+adds start-aware collection browsing, derived yearly milestones, and read-only
+time sharing/Shortcuts. These use existing saved fields; do not reopen the
+accepted identity, date, Mark, or Archive decisions.
 
 ## Order of Work
 
@@ -61,14 +64,17 @@ those decisions or expand the integration into additional Fluel features.
   local-midnight foreground refresh, and other device-size checks.
 
 The [accepted design](item-start-and-elapsed-time-proposal.md) is the contract.
-Milestones, activity timelines, presets, broader navigation, and a Fluel
-importer are outside this integration.
+Yearly milestones, start-aware browsing, and time sharing/Shortcuts are derived
+follow-ups within the same Item boundary. Activity timelines, presets, broader
+navigation, relationship-ending records, and a Fluel importer remain deferred
+for the reasons in the follow-up comparison.
 
 ## Guardrails
 
 - Do not copy Fluel's app shell, platform bootstrap, MHUI adapters, or release
   configuration into Stally.
-- Do not redesign the accepted model during verification or add new features.
+- Keep the follow-up read-only; do not redesign the accepted saved model or
+  expand into deferred Fluel capabilities without a concrete new use case.
 - Do not broaden MHPlatform or MHUI for a need that exists only in a proposal.
 - Treat wrapper modernization as separate work unless a concrete Stally need,
   defect, platform change, or measurable development benefit justifies it.
@@ -85,8 +91,8 @@ in meaningful units, preserving unrelated work.
 
 The September 14 integration Release archive passes local build, signature,
 manifest, and Debug-fixture exclusion checks. It predates the subsequent Support
-link and remains development-signed with the sample advertising app ID; it is
-not a cleared distribution artifact.
+link and read-only time follow-up and remains development-signed with the sample
+advertising app ID; it is not a cleared distribution artifact.
 
 Do not report integration-wide interaction or accessibility completion while
 the verification ledger still has gaps. Local evidence does not establish

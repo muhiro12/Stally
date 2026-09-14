@@ -561,3 +561,155 @@ and confirmed. Runtime review found no fatal, crash, or exception output; the
 unexpected local-container launch remains explicitly recorded above. Logs,
 hierarchies, PID records, and the session ledger are retained in ignored
 `.build/ci/stally-launch-preparation-20260914/runtime/`.
+
+## September 14 Read-Only Time Follow-up
+
+The [follow-up assessment](fluel-integration-assessment.md#september-14-follow-up-integration)
+selects start-aware browsing, derived yearly milestones, and reusable time
+readings. The app changes in `0f91a4f` adapt the Operations added in `dae979e`
+and the read-only Check Time Together intent in `3f6fff1`. No saved model,
+backup contract, original V1 fixture, or Fluel source changed.
+
+The comparison uses the dedicated portrait iPhone 18 Pro Simulator on iOS 27.0
+and Xcode 27.0 build `27A266a`. Before images use the previously installed
+`2c5b790` app: the app, library, and project sources were unchanged between that
+commit and the starting `9d77f6c` baseline. Native interaction was unavailable
+for those captures, so official `simctl` screenshots establish static before
+evidence only. The final native app build passed with zero errors and extracted
+Stally App Intents metadata. After official installation and explicit preview
+launch, a device-specific native session recovered actual app interaction.
+Before detail captures use the direct tracking preview hosts; the after Home
+capture was reached from Library. The different back-navigation context is not
+part of the feature change. All retained images are unedited tool captures.
+
+| Library before | Library after |
+| --- | --- |
+| ![Library without start metadata](ui-preview-screenshots/time-followup/library-before.png) | ![Library with precision-preserving start metadata](ui-preview-screenshots/time-followup/library-after.png) |
+
+| Year-only detail before | Year-only detail after |
+| --- | --- |
+| ![Original year-only time reading](ui-preview-screenshots/time-followup/year-detail-before.png) | ![Year-only milestone and native time sharing](ui-preview-screenshots/time-followup/year-detail-after.png) |
+
+The Library additions retain the existing native collection and Refine controls.
+Actual selection of Does Not Record Marks and With Start each returned Home and
+Window Plant in the mixed synthetic collection. Earliest Start placed Home
+before Window Plant; Latest Start reversed them. The
+[ordering explanation](ui-preview-screenshots/time-followup/library-earliest-after.png)
+remained visible. This compares known start bounds, without claiming exact
+durations for overlapping partial dates.
+
+Home retained Start `2020` and Elapsed Time `About 5–6 years`. Its new yearly
+milestone showed `6 years together` / `2026`, with a footer explaining that the
+exact day is unknown. It did not invent a January 1 anniversary or offer Mark
+actions for the non-Mark item.
+
+| Month-only detail before | Month-only detail after |
+| --- | --- |
+| ![Original approximate month reading](ui-preview-screenshots/time-followup/month-detail-before.png) | ![Month-only yearly milestone](ui-preview-screenshots/time-followup/month-detail-after.png) |
+
+Window Plant retained September 2020 and About 71–72 months; its milestone
+showed September 2026. In
+[Japanese Archive detail](ui-preview-screenshots/time-followup/archived-detail-ja-after.png),
+the exact September 13, 2020 start read 2,192 days on September 14, 2026, and
+the next milestone remained an exact September 13, 2027 / seven-year reading.
+Move Back stayed available and no Mark controls appeared.
+
+Archive's non-Mark filter was actually selected and returned Archived Plant
+alone. Latest Start was also selected, and the Japanese ordering footer was
+readable after scrolling. A final English Archive check selected Earliest Start
+with both items present: Archived Plant preceded the unknown-start Travel
+Weekender. With Start was selected in Library; its Archive option was inspected
+but not separately selected.
+
+Actual activation of Share Time Together opened the
+[native share sheet](ui-preview-screenshots/time-followup/share-time-sheet-after.png).
+Its accessibility caption contained Home, the approximate elapsed reading,
+Start `2020`, and reference day `2026-09-14`. Tapping the native dismissal region
+returned to the same Home screen and app process. No recipient, Copy, Files,
+or other share action was selected. This proves presentation and cancellation,
+not external delivery. System share destinations used the Simulator's existing
+language, independently of the app's English launch override.
+
+### Maximum Text and Confirmed Row Correction
+
+At maximum Dynamic Type, Japanese Archive truncated the new exact start to
+`2020年9月…`. The accessibility hierarchy retained the full date, but the visible
+row did not. The bounded correction lets only the start text use its full
+wrapped height. The final native build passed with zero errors; returning to
+the same one-item non-Mark filter showed `2020年9月` / `13日` without omission.
+
+| Japanese maximum text before correction | Same item after correction |
+| --- | --- |
+| ![Exact start truncated in Archive](ui-preview-screenshots/time-followup/archive-ja-max-start-clipped.png) | ![Complete exact start after wrapping](ui-preview-screenshots/time-followup/archive-ja-max-start-fixed.png) |
+
+The [English maximum-text detail](ui-preview-screenshots/time-followup/year-detail-en-max-after.png)
+shows Yearly Milestone, its year-only value, and Share Time Together after actual
+scrolling. Japanese maximum-text Archive detail retained both exact start and
+milestone dates. The new Japanese filter/sort menu labels were reached by actual
+scrolling and displayed in full. The final English maximum-text Refine check
+also reached the full Does Not Record Marks, With Start, Earliest Start, and
+Latest Start labels. Hierarchy evidence is not a VoiceOver speech or focus-order
+check.
+
+| Japanese month milestone and sharing | Same detail after further scrolling |
+| --- | --- |
+| ![Full Japanese month milestone and share label at maximum text](ui-preview-screenshots/time-followup/month-detail-ja-max-final.png) | ![Complete date-precision footer after scrolling](ui-preview-screenshots/time-followup/month-detail-ja-max-footer-final.png) |
+
+The final Japanese month-detail check reached the complete September 2026
+milestone, share label, and approximate-date footer through actual scrolling.
+The footer remained readable through its final sentence. No day was invented.
+
+The same maximum-text run also exposed clipping in the existing small test ad's
+CTA and oversized ad typography after returning to standard text. No ad was
+activated. That separate advertising presentation defect is
+retained in [release readiness](release-readiness.md#remaining-release-evidence);
+the start-row correction does not fix or approve it.
+
+### Verification Boundary
+
+| App language and text size | Targeted screen coverage |
+| --- | --- |
+| English, standard | Mixed Library, both tracking filters and start sorts, year/month detail, native share presentation and cancellation |
+| English, maximum | Year-detail milestone/share labels, Archive Refine labels and Earliest Start selection |
+| Japanese, standard | Archive start metadata, exact-day archived detail, month detail |
+| Japanese, maximum | Archive date-wrap correction, Refine labels and Latest Start selection, archived exact-day detail, month-detail milestone/share/footer |
+
+The library suite passed 151 tests in 35 suites, including the retained disk
+migration and v2/v3 backup checks. Two additional disposable app-adapter probes
+executed Check Time Together against copied current Intent/entity sources with
+explicit in-memory dependency injection. They do not prove Shortcuts/Siri system
+presentation or authentication. Formatter, repository rules, and English/Japanese
+catalog checks passed; all six catalogs had zero incomplete entries. The existing
+stale Actions key and intentional product-name source copies remain.
+
+The row-only correction repeated the native build, repository rules, catalog
+audit, and affected runtime check. It did not change domain or Intent sources,
+so the passing library and adapter suites were not rerun for that layout change.
+
+This matrix covers one portrait iPhone in light appearance. New surfaces were
+not checked on iPad, in landscape, dark appearance, or Increase Contrast. Those
+checks, VoiceOver operation, system Shortcuts/Siri and authentication, exporter
+Save, and local-midnight foreground refresh remain unverified here.
+For the remaining Archive With Start permutation, use the safe synthetic setup,
+open Archive, select Refine > With Start, and expect Archived Plant alone.
+
+All five after-build app processes logged `model_container.preview_created` and
+`startup.ready`. The scoped log review found no normal local/cloud-container
+startup or fatal, crash, exception, or failed-container output. These are
+synthetic Simulator results, not production-runtime evidence. The earlier
+Support audit's empty local store was left untouched.
+
+The app and native sessions were stopped. Standard text size, light appearance,
+and disabled Increase Contrast were restored and read back. The original Stally
+scheme was restored first, valid destinations rediscovered, and Stally MHPlatform
+1.13 Audit restored and confirmed. Only the dedicated Simulator was shut down.
+No Simulator was erased. Build logs, runtime logs, hierarchies, source hashes,
+and full interaction ledgers remain in ignored
+`.build/ci/stally-time-followup-20260914/`; the fourteen curated images above are
+unchanged copies of the inspected captures.
+
+The [tracking verification record](item-tracking-verification.md#accessibility-and-system-surfaces)
+provides the separate system, VoiceOver, and device-size procedures. Release
+account, public-page, signing, and device checks remain in
+[issue #8](https://github.com/muhiro12/Stally/issues/8); the older development
+archive does not verify this later app surface.

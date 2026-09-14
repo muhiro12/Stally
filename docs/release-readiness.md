@@ -9,6 +9,13 @@ monthly ad removal, following Incomes. Initial advertising setup may be staged
 around the first App Store publication. The existing Stally GitHub Pages URLs
 and GitHub Issues contact are approved; their publication remains pending.
 
+Remaining external setup and distribution checks are tracked in
+[issue #8](https://github.com/muhiro12/Stally/issues/8). The subsequent read-only
+Fluel follow-up adds start browsing, yearly milestones, and time sharing/system
+readings; it does not clear or alter those external gates. A final distribution
+candidate must include and verify these later changes; the retained development
+archive predates them.
+
 ## Current Outcome
 
 The optional-start and non-Mark integration is now implemented locally with a
@@ -162,6 +169,11 @@ Implemented changes still require their own local verification evidence.
    ad-removal sales with it. This preserves the accepted long-term offer.
    Ad-readiness review after store publication is distinct from ID creation;
    it does not automatically require removing the advertising integration.
+   The September 14 time-follow-up audit also reproduced clipped text in the
+   small test ad's CTA at maximum Dynamic Type, with oversized ad typography
+   persisting after returning to standard text. Retain it as an advertising
+   presentation defect to diagnose and recheck before enabling ads; no ad was
+   activated, and this observation does not establish production serving.
 5. **Privacy and support:** the Settings Privacy Policy destination returned
    HTTP 404 again on September 14. The README Support URL also returns 404.
    Publish the approved Stally GitHub Pages destinations and verify their actual
