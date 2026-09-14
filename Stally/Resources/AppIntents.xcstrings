@@ -150,6 +150,22 @@
         }
       }
     },
+    "Check Time Together" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check Time Together"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一緒に過ごした時間を確認"
+          }
+        }
+      }
+    },
     "Clothing" : {
       "localizations" : {
         "en" : {
@@ -790,6 +806,22 @@
         }
       }
     },
+    "Read an item's start and elapsed time without changing its records." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read an item's start and elapsed time without changing its records."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "項目の記録を変更せずに、開始日と経過時間を読み取ります。"
+          }
+        }
+      }
+    },
     "Remove today's mark from an item." : {
       "localizations" : {
         "en" : {
@@ -866,6 +898,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "靴"
+          }
+        }
+      }
+    },
+    "The current calendar day could not be read." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The current calendar day could not be read."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "現在の日付を読み取れませんでした。"
           }
         }
       }

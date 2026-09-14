@@ -7,13 +7,20 @@
 
 import Foundation
 
-enum StallyIntentError: LocalizedError {
+enum StallyIntentError: LocalizedError, CustomLocalizedStringResourceConvertible {
     case itemNotFound
+    case currentDayUnavailable
 
     var errorDescription: String? {
+        String(localized: localizedStringResource)
+    }
+
+    var localizedStringResource: LocalizedStringResource {
         switch self {
         case .itemNotFound:
-            String(localized: "Item could not be found.", table: "AppIntents")
+            .init("Item could not be found.", table: "AppIntents")
+        case .currentDayUnavailable:
+            .init("The current calendar day could not be read.", table: "AppIntents")
         }
     }
 }

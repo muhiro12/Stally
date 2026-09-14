@@ -54,5 +54,13 @@ struct StallyShortcuts: AppShortcutsProvider {
             shortTitle: LocalizedStringResource("Open Insights", table: "AppIntents"),
             systemImageName: "chart.line.uptrend.xyaxis"
         )
+        AppShortcut(
+            intent: CheckStallyTimeTogetherIntent(),
+            phrases: [
+                "Check time together in \(.applicationName)"
+            ],
+            shortTitle: LocalizedStringResource("Check Time Together", table: "AppIntents"),
+            systemImageName: "calendar"
+        )
     }
 }

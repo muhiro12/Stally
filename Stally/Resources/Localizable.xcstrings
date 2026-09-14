@@ -708,6 +708,22 @@
         }
       }
     },
+    "Check time together for ${item}" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check time together for ${item}"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${item}と一緒に過ごした時間を確認"
+          }
+        }
+      }
+    },
     "Choice readings are incomplete. Enable Marks on items with existing history." : {
       "localizations" : {
         "en" : {
