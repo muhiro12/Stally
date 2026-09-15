@@ -35,18 +35,19 @@ struct InsightsView: View {
             now: now
         )
 
-        InsightsList(
-            snapshot: snapshot,
-            selectedRange: $selectedRange,
-            includesArchivedItems: $includesArchivedItems
-        )
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                StallyLinkShareButton(
-                    link: .destination(.insights),
-                    title: "Share Insights Link"
-                )
+        InsightsList(snapshot: snapshot)
+            .toolbar {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    InsightsScopeMenu(
+                        selectedRange: $selectedRange,
+                        includesArchivedItems: $includesArchivedItems
+                    )
+
+                    StallyLinkShareButton(
+                        link: .destination(.insights),
+                        title: "Share Insights Link"
+                    )
+                }
             }
-        }
     }
 }

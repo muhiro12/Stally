@@ -26,8 +26,6 @@ struct InsightsActivityFeature: View {
                     Text(snapshot.uniqueMarkedItems, format: .number)
                 }
 
-                Divider()
-
                 LabeledContent("Unique Categories") {
                     Text(snapshot.uniqueMarkedCategories, format: .number)
                 }

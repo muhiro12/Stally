@@ -19,7 +19,7 @@ struct InsightsFeatureTile<Details: View>: View {
     let details: Details
 
     var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.control) {
+        VStack(alignment: .leading, spacing: theme.spacing.content) {
             VStack(alignment: .leading, spacing: theme.spacing.inline) {
                 Text(metadata)
                     .mhTextStyle(.metadata, colorRole: .tertiaryText)
@@ -31,9 +31,6 @@ struct InsightsFeatureTile<Details: View>: View {
                     .mhTextStyle(.bodyStrong)
             }
             .fixedSize(horizontal: false, vertical: true)
-
-            Divider()
-                .accessibilityHidden(true)
 
             details
         }

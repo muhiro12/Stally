@@ -9,23 +9,37 @@ import MHUI
 import SwiftUI
 
 struct InsightsSummary: View {
+    @Environment(\.mhTheme)
+    private var theme
+
     let totalMarks: Int
     let rangeTitle: LocalizedStringResource
+    let includesArchivedItems: Bool
     let choiceItemCount: Int
     let hasHistoryConflict: Bool
 
     var body: some View {
-        MHSummary(
-            title: Text(rangeTitle),
-            metadata: Text("Scope"),
-            supporting: supporting
-        ) {
+        VStack(alignment: .leading, spacing: theme.spacing.inline) {
+            Text(rangeTitle)
+                .mhTextStyle(.bodyStrong)
+
             Text("\(totalMarks) marks")
-                .mhBadge(style: .accent)
+                .mhTextStyle(.supporting, colorRole: .secondaryText)
+
+            if includesArchivedItems {
+                Text("Library and Archive")
+                    .mhTextStyle(.supporting, colorRole: .secondaryText)
+            }
+
+            if let supporting {
+                supporting
+                    .mhTextStyle(.supporting, colorRole: .secondaryText)
+            }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private var supporting: Text {
+    private var supporting: Text? {
         if hasHistoryConflict {
             Text("Choice readings are incomplete. Enable Marks on items with existing history.")
         } else if choiceItemCount == 0 {
@@ -33,7 +47,7 @@ struct InsightsSummary: View {
         } else if totalMarks == 0 {
             Text("No activity in this window yet.")
         } else {
-            Text("The selected range shapes every reading below.")
+            nil
         }
     }
 }

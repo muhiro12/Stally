@@ -149,6 +149,7 @@
       }
     },
     "Activity, consistency, and collection health at a glance." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1591,6 +1592,22 @@
         }
       }
     },
+    "Library and Archive" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Library and Archive"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ライブラリとアーカイブ"
+          }
+        }
+      }
+    },
     "Library could not be cleared." : {
       "localizations" : {
         "en" : {
@@ -2475,6 +2492,7 @@
       }
     },
     "Read the collection as a pattern, not just a list." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2486,6 +2504,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "コレクションを単なる一覧ではなく、パターンとして読み解きます。"
+          }
+        }
+      }
+    },
+    "Reading Range" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading Range"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "表示期間"
           }
         }
       }
@@ -2651,6 +2685,7 @@
       }
     },
     "Report" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -3275,6 +3310,7 @@
       }
     },
     "The selected range shapes every reading below." : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

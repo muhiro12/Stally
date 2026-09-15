@@ -18,9 +18,5 @@ struct InsightsHighlightsSection: View {
             InsightsConsistencyFeature(snapshot: snapshot)
             InsightsCollectionHealthFeature(snapshot: snapshot)
         }
-        .mhSection(
-            "Overview",
-            supporting: "Activity, consistency, and collection health at a glance."
-        )
     }
 }

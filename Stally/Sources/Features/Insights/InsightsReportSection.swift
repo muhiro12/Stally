@@ -15,9 +15,8 @@ struct InsightsReportSection: View {
         MHActionGroup {
             ShareLink(item: report) {
                 Label("Share Report", systemImage: "square.and.arrow.up")
-                    .mhTextStyle(.body, colorRole: .primaryText)
             }
+            .buttonStyle(.mhQuiet)
         }
-        .mhSection("Report")
     }
 }

@@ -16,33 +16,27 @@ struct InsightsList: View {
     private var theme
 
     let snapshot: InsightsSnapshot
-    @Binding var selectedRange: InsightsRange
-    @Binding var includesArchivedItems: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.section) {
             InsightsSummary(
                 totalMarks: snapshot.totalMarks,
                 rangeTitle: snapshot.options.range.title,
+                includesArchivedItems: snapshot.options.includesArchivedItems,
                 choiceItemCount: snapshot.choiceItemCount,
                 hasHistoryConflict: snapshot.nonMarkHistoryConflictCount > 0
             )
 
             InsightsHighlightsSection(snapshot: snapshot)
 
-            InsightsScopeSection(
-                selectedRange: $selectedRange,
-                includesArchivedItems: $includesArchivedItems
-            )
-
             Text("Choice readings include only items that record Marks. Context coverage includes all scoped items.")
                 .mhTextStyle(.supporting, colorRole: .secondaryText)
+
+            InsightsReadingSections(snapshot: snapshot)
 
             InsightsReportSection(
                 report: InsightsReportOperations.report(for: snapshot)
             )
-
-            InsightsReadingSections(snapshot: snapshot)
 
             if !isSubscribeOn {
                 StallyAdvertisementSection(size: .medium)
@@ -50,9 +44,6 @@ struct InsightsList: View {
 
             InsightsRecommendationsSection(recommendations: snapshot.recommendations)
         }
-        .mhScreen(
-            "Insights",
-            subtitle: "Read the collection as a pattern, not just a list."
-        )
+        .mhScreen("Insights")
     }
 }
