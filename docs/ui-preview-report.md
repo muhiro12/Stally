@@ -2,8 +2,8 @@
 
 ## Purpose
 
-This report preserves the major-screen captures from Stally's MHUI adoption
-through version 1.17.0 and subsequent targeted runtime checks.
+This report preserves Stally's MHUI adoption decisions, major-screen captures,
+and subsequent targeted runtime checks.
 
 The initial review date is July 23, 2026. Later checks are dated separately.
 
@@ -14,12 +14,187 @@ Its subsequent isolated interaction audit records one precision-Picker layout
 correction, Dynamic Type/appearance comparisons, and explicit manual checks
 where runtime operation or accessibility tools could not connect.
 
-## Current MHUI 1.19 Adoption
+## MHUI 1.19 App Composition
+
+The September 15 composition update applies the release's design intent to
+Stally's reading order and action hierarchy. The SDK's
+[visual design principles][mhui-1-19-principles] call for quiet content planes,
+selective editorial emphasis, and hierarchy through alignment, spacing, and
+tonal depth. Glass belongs to navigation and important controls. These choices
+require app-level composition in addition to adopting the dependency.
+
+### Design Decisions
+
+| SDK intent | Stally application |
+| --- | --- |
+| Lead with content | Place Insights readings below compact scope context |
+| Fewer boundaries | Remove the outer Insights card and internal rules |
+| Native controls | Move range and Archive inclusion to the toolbar menu |
+| Selective glass | Keep today's Mark or Undo in the floating action bar |
+| Content before commands | Group Backup actions outside individual cards |
+| Quieter alternatives | Use quiet styling for report sharing and restore |
+
+Insights no longer places generic introductory and Overview copy before its
+readings. The standard elevated Activity and muted supporting card roles
+remain, with spacing separating their metrics. Report sharing follows the
+readings.
+
+Item Detail places Adjust History in a native row beside the history it edits.
+Backup Center keeps the snapshot as a content surface and groups Export with
+Choose File. Reset retains a separate heading and destructive action style.
+Empty Library keeps its primary Add and secondary sample actions, with Restore
+From Backup as the quieter alternative.
+Quiet Restore and Share Report labels use the SDK's `primaryText` role; the
+first Light capture showed that the default Mint text was visually weak on
+the pale canvas. Their quiet layout and touch targets remain SDK-owned.
+
+The range menu follows Apple's guidance for
+[toolbar controls][apple-toolbars] and [menus][apple-menus]. It retains the
+existing preference bindings and snapshot Operations. The current range is
+always visible in the content; including archived items also shows
+"Library and Archive" there. Both new labels have English and Japanese
+translations.
+
+Native List, Form, navigation, sheet, file-picker, and confirmation behavior
+remain the foundation. The app does not override MHUI's palette, typography,
+spacing metrics, or adaptive layout decisions. Mark eligibility, archived-item
+restrictions, history adjustment, backup validation, and destructive
+confirmations continue to use their existing behavior.
+
+### Insights Runtime Verification
+
+The composition change is committed as `88fdc10`. The comparison uses MHUI 1.19
+on both sides, with the existing Debug `typical` in-memory fixture. The iPhone
+18 Pro runs iOS 27 in portrait at 402 by 874 points. Default captures use
+English, Light appearance, Large text, and Increase Contrast disabled.
+
+| Insights viewport | Before composition | After composition |
+| --- | --- | --- |
+| English, Light | [Before][119-insights-after] | [After][119c-insights] |
+| Japanese, AX5 | [Before][119-insights-ax5] | [After][119c-insights-ax5] |
+| iPad, landscape | [Before][119c-ipad-before] | [After][119c-ipad-after] |
+
+At default text size, Activity and both supporting readings now fit in the
+initial viewport. At Japanese Accessibility Extra Extra Extra Large (AX5),
+the primary reading is visible at launch and native swipes reveal
+[vertically wrapped supporting cards][119c-metrics-ax5].
+[Dark appearance with Increase Contrast][119c-insights-dark] also preserves
+readable labels and distinct content planes in the inspected viewport.
+The iPad Pro 13-inch landscape comparison uses a 1376 by 1032-point viewport;
+the native sidebar remains and the feature grid uses its regular-width layout.
+
+The [native scope menu][119c-scope] changes 30 Days to 90 Days, updating
+16 Marks and 14 active days to 20 Marks and 18 active days. Including Archive
+then produces [21 Marks and 19 active days][119c-scope-archive], with the scope
+label visible. Both settings and the resulting readings persist after process
+relaunch. The audit restores 30 Days and Archive exclusion and confirms the
+original 16 Marks.
+
+### Action Layout Runtime Verification
+
+The action hierarchy and final quiet-label treatment are committed as `f0dcbfb`.
+
+| Screen / viewport | Before composition | After composition |
+| --- | --- | --- |
+| Detail, English | [Before][119-detail-after] | [After][119c-detail] |
+| Detail, Japanese AX5 | [Before][119-detail-ax5] | [After][119c-detail-ax5] |
+| Detail, iPad | [Before][119c-detail-ipad-before] | [After][119c-detail-ipad] |
+| Empty Library | [Before][119c-empty-before] | [After][119c-empty] |
+| Backup Center | [Before][119-backup] | [After][119c-backup] |
+
+At Japanese AX5, the floating action area decreases from approximately
+373 points to one 211-point action. The whole summary note fits above it, and
+the Japanese Undo label still wraps fully. No text-size override is introduced.
+
+Native taps verify Undo and Mark Today with a 9 to 8 to 9 Mark round trip.
+The [Adjust History row][119c-history-row] is reachable beside Quiet History
+and opens the existing [history sheet][119c-history-sheet]. Done dismisses it
+without adjusting a day or changing the Mark count.
+The iPad landscape capture retains native rows and the sidebar with the single
+floating action. The final [Share Report label][119c-report] is also readable
+after the readings, using primary text without a surrounding card. The test
+advertisement visible below it was not activated.
+
+Empty Library's Add action opens the native [item editor][119c-empty-add];
+Cancel returns to the empty screen. Restore From Backup opens
+[Backup Center with an empty snapshot][119c-empty-restore]. The populated
+[Backup Center capture][119c-backup] shows the snapshot, Export, Choose File,
+and distinct Reset area without the former individual command cards.
+The native file picker opens and cancels. The
+[Delete Every Item confirmation][119c-backup-confirmation] opens and dismisses
+without deletion. The snapshot remains at 5 items, 1 archived item, and
+23 Marks after both checks.
+
+### Verification Scope
+
+The final native app build succeeds with Xcode 27.0 (`27A266a`), the Stally
+scheme, and iOS 27 Simulator, with no warning or error entries. Swift
+formatting, repository-managed SwiftLint and boundary checks, and
+`git diff --check` pass.
+The intermediate compiler diagnostic failure is resolved by simplifying
+history composition and passing eligibility separately from its action.
+
+The English/Japanese audit covers all six String Catalogs, with no incomplete
+keys or referenced stale keys. The two remaining translation tasks are the
+intentional Japanese copies of the Stally product name. Removed labels keep
+their extractor-generated stale markers; unrelated catalog ordering changes
+are excluded. `StallyLibrary`, persistence, and backup contracts are unchanged,
+so library tests are not repeated for this presentation-only work.
+
+Builds and UI inspection use Xcode-native tools. Selected fresh-Simulator and
+session-recovery runs use official `simctl` install/launch fallbacks followed
+by native capture sessions. An initial iPad connection failure and a rotation
+timeout recover without an app-source workaround. Runtime logs confirm the
+preview container and startup-ready state. CoreTelephony, WebKit, and
+accessibility-runtime diagnostics remain; no Stally crash is observed.
+
+These are synthetic in-memory fixtures and implementation review captures.
+VoiceOver operation, Reduce Transparency, Reduce Motion, iPad AX5, Japanese
+AX5 Backup/empty screens, the report share-sheet/export action, real-device
+behavior, and production services are not verified. Screenshots do not establish
+a golden visual baseline or distribution approval.
+
+Stally is stopped on both simulators, and device sessions are ended.
+Native readback confirms
+Stally / My Mac after restoring the scheme and destination. Both simulators
+return to Light, Large text, and Increase Contrast disabled; the iPad returns
+to portrait. Insights retains the original 30-day range and Archive exclusion.
+Detailed build logs, runtime logs, hierarchies, settings readback, and audit
+results are retained locally under the ignored
+`.build/ci/mhui-1.19-composition/` directory.
+
+[119c-detail-ipad-before]: ui-preview-screenshots/mhui-1.19-composition/before/item-detail-ipad-en-light-large-landscape.png
+[119c-detail-ipad]: ui-preview-screenshots/mhui-1.19-composition/after/item-detail-ipad-en-light-large-landscape.png
+[119c-report]: ui-preview-screenshots/mhui-1.19-composition/after/share-report-ipad-en-light-large-landscape.png
+[119c-empty-before]: ui-preview-screenshots/mhui-1.19-composition/before/empty-library-iphone-en-light-large.png
+[119c-empty]: ui-preview-screenshots/mhui-1.19-composition/after/empty-library-iphone-en-light-large.png
+[119c-backup-confirmation]: ui-preview-screenshots/mhui-1.19-composition/after/backup-delete-confirmation-iphone-en-light-large.png
+[119c-backup]: ui-preview-screenshots/mhui-1.19-composition/after/backup-iphone-en-light-large.png
+[119c-empty-add]: ui-preview-screenshots/mhui-1.19-composition/after/empty-add-open-iphone-en-light-large.png
+[119c-empty-restore]: ui-preview-screenshots/mhui-1.19-composition/after/empty-restore-backup-iphone-en-light-large.png
+[119c-detail]: ui-preview-screenshots/mhui-1.19-composition/after/item-detail-iphone-en-light-large.png
+[119c-detail-ax5]: ui-preview-screenshots/mhui-1.19-composition/after/item-detail-iphone-ja-light-ax5.png
+[119c-history-row]: ui-preview-screenshots/mhui-1.19-composition/after/quiet-history-row-iphone-en-light-large.png
+[119c-history-sheet]: ui-preview-screenshots/mhui-1.19-composition/after/adjust-history-open-iphone-en-light-large.png
+[119c-insights]: ui-preview-screenshots/mhui-1.19-composition/after/insights-iphone-en-light-large.png
+[119c-insights-ax5]: ui-preview-screenshots/mhui-1.19-composition/after/insights-iphone-ja-light-ax5.png
+[119c-metrics-ax5]: ui-preview-screenshots/mhui-1.19-composition/after/insights-iphone-ja-light-ax5-scrolled.png
+[119c-insights-dark]: ui-preview-screenshots/mhui-1.19-composition/after/insights-iphone-en-dark-contrast-large.png
+[119c-scope]: ui-preview-screenshots/mhui-1.19-composition/after/scope-menu-iphone-en-light-large.png
+[119c-scope-archive]: ui-preview-screenshots/mhui-1.19-composition/after/scope-90days-archive-iphone-en-light-large.png
+[119c-ipad-before]: ui-preview-screenshots/mhui-1.19-composition/before/insights-ipad-en-light-large-landscape.png
+[119c-ipad-after]: ui-preview-screenshots/mhui-1.19-composition/after/insights-ipad-en-light-large-landscape.png
+[mhui-1-19-principles]: https://github.com/muhiro12/MHUI/blob/1.19/Designs/Guides/VISUAL_DESIGN_PRINCIPLES.md
+[apple-toolbars]: https://developer.apple.com/design/human-interface-guidelines/toolbars
+[apple-menus]: https://developer.apple.com/design/human-interface-guidelines/menus
+
+## Initial MHUI 1.19 Compatibility Check
 
 The September 15 update adopts the published [MHUI 1.19 release][mhui-1-19],
-revision `81f48d1784ad85aadf4fccdf1e4e85606ac5c142`. Only the app's MHUI
-lockfile entry changes from 1.18.0 to 1.19.0; all other dependency pins remain
-unchanged. Xcode's resolved MHUI checkout matches the release revision.
+revision `81f48d1784ad85aadf4fccdf1e4e85606ac5c142`. In the compatibility
+commit, only the app's MHUI lockfile entry changes from 1.18.0 to 1.19.0;
+other pins remain unchanged. Xcode's resolved MHUI checkout matches the
+release revision.
 
 ### SDK Changes and App Integration
 
@@ -46,8 +221,9 @@ It has no references to the removed `MHCuePlacement`, `screenCue*`, or
   scope. Glass remains on interactive controls; content surfaces use the
   package's standard opaque roles.
 
-No app-source adjustment is needed for the removed API or theme changes.
-The integration follows the release's
+No app-source adjustment was required for API compatibility. The subsequent
+app composition changes are recorded above. This initial check follows the
+release's
 [adoption guide][mhui-1-19-adoption] and Apple's
 [Liquid Glass guidance][apple-liquid-glass] for native controls and navigation.
 
