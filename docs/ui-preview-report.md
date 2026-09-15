@@ -14,9 +14,145 @@ Its subsequent isolated interaction audit records one precision-Picker layout
 correction, Dynamic Type/appearance comparisons, and explicit manual checks
 where runtime operation or accessibility tools could not connect.
 
-## Current MHUI 1.18 Adoption
+## Current MHUI 1.19 Adoption
 
-The September 13 review confirms that the latest published
+The September 15 update adopts the published [MHUI 1.19 release][mhui-1-19],
+revision `81f48d1784ad85aadf4fccdf1e4e85606ac5c142`. Only the app's MHUI
+lockfile entry changes from 1.18.0 to 1.19.0; all other dependency pins remain
+unchanged. Xcode's resolved MHUI checkout matches the release revision.
+
+### SDK Changes and App Integration
+
+The release removes decorative screen and section heading cues and the
+summary's top rule. It introduces low-chroma content colors, softer heading
+and metadata typography, quieter dividers and surface borders, and slightly
+slower standard motion. `MHDesign` metrics and package dependencies do not
+change between these revisions.
+
+Stally inherits these changes through its existing root `mhTheme(.standard)`.
+It has no references to the removed `MHCuePlacement`, `screenCue*`, or
+`sectionCue*` APIs and no custom `MHTheme.Presentation` to migrate.
+
+- Library, Archive, Review, Settings, and Item Detail retain native `List`
+  composition; item editors retain native `Form` composition.
+- Insights and Backup Center keep their deliberate stack-based composition.
+  SDK-owned headings, summaries, and surface boundaries adopt the new
+  treatment without app-local replacements for the removed decoration.
+- The Divider inside each Insights feature tile separates its leading metric
+  from supporting readings. It remains a content boundary rather than a
+  decorative heading cue.
+- The app-owned Mint accent and semantic action styles remain in place.
+  Item Detail keeps its bottom `safeAreaBar` inside `mhListChrome`'s layout
+  scope. Glass remains on interactive controls; content surfaces use the
+  package's standard opaque roles.
+
+No app-source adjustment is needed for the removed API or theme changes.
+The integration follows the release's
+[adoption guide][mhui-1-19-adoption] and Apple's
+[Liquid Glass guidance][apple-liquid-glass] for native controls and navigation.
+
+### September 15 Verification
+
+The dependency update is committed as `e43c627`. Both comparison builds use
+Xcode 27.0 (`27A266a`), the Stally scheme, and the iOS 27 Simulator. The
+Xcode-native build with MHUI 1.19 succeeds with no warnings or errors and
+extracts Stally's App Intents metadata. Repository rules pass, including the
+project-managed SwiftLint and app/library boundary checks.
+
+These are presentation-only dependency changes. `StallyLibrary` source,
+persistence, backup formats, and its dependency graph are unchanged; library
+tests are not repeated for this update.
+
+The comparison uses the existing Debug `typical` in-memory fixture on an
+iPhone 18 Pro in portrait, at the default Large content-size category, with
+English, Light appearance, and Increase Contrast disabled. It compares
+published MHUI 1.18.0 against 1.19.0 with identical app source and launch
+arguments. Startup logs confirm the preview model container and ready state.
+
+| Screen | Before | After |
+| --- | --- | --- |
+| Insights | [1.18][119-insights-before] | [1.19][119-insights-after] |
+| Item Detail | [1.18][119-detail-before] | [1.19][119-detail-after] |
+| Add Item | [1.18][119-add-before] | [1.19][119-add-after] |
+
+Insights loses its decorative heading rules and adopts softer typography and
+surface boundaries. Item Detail retains its native grouping and floating
+action layout. Add Item keeps its native fields, selected Record Marks toggle,
+and disabled Add action. No clipping or overlap is observed in these captured
+viewports.
+
+Native hierarchy-based taps also confirm that Edit Item opens a populated
+[editor sheet][119-editor] and Cancel returns to the unchanged detail. Undo
+Today's Mark changes the item to Not marked and shows the Mint
+[Mark Today action][119-mark]; tapping it restores Marked Today and the
+original mark count. These operations affect only the in-memory fixture.
+
+Additional default-size captures cover [Library][119-library],
+[Backup Center][119-backup], and [Settings][119-settings]. Library's rows and
+semantic badges remain readable. Backup's snapshot, Export, and Import groups
+remain distinct after dismissing a transient TipKit hint. Settings preserves
+the visible native toggles and steppers.
+
+Settings also retains the empty subscription-product container observed in
+the earlier platform audit. The log reports that the subscription store has
+no auto-renewable subscription to show. The app's StoreKit adapter and package
+pin are unchanged; this capture does not resolve that product-availability
+limitation or verify purchase and restore behavior.
+
+At Japanese Accessibility Extra Extra Extra Large (AX5), Insights keeps its
+[heading and summary][119-insights-ax5] readable and its
+[metric labels and values][119-metrics-ax5] vertically wrapped. Native swipes
+confirm that the content remains scrollable.
+
+Item Detail's [Japanese AX5 actions][119-detail-ax5] also wrap completely.
+The two floating actions occupy about 373 points of the 874-point screen,
+leaving a short reading viewport; [scrolling still works][119-detail-scroll].
+Action typography and padding are unchanged by this update. Attribution to
+1.19 remains unverified because this pass has no matching 1.18 AX5 capture.
+
+English [Insights][119-insights-dark] and [Item Detail][119-detail-dark] were
+also inspected in Dark appearance with Increase Contrast enabled and Large
+text. Text hierarchy, Mint controls, neutral actions, and surface boundaries
+remain readable in the captured viewports.
+
+This pass covers portrait iPhone presentation and the named interactions.
+iPad, landscape, VoiceOver operation, Reduce Transparency, Reduce Motion, and
+production service behavior are not verified here. Simulator logs contain
+CoreTelephony, WebKit, and accessibility-runtime diagnostics; no Stally crash
+or fatal startup failure was observed. The screenshots are implementation
+evidence, not a golden visual baseline or distribution approval.
+
+Verification runs were stopped and device sessions ended. Simulator
+appearance, Increase Contrast, and content size were restored to Light,
+disabled, and Large. Xcode's scheme was restored first, destinations were
+rediscovered, and the final Stally / My Mac selection was confirmed.
+Detailed build logs, runtime logs, hierarchies, and the environment ledger are
+retained locally in the ignored `.build/ci/mhui-1.19/` directory.
+
+[119-insights-before]: ui-preview-screenshots/mhui-1.19/before/insights-en-light-large.png
+[119-insights-after]: ui-preview-screenshots/mhui-1.19/after/insights-en-light-large.png
+[119-detail-before]: ui-preview-screenshots/mhui-1.19/before/item-detail-en-light-large.png
+[119-detail-after]: ui-preview-screenshots/mhui-1.19/after/item-detail-en-light-large.png
+[119-add-before]: ui-preview-screenshots/mhui-1.19/before/add-item-en-light-large.png
+[119-add-after]: ui-preview-screenshots/mhui-1.19/after/add-item-en-light-large.png
+[119-editor]: ui-preview-screenshots/mhui-1.19/after/item-detail-edit-open-en-light-large.png
+[119-mark]: ui-preview-screenshots/mhui-1.19/after/item-detail-undo-en-light-large.png
+[119-library]: ui-preview-screenshots/mhui-1.19/after/library-en-light-large.png
+[119-backup]: ui-preview-screenshots/mhui-1.19/after/backup-clear-en-light-large.png
+[119-settings]: ui-preview-screenshots/mhui-1.19/after/settings-en-light-large.png
+[119-insights-ax5]: ui-preview-screenshots/mhui-1.19/after/insights-ja-light-ax5.png
+[119-metrics-ax5]: ui-preview-screenshots/mhui-1.19/after/insights-ja-light-ax5-metrics.png
+[119-detail-ax5]: ui-preview-screenshots/mhui-1.19/after/item-detail-ja-light-ax5.png
+[119-detail-scroll]: ui-preview-screenshots/mhui-1.19/after/item-detail-ja-light-ax5-scrolled.png
+[119-insights-dark]: ui-preview-screenshots/mhui-1.19/after/insights-en-dark-contrast-large.png
+[119-detail-dark]: ui-preview-screenshots/mhui-1.19/after/item-detail-en-dark-contrast-large.png
+[mhui-1-19]: https://github.com/muhiro12/MHUI/releases/tag/1.19
+[mhui-1-19-adoption]: https://github.com/muhiro12/MHUI/blob/1.19/Designs/Guides/ADOPTION_GUIDE.md
+[apple-liquid-glass]: https://developer.apple.com/documentation/TechnologyOverviews/adopting-liquid-glass
+
+## September 13 MHUI 1.18 Adoption
+
+The September 13 review confirms that the then-latest published
 [MHUI 1.18 release][mhui-1-18] is already installed by `ea9b314`. The app's
 lockfile and both verified build checkouts match the published revision
 `5e9841f77b770184ea560cec4831adacc1e0fdb6`.
