@@ -32,8 +32,11 @@ struct EmptyLibraryView: View {
                         .buttonStyle(.mhSecondary)
                 }
 
-                Button("Restore From Backup", action: restoreAction)
-                    .buttonStyle(.mhSecondary)
+                Button(action: restoreAction) {
+                    Text("Restore From Backup")
+                        .mhForegroundStyle(.primaryText)
+                }
+                .buttonStyle(.mhQuiet)
             }
             .mhEmptyStateLayout()
         }

@@ -9,13 +9,19 @@ import MHUI
 import SwiftUI
 
 struct BackupResetSection: View {
+    @Environment(\.mhTheme)
+    private var theme
+
     let deleteEverythingAction: () -> Void
 
     var body: some View {
-        MHActionGroup {
-            Button("Delete Every Item", role: .destructive, action: deleteEverythingAction)
-                .buttonStyle(.mhDestructive)
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
+            MHSectionHeader("Reset Tools")
+
+            MHActionGroup {
+                Button("Delete Every Item", role: .destructive, action: deleteEverythingAction)
+                    .buttonStyle(.mhDestructive)
+            }
         }
-        .mhSection("Reset Tools")
     }
 }

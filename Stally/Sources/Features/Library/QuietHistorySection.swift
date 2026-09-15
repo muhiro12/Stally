@@ -15,6 +15,8 @@ struct QuietHistorySection: View {
     }
 
     let history: ItemHistorySnapshot
+    let canChangeHistory: Bool
+    let adjustAction: () -> Void
 
     var body: some View {
         Section("Quiet History") {
@@ -26,6 +28,12 @@ struct QuietHistorySection: View {
                     .padding(.vertical, Layout.gridVerticalPadding)
 
                 LatestMarkedDays(days: Array(history.markedDays.prefix(Layout.latestMarkedDayLimit)))
+            }
+
+            if canChangeHistory {
+                Button(action: adjustAction) {
+                    Label("Adjust History", systemImage: "calendar")
+                }
             }
         }
     }

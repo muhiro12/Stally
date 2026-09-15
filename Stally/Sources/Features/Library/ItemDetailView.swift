@@ -67,6 +67,7 @@ struct ItemDetailView: View {
         let isMarkedToday = today.map { today in
             ItemOperations.isMarked(item, on: today)
         } ?? false
+        let canChangeHistory = ItemOperations.historyChangeError(for: item) == nil
 
         List {
             Section {
@@ -91,9 +92,10 @@ struct ItemDetailView: View {
             }
 
             if let history, item.recordsMarks || ItemOperations.hasNonMarkHistoryConflict(item) {
-                HistoryOverviewSection(history: history)
-
-                QuietHistorySection(history: history)
+                historySections(
+                    history: history,
+                    canChangeHistory: canChangeHistory
+                )
             }
 
             ArchiveActionSection(
@@ -106,12 +108,11 @@ struct ItemDetailView: View {
         }
         .scrollEdgeEffectStyle(.soft, for: .bottom)
         .safeAreaBar(edge: .bottom) {
-            if ItemOperations.historyChangeError(for: item) == nil {
+            if canChangeHistory {
                 TodayMarkSection(
                     isMarkedToday: isMarkedToday,
                     markAction: markToday,
-                    undoAction: undoToday,
-                    adjustAction: presentHistoryAdjustment
+                    undoAction: undoToday
                 )
                 .frame(maxWidth: theme.layout.readableContentWidth)
                 .padding(.horizontal, theme.spacing.content)
@@ -173,6 +174,20 @@ struct ItemDetailView: View {
 }
 
 private extension ItemDetailView {
+    @ViewBuilder
+    private func historySections(
+        history: ItemHistorySnapshot,
+        canChangeHistory: Bool
+    ) -> some View {
+        HistoryOverviewSection(history: history)
+
+        QuietHistorySection(
+            history: history,
+            canChangeHistory: canChangeHistory,
+            adjustAction: presentHistoryAdjustment
+        )
+    }
+
     private func timeSection(today: LocalDay) -> some View {
         ItemTimeSection(
             snapshot: ItemTimeOperations.snapshot(for: item, today: today),

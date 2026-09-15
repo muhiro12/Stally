@@ -18,6 +18,5 @@ struct BackupImportSection: View {
             }
             .buttonStyle(.mhSecondary)
         }
-        .mhSection("Import Tools")
     }
 }

@@ -22,7 +22,6 @@ struct BackupExportSection: View {
             .buttonStyle(.mhPrimary)
             .popoverTip(exportTip, arrowEdge: .top)
         }
-        .mhSection("Export Tools")
     }
 
     private func exportBackup() {

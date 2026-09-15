@@ -26,11 +26,13 @@ struct BackupList: View {
         VStack(alignment: .leading, spacing: theme.spacing.section) {
             BackupSnapshotSection(summary: summary)
 
-            BackupExportSection(exportAction: exportAction)
+            VStack(alignment: .leading, spacing: theme.spacing.control) {
+                BackupExportSection(exportAction: exportAction)
 
-            BackupImportSection(
-                chooseBackupAction: chooseBackupAction
-            )
+                BackupImportSection(
+                    chooseBackupAction: chooseBackupAction
+                )
+            }
 
             if let preview {
                 BackupImportPreviewSection(

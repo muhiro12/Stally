@@ -15,7 +15,6 @@ struct TodayMarkSection: View {
     let isMarkedToday: Bool
     let markAction: () -> Void
     let undoAction: () -> Void
-    let adjustAction: () -> Void
 
     var body: some View {
         MHActionGroup {
@@ -31,11 +30,6 @@ struct TodayMarkSection: View {
                 .buttonStyle(.mhPrimary)
                 .popoverTip(markTodayTip, arrowEdge: .top)
             }
-
-            Button(action: adjustAction) {
-                Label("Adjust History", systemImage: "calendar")
-            }
-            .buttonStyle(.mhSecondary)
         }
     }
 
