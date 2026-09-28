@@ -47,7 +47,8 @@ enum StallyPlatformEnvironmentFactory {
             nativeAdUnitID: StallyMonetizationConfiguration.nativeAdUnitID(
                 for: platformMode
             ),
-            showsLicenses: true
+            showsLicenses: true,
+            adsConsent: .init()
         )
     }
 

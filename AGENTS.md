@@ -165,7 +165,8 @@ The app target should stay a thin adapter over the current product surface.
 - `Stally/Sources/Features/Settings/` owns the SwiftUI Settings surface,
   independent subscription/iCloud controls, StoreKit subscription section,
   Review thresholds, Insights defaults, shareable-link list surface, and
-  Settings-owned App Intents, plus native Support and Privacy links.
+  Settings-owned App Intents, plus native Support and Privacy links and the
+  consent-driven Ad Privacy Choices control.
 - `Stally/Sources/SharedUI/` owns app-local MHUI presentation adapters and
   shared visual treatment helpers, including app-local ad presentation
   wrappers. It must not contain product behavior, persistence logic, or

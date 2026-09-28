@@ -355,6 +355,41 @@ Debug build and Release archive above include that exact revision; this
 documentation review adds no new runtime or distribution evidence. See the
 [current UI adoption report](ui-preview-report.md) for the source comparison.
 
+## MHPlatform 1.15 Adoption
+
+The September 29 package update moves Stally to MHPlatform 1.15.0, which
+resolves GoogleMobileAdsWrapper 2.0.0 and Google Mobile Ads 13.10.0. UMP 3.1.0,
+LicenseList 2.5.0, and StoreKitWrapper 1.4.0 are unchanged. StallyLibrary now
+requires MHPlatform 1.15 or later within 1.x and still links only
+`MHPlatformCore`.
+
+- Native ads use `MHNativeAdLayout`: Library requests `.compact` and Insights
+  requests `.media`, replacing the removed small/medium sizes. Stally never
+  persisted those values, so no preference migration is needed.
+- Ad sections are reserved with `canDisplayAds`, which combines ads
+  availability with consent.
+- The runtime configuration opts into MHPlatform's consent lifecycle. When an ad
+  unit is configured and premium status resolves as inactive, the runtime
+  requests UMP consent information once per session, presents a required form,
+  and starts ads only when UMP reports that ads can be requested. Release builds
+  still configure no ad unit, so they perform no consent or ads SDK work.
+- Settings shows **Ad Privacy Choices** in About only when UMP reports that
+  privacy options are required.
+- Stally does not remove unknown standard-defaults keys, so no consent-storage
+  allowlist is needed. The preference registry is not adopted because Stally has
+  no legacy preference keys to migrate.
+
+A Debug run on the iOS 27 simulator with a temporary, uncommitted EEA debug
+geography showed Google's test consent form at launch. After consenting,
+Settings showed Ad Privacy Choices, and the row presented the privacy options
+form over the Settings sheet. The committed configuration uses no debug
+geography.
+
+This closes the source-side consent gap described in the September 14 check.
+Stally-owned AdMob app and unit IDs, the AdMob Privacy & messaging
+configuration, disclosures, and production consent behavior remain release
+gates.
+
 ## Next Action
 
 The [optional start design][start-proposal] is accepted and implemented through
@@ -472,12 +507,11 @@ reference; its production app/unit identifiers must never be copied to Stally.
    ads and the offer in a later verified release. This fallback is conditional;
    no monetization, signing, or account configuration was changed in this task.
 
-The remaining consent boundary is concrete: the shared runtime owns ad startup
-and the native-ad factory, but currently exposes no verified consent flow.
-Prepare a shared startup gate and privacy-options presentation before enabling
-Stally production ads, preserving the public MHPlatform boundary. Do not copy
-SDK startup into a Stally screen or assume that Incomes already supplies consent.
-Changes to sibling packages require their own authorized scope.
+The shared runtime now owns the consent startup gate and privacy-options
+presentation, and Stally adopts them; see
+[MHPlatform 1.15 Adoption](#mhplatform-115-adoption). Configure AdMob Privacy &
+messaging for the Stally app before enabling production ads. Do not copy SDK
+startup into a Stally screen or assume that Incomes already supplies consent.
 
 ## Accepted Public Pages and Support
 

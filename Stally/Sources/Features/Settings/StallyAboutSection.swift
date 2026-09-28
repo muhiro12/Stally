@@ -44,6 +44,16 @@ struct StallyAboutSection: View {
             }
             .mhRow()
 
+            if appRuntime.adsPrivacyOptionsRequirement == .required {
+                Button {
+                    presentAdsPrivacyOptions()
+                } label: {
+                    Label("Ad Privacy Choices", systemImage: "hand.raised.square")
+                        .mhTextStyle(.body, colorRole: .primaryText)
+                }
+                .mhRow()
+            }
+
             NavigationLink {
                 appRuntime.licensesView()
                     .navigationTitle("Licenses")
@@ -53,6 +63,13 @@ struct StallyAboutSection: View {
             .mhRow()
         } header: {
             MHSectionHeader("About")
+        }
+    }
+
+    private func presentAdsPrivacyOptions() {
+        Task {
+            // The runtime logs failures and re-evaluates ad eligibility either way.
+            try? await appRuntime.presentAdsPrivacyOptions()
         }
     }
 }
