@@ -15,12 +15,12 @@ struct StallyAdvertisementSection: View {
     @Environment(\.mhDesignMetrics)
     private var designMetrics
 
-    let size: MHNativeAdSize
+    let layout: MHNativeAdLayout
 
     var body: some View {
-        if appRuntime.adsAvailability == .available {
+        if appRuntime.canDisplayAds {
             Section {
-                appRuntime.nativeAdView(size: size)
+                appRuntime.nativeAdView(layout: layout)
                     .frame(maxWidth: .infinity)
                     .padding(designMetrics.spacing.inline)
             }

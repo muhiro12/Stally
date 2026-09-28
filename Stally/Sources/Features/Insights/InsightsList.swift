@@ -39,7 +39,7 @@ struct InsightsList: View {
             )
 
             if !isSubscribeOn {
-                StallyAdvertisementSection(size: .medium)
+                StallyAdvertisementSection(layout: .media)
             }
 
             InsightsRecommendationsSection(recommendations: snapshot.recommendations)

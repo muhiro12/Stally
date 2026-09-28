@@ -110,7 +110,7 @@ struct ItemLibraryList: View {
         }
 
         if !isSubscribeOn {
-            StallyAdvertisementSection(size: .small)
+            StallyAdvertisementSection(layout: .compact)
         }
     }
 
