@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/07/12.
 //
 
+import MHUI
 import SwiftData
 import SwiftUI
 
@@ -60,7 +61,7 @@ struct EditItemView: View {
                     allowsDisablingMarks: ItemOperations.canDisableMarkRecording(item)
                 )
             }
-            .stallyFormChrome()
+            .stallyFormChrome(.content)
             .navigationTitle("Edit Item")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -9,13 +9,15 @@ import MHUI
 import SwiftUI
 
 extension View {
-    func stallyListChrome() -> some View {
-        mhListChrome()
+    /// Applies the screen's explicit MHUI container route with Stally's key-value rows.
+    func stallyListChrome(_ style: MHContainerStyle) -> some View {
+        mhListChrome(style)
             .labeledContentStyle(.mhKeyValue)
     }
 
-    func stallyFormChrome() -> some View {
-        mhFormChrome()
+    /// Applies the form's explicit MHUI container route with Stally's key-value rows.
+    func stallyFormChrome(_ style: MHContainerStyle) -> some View {
+        mhFormChrome(style)
             .labeledContentStyle(.mhKeyValue)
     }
 

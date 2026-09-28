@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import MHUI
 import SwiftData
 import SwiftUI
 import TipKit
@@ -65,6 +66,7 @@ struct ReviewLaneList: View {
     var body: some View {
         List(selection: $selectedItemIDs) {
             TipView(overviewTip)
+                .listRowSeparator(.hidden)
 
             ForEach(visibleLanes) { lane in
                 ReviewLaneSection(
@@ -75,7 +77,7 @@ struct ReviewLaneList: View {
                 }
             }
         }
-        .stallyListChrome()
+        .stallyListChrome(.content)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 EditButton()

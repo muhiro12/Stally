@@ -91,7 +91,7 @@ struct SettingsView: View {
         List {
             settingsContent()
         }
-        .stallyListChrome()
+        .stallyListChrome(.native)
         .navigationTitle("Settings")
     }
 

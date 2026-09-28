@@ -53,7 +53,7 @@ struct ItemLibraryList: View {
         List {
             listContent(refinedItems: refinedItems)
         }
-        .stallyListChrome()
+        .stallyListChrome(.content)
         .searchable(
             text: $searchText,
             prompt: Text(kind.searchPrompt)

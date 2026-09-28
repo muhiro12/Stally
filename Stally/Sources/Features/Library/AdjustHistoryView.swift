@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/07/12.
 //
 
+import MHUI
 import SwiftData
 import SwiftUI
 
@@ -56,7 +57,7 @@ struct AdjustHistoryView: View {
                     removeAction: removeMark
                 )
             }
-            .stallyFormChrome()
+            .stallyFormChrome(.content)
             .navigationTitle("Adjust History")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

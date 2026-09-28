@@ -14,6 +14,64 @@ Its subsequent isolated interaction audit records one precision-Picker layout
 correction, Dynamic Type/appearance comparisons, and explicit manual checks
 where runtime operation or accessibility tools could not connect.
 
+## MHUI 2.3 Adoption
+
+The September 29 package update moves Stally from MHUI 1.19 to 2.3.0. MHUI 2.0
+replaces the palettes with an achromatic foundation and makes every screen
+choose an explicit container route. The later 2.x releases add native control
+theming, open section rhythm, and the full available column width. Stally
+followed the [migration guide][mhui-2-3-migration] rather than preserving 1.19
+appearance.
+
+### Route Decisions
+
+| Screen | Route | Reason |
+| --- | --- | --- |
+| Sidebar | `.native` | Keep the split-view sidebar system-owned |
+| Library, Archive, Review, empty states | `.content` | Collections read as MHUI rows on an open canvas |
+| Item Detail | `.native` | Keep native row geometry around history, time, and actions |
+| Settings | `.native` | Keep grouped controls and secondary footers |
+| Add Item, Edit Item, Adjust History | `.content` | Forms keep native fields on the MHUI canvas |
+
+`stallyListChrome(_:)` and `stallyFormChrome(_:)` now require the route, so
+the no-argument 2.x default cannot silently change a screen. App startup calls
+`MHTheme.standard.configureNativeAppearance()` once, which applies the theme to
+navigation titles and UIKit text inputs. Stally had no palette, surface-glass,
+footer-only `mhSection`, or metrics overrides to migrate.
+
+On the content route, the refinement row hides its top separator and the Review
+tip hides its separators. This keeps the list's first row from drawing a rule
+under the navigation title.
+
+### Runtime Captures
+
+Captures use the Debug `typical` in-memory fixture on the iPhone 18 Pro
+simulator (iOS 27, 402 by 874 points), in English with Large text.
+
+| Light | Dark |
+| --- | --- |
+| ![Library in light appearance][23-library] | ![Library in dark appearance][23-library-dark] |
+| ![Settings in light appearance][23-settings] | ![Settings in dark appearance][23-settings-dark] |
+| ![Item Detail in light appearance][23-detail] | ![Add Item in light appearance][23-add] |
+
+In Light appearance, the 2.x canvas and row planes are both white. Rows are
+separated by spacing and rules rather than cards. Settings keeps its footers in
+secondary text on the native route.
+
+In Dark appearance, rows in a `.content` list keep the system's black plain-row
+background, while the canvas is near-black. This leaves a visible seam under
+the navigation title. MHUI's content route clears the scroll background but not
+row backgrounds, so this is a package follow-up rather than an app override.
+Native-route screens are unaffected.
+
+[mhui-2-3-migration]: https://github.com/muhiro12/MHUI/blob/2.3.0/Designs/Guides/ADOPTION_GUIDE.md#migration-to-20
+[23-library]: ui-preview-screenshots/mhui-2.3/library-iphone-en-light.png
+[23-library-dark]: ui-preview-screenshots/mhui-2.3/library-iphone-en-dark.png
+[23-settings]: ui-preview-screenshots/mhui-2.3/settings-iphone-en-light.png
+[23-settings-dark]: ui-preview-screenshots/mhui-2.3/settings-iphone-en-dark.png
+[23-detail]: ui-preview-screenshots/mhui-2.3/item-detail-iphone-en-light.png
+[23-add]: ui-preview-screenshots/mhui-2.3/add-item-iphone-en-light.png
+
 ## MHUI 1.19 App Composition
 
 The September 15 composition update applies the release's design intent to

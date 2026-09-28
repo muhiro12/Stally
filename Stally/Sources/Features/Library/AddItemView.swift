@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import MHUI
 import SwiftData
 import SwiftUI
 
@@ -58,7 +59,7 @@ struct AddItemView: View {
                     allowsDisablingMarks: true
                 )
             }
-            .stallyFormChrome()
+            .stallyFormChrome(.content)
             .navigationTitle("Add Item")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

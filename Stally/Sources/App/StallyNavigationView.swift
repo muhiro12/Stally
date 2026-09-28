@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/07/16.
 //
 
+import MHUI
 import SwiftUI
 
 struct StallyNavigationView: View {
@@ -65,7 +66,7 @@ struct StallyNavigationView: View {
                     }
                 }
             }
-            .stallyListChrome()
+            .stallyListChrome(.native)
             .navigationTitle("Stally")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

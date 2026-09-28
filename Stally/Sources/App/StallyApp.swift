@@ -60,6 +60,7 @@ struct StallyApp: App {
             source: #fileID
         )
         startupLogger.notice("startup.begin")
+        MHTheme.standard.configureNativeAppearance()
         Self.configureTips(startupLogger: startupLogger)
 
         let preferenceStore = MHPreferenceStore()

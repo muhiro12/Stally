@@ -21,6 +21,7 @@ struct ItemCollectionRefinementSection: View {
         Section {
             refinementMenu
                 .mhRow()
+                .listRowSeparator(.hidden, edges: .top)
 
             if selectedFilter == .openOnDay || selectedFilter == .markedOnDay {
                 DatePicker(

@@ -119,7 +119,7 @@ struct ItemDetailView: View {
                 .padding(.vertical, theme.spacing.inline)
             }
         }
-        .mhListChrome()
+        .mhListChrome(.native)
         .navigationTitle(item.name)
         .navigationBarTitleDisplayMode(.inline)
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in

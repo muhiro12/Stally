@@ -13,7 +13,7 @@ struct EmptyReviewView: View {
         List {
             // Preserve the native list canvas behind the empty state.
         }
-        .stallyListChrome()
+        .stallyListChrome(.content)
         .overlay {
             ContentUnavailableView {
                 Label("Nothing Needs Review", systemImage: "checkmark.circle")

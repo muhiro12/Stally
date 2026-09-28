@@ -17,7 +17,7 @@ struct EmptyLibraryView: View {
         List {
             // Preserve the native list canvas behind the empty state.
         }
-        .stallyListChrome()
+        .stallyListChrome(.content)
         .overlay {
             ContentUnavailableView {
                 Label("Start Your Library", systemImage: "tray")
