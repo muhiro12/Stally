@@ -26,6 +26,6 @@ struct BackupSnapshotSection: View {
             }
         }
         .labeledContentStyle(.mhKeyValue)
-        .mhSection("Backup Snapshot")
+        .mhSection("Collection Data")
     }
 }

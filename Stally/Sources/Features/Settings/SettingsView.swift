@@ -131,7 +131,7 @@ struct SettingsView: View {
             NavigationLink {
                 BackupCenterView(items: items)
             } label: {
-                Label("Backup Center", systemImage: "externaldrive")
+                Label("Import & Export", systemImage: "externaldrive")
             }
             .mhRow()
         }

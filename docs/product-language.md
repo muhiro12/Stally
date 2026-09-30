@@ -1,5 +1,91 @@
 # Product Language
 
+## Current Combined Product Glossary
+
+The first-release vocabulary follows `first-release-data-model.md`. One Item
+can carry daily choices, start knowledge, both, or neither. Its identity and
+context do not depend on which readings the person wants to keep.
+
+| English | Japanese | Meaning |
+| --- | --- | --- |
+| Item | アイテム | One personally meaningful thing or place |
+| Mark | マーク | A recorded choice on one local calendar day |
+| Record Marks | マークを記録する | Enable daily choice recording |
+| Start | 開始時期 | Entered year, month, or day; creation is separate |
+| Not Set | 未設定 | No start knowledge has been entered |
+| Time Together | 一緒に過ごした時間 | A reading at the entered start precision |
+| Milestone | 節目 | A derived yearly reflection, never a new event |
+| Library | ライブラリ | The active collection, with either recording policy |
+| Archive | アーカイブ | Put an Item aside; time and history continue |
+| Review | 見直し | Revisit Mark-enabled Items that may need attention |
+| Insights | 振り返り | Read choice patterns and collection context |
+| History | 履歴 | Recorded choice days, separate from elapsed time |
+| Import & Export | 読み込みと書き出し | Take the full collection out or bring data in |
+| Stally Data | Stallyデータ | A portable collection file |
+| Backup | バックアップ | A retained export for later recovery |
+| Merge | 統合 | Keep local details and add missing compatible history |
+| Replace | 置き換え | Restore the file's collection after confirmation |
+
+Item is the canonical interface noun; thing/place explains its scope. A
+relationship describes the person's time with that Item, not another record
+or a social connection. Do not expose `recordsMarks`, schema names, or
+"non-Mark state" in ordinary copy. Say that an Item does not record Marks.
+An Item with no Marks yet may still have recording enabled; keep that distinct.
+
+Start never implies an exact day when only a year or month is known. Japanese
+uses 開始時期 for the general concept; exact-day controls may still say 日.
+Archive never means ending the relationship. Milestones, counts, and time
+together remain readings rather than inferred actions or history.
+
+### Action Vocabulary
+
+Use the same verbs in visible controls, accessibility labels, App Intents,
+entity descriptions, and transfer prompts:
+
+- Add Item / アイテムを追加; Edit Item / アイテムを編集.
+- Mark Today / 今日マーク; Undo Today's Mark / 今日のマークを取り消す.
+- Archive Item / アイテムをアーカイブ.
+- Move Back to Library / ライブラリに戻す.
+- Check Time Together / 一緒に過ごした時間を確認.
+- Share Time Together / 一緒に過ごした時間を共有.
+- Export Data / データを書き出す; Import Data / データを読み込む.
+- Choose Data File / データファイルを選択.
+- Merge Into Library / ライブラリに統合.
+- Replace Library / ライブラリを置き換え.
+
+Siri/Shortcuts name the same Item and actions. Stable route/UUID identifiers
+and internal `Backup*` implementation types do not become interface language.
+The `.stallybackup` extension and versioned development files retain their
+documented meaning; a neutral display name does not relabel their schema.
+
+### Public and Store Copy
+
+Use this combined-product meaning in repository, support, and future Store
+descriptions. Store publication and the public website deployment remain
+separate release actions; this glossary is their copy source.
+
+English:
+
+> Keep a quiet record of the things and places that matter to you. Record
+> everyday choices with Marks, look back on time together, or keep both.
+> Enter only the start year, month, or day you know. Archive keeps an Item
+> nearby without ending your time together. Your collection can be exported
+> with its notes, photos, and history and previewed before importing it again.
+
+Japanese:
+
+> 大切なものや場所を、静かに記録するアプリです。日々の選択をマークしたり、
+> 一緒に過ごした時間を振り返ったり、どちらも同じアイテムに残せます。
+> 開始時期は、わかる年・月・日だけを入力できます。アーカイブしても時間は進み、
+> 情報や履歴は残ります。メモ・写真・履歴を含むコレクションを書き出せます。
+> データを読み込む前に内容を確認できます。
+
+## Preserved Language Reference
+
+The following sections retain the original Mark-centered language as product
+intent evidence. Historical names such as Backup Center are superseded by the
+current glossary; these examples do not restrict Items to daily choices.
+
 ## Voice
 
 Stally's voice is calm, direct, and personal.

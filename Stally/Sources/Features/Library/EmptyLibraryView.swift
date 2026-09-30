@@ -22,7 +22,7 @@ struct EmptyLibraryView: View {
             ContentUnavailableView {
                 Label("Start Your Library", systemImage: "tray")
             } description: {
-                Text("Start with a few pieces you actually reach for.")
+                Text("Keep the things and places that matter to you.")
             } actions: {
                 Button("Add Your First Item", action: addAction)
                     .buttonStyle(.mhPrimary)
@@ -33,7 +33,7 @@ struct EmptyLibraryView: View {
                 }
 
                 Button(action: restoreAction) {
-                    Text("Restore From Backup")
+                    Text("Import Data")
                         .mhForegroundStyle(.primaryText)
                 }
                 .buttonStyle(.mhQuiet)

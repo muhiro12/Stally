@@ -1,7 +1,8 @@
 # Stally
 
-Stally is an unfinished iPhone app for quietly tracking the personal items a
-user keeps choosing over time.
+Stally is a pre-release iPhone and iPad app for keeping a quiet record of the
+things and places that matter to you. Record everyday choices with Marks,
+look back on time together, or keep both kinds of knowledge for the same Item.
 
 The repository is in rebuild implementation. The legacy implementation was
 removed after product intent was preserved under `docs/`, and the current tree
@@ -9,7 +10,7 @@ now contains a fresh Apple-platform app project plus a local library package:
 
 - `Stally.xcodeproj`, with the `Stally` app target and `Stally` scheme.
 - `Stally/`, a SwiftUI app source tree for the rebuilt Library, Archive,
-  Review, Insights, Backup Center, Settings, shareable-link surfaces,
+  Review, Insights, Import & Export, Settings, shareable-link surfaces,
   App Intents adapters, app-side MHUI presentation chrome, English and
   Japanese string catalogs, and DEBUG-only preview support.
 - `StallyLibrary/`, a local Swift package for the durable item domain,
@@ -37,6 +38,7 @@ Use the documents under `docs/` as the rebuild documentation set:
 - `docs/user-workflows.md`
 - `docs/user-experience-principles.md`
 - `docs/product-language.md`
+- `docs/first-release-data-model.md`
 - `docs/rebuild-handoff.md`
 - `docs/rebuild-implementation-direction.md`
 - `docs/rebuild-implementation-principles.md`
@@ -52,7 +54,7 @@ created. This README and `AGENTS.md` describe the current repository state.
 ## Current Repository State
 
 This repository currently contains rebuilt core Stally surfaces for Library,
-Archive, Review, Insights, Backup Center, Settings, shareable links, CloudKit
+Archive, Review, Insights, Import & Export, Settings, shareable links, CloudKit
 persistence baseline, App Intents, and English/Japanese localization. The app
 target owns SwiftUI presentation, app lifecycle wiring, navigation, MHUI visual
 chrome, file import/export presentation, route handling, App Intents adapters,

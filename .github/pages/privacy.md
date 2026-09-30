@@ -90,7 +90,7 @@ You can:
 - use Stally without iCloud Sync;
 - add, change, or remove item photos;
 - delete individual items and their history;
-- reset the library from Backup Center;
+- reset the library from Import & Export;
 - export a copy of your library; and
 - disable iCloud Sync from Settings.
 

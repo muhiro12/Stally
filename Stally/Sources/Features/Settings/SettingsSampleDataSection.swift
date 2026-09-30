@@ -36,7 +36,7 @@ struct SettingsSampleDataSection: View {
         } footer: {
             MHSectionFooter(
                 // swiftlint:disable:next line_length
-                "Sample items use the same Library, history, Review, Insights, Archive, backup, and sync features as your own items."
+                "Sample items use the same collection, history, time, import/export, and sync features as your own items."
             )
         }
     }

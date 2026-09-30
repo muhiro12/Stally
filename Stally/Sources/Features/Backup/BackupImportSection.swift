@@ -14,7 +14,7 @@ struct BackupImportSection: View {
     var body: some View {
         MHActionGroup {
             Button(action: chooseBackupAction) {
-                Label("Choose Backup File", systemImage: "doc.badge.plus")
+                Label("Choose Data File", systemImage: "doc.badge.plus")
             }
             .buttonStyle(.mhSecondary)
         }

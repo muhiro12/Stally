@@ -88,7 +88,7 @@ struct InsightsReportOperationsTests {
             locale: .init(identifier: "ja")
         )
 
-        #expect(report.contains("Stallyインサイト"))
+        #expect(report.contains("Stally振り返り"))
         #expect(report.contains("範囲: すべての期間 · すべてのアイテム"))
         #expect(report.contains("アクティビティ"))
         #expect(report.contains("現在の連続日数: 0"))

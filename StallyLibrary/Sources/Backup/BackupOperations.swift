@@ -5,7 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
-/// Cross-surface Backup Center use cases.
+/// Cross-surface collection import, export, and recovery use cases.
 public enum BackupOperations {
     /// Product-facing backup filename extension.
     public static let fileExtension = "stallybackup"

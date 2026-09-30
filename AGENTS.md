@@ -20,7 +20,7 @@ Repository-specific agent contract for Stally.
 ## Current State
 
 Stally has re-entered rebuild implementation and now contains the rebuilt core
-Library, Archive, Review, Insights, Backup Center, Settings, shareable-link,
+Library, Archive, Review, Insights, Import & Export, Settings, shareable-link,
 CloudKit persistence, App Intents, monetization, and English/Japanese
 localization baselines plus the local MHPlatform runtime, logging, and route
 foundation for continuing the rebuild.
@@ -163,7 +163,7 @@ The app target should stay a thin adapter over the current product surface.
   Review-owned App Intents.
 - `Stally/Sources/Features/Insights/` owns the SwiftUI Insights reading
   surface and Insights-owned App Intents.
-- `Stally/Sources/Features/Backup/` owns the SwiftUI Backup Center surface,
+- `Stally/Sources/Features/Backup/` owns the SwiftUI Import & Export surface,
   including file importer/exporter presentation, safety confirmations, and
   Backup-owned App Intents.
 - `Stally/Sources/Features/Links/` owns app-side link-sharing presentation.

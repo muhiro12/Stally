@@ -34,7 +34,7 @@ public enum StallyLinkDestination: String, CaseIterable, Codable, Identifiable, 
         case .insights:
             .init("Insights", bundle: #bundle)
         case .backupCenter:
-            .init("Backup Center", bundle: #bundle)
+            .init("Import & Export", bundle: #bundle)
         case .createItem:
             .init("Create Item", bundle: #bundle)
         case .settings:

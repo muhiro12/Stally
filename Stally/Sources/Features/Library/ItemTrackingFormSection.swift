@@ -14,7 +14,7 @@ struct ItemTrackingFormSection: View {
             if !allowsDisablingMarks {
                 Text("Keep Marks enabled to preserve this item's existing history.")
             } else {
-                Text("Items without Marks stay in your collection and are excluded from Review and choice counts.")
+                Text("Items that do not record Marks stay in your collection without Review or choice counts.")
             }
         }
 

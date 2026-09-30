@@ -45,7 +45,7 @@ struct BackupCenterView: View {
             replaceAction: confirmReplace,
             deleteEverythingAction: confirmDeleteEverything
         )
-        .navigationTitle("Backup Center")
+        .navigationTitle("Import & Export")
         .onChange(of: isReplacingExistingItems) {
             refreshSelectedPreview()
         }
@@ -53,7 +53,7 @@ struct BackupCenterView: View {
             ToolbarItem(placement: .topBarTrailing) {
                 StallyLinkShareButton(
                     link: .destination(.backupCenter),
-                    title: "Share Backup Center Link"
+                    title: "Share Import & Export Link"
                 )
             }
         }
@@ -61,7 +61,7 @@ struct BackupCenterView: View {
             isPresented: $isPresentingExporter,
             document: exportDocument,
             contentType: .stallyBackup,
-            defaultFilename: String(localized: "Stally Backup")
+            defaultFilename: String(localized: "Stally Data")
         ) { result in
             handleExportResult(result)
         }
@@ -138,7 +138,7 @@ private extension BackupCenterView {
             isPresentingExporter = true
         } catch BackupError.validationFailed(let preview) {
             presentError(
-                title: String(localized: "Backup could not be exported."),
+                title: String(localized: "Data could not be exported."),
                 message: preview.validationIssues.map { issue in
                     String(localized: issue.title)
                 }
@@ -146,7 +146,7 @@ private extension BackupCenterView {
             )
         } catch {
             presentError(
-                title: String(localized: "Backup could not be exported."),
+                title: String(localized: "Data could not be exported."),
                 message: error.localizedDescription
             )
         }
@@ -155,10 +155,10 @@ private extension BackupCenterView {
     private func handleExportResult(_ result: Result<URL, any Error>) {
         switch result {
         case .success:
-            statusMessage = String(localized: "Backup saved.")
+            statusMessage = String(localized: "Data saved.")
         case .failure(let error):
             presentError(
-                title: String(localized: "Backup could not be saved."),
+                title: String(localized: "Data could not be saved."),
                 message: error.localizedDescription
             )
         }
@@ -174,7 +174,7 @@ private extension BackupCenterView {
             readBackupFile(at: url)
         case .failure(let error):
             presentError(
-                title: String(localized: "Backup file could not be opened."),
+                title: String(localized: "Data file could not be opened."),
                 message: error.localizedDescription
             )
         }
@@ -213,7 +213,7 @@ private extension BackupCenterView {
             selectedBackupData = nil
             selectedBackupPreview = nil
             presentError(
-                title: String(localized: "Backup file could not be read."),
+                title: String(localized: "Data file could not be read."),
                 message: error.localizedDescription
             )
         }
@@ -311,12 +311,12 @@ private extension BackupCenterView {
            case .validationFailed(let preview) = backupError {
             selectedBackupPreview = preview
             presentError(
-                title: String(localized: "Backup has validation issues."),
-                message: String(localized: "Preview the validation issues before importing this backup.")
+                title: String(localized: "Data has validation issues."),
+                message: String(localized: "Preview the validation issues before importing this data.")
             )
         } else {
             presentError(
-                title: String(localized: "Backup action failed."),
+                title: String(localized: "Data transfer failed."),
                 message: error.localizedDescription
             )
         }

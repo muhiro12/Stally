@@ -373,182 +373,6 @@
         }
       }
     },
-    "Backup action failed." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup action failed."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップ操作に失敗しました。"
-          }
-        }
-      }
-    },
-    "Backup Center" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup Center"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップセンター"
-          }
-        }
-      }
-    },
-    "Backup could not be exported." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup could not be exported."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップを書き出せませんでした。"
-          }
-        }
-      }
-    },
-    "Backup could not be saved." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup could not be saved."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップを保存できませんでした。"
-          }
-        }
-      }
-    },
-    "Backup file could not be opened." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup file could not be opened."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップファイルを開けませんでした。"
-          }
-        }
-      }
-    },
-    "Backup file could not be read." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup file could not be read."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップファイルを読み込めませんでした。"
-          }
-        }
-      }
-    },
-    "Backup files are for archiving and transfer, not ongoing sync between devices." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup files are for archiving and transfer, not ongoing sync between devices."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップファイルは保管や移行のためのもので、デバイス間の継続的な同期には使いません。"
-          }
-        }
-      }
-    },
-    "Backup has validation issues." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup has validation issues."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップに確認が必要な項目があります。"
-          }
-        }
-      }
-    },
-    "Backup Preview" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup Preview"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップのプレビュー"
-          }
-        }
-      }
-    },
-    "Backup saved." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup saved."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップを保存しました。"
-          }
-        }
-      }
-    },
-    "Backup Snapshot" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup Snapshot"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップスナップショット"
-          }
-        }
-      }
-    },
     "Best Streak" : {
       "localizations" : {
         "en" : {
@@ -677,6 +501,38 @@
         }
       }
     },
+    "Choose Data File" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose Data File"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データファイルを選択"
+          }
+        }
+      }
+    },
+    "Choose Photo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose Photo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真を選択"
+          }
+        }
+      }
+    },
     "Choose a valid day no later than today." : {
       "localizations" : {
         "en" : {
@@ -725,38 +581,6 @@
         }
       }
     },
-    "Choose Backup File" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose Backup File"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップファイルを選択"
-          }
-        }
-      }
-    },
-    "Choose Photo" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose Photo"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "写真を選択"
-          }
-        }
-      }
-    },
     "Clear" : {
       "localizations" : {
         "en" : {
@@ -784,7 +608,23 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無効な開始日をクリア"
+            "value" : "無効な開始時期をクリア"
+          }
+        }
+      }
+    },
+    "Collection Data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collection Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コレクションのデータ"
           }
         }
       }
@@ -945,6 +785,134 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "現在のストリーク"
+          }
+        }
+      }
+    },
+    "Data could not be exported." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data could not be exported."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データを書き出せませんでした。"
+          }
+        }
+      }
+    },
+    "Data could not be saved." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data could not be saved."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データを保存できませんでした。"
+          }
+        }
+      }
+    },
+    "Data file could not be opened." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data file could not be opened."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データファイルを開けませんでした。"
+          }
+        }
+      }
+    },
+    "Data file could not be read." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data file could not be read."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データファイルを読み込めませんでした。"
+          }
+        }
+      }
+    },
+    "Data files are for archiving and transfer, not ongoing sync between devices." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data files are for archiving and transfer, not ongoing sync between devices."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データファイルは保管や移行のためのもので、デバイス間の継続的な同期には使いません。"
+          }
+        }
+      }
+    },
+    "Data has validation issues." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data has validation issues."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データに確認が必要な項目があります。"
+          }
+        }
+      }
+    },
+    "Data saved." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data saved."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データを保存しました。"
+          }
+        }
+      }
+    },
+    "Data transfer failed." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data transfer failed."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データの読み書きに失敗しました。"
           }
         }
       }
@@ -1237,18 +1205,18 @@
         }
       }
     },
-    "Export Backup" : {
+    "Export Data" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Export Backup"
+            "value" : "Export Data"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バックアップを書き出す"
+            "value" : "データを書き出す"
           }
         }
       }
@@ -1302,85 +1270,34 @@
         }
       }
     },
-    "iCloud" : {
-      "shouldTranslate" : false
-    },
-    "iCloud Sync" : {
+    "Import & Export" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iCloud Sync"
+            "value" : "Import & Export"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iCloud同期"
+            "value" : "読み込みと書き出し"
           }
         }
       }
     },
-    "iCloud sync changes take effect the next time Stally starts." : {
+    "Import Data" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iCloud sync changes take effect the next time Stally starts."
+            "value" : "Import Data"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iCloud同期の変更は、次にStallyを起動したときに反映されます。"
-          }
-        }
-      }
-    },
-    "iCloud sync could not start. Stally is using local storage for this launch." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud sync could not start. Stally is using local storage for this launch."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud同期を開始できませんでした。この起動中、Stallyはローカルストレージを使用しています。"
-          }
-        }
-      }
-    },
-    "iCloud sync is off for this launch." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud sync is off for this launch."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "この起動中、iCloud同期はオフです。"
-          }
-        }
-      }
-    },
-    "iCloud sync is on for this launch." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iCloud sync is on for this launch."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "この起動中、iCloud同期はオンです。"
+            "value" : "データを読み込む"
           }
         }
       }
@@ -1397,6 +1314,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "読み込み方法"
+          }
+        }
+      }
+    },
+    "Import Preview" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import Preview"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み込みのプレビュー"
           }
         }
       }
@@ -1445,7 +1378,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "インサイト"
+            "value" : "振り返り"
           }
         }
       }
@@ -1482,34 +1415,18 @@
         }
       }
     },
-    "Items without Marks stay in your collection and are excluded from Review and choice counts." : {
+    "Items that do not record Marks stay in your collection without Review or choice counts." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Items without Marks stay in your collection and are excluded from Review and choice counts."
+            "value" : "Items that do not record Marks stay in your collection without Review or choice counts."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "マークしないアイテムもコレクションに残り、レビューや選択回数の集計から除外されます。"
-          }
-        }
-      }
-    },
-    "Keep a portable snapshot" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keep a portable snapshot"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "持ち運べるバックアップを残す"
+            "value" : "マークを記録しないアイテムもコレクションに残り、見直しや選択回数の集計から除外されます。"
           }
         }
       }
@@ -1530,6 +1447,22 @@
         }
       }
     },
+    "Keep a portable snapshot" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep a portable snapshot"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "持ち運べるバックアップを残す"
+          }
+        }
+      }
+    },
     "Keep one recent export before you try any replace-style restore." : {
       "localizations" : {
         "en" : {
@@ -1546,18 +1479,18 @@
         }
       }
     },
-    "Last marked" : {
+    "Keep the things and places that matter to you." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Last marked"
+            "value" : "Keep the things and places that matter to you."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "最後のマーク"
+            "value" : "大切なものや場所を、ここに集めましょう。"
           }
         }
       }
@@ -1574,6 +1507,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "前回の結果"
+          }
+        }
+      }
+    },
+    "Last marked" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last marked"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最後のマーク"
           }
         }
       }
@@ -1770,22 +1719,6 @@
         }
       }
     },
-    "Merge import will preserve local items and add missing history." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Merge import will preserve local items and add missing history."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "統合では手元のアイテムを残し、不足している履歴を追加します。"
-          }
-        }
-      }
-    },
     "Merge Into Library" : {
       "localizations" : {
         "en" : {
@@ -1818,18 +1751,34 @@
         }
       }
     },
-    "Merge preserves existing details, including start dates and Mark settings, and adds missing history." : {
+    "Merge import will preserve local items and add missing history." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Merge preserves existing details, including start dates and Mark settings, and adds missing history."
+            "value" : "Merge import will preserve local items and add missing history."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "結合では、開始日やマーク設定などの既存情報を保持し、不足している履歴を追加します。"
+            "value" : "統合では手元のアイテムを残し、不足している履歴を追加します。"
+          }
+        }
+      }
+    },
+    "Merge preserves existing details, including starts and Mark settings, and adds missing history." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Merge preserves existing details, including starts and Mark settings, and adds missing history."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "統合では、開始時期やマーク設定などの既存情報を保持し、不足している履歴を追加します。"
           }
         }
       }
@@ -1994,22 +1943,6 @@
         }
       }
     },
-    "No activity in this window yet." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No activity in this window yet."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "この期間にはまだ動きがありません。"
-          }
-        }
-      }
-    },
     "No Archived Items" : {
       "localizations" : {
         "en" : {
@@ -2022,6 +1955,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アーカイブ済みアイテムはありません"
+          }
+        }
+      }
+    },
+    "No Matching Archived Items" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Matching Archived Items"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一致するアーカイブ済みアイテムはありません"
+          }
+        }
+      }
+    },
+    "No Matching Items" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Matching Items"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一致するアイテムはありません"
+          }
+        }
+      }
+    },
+    "No activity in this window yet." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No activity in this window yet."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この期間にはまだ動きがありません。"
           }
         }
       }
@@ -2090,38 +2071,6 @@
         }
       }
     },
-    "No Matching Archived Items" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Matching Archived Items"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一致するアーカイブ済みアイテムはありません"
-          }
-        }
-      }
-    },
-    "No Matching Items" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Matching Items"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一致するアイテムはありません"
-          }
-        }
-      }
-    },
     "No quiet items in this window yet." : {
       "localizations" : {
         "en" : {
@@ -2138,18 +2087,18 @@
         }
       }
     },
-    "No validation issues were found in this backup." : {
+    "No validation issues were found in this data." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No validation issues were found in this backup."
+            "value" : "No validation issues were found in this data."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このバックアップに検証上の問題はありません。"
+            "value" : "このデータに検証上の問題はありません。"
           }
         }
       }
@@ -2170,22 +2119,6 @@
         }
       }
     },
-    "Not marked" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Not marked"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未マーク"
-          }
-        }
-      }
-    },
     "Not Set" : {
       "localizations" : {
         "en" : {
@@ -2198,6 +2131,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未設定"
+          }
+        }
+      }
+    },
+    "Not marked" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not marked"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未マーク"
           }
         }
       }
@@ -2261,7 +2210,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レビューが必要なものはありません"
+            "value" : "見直しが必要なものはありません"
           }
         }
       }
@@ -2328,7 +2277,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "年・月までの開始日は、その期間の最初の日で並びます。開始日が未設定の項目は最後に表示します。"
+            "value" : "年・月までの開始時期は、その期間の最初の日で並びます。開始時期が未設定のアイテムは最後に表示します。"
           }
         }
       }
@@ -2445,18 +2394,18 @@
         }
       }
     },
-    "Preview the validation issues before importing this backup." : {
+    "Preview the validation issues before importing this data." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Preview the validation issues before importing this backup."
+            "value" : "Preview the validation issues before importing this data."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このバックアップを読み込む前に、検証項目を確認してください。"
+            "value" : "このデータを読み込む前に、検証項目を確認してください。"
           }
         }
       }
@@ -2638,22 +2587,6 @@
         }
       }
     },
-    "Replace import will overwrite them." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Replace import will overwrite them."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "置き換えでは現在の内容を上書きします。"
-          }
-        }
-      }
-    },
     "Replace Library" : {
       "localizations" : {
         "en" : {
@@ -2682,6 +2615,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ライブラリを置き換えますか？"
+          }
+        }
+      }
+    },
+    "Replace import will overwrite them." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replace import will overwrite them."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "置き換えでは現在の内容を上書きします。"
           }
         }
       }
@@ -2735,22 +2684,6 @@
         }
       }
     },
-    "Restore From Backup" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Restore From Backup"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップから復元"
-          }
-        }
-      }
-    },
     "Review" : {
       "localizations" : {
         "en" : {
@@ -2762,7 +2695,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レビュー"
+            "value" : "見直し"
           }
         }
       }
@@ -2778,7 +2711,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レビューには、最初のマークを待つアイテム、休眠中のアイテム、もう一度出番がありそうな以前のお気に入りが集まります。"
+            "value" : "見直しには、最初のマークを待つアイテム、休眠中のアイテム、もう一度出番がありそうな以前のお気に入りが集まります。"
           }
         }
       }
@@ -2831,6 +2764,22 @@
         }
       }
     },
+    "Sample Marks" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sample Marks"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サンプルのマーク"
+          }
+        }
+      }
+    },
     "Sample items can only be added when the collection is empty." : {
       "localizations" : {
         "en" : {
@@ -2847,34 +2796,18 @@
         }
       }
     },
-    "Sample items use the same Library, history, Review, Insights, Archive, backup, and sync features as your own items." : {
+    "Sample items use the same collection, history, time, import/export, and sync features as your own items." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sample items use the same Library, history, Review, Insights, Archive, backup, and sync features as your own items."
+            "value" : "Sample items use the same collection, history, time, import/export, and sync features as your own items."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "サンプルアイテムは、自分で追加したアイテムと同じライブラリ、履歴、レビュー、インサイト、アーカイブ、バックアップ、同期機能を使用します。"
-          }
-        }
-      }
-    },
-    "Sample Marks" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sample Marks"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サンプルのマーク"
+            "value" : "サンプルアイテムは、自分で追加したアイテムと同じコレクション、履歴、時間、読み書き、同期機能を使用します。"
           }
         }
       }
@@ -2975,18 +2908,18 @@
         }
       }
     },
-    "Share Backup Center Link" : {
+    "Share Import & Export Link" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Share Backup Center Link"
+            "value" : "Share Import & Export Link"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バックアップセンターリンクを共有"
+            "value" : "読み込みと書き出しのリンクを共有"
           }
         }
       }
@@ -3002,7 +2935,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "インサイトリンクを共有"
+            "value" : "振り返りリンクを共有"
           }
         }
       }
@@ -3066,7 +2999,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レビューリンクを共有"
+            "value" : "見直しリンクを共有"
           }
         }
       }
@@ -3167,18 +3100,18 @@
         }
       }
     },
-    "Stally Backup" : {
+    "Stally Data" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stally Backup"
+            "value" : "Stally Data"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stallyバックアップ"
+            "value" : "Stallyデータ"
           }
         }
       }
@@ -3210,23 +3143,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開始日"
-          }
-        }
-      }
-    },
-    "Start with a few pieces you actually reach for." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Start with a few pieces you actually reach for."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "実際によく手に取るものを、まずは少しだけ追加しましょう。"
+            "value" : "開始時期"
           }
         }
       }
@@ -3355,7 +3272,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存された開始日が無効です。編集またはクリアしてから保存してください。"
+            "value" : "保存された開始時期が無効です。編集またはクリアしてから保存してください。"
           }
         }
       }
@@ -3612,6 +3529,89 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "年ごとの節目"
+          }
+        }
+      }
+    },
+    "iCloud" : {
+      "shouldTranslate" : false
+    },
+    "iCloud Sync" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud Sync"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud同期"
+          }
+        }
+      }
+    },
+    "iCloud sync changes take effect the next time Stally starts." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud sync changes take effect the next time Stally starts."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud同期の変更は、次にStallyを起動したときに反映されます。"
+          }
+        }
+      }
+    },
+    "iCloud sync could not start. Stally is using local storage for this launch." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud sync could not start. Stally is using local storage for this launch."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud同期を開始できませんでした。この起動中、Stallyはローカルストレージを使用しています。"
+          }
+        }
+      }
+    },
+    "iCloud sync is off for this launch." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud sync is off for this launch."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この起動中、iCloud同期はオフです。"
+          }
+        }
+      }
+    },
+    "iCloud sync is on for this launch." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iCloud sync is on for this launch."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この起動中、iCloud同期はオンです。"
           }
         }
       }

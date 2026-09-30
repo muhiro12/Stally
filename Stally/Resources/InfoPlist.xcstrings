@@ -18,18 +18,18 @@
         }
       }
     },
-    "Stally Backup" : {
+    "Stally Data" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stally Backup"
+            "value" : "Stally Data"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stallyバックアップ"
+            "value" : "Stallyデータ"
           }
         }
       }

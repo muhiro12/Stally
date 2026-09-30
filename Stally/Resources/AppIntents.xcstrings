@@ -102,22 +102,6 @@
         }
       }
     },
-    "Backup Center" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup Center"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップセンター"
-          }
-        }
-      }
-    },
     "Bags" : {
       "localizations" : {
         "en" : {
@@ -182,22 +166,6 @@
         }
       }
     },
-    "Create a Stally item without opening the app." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Create a Stally item without opening the app."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アプリを開かずにStallyのアイテムを作成します。"
-          }
-        }
-      }
-    },
     "Create Item" : {
       "localizations" : {
         "en" : {
@@ -210,6 +178,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アイテムを作成"
+          }
+        }
+      }
+    },
+    "Create a Stally item without opening the app." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a Stally item without opening the app."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリを開かずにStallyのアイテムを作成します。"
           }
         }
       }
@@ -246,6 +230,22 @@
         }
       }
     },
+    "Import & Export" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import & Export"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み込みと書き出し"
+          }
+        }
+      }
+    },
     "Insights" : {
       "localizations" : {
         "en" : {
@@ -257,7 +257,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "インサイト"
+            "value" : "振り返り"
           }
         }
       }
@@ -342,22 +342,6 @@
         }
       }
     },
-    "Mark that you chose an item today." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mark that you chose an item today."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今日このアイテムを選んだことをマークします。"
-          }
-        }
-      }
-    },
     "Mark Today" : {
       "localizations" : {
         "en" : {
@@ -374,6 +358,22 @@
         }
       }
     },
+    "Mark that you chose an item today." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark that you chose an item today."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日このアイテムを選んだことをマークします。"
+          }
+        }
+      }
+    },
     "Marked today." : {
       "localizations" : {
         "en" : {
@@ -386,6 +386,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今日のマークを付けました。"
+          }
+        }
+      }
+    },
+    "Move Item Back to Library" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move Item Back to Library"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アイテムをライブラリに戻す"
           }
         }
       }
@@ -418,22 +434,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "履歴を残したままアイテムをアーカイブへ移します。"
-          }
-        }
-      }
-    },
-    "Move Item Back to Library" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Move Item Back to Library"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アイテムをライブラリに戻す"
           }
         }
       }
@@ -534,18 +534,18 @@
         }
       }
     },
-    "Open Backup Center" : {
+    "Open Import & Export" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open Backup Center"
+            "value" : "Open Import & Export"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バックアップセンターを開く"
+            "value" : "読み込みと書き出しを開く"
           }
         }
       }
@@ -561,7 +561,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "インサイトを開く"
+            "value" : "振り返りを開く"
           }
         }
       }
@@ -609,7 +609,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レビューを開く"
+            "value" : "見直しを開く"
           }
         }
       }
@@ -662,6 +662,102 @@
         }
       }
     },
+    "Open Stally to Archive." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Stally to Archive."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stallyでアーカイブを開きます。"
+          }
+        }
+      }
+    },
+    "Open Stally to Import & Export." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Stally to Import & Export."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stallyで読み込みと書き出しを開きます。"
+          }
+        }
+      }
+    },
+    "Open Stally to Insights." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Stally to Insights."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stallyで振り返りを開きます。"
+          }
+        }
+      }
+    },
+    "Open Stally to Library." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Stally to Library."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stallyでライブラリを開きます。"
+          }
+        }
+      }
+    },
+    "Open Stally to Review." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Stally to Review."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stallyで見直しを開きます。"
+          }
+        }
+      }
+    },
+    "Open Stally to Settings." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Stally to Settings."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stallyで設定を開きます。"
+          }
+        }
+      }
+    },
     "Open Stally to a major app destination." : {
       "localizations" : {
         "en" : {
@@ -694,102 +790,6 @@
         }
       }
     },
-    "Open Stally to Archive." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Stally to Archive."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stallyでアーカイブを開きます。"
-          }
-        }
-      }
-    },
-    "Open Stally to Backup Center." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Stally to Backup Center."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stallyでバックアップセンターを開きます。"
-          }
-        }
-      }
-    },
-    "Open Stally to Insights." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Stally to Insights."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stallyでインサイトを開きます。"
-          }
-        }
-      }
-    },
-    "Open Stally to Library." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Stally to Library."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stallyでライブラリを開きます。"
-          }
-        }
-      }
-    },
-    "Open Stally to Review." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Stally to Review."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stallyでレビューを開きます。"
-          }
-        }
-      }
-    },
-    "Open Stally to Settings." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Stally to Settings."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stallyで設定を開きます。"
-          }
-        }
-      }
-    },
     "Other" : {
       "localizations" : {
         "en" : {
@@ -817,7 +817,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "項目の記録を変更せずに、開始日と経過時間を読み取ります。"
+            "value" : "アイテムの記録を変更せずに、開始時期と経過時間を読み取ります。"
           }
         }
       }
@@ -865,7 +865,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レビュー"
+            "value" : "見直し"
           }
         }
       }
@@ -918,6 +918,9 @@
         }
       }
     },
+    "URL" : {
+      "shouldTranslate" : false
+    },
     "Undo Today's Mark" : {
       "localizations" : {
         "en" : {
@@ -933,9 +936,6 @@
           }
         }
       }
-    },
-    "URL" : {
-      "shouldTranslate" : false
     }
   },
   "version" : "1.0"

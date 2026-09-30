@@ -17,7 +17,7 @@ struct BackupExportSection: View {
     var body: some View {
         MHActionGroup {
             Button(action: exportBackup) {
-                Label("Export Backup", systemImage: "square.and.arrow.up")
+                Label("Export Data", systemImage: "square.and.arrow.up")
             }
             .buttonStyle(.mhPrimary)
             .popoverTip(exportTip, arrowEdge: .top)

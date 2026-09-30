@@ -49,22 +49,6 @@
         }
       }
     },
-    "90 Days" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "90 Days"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "90日"
-          }
-        }
-      }
-    },
     "365 Days" : {
       "localizations" : {
         "en" : {
@@ -77,6 +61,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "365日"
+          }
+        }
+      }
+    },
+    "90 Days" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "90 Days"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "90日"
           }
         }
       }
@@ -257,22 +257,6 @@
         }
       }
     },
-    "All items" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "All items"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "すべてのアイテム"
-          }
-        }
-      }
-    },
     "All Time" : {
       "localizations" : {
         "en" : {
@@ -285,6 +269,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "すべての期間"
+          }
+        }
+      }
+    },
+    "All items" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All items"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのアイテム"
           }
         }
       }
@@ -365,22 +365,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "確認日"
-          }
-        }
-      }
-    },
-    "Backup Center" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Backup Center"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップセンター"
           }
         }
       }
@@ -508,7 +492,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開始日は今日以前の日付を選んでください。"
+            "value" : "開始時期は今日以前の日付を選んでください。"
           }
         }
       }
@@ -620,7 +604,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Markしない項目"
+            "value" : "マークを記録しない"
           }
         }
       }
@@ -716,7 +700,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開始日が古い順"
+            "value" : "開始時期が古い順"
           }
         }
       }
@@ -769,6 +753,22 @@
         }
       }
     },
+    "Import & Export" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Import & Export"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み込みと書き出し"
+          }
+        }
+      }
+    },
     "Insights" : {
       "localizations" : {
         "en" : {
@@ -780,7 +780,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "インサイト"
+            "value" : "振り返り"
           }
         }
       }
@@ -812,7 +812,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アイテムの開始日が無効です"
+            "value" : "アイテムの開始時期が無効です"
           }
         }
       }
@@ -865,22 +865,6 @@
         }
       }
     },
-    "Items with history but no marks in this range may deserve a gentle revisit." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Items with history but no marks in this range may deserve a gentle revisit."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "履歴はあるのにこの期間は静かなアイテムは、少し見直してもよさそうです。"
-          }
-        }
-      }
-    },
     "Items with Notes" : {
       "localizations" : {
         "en" : {
@@ -913,6 +897,22 @@
         }
       }
     },
+    "Items with history but no marks in this range may deserve a gentle revisit." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Items with history but no marks in this range may deserve a gentle revisit."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "履歴はあるのにこの期間は静かなアイテムは、少し見直してもよさそうです。"
+          }
+        }
+      }
+    },
     "Keep Marks enabled to preserve this item's existing history." : {
       "localizations" : {
         "en" : {
@@ -940,7 +940,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開始日が新しい順"
+            "value" : "開始時期が新しい順"
           }
         }
       }
@@ -1009,22 +1009,6 @@
         }
       }
     },
-    "Marked on Day" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Marked on Day"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "指定日にマーク済み"
-          }
-        }
-      }
-    },
     "Marked Today" : {
       "localizations" : {
         "en" : {
@@ -1037,6 +1021,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今日マーク済み"
+          }
+        }
+      }
+    },
+    "Marked on Day" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marked on Day"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指定日にマーク済み"
           }
         }
       }
@@ -1084,7 +1084,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "結合するにはこのアイテムのマーク記録を有効にしてください"
+            "value" : "統合するにはこのアイテムのマーク記録を有効にしてください"
           }
         }
       }
@@ -1329,22 +1329,6 @@
         }
       }
     },
-    "Open on Day" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open on Day"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "指定日に未マーク"
-          }
-        }
-      }
-    },
     "Open Today" : {
       "localizations" : {
         "en" : {
@@ -1357,6 +1341,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今日未マーク"
+          }
+        }
+      }
+    },
+    "Open on Day" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open on Day"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指定日に未マーク"
           }
         }
       }
@@ -1452,7 +1452,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レビュー"
+            "value" : "見直し"
           }
         }
       }
@@ -1580,7 +1580,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stallyインサイト"
+            "value" : "Stally振り返り"
           }
         }
       }
@@ -1596,7 +1596,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開始日"
+            "value" : "開始時期"
           }
         }
       }
@@ -1676,7 +1676,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存された開始日が無効です。編集またはクリアしてから保存してください。"
+            "value" : "保存された開始時期が無効です。編集またはクリアしてから保存してください。"
           }
         }
       }
@@ -1724,7 +1724,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開始日とマーク設定にはバックアップ形式3が必要です"
+            "value" : "開始時期とマーク設定にはバックアップ形式3が必要です"
           }
         }
       }
@@ -1852,7 +1852,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "開始日あり"
+            "value" : "開始時期あり"
           }
         }
       }

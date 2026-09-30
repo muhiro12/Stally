@@ -26,7 +26,7 @@ enum StallyDestinationIntentValue: String, AppEnum {
             .review: .init(title: .init("Review", table: "AppIntents")),
             .insights: .init(title: .init("Insights", table: "AppIntents")),
             .archive: .init(title: .init("Archive", table: "AppIntents")),
-            .backupCenter: .init(title: .init("Backup Center", table: "AppIntents")),
+            .backupCenter: .init(title: .init("Import & Export", table: "AppIntents")),
             .createItem: .init(title: .init("Create Item", table: "AppIntents")),
             .settings: .init(title: .init("Settings", table: "AppIntents"))
         ]

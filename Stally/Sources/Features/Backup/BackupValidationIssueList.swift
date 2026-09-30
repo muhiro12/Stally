@@ -14,7 +14,7 @@ struct BackupValidationIssueList: View {
     var body: some View {
         MHGroupedRows {
             if issues.isEmpty {
-                Text("No validation issues were found in this backup.")
+                Text("No validation issues were found in this data.")
                     .mhRowSupporting()
             } else {
                 ForEach(issues) { issue in

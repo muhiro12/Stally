@@ -141,7 +141,7 @@ import SwiftUI
     }
 }
 
-#Preview("Backup Center - Snapshot") {
+#Preview("Import & Export - Snapshot") {
     StallyPreviewContainer(.dense) { items in
         NavigationStack {
             BackupCenterView(items: items)
@@ -149,21 +149,21 @@ import SwiftUI
     }
 }
 
-#Preview("Backup Center - Import Preview") {
+#Preview("Import & Export - Import Preview") {
     StallyPreviewContainer(.dense) { items in
         NavigationStack {
             BackupList(
                 summary: .init(items: items),
                 preview: StallyPreviewData.backupValidationPreview,
                 isReplacingExistingItems: .constant(false),
-                statusMessage: "Backup saved.",
+                statusMessage: "Data saved.",
                 exportAction: { /* Preview action intentionally left empty. */ },
                 chooseBackupAction: { /* Preview action intentionally left empty. */ },
                 mergeAction: { /* Preview action intentionally left empty. */ },
                 replaceAction: { /* Preview action intentionally left empty. */ },
                 deleteEverythingAction: { /* Preview action intentionally left empty. */ }
             )
-            .navigationTitle("Backup Center")
+            .navigationTitle("Import & Export")
         }
     }
 }

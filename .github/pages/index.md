@@ -5,8 +5,8 @@ title: Stally
 # Stally
 
 Stally helps you keep a collection of the things you choose, care for, and
-spend time with. Record everyday choices with Marks, or simply look back on
-your time together.
+spend time with, including places. Record everyday choices with Marks, or
+simply look back on your time together.
 
 ## Your Collection
 
@@ -51,7 +51,7 @@ Stally synchronizes your collection through your private iCloud database.
 
 ### How should I keep a backup?
 
-Export a backup from Backup Center and keep the saved file in a location you
+Export your data from Import & Export and keep the saved file in a location you
 trust. Backups include your photos and collection information. Keep an
 independent copy before replacing your Library; replacement uses the selected
 backup's contents. Archive is not a backup or deletion operation.

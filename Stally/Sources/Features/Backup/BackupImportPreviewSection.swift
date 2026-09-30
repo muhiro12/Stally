@@ -48,6 +48,6 @@ struct BackupImportPreviewSection: View {
                 }
             }
         }
-        .mhSection("Backup Preview")
+        .mhSection("Import Preview")
     }
 }

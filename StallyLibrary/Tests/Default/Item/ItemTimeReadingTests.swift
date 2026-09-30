@@ -25,7 +25,7 @@ struct ItemTimeReadingTests {
             #expect(ItemTimeOperations.elapsedText(for: snapshot, locale: .init(identifier: "ja_JP")) == japanese)
         }
         #expect(ItemTimeOperations.elapsedText(for: .unknown, locale: .init(identifier: "en")) == "Not Set")
-        #expect(ItemTimeOperations.elapsedText(for: .invalidStart, locale: .init(identifier: "ja")) == "アイテムの開始日が無効です")
+        #expect(ItemTimeOperations.elapsedText(for: .invalidStart, locale: .init(identifier: "ja")) == "アイテムの開始時期が無効です")
     }
 
     @Test
@@ -71,7 +71,7 @@ extension SwiftDataOperationsTests {
             #expect(ItemTimeOperations.report(for: item, today: today, locale: .init(identifier: "en_US")) == report)
             let japanese = ItemTimeOperations.report(for: item, today: today, locale: .init(identifier: "ja_JP"))
             #expect(japanese.contains("経過時間: 約5〜6年"))
-            #expect(japanese.contains("開始日: 2020年"))
+            #expect(japanese.contains("開始時期: 2020年"))
             #expect(!report.contains(item.note))
             #expect(!report.contains(item.uuid.uuidString))
             #expect(item.createdAt == createdAt)
