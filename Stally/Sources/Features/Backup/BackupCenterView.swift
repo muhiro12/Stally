@@ -16,14 +16,16 @@ struct BackupCenterView: View {
     @Query(sort: \Item.createdAt, order: .reverse)
     private var items: [Item]
 
+    let incomingFile: StallyImportFile?
+
     @State private var exportDocument: StallyBackupDocument?
-    @State private var isPresentingExporter = false
     @State private var isPresentingImporter = false
     @State private var isConfirmingMerge = false
     @State private var isConfirmingReplace = false
     @State private var isConfirmingDeleteEverything = false
-    @State private var selectedBackupData: Data?
-    @State private var selectedBackupPreview: BackupPreview?
+    @State private var selectedReview: BackupImportReview?
+    @State private var pendingReview: BackupImportReview?
+
     @State private var statusMessage: String?
     @State private var alertTitle = ""
     @State private var alertMessage = ""
@@ -37,7 +39,7 @@ struct BackupCenterView: View {
     var body: some View {
         BackupList(
             summary: summary,
-            preview: selectedBackupPreview,
+            preview: selectedReview?.preview,
             isReplacingExistingItems: $isReplacingExistingItems,
             statusMessage: statusMessage,
             exportAction: exportBackup,
@@ -48,7 +50,12 @@ struct BackupCenterView: View {
         )
         .navigationTitle("Import & Export")
         .onChange(of: isReplacingExistingItems) {
-            refreshSelectedPreview()
+            refreshSelectedReview()
+        }
+        .onChange(of: incomingFile?.id, initial: true) {
+            if let incomingFile {
+                selectImport(incomingFile)
+            }
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -58,13 +65,8 @@ struct BackupCenterView: View {
                 )
             }
         }
-        .fileExporter(
-            isPresented: $isPresentingExporter,
-            document: exportDocument,
-            contentType: .stallyBackup,
-            defaultFilename: String(localized: "Stally Data")
-        ) { result in
-            handleExportResult(result)
+        .sheet(item: $exportDocument) { document in
+            BackupExportView(document: document)
         }
         .fileImporter(
             isPresented: $isPresentingImporter,
@@ -82,7 +84,7 @@ struct BackupCenterView: View {
             }
 
             Button("Cancel", role: .cancel) {
-                isConfirmingMerge = false
+                cancelImportConfirmation()
             }
         } message: {
             Text("Merge import will preserve local items and add missing history.")
@@ -97,10 +99,15 @@ struct BackupCenterView: View {
             }
 
             Button("Cancel", role: .cancel) {
-                isConfirmingReplace = false
+                cancelImportConfirmation()
             }
         } message: {
-            Text("Replace import will overwrite them.")
+            Text(
+                """
+                This replaces every Item, including Archive, and their notes, photos, \
+                starts, and Marks with this file.
+                """
+            )
             Text("Keep one recent export before you try any replace-style restore.")
         }
         .confirmationDialog(
@@ -126,6 +133,14 @@ struct BackupCenterView: View {
             Text(alertMessage)
         }
     }
+
+    init() {
+        incomingFile = nil
+    }
+
+    init(incomingFile: StallyImportFile?) {
+        self.incomingFile = incomingFile
+    }
 }
 
 private extension BackupCenterView {
@@ -136,7 +151,6 @@ private extension BackupCenterView {
         do {
             let data = try BackupOperations.exportData(for: items)
             exportDocument = .init(data: data)
-            isPresentingExporter = true
         } catch BackupError.validationFailed(let preview) {
             presentError(
                 title: String(localized: "Data could not be exported."),
@@ -148,18 +162,6 @@ private extension BackupCenterView {
         } catch {
             presentError(
                 title: String(localized: "Data could not be exported."),
-                message: error.localizedDescription
-            )
-        }
-    }
-
-    private func handleExportResult(_ result: Result<URL, any Error>) {
-        switch result {
-        case .success:
-            statusMessage = String(localized: "Data saved.")
-        case .failure(let error):
-            presentError(
-                title: String(localized: "Data could not be saved."),
                 message: error.localizedDescription
             )
         }
@@ -182,37 +184,11 @@ private extension BackupCenterView {
     }
 
     private func readBackupFile(at url: URL) {
-        let didAccessSecurityScope = url.startAccessingSecurityScopedResource()
-        defer {
-            if didAccessSecurityScope {
-                url.stopAccessingSecurityScopedResource()
-            }
-        }
-
         do {
-            let resourceValues = try url.resourceValues(forKeys: [.fileSizeKey])
-
-            if let dataByteCount = resourceValues.fileSize,
-               dataByteCount > BackupOperations.maximumImportDataByteCount {
-                selectedBackupData = nil
-                selectedBackupPreview = BackupOperations.oversizedImportPreview(
-                    dataByteCount: dataByteCount
-                )
-                statusMessage = nil
-                return
-            }
-
-            let data = try Data(contentsOf: url, options: .mappedIfSafe)
-            selectedBackupData = data
-            selectedBackupPreview = BackupOperations.preview(
-                data: data,
-                currentItems: items,
-                replacingExistingItems: isReplacingExistingItems
-            )
-            statusMessage = nil
+            selectImport(try .read(at: url))
         } catch {
-            selectedBackupData = nil
-            selectedBackupPreview = nil
+            cancelImportConfirmation()
+            selectedReview = nil
             presentError(
                 title: String(localized: "Data file could not be read."),
                 message: error.localizedDescription
@@ -220,72 +196,82 @@ private extension BackupCenterView {
         }
     }
 
+    private func selectImport(_ file: StallyImportFile) {
+        cancelImportConfirmation()
+        selectedReview = BackupOperations.review(
+            data: file.data,
+            currentItems: items,
+            replacingExistingItems: isReplacingExistingItems
+        )
+        statusMessage = nil
+    }
+
     private func confirmMerge() {
-        refreshSelectedPreview()
-        guard selectedBackupPreview?.canImport == true else {
-            return
+        if hasCurrentReview() {
+            pendingReview = selectedReview
+            isConfirmingMerge = true
         }
-        isConfirmingMerge = true
     }
 
     private func confirmReplace() {
-        refreshSelectedPreview()
-        guard selectedBackupPreview?.canImport == true else {
-            return
+        if hasCurrentReview() {
+            pendingReview = selectedReview
+            isConfirmingReplace = true
         }
-        isConfirmingReplace = true
+    }
+
+    private func hasCurrentReview() -> Bool {
+        guard let selectedReview else {
+            return false
+        }
+        let refreshed = BackupOperations.review(
+            data: selectedReview.data,
+            currentItems: items,
+            replacingExistingItems: isReplacingExistingItems
+        )
+        guard refreshed == selectedReview else {
+            requireFreshReview(refreshed)
+            return false
+        }
+        return refreshed.preview.canImport
     }
 
     private func confirmDeleteEverything() {
         isConfirmingDeleteEverything = true
     }
 
-    private func refreshSelectedPreview() {
-        guard let selectedBackupData else {
+    private func refreshSelectedReview() {
+        cancelImportConfirmation()
+        guard let selectedReview else {
             return
         }
-        selectedBackupPreview = BackupOperations.preview(
-            data: selectedBackupData,
+        self.selectedReview = BackupOperations.review(
+            data: selectedReview.data,
             currentItems: items,
             replacingExistingItems: isReplacingExistingItems
         )
     }
 
     private func mergeIntoLibrary() {
-        guard let selectedBackupData else {
-            return
-        }
-
-        do {
-            let result = try BackupOperations.mergeIntoLibrary(
-                data: selectedBackupData,
-                context: modelContext
-            )
-            selectedBackupPreview = nil
-            self.selectedBackupData = nil
-            statusMessage = importStatusMessage(
-                prefix: String(localized: "Merged into the current library."),
-                result: result
-            )
-        } catch {
-            handleBackupMutationError(error)
-        }
+        importSelectedReview()
     }
 
     private func replaceLibrary() {
-        guard let selectedBackupData else {
+        importSelectedReview()
+    }
+
+    private func importSelectedReview() {
+        guard let pendingReview, pendingReview == selectedReview else {
             return
         }
-
+        cancelImportConfirmation()
         do {
-            let result = try BackupOperations.replaceLibrary(
-                data: selectedBackupData,
-                context: modelContext
-            )
-            selectedBackupPreview = nil
-            self.selectedBackupData = nil
+            let result = try BackupOperations.importReviewed(pendingReview, context: modelContext)
+            self.selectedReview = nil
             statusMessage = importStatusMessage(
-                prefix: String(localized: "Replaced the current library."),
+                prefix: result.didReplaceLibrary
+                    ? String(localized: "Replaced the current library.")
+                    : String(localized: "Merged into the current library."),
                 result: result
             )
         } catch {
@@ -296,8 +282,7 @@ private extension BackupCenterView {
     private func deleteEverything() {
         do {
             let result = try BackupOperations.deleteEverything(context: modelContext)
-            selectedBackupPreview = nil
-            selectedBackupData = nil
+            selectedReview = nil
             statusMessage = deleteStatusMessage(for: result)
         } catch {
             presentError(
@@ -308,19 +293,36 @@ private extension BackupCenterView {
     }
 
     private func handleBackupMutationError(_ error: any Error) {
-        if let backupError = error as? BackupError,
-           case .validationFailed(let preview) = backupError {
-            selectedBackupPreview = preview
+        switch error {
+        case BackupError.reviewChanged(let review):
+            requireFreshReview(review)
+        case BackupError.validationFailed:
+            refreshSelectedReview()
             presentError(
                 title: String(localized: "Data has validation issues."),
                 message: String(localized: "Preview the validation issues before importing this data.")
             )
-        } else {
+        default:
             presentError(
                 title: String(localized: "Data transfer failed."),
                 message: error.localizedDescription
             )
         }
+    }
+
+    private func requireFreshReview(_ review: BackupImportReview) {
+        cancelImportConfirmation()
+        selectedReview = review
+        presentError(
+            title: String(localized: "Review Updated"),
+            message: String(localized: "Your collection changed. Review the updated preview before importing.")
+        )
+    }
+
+    private func cancelImportConfirmation() {
+        isConfirmingMerge = false
+        isConfirmingReplace = false
+        pendingReview = nil
     }
 
     private func presentError(title: String, message: String) {

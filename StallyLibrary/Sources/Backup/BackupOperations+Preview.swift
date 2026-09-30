@@ -12,13 +12,13 @@ public extension BackupOperations {
     static func preview(
         data: Data,
         currentItems: [Item],
-        replacingExistingItems: Bool = false,
-        decoder: JSONDecoder = .init()
+        replacingExistingItems: Bool = false
     ) -> BackupPreview {
         guard data.count <= maximumImportDataByteCount else {
             return oversizedImportPreview(dataByteCount: data.count)
         }
 
+        let decoder = BackupCoding.decoder()
         guard let schemaVersion = try? schemaVersion(in: data, decoder: decoder) else {
             return unreadablePreview()
         }

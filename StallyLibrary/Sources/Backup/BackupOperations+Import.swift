@@ -13,8 +13,7 @@ public extension BackupOperations {
     @discardableResult
     static func mergeIntoLibrary(
         data: Data,
-        context: ModelContext,
-        decoder: JSONDecoder = .init()
+        context: ModelContext
     ) throws -> BackupImportResult {
         guard data.count <= maximumImportDataByteCount else {
             throw BackupError.validationFailed(
@@ -22,6 +21,7 @@ public extension BackupOperations {
             )
         }
 
+        let decoder = BackupCoding.decoder()
         let schemaVersion = try schemaVersion(in: data, decoder: decoder)
 
         guard BackupSnapshot.supports(schemaVersion: schemaVersion) else {
@@ -71,8 +71,7 @@ public extension BackupOperations {
     @discardableResult
     static func replaceLibrary(
         data: Data,
-        context: ModelContext,
-        decoder: JSONDecoder = .init()
+        context: ModelContext
     ) throws -> BackupImportResult {
         guard data.count <= maximumImportDataByteCount else {
             throw BackupError.validationFailed(
@@ -80,6 +79,7 @@ public extension BackupOperations {
             )
         }
 
+        let decoder = BackupCoding.decoder()
         let schemaVersion = try schemaVersion(in: data, decoder: decoder)
 
         guard BackupSnapshot.supports(schemaVersion: schemaVersion) else {
@@ -191,12 +191,10 @@ private extension BackupOperations {
     }
 
     static func item(from backupItem: BackupItem) -> Item {
-        let input = itemFormInput(from: backupItem)
-
         let item = Item(
-            name: input.normalizedName,
+            name: backupItem.name,
             category: ItemCategory(rawValue: backupItem.categoryRawValue) ?? .other,
-            note: input.normalizedNote,
+            note: backupItem.note,
             createdAt: backupItem.createdAt,
             uuid: backupItem.id,
             photoData: backupItem.photoData,

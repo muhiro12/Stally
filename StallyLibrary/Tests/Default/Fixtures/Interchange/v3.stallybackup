@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 3,
+  "exportedAt": 812345678.125,
+  "items": [
+    {
+      "id": "00000000-0000-0000-0000-000000001401",
+      "name": "Golden Home",
+      "categoryRawValue": "Other",
+      "note": "  A place to return to.\n帰る場所  ",
+      "createdAt": 812345000.5,
+      "marks": [],
+      "recordsMarks": false,
+      "start": "2000"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000001402",
+      "name": "Golden Coat",
+      "categoryRawValue": "Clothing",
+      "note": "",
+      "createdAt": 812345100.25,
+      "archivedAt": 812345500.75,
+      "marks": [
+        {
+          "id": "00000000-0000-0000-0000-000000001403",
+          "day": "2026-09-29",
+          "createdAt": 812345200.125
+        }
+      ],
+      "recordsMarks": true,
+      "start": "2000-02"
+    }
+  ]
+}

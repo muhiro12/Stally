@@ -120,8 +120,8 @@ extension SwiftDataOperationsTests {
                 today: Fixtures.today
             )
             #expect(mergedHistory.totalMarks == 2)
-            #expect(insertedItem.name == "Daily Field Notes")
-            #expect(insertedItem.note == "Still waiting for its first stretch of regular use.")
+            #expect(insertedItem.name == "  Daily Field Notes  ")
+            #expect(insertedItem.note == "  Still waiting for its first stretch of regular use.  ")
             #expect(ItemOperations.historySnapshot(for: insertedItem, today: Fixtures.today).totalMarks == 1)
         }
 

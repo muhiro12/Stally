@@ -28,8 +28,7 @@ public extension BackupOperations {
     /// the snapshot cannot be restored by the current backup contract.
     static func exportData(
         for items: [Item],
-        exportedAt: Date = .now,
-        encoder: JSONEncoder = .init()
+        exportedAt: Date = .now
     ) throws -> Data {
         let snapshot = snapshot(for: items, exportedAt: exportedAt)
         let preview = preview(snapshot: snapshot, currentItems: [])
@@ -38,7 +37,7 @@ public extension BackupOperations {
             throw BackupError.validationFailed(preview)
         }
 
-        let data = try encoder.encode(snapshot)
+        let data = try BackupCoding.encoder().encode(snapshot)
 
         guard data.count <= maximumImportDataByteCount else {
             throw BackupError.validationFailed(

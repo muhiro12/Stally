@@ -14,7 +14,11 @@ extension View {
         _ environment: StallyPlatformEnvironment
     ) -> some View {
         stallyBasePlatformEnvironment(environment)
-            .mhAppRuntimeBootstrap(environment.runtimeBootstrap)
+            .mhAppRuntimeEnvironment(environment.runtimeBootstrap)
+            .mhAppRuntimeLifecycle(
+                runtime: environment.runtimeBootstrap.runtime,
+                plan: environment.runtimeBootstrap.lifecyclePlan
+            )
     }
 
     func stallyPreviewPlatformEnvironment(

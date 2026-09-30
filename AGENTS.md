@@ -51,6 +51,8 @@ This repository currently contains:
   original synthetic V1 disk stores, external photo storage, v2 backup, links,
   capture provenance, and checksums. Migration tests must open disposable
   copies with CloudKit disabled; never regenerate these with a newer model.
+- `StallyLibrary/Tests/Default/Fixtures/Interchange/` retains hand-authored
+  current-version golden JSON, separately from the frozen original V1 evidence.
 - `ci_scripts/`, which owns repository-managed lint, rule, and library-test
   entrypoints.
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
@@ -107,6 +109,9 @@ design and current visual evidence are in `docs/combined-interface-design.md`.
 Earlier assessment approval gates are historical; implementation evidence does
 not authorize production CloudKit changes, real-data operations, or release.
 
+`docs/portable-data-contract.md` defines the full collection interchange,
+version mapping, native save/share/open journeys, and import review boundary.
+
 `docs/first-release-data-model.md` records the selected combined domain,
 first-release persistence shape, retained development compatibility, and the
 explicit persistence/interchange version mapping. Use it for current model
@@ -150,7 +155,8 @@ facts authoritative.
 
 The app target should stay a thin adapter over the current product surface.
 
-- `Stally/Sources/App/` owns app lifecycle, exported library import, and root
+- `Stally/Sources/App/` owns app lifecycle, exported library import, file URL
+  discrimination before navigation URL ingestion, and root
   composition, including adaptive tab selection, per-tab paths, and sheet
   routing, plus the scene-aware date environment for retained readings.
 - `Stally/Sources/App/Intents/` owns app-wide App Shortcuts and generic route
@@ -175,7 +181,9 @@ The app target should stay a thin adapter over the current product surface.
 - `Stally/Sources/Features/Insights/` owns the SwiftUI Insights reading
   surface and Insights-owned App Intents.
 - `Stally/Sources/Features/Backup/` owns the SwiftUI Import & Export surface,
-  including file importer/exporter presentation, safety confirmations, and
+  including file importer/exporter and native sharing presentation, bounded
+  coordinated opened-file requests, immutable import review, safety
+  confirmations, and
   Backup-owned App Intents.
 - `Stally/Sources/Features/Links/` owns app-side link-sharing presentation.
 - `Stally/Sources/Features/Settings/` owns the SwiftUI Settings surface,
@@ -246,7 +254,10 @@ The app target should stay a thin adapter over the current product surface.
   `BackupOperations`. New exports use v3 with explicit Mark policy and nullable
   start knowledge; v2 imports preserve the original Mark-enabled, unknown-start
   defaults. Merge keeps existing item metadata, while replacement has its own
-  preview validation. Export must satisfy the current import validation and
+  preview validation. `BackupImportReview` captures immutable bytes, method, and
+  the complete portable current-data baseline; changed baselines require another
+  visible review before mutation. Import preserves validated text exactly.
+  Export must satisfy the current import validation and
   encoded-size limits before presenting a restorable backup; failures must
   preserve source records and surface their validation reasons.
 - `StallyLibrary/Sources/Link/` owns shareable destination and item link

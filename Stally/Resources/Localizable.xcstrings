@@ -2598,22 +2598,6 @@
         }
       }
     },
-    "Replace import will overwrite them." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Replace import will overwrite them."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "置き換えでは現在の内容を上書きします。"
-          }
-        }
-      }
-    },
     "Replaced the current library." : {
       "localizations" : {
         "en" : {
@@ -2658,6 +2642,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "見直し"
+          }
+        }
+      }
+    },
+    "Review Updated" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review Updated"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プレビューを更新しました"
           }
         }
       }
@@ -2790,6 +2790,22 @@
         }
       }
     },
+    "Save to Files" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save to Files"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルに保存"
+          }
+        }
+      }
+    },
     "Scope" : {
       "localizations" : {
         "en" : {
@@ -2866,6 +2882,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アーカイブリンクを共有"
+          }
+        }
+      }
+    },
+    "Share Data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share Data"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データを共有"
           }
         }
       }
@@ -3222,6 +3254,22 @@
         }
       }
     },
+    "This export includes every Item, note, photo, and Mark. Choose where to save or share it." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This export includes every Item, note, photo, and Mark. Choose where to save or share it."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この書き出しには、すべてのアイテム、メモ、写真、マークが含まれます。保存先または共有先を選んでください。"
+          }
+        }
+      }
+    },
     "This item and all of its marks will be permanently deleted. This cannot be undone." : {
       "localizations" : {
         "en" : {
@@ -3266,6 +3314,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "サンプルアイテム%lld件とマーク%lld件を削除します。サンプルに加えた編集や履歴も削除されます。それ以外のアイテムはライブラリに残ります。"
+          }
+        }
+      }
+    },
+    "This replaces every Item, including Archive, and their notes, photos, starts, and Marks with this file." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This replaces every Item, including Archive, and their notes, photos, starts, and Marks with this file."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アーカイブも含めたすべてのアイテムと、それらのメモ、写真、開始時期、マークを、このファイルの内容に置き換えます。"
           }
         }
       }
@@ -3490,6 +3554,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "年ごとの節目"
+          }
+        }
+      }
+    },
+    "Your collection changed. Review the updated preview before importing." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your collection changed. Review the updated preview before importing."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コレクションが変更されました。更新されたプレビューを確認してから読み込んでください。"
           }
         }
       }

@@ -44,7 +44,8 @@ reading rules. It must not overload Archive.
 Public entry points by owner:
 
 - Item: `create`, `update`, `delete`, `archive`, `moveBackToLibrary`, `items`,
-  `item`, name matching, `activeItems`, `archivedItems`,
+  `item`, batch identity resolution, name matching, `suggestedItems`,
+  `activeItems`, `archivedItems`,
   `itemsEligibleForHistoryChanges`, `mark`, `undoMark`, `isMarked`,
   `historySnapshot`, `trackingInput`, `capabilities`, and the history-change,
   conflict, and disable helpers.
@@ -53,8 +54,9 @@ Public entry points by owner:
 - Photo: `prepare`, `validate`, and size constants.
 - Review: `snapshot`, `identifiersSnapshot`, `performPrimaryAction(s)`.
 - Insights: `snapshot`, `InsightsReportOperations.report`.
-- Import/export: `snapshot`, `exportData`, `preview`, `mergeIntoLibrary`,
-  `replaceLibrary`, `deleteEverything`, and oversized-preview helper.
+- Import/export: `snapshot`, `exportData`, `preview`, `review`, `importReviewed`,
+  `mergeIntoLibrary`, `replaceLibrary`, `deleteEverything`, and oversized-preview
+  helper.
 - Links: `url`, `parse`, and scheme.
 - Sample data: empty-library creation, summary, and removal.
 - Subscription: `calculate`.
@@ -63,7 +65,9 @@ Core writes retain validation and rollback. UUID resolution uses a predicate
 and a single-result limit. Action guards and suggestions share capability
 readings; compatibility helpers delegate to them. Time values remain separate
 from localized report formatting. Review retains atomic bulk placement, and
-import/export retains explicit preview and recovery transactions.
+import/export retains explicit preview and recovery transactions. Reviewed app
+imports bind the file, method, and complete current-data baseline; changes
+require a new visible review before writing.
 
 No public facade is obsolete merely because it was added later. Localized
 presentation belongs beside reusable domain readings; SwiftUI, sheets, and
@@ -83,8 +87,8 @@ scope so it does not decide navigation or invent another stored collection.
 | Put aside or return | Item `archive`, `moveBackToLibrary` |
 | Inspect/apply a Review lane | Review `snapshot`, `performPrimaryAction(s)` |
 | Read/share Insights | Insights `snapshot`, report `report` |
-| Preview an import | Backup `preview` |
-| Merge or replace data | Backup `mergeIntoLibrary`, `replaceLibrary` |
+| Preview an import | Backup `review`; value `preview` |
+| Merge or replace reviewed data | Backup `importReviewed` |
 | Save/share full data | Backup `exportData` |
 | Delete one or reset all | Item `delete`, Backup `deleteEverything` |
 | Open/share links | Link `parse`, `url`; app routing |

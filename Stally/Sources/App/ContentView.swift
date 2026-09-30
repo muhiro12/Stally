@@ -22,6 +22,7 @@ struct ContentView: View {
     @State private var presentedSheet: ContentViewPresentedSheet?
     @State private var isPresentingMissingItemLinkAlert = false
     @State private var itemResolutionError: String?
+    @State private var incomingFile: StallyImportFile?
 
     #if DEBUG
     @State private var pendingInitialPreviewRoute: StallyPreviewRoute?
@@ -48,13 +49,13 @@ struct ContentView: View {
             restoreAction: presentBackupCenter,
             settingsAction: presentSettings
         )
-        .sheet(item: $presentedSheet) { sheet in
+        .sheet(item: $presentedSheet, onDismiss: releaseIncomingFile) { sheet in
             switch sheet {
             case .addItem:
                 AddItemView()
             case .backupCenter:
                 NavigationStack {
-                    BackupCenterView()
+                    BackupCenterView(incomingFile: incomingFile)
                 }
             case .settings:
                 SettingsView()
@@ -87,6 +88,19 @@ struct ContentView: View {
         }
         .mhRouteHandler(routeInbox) { link in
             openSupportedLink(link)
+        }
+        .onOpenURL { url in
+            receiveURL(url)
+        }
+        .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+            if let url = activity.webpageURL {
+                receiveURL(url)
+            }
+        }
+        .onChange(of: routePipeline.inbox.pendingURL) {
+            Task {
+                await routePipeline.synchronizePendingRoutesIfPossible()
+            }
         }
         .stallySubscriptionStateSync()
         .stallyTemporaryStorageAlert()
@@ -144,7 +158,30 @@ struct ContentView: View {
     }
 
     private func presentBackupCenter() {
+        incomingFile = nil
         presentedSheet = .backupCenter
+    }
+
+    private func releaseIncomingFile() {
+        guard case nil = presentedSheet else {
+            return
+        }
+        incomingFile = nil
+    }
+
+    private func receiveURL(_ url: URL) {
+        guard url.isFileURL else {
+            Task {
+                await routePipeline.ingest(url)
+            }
+            return
+        }
+        do {
+            incomingFile = try .read(at: url)
+            presentedSheet = .backupCenter
+        } catch {
+            itemResolutionError = String(localized: "Data file could not be read.")
+        }
     }
 
     private func openSupportedLink(_ link: StallyLink) {

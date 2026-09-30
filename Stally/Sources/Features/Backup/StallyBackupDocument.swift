@@ -9,11 +9,12 @@ import Foundation
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct StallyBackupDocument: FileDocument {
+struct StallyBackupDocument: FileDocument, Identifiable {
     static var readableContentTypes: [UTType] {
         [.stallyBackup]
     }
 
+    let id = UUID()
     var data: Data
 
     init(data: Data) {
