@@ -55,9 +55,15 @@ public enum ItemOperations {
         context: ModelContext,
         uuid: UUID
     ) throws -> Item? {
-        try items(context: context).first { item in
-            item.uuid == uuid
-        }
+        var descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate { item in
+                item.uuid == uuid
+            },
+            sortBy: [.init(\.createdAt, order: .reverse)]
+        )
+        descriptor.fetchLimit = 1
+        descriptor.includePendingChanges = true
+        return try context.fetch(descriptor).first
     }
 
     /// Fetches items whose user-facing name matches the query.

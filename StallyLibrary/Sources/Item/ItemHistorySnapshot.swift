@@ -6,7 +6,7 @@
 //
 
 /// Item-level history readings derived from one item and its marks.
-public struct ItemHistorySnapshot {
+public struct ItemHistorySnapshot: Equatable, Sendable {
     private enum Defaults {
         static let shortWindowDayCount = 30
         static let mediumWindowDayCount = 90

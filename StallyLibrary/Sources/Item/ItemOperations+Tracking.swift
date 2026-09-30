@@ -49,39 +49,11 @@ public extension ItemOperations {
         }
         return .init(recordsMarks: item.recordsMarks, start: start)
     }
-
-    /// The shared guard for Mark, Undo, history editing, and their suggestions.
-    static func historyChangeError(for item: Item) -> ItemValidationError? {
-        if !item.recordsMarks {
-            return .marksNotEnabled
-        }
-        if item.isArchived {
-            return .archivedItemsCannotChangeHistory
-        }
-        return nil
-    }
-
-    /// Returns active Mark-enabled Items without changing generic entity resolution.
-    static func itemsEligibleForHistoryChanges(from items: [Item]) -> [Item] {
-        activeItems(from: items).filter { item in
-            historyChangeError(for: item) == nil
-        }
-    }
-
-    /// Detects an inconsistent sync/import state while retaining every existing Mark.
-    static func hasNonMarkHistoryConflict(_ item: Item) -> Bool {
-        !item.recordsMarks && !item.marks.isEmpty
-    }
-
-    /// Disabling Marks must never remove or hide an existing history.
-    static func canDisableMarkRecording(_ item: Item) -> Bool {
-        item.marks.isEmpty
-    }
 }
 
 extension ItemOperations {
     static func validateMarkPolicy(_ recordsMarks: Bool, for item: Item) throws {
-        guard recordsMarks || item.marks.isEmpty else {
+        guard recordsMarks || capabilities(for: item).canDisableMarkRecording else {
             throw ItemValidationError.existingMarksRequireRecording
         }
     }

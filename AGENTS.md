@@ -84,6 +84,8 @@ owner-directed rebuild constraints while the implementation is rebuilt.
   tone.
 - `docs/product-language.md` records preserved nouns, verbs, labels, and copy
   direction.
+- `docs/domain-operations.md` records the selected use-case, capability, and
+  isolation contracts for the combined product.
 - `docs/rebuild-handoff.md` records the extraction audit and phase boundary.
 - `docs/rebuild-implementation-direction.md` records explicit rebuild
   direction added after the legacy extraction.
@@ -202,11 +204,13 @@ The app target should stay a thin adapter over the current product surface.
   `ItemCategory`, collection browsing options, `ItemHistorySnapshot`,
   `ItemFormInput`, `ItemTrackingInput`, `ItemMarkPolicy`, precision-preserving `ItemStart`,
   `ItemTimeSnapshot`, `ItemMilestone`, `ItemTimeOperations`, `ItemValidationError`,
+  `ItemCapabilities`,
   `ItemCollectionOperations`, and `ItemOperations`. Time Operations also own
   precision-preserving annual milestones and localized read-only time reports;
   collection Operations own start sorting and tracking-policy filters.
 - `StallyLibrary/Sources/Review/` owns Review lane values, settings, action
-  requests, snapshots, and `ReviewOperations`. All lanes and bulk actions
+  requests, live snapshots, Sendable `ReviewIdentifiersSnapshot`, and
+  `ReviewOperations`. All lanes and bulk actions
   exclude items that do not record Marks.
 - `StallyLibrary/Sources/Insights/` owns Insights range/options, reading
   values, recommendations, snapshots, `InsightsOperations`, and
