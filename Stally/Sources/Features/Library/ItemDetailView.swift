@@ -217,7 +217,7 @@ private extension ItemDetailView {
     }
 
     private func currentDay() -> LocalDay? {
-        let now = Date()
+        let now = StallyActionDate.current
         return .init(containing: now, in: timeZone)
     }
 
@@ -233,7 +233,7 @@ private extension ItemDetailView {
     }
 
     private func archiveItem() {
-        let now = Date()
+        let now = StallyActionDate.current
 
         performSave {
             try ItemOperations.archive(
@@ -263,7 +263,7 @@ private extension ItemDetailView {
             return
         }
         let capturedTimeZone = timeZone
-        let now = Date()
+        let now = StallyActionDate.current
 
         guard let today = LocalDay(containing: now, in: capturedTimeZone),
               let todayDate = today.date(in: capturedTimeZone) else {

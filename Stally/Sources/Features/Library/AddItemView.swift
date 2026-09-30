@@ -88,7 +88,7 @@ struct AddItemView: View {
 
     private func addItem() {
         do {
-            let now = Date()
+            let now = StallyActionDate.current
             guard let today = LocalDay(containing: now, in: timeZone) else {
                 throw CocoaError(.coderInvalidValue)
             }

@@ -19,6 +19,9 @@ struct QuietHistoryGrid: View {
     @Environment(\.timeZone)
     private var timeZone
 
+    @Environment(\.stallyReadingDate)
+    private var readingDate
+
     let markedDays: [LocalDay]
 
     private let columns = [
@@ -32,7 +35,7 @@ struct QuietHistoryGrid: View {
     ]
 
     var body: some View {
-        let now = Date()
+        let now = readingDate
         let today = LocalDay(containing: now, in: timeZone)
 
         LazyVGrid(columns: columns, spacing: Layout.rowSpacing) {

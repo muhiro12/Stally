@@ -16,6 +16,7 @@ struct SampleDataSeed {
     let createdDaysAgo: Int
     let markedDaysAgo: [Int]
     let archivedDaysAgo: Int?
+    var tracking: ItemTrackingInput = .init(recordsMarks: true, start: nil)
 }
 
 extension SampleDataOperations {

@@ -9,6 +9,9 @@ import MHUI
 import SwiftUI
 
 struct ItemCollectionRefinementSection: View {
+    @Environment(\.stallyReadingDate)
+    private var readingDate
+
     let kind: ItemCollectionKind
     let shownItemCount: Int
 
@@ -27,7 +30,7 @@ struct ItemCollectionRefinementSection: View {
                 DatePicker(
                     "Day",
                     selection: $selectedDate,
-                    in: ...Date.now,
+                    in: ...readingDate,
                     displayedComponents: .date
                 )
                 .mhRow()

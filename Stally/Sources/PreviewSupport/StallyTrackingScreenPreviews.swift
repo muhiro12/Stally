@@ -4,7 +4,7 @@ import SwiftUI
 #Preview("Item Detail - Non Mark Month") {
     StallyPreviewContainer(.timeTogether) { items in
         NavigationStack {
-            if let item = items.first(where: { $0.name == "Window Plant" }) {
+            if let item = items.first(where: { $0.uuid == StallyFixtureItem.windowPlant.id }) {
                 ItemDetailView()
                     .environment(item)
             }
@@ -15,7 +15,7 @@ import SwiftUI
 #Preview("Item Detail - Archived Day") {
     StallyPreviewContainer(.timeTogether) { items in
         NavigationStack {
-            if let item = items.first(where: { $0.name == "Archived Plant" }) {
+            if let item = items.first(where: { $0.uuid == StallyFixtureItem.archivedPlant.id }) {
                 ItemDetailView()
                     .environment(item)
             }
@@ -25,7 +25,7 @@ import SwiftUI
 
 #Preview("Edit Item - Year Precision") {
     StallyPreviewContainer(.timeTogether) { items in
-        if let item = items.first(where: { $0.name == "Home" }) {
+        if let item = items.first(where: { $0.uuid == StallyFixtureItem.home.id }) {
             EditItemView()
                 .environment(item)
         }

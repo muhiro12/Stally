@@ -149,7 +149,7 @@ private extension BackupCenterView {
         statusMessage = nil
 
         do {
-            let data = try BackupOperations.exportData(for: items)
+            let data = try BackupOperations.exportData(for: items, exportedAt: StallyActionDate.current)
             exportDocument = .init(data: data)
         } catch BackupError.validationFailed(let preview) {
             presentError(

@@ -84,19 +84,18 @@ extension SampleDataOperations {
         saving save: (ModelContext) throws -> Void
     ) throws -> [Item] {
         guard try ItemOperations.items(context: context).isEmpty,
-              let today = LocalDay(containing: createdAt, in: timeZone) else {
+              LocalDay(containing: createdAt, in: timeZone) != nil else {
             return []
         }
 
-        let calendar = calendar(in: timeZone)
+        let calendar = ItemSeedBuilder.calendar(in: timeZone)
         let items = try sampleSeeds(locale: locale).map { seed in
-            try makeItem(
+            try ItemSeedBuilder.makeItem(
                 from: seed,
-                today: today,
                 referenceDate: createdAt,
                 calendar: calendar,
                 context: context
-            )
+            ) { _ in .init() }
         }
 
         try ItemOperations.saveOrRollback(context, saving: save)
@@ -127,78 +126,5 @@ extension SampleDataOperations {
 
         try save(removalContext)
         return summary
-    }
-}
-
-private extension SampleDataOperations {
-    static func makeItem(
-        from seed: SampleDataSeed,
-        today: LocalDay,
-        referenceDate: Date,
-        calendar: Calendar,
-        context: ModelContext
-    ) throws -> Item {
-        let item = try ItemOperations.makeItem(
-            input: seed.input,
-            createdAt: try date(
-                seed.createdDaysAgo,
-                before: referenceDate,
-                calendar: calendar
-            ),
-            uuid: seed.uuid
-        )
-        context.insert(item)
-
-        for markedDaysAgo in seed.markedDaysAgo {
-            guard let markedDay = today.adding(days: -markedDaysAgo) else {
-                throw CocoaError(.coderInvalidValue)
-            }
-
-            let mark = ItemMark(
-                day: markedDay,
-                createdAt: try date(
-                    markedDaysAgo,
-                    before: referenceDate,
-                    calendar: calendar
-                ),
-                item: item,
-                uuid: .init()
-            )
-            item.marks.append(mark)
-            context.insert(mark)
-        }
-
-        if let archivedDaysAgo = seed.archivedDaysAgo {
-            item.archivedAt = try date(
-                archivedDaysAgo,
-                before: referenceDate,
-                calendar: calendar
-            )
-        }
-
-        return item
-    }
-
-    static func date(
-        _ daysAgo: Int,
-        before referenceDate: Date,
-        calendar: Calendar
-    ) throws -> Date {
-        guard let date = calendar.date(
-            byAdding: .day,
-            value: -daysAgo,
-            to: referenceDate
-        ) else {
-            throw CocoaError(.coderInvalidValue)
-        }
-
-        return calendar.startOfDay(for: date)
-    }
-
-    static func calendar(in timeZone: TimeZone) -> Calendar {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.locale = .init(identifier: "en_US_POSIX")
-        calendar.timeZone = timeZone
-        return calendar
     }
 }

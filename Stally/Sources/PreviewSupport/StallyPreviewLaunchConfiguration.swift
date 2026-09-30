@@ -6,6 +6,7 @@
 //
 
 #if DEBUG
+import Foundation
 import SwiftData
 import SwiftUI
 
@@ -23,6 +24,10 @@ struct StallyPreviewLaunchConfiguration {
             return nil
         }
         return requestedTextSize
+    }
+
+    var referenceDate: Date? {
+        resolvedScenario == nil ? nil : StallyFixtureOperations.referenceDate
     }
 
     private let requestedTextSize: DynamicTypeSize?

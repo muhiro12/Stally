@@ -23,17 +23,26 @@ struct StallyApp: App {
     private static let previewLaunchConfiguration = StallyPreviewLaunchConfiguration.current
     #endif
 
+    private static var readingDateModifier: StallyReadingDateModifier {
+        #if DEBUG
+        .init(previewDate: previewLaunchConfiguration.referenceDate)
+        #else
+        .init()
+        #endif
+    }
+
     private let platformEnvironment: StallyPlatformEnvironment
 
     var body: some Scene {
         WindowGroup {
             rootContent
-                .modifier(StallyReadingDateModifier())
+                .modifier(Self.readingDateModifier)
                 .stallyPlatformEnvironment(platformEnvironment)
                 .mhTheme(.standard)
                 .mhGlassPolicy(.automatic)
                 #if DEBUG
                 .modifier(StallyPreviewTextSizeModifier(size: Self.previewLaunchConfiguration.textSize))
+                .modifier(StallyPreviewTimeZoneModifier(referenceDate: Self.previewLaunchConfiguration.referenceDate))
             #endif
         }
     }

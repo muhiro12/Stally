@@ -111,6 +111,8 @@ not authorize production CloudKit changes, real-data operations, or release.
 
 `docs/portable-data-contract.md` defines the full collection interchange,
 version mapping, native save/share/open journeys, and import review boundary.
+`docs/fixture-architecture.md` defines sample lifecycles, deterministic DEBUG
+profiles, preserved fixture boundaries, and the bounded scale evidence.
 
 `docs/first-release-data-model.md` records the selected combined domain,
 first-release persistence shape, retained development compatibility, and the
@@ -198,7 +200,12 @@ The app target should stay a thin adapter over the current product surface.
 - `Stally/Sources/PreviewSupport/` owns DEBUG-only preview data, in-memory
   preview containers, screenshot launch routes, and screen-level previews for
   UI review. It must not become product behavior or shared-library logic.
-  Tracking scenarios include mixed collections and non-Mark-only collections.
+  It adapts the library's `StallyFixtureProfile` and `StallyFixtureOperations`
+  without a second record catalog or builder. Synthetic launches fix the
+  reading date to September 30, 2026 and the timezone to UTC; ordinary and
+  Release launches retain the system clock/timezone.
+  Profiles are `empty`, `typical`, `dense`, `integration`, `timeTogether`,
+  `history`, and `stress` (500 Items / 6,250 Marks).
   `--stally-preview-text-size` accepts `xxxLarge` or `accessibility3` only with
   a synthetic launch scenario; it leaves ordinary and Release text settings
   under the system environment.
@@ -268,7 +275,11 @@ The app target should stay a thin adapter over the current product surface.
   independent from subscription state.
 - `StallyLibrary/Sources/SampleData/` owns localized empty-Library sample
   creation, stable sample identity, summary, and removal use cases through
-  `SampleDataOperations`.
+  `SampleDataOperations`, plus the internal shared seed builder.
+- `StallyLibrary/Sources/Fixtures/` owns DEBUG-only development profiles,
+  stable synthetic Item/Mark IDs, and `StallyFixtureOperations`. Seeding
+  requires an empty in-memory container and is absent from Release builds.
+  Developer IDs must remain separate from removable user-facing sample IDs.
 - `StallyLibrary/Sources/Preferences/` owns app-local preference descriptors
   used by app startup and SwiftUI settings surfaces.
 - `StallyLibrary/Sources/Persistence/` owns `StallyMigrationPlan` and

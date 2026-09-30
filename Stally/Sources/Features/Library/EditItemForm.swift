@@ -92,7 +92,7 @@ struct EditItemForm: View {
 
     private func updateItem() {
         do {
-            let now = Date()
+            let now = StallyActionDate.current
             guard let today = LocalDay(containing: now, in: timeZone) else {
                 throw CocoaError(.coderInvalidValue)
             }

@@ -7,7 +7,7 @@ struct StallyTrackingPreviewHost: View {
     let items: [Item]
 
     var body: some View {
-        if let item = items.first(where: { $0.name == screen.itemName }) {
+        if let item = items.first(where: { $0.uuid == screen.itemID }) {
             if screen.showsEditor {
                 EditItemView()
                     .environment(item)

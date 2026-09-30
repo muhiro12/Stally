@@ -1,4 +1,6 @@
 #if DEBUG
+import Foundation
+
 enum StallyTrackingPreviewScreen: String {
     case yearDetail
     case monthDetail
@@ -6,14 +8,14 @@ enum StallyTrackingPreviewScreen: String {
     case editYear
     case editMonth
 
-    var itemName: String {
+    var itemID: UUID {
         switch self {
         case .yearDetail, .editYear:
-            "Home"
+            StallyFixtureItem.home.id
         case .monthDetail, .editMonth:
-            "Window Plant"
+            StallyFixtureItem.windowPlant.id
         case .archivedDetail:
-            "Archived Plant"
+            StallyFixtureItem.archivedPlant.id
         }
     }
 

@@ -1,6 +1,23 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Archived Plant" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archived Plant"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アーカイブした植物"
+          }
+        }
+      }
+    },
     "Archived because it only comes out a few times a year." : {
       "localizations" : {
         "en" : {
@@ -81,6 +98,159 @@
         }
       }
     },
+    "Home" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Home"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自宅"
+          }
+        }
+      }
+    },
+    "Kept for slow mornings and the days that need something familiar.\nThe longer note makes dense and Dynamic Type previews easier to inspect." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kept for slow mornings and the days that need something familiar.\nThe longer note makes dense and Dynamic Type previews easier to inspect."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ゆっくりした朝や、なじみのあるものがほしい日に。\n長いメモで、情報が多い画面や文字を大きくした表示を確認できます。"
+          }
+        }
+      }
+    },
+    "Leather Card Case" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leather Card Case"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "革のカードケース"
+          }
+        }
+      }
+    },
+    "Lives near the desk for small thoughts." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lives near the desk for small thoughts."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "小さな思いつきを書くために、机のそばに置いてある。"
+          }
+        }
+      }
+    },
+    "Preserved for colder days." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preserved for colder days."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "寒い日に備えて残してある。"
+          }
+        }
+      }
+    },
+    "Quietly useful when the weather turns." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quietly useful when the weather turns."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "天気が変わった日に、そっと役立つ。"
+          }
+        }
+      }
+    },
+    "Rain Shell" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rain Shell"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レインシェル"
+          }
+        }
+      }
+    },
+    "Small Black Notebook" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Small Black Notebook"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "小さな黒のノート"
+          }
+        }
+      }
+    },
+    "Soft Navy Sweater With A Long Familiar Name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soft Navy Sweater With A Long Familiar Name"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "長くなじみのある名前のやわらかな紺色セーター"
+          }
+        }
+      }
+    },
     "Still waiting for its first stretch of regular use." : {
       "localizations" : {
         "en" : {
@@ -157,6 +327,40 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "白の普段履きスニーカー"
+          }
+        }
+      }
+    },
+    "Window Plant" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Window Plant"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "窓辺の植物"
+          }
+        }
+      }
+    },
+    "Winter Scarf" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Winter Scarf"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "冬のマフラー"
           }
         }
       }

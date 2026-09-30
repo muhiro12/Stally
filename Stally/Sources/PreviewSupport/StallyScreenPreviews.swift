@@ -65,7 +65,7 @@ import SwiftUI
     StallyPreviewContainer(.typical) { items in
         StallyAdjustHistoryPreview(
             items: items,
-            itemName: "Black Wool Coat"
+            itemID: StallyFixtureItem.blackWoolCoat.id
         )
     }
 }
@@ -74,7 +74,7 @@ import SwiftUI
     StallyPreviewContainer(.typical) { items in
         StallyAdjustHistoryPreview(
             items: items,
-            itemName: "Daily Field Notes"
+            itemID: StallyFixtureItem.dailyFieldNotes.id
         )
     }
 }
@@ -157,7 +157,7 @@ private struct StallyScreenPreviews: View {
 
     private var selectedItem: Item? {
         items.first { item in
-            item.name == "Soft Navy Sweater With A Long Familiar Name"
+            item.uuid == StallyFixtureItem.longNameSweater.id
         } ?? ItemOperations.activeItems(from: items).first
     }
 

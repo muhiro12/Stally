@@ -21,7 +21,7 @@ struct ItemLibraryList: View {
     @State private var selectedCategory: ItemCategory?
     @State private var selectedFilter = ItemCollectionFilter.all
     @State private var selectedSort = ItemCollectionSort.defaultOrder
-    @State private var selectedDate = Date.now
+    @State private var selectedDate: Date?
 
     let items: [Item]
     let kind: ItemCollectionKind
@@ -33,9 +33,17 @@ struct ItemLibraryList: View {
             || selectedSort != .defaultOrder
     }
 
+    private var selectedDateBinding: Binding<Date> {
+        .init {
+            selectedDate ?? readingDate
+        } set: { date in
+            selectedDate = date
+        }
+    }
+
     var body: some View {
         let today = LocalDay(containing: readingDate, in: timeZone)
-        let selectedDay = LocalDay(containing: selectedDate, in: timeZone)
+        let selectedDay = LocalDay(containing: selectedDate ?? readingDate, in: timeZone)
         let refinedItems = ItemCollectionOperations.items(
             from: items,
             options: .init(
@@ -66,7 +74,7 @@ struct ItemLibraryList: View {
             selectedCategory: $selectedCategory,
             selectedFilter: $selectedFilter,
             selectedSort: $selectedSort,
-            selectedDate: $selectedDate
+            selectedDate: selectedDateBinding
         )
 
         if refinedItems.isEmpty {
@@ -102,6 +110,6 @@ struct ItemLibraryList: View {
         selectedCategory = nil
         selectedFilter = .all
         selectedSort = .defaultOrder
-        selectedDate = .now
+        selectedDate = nil
     }
 }

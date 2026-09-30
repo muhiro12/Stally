@@ -6,21 +6,22 @@
 //
 
 #if DEBUG
+import Foundation
 import SwiftUI
 
 struct StallyAdjustHistoryPreview: View {
     let items: [Item]
-    let itemName: String
+    let itemID: UUID
 
     private var selectedItem: Item? {
         items.first { item in
-            item.name == itemName
+            item.uuid == itemID
         }
     }
 
     var body: some View {
         let timeZone = StallyPreviewData.timeZone
-        let now = Date()
+        let now = StallyPreviewData.referenceDate
         let today = LocalDay(containing: now, in: timeZone)
         let todayDate = today?.date(in: timeZone)
 
