@@ -46,7 +46,8 @@ and newest-archived sort. Review, Insights, and transfer summaries require
 their own whole-collection scopes. Their arrays are live references supplied
 to composition helpers and Operations, never stored mirrors.
 
-Navigation paths and links carry UUIDs. `ContentView` and
+Each adaptive tab retains its navigation path. Paths and links carry UUIDs.
+`ContentView` and
 `StallyItemDestinationView` resolve them through `ItemOperations.item`, using
 a predicate and one-result fetch limit. The destination then supplies that
 same live model to its children. A missing identity shows the existing
@@ -90,7 +91,9 @@ The native SDK documentation and implementation use Apple's
 [Query](https://developer.apple.com/documentation/swiftdata/query),
 [Environment](https://developer.apple.com/documentation/swiftui/environment),
 and [ResultsObserver](https://developer.apple.com/documentation/swiftdata/resultsobserver)
-contracts. No custom environment key or model default is needed for Item.
+contracts. No custom environment key or model default is needed for Item. A separate
+app-local Date environment refreshes retained readings with scene/clock changes;
+it is a presentation value, not a model mirror or query observer.
 
 ## Verification Boundary
 

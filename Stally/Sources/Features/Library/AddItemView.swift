@@ -23,7 +23,7 @@ struct AddItemView: View {
     private var timeZone
 
     @State private var name = ""
-    @State private var category: ItemCategory = .clothing
+    @State private var category: ItemCategory = .other
     @State private var note = ""
     @State private var photoData: Data?
     @State private var isLoadingPhoto = false

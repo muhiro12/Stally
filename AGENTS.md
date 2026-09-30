@@ -99,9 +99,10 @@ Temporary release evidence and integration decision inputs live in
 The accepted, implemented design is
 `docs/item-start-and-elapsed-time-proposal.md`; current integration evidence and
 remaining manual checks are in `docs/item-tracking-verification.md`.
-Use them alongside `docs/near-term-development-brief.md`. Earlier assessment
-approval gates are historical; implementation evidence does not authorize
-production CloudKit changes, real-data operations, or release.
+Use them alongside `docs/near-term-development-brief.md`. The combined UI
+design and current visual evidence are in `docs/combined-interface-design.md`.
+Earlier assessment approval gates are historical; implementation evidence does
+not authorize production CloudKit changes, real-data operations, or release.
 
 `docs/first-release-data-model.md` records the selected combined domain,
 first-release persistence shape, retained development compatibility, and the
@@ -145,7 +146,8 @@ facts authoritative.
 The app target should stay a thin adapter over the current product surface.
 
 - `Stally/Sources/App/` owns app lifecycle, exported library import, and root
-  composition, including split-view destination selection and sheet routing.
+  composition, including adaptive tab selection, per-tab paths, and sheet
+  routing, plus the scene-aware date environment for retained readings.
 - `Stally/Sources/App/Intents/` owns app-wide App Shortcuts and generic route
   App Intents. Feature-specific App Intents should live under the owning
   `Features/*/Intents/` directory.
@@ -184,6 +186,9 @@ The app target should stay a thin adapter over the current product surface.
   preview containers, screenshot launch routes, and screen-level previews for
   UI review. It must not become product behavior or shared-library logic.
   Tracking scenarios include mixed collections and non-Mark-only collections.
+  `--stally-preview-text-size` accepts `xxxLarge` or `accessibility3` only with
+  a synthetic launch scenario; it leaves ordinary and Release text settings
+  under the system environment.
   `--stally-preview-tracking-screen` selects `yearDetail`, `monthDetail`,
   `archivedDetail`, `editYear`, or `editMonth` using the real screens and an
   in-memory container. These arguments and hosts are absent from Release builds.

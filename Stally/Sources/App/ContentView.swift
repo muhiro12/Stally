@@ -17,9 +17,8 @@ struct ContentView: View {
     @Environment(StallyRoutePipeline.self)
     private var routePipeline
 
-    @State private var selectedDestination: StallyNavigationView.Destination?
-    @State private var preferredCompactColumn: NavigationSplitViewColumn
-    @State private var detailPath: [StallyNavigationView.DetailRoute]
+    @State private var selectedDestination: StallyNavigationView.Destination
+    @State private var detailPaths: [StallyNavigationView.Destination: [StallyNavigationView.DetailRoute]]
     @State private var presentedSheet: ContentViewPresentedSheet?
     @State private var isPresentingMissingItemLinkAlert = false
     @State private var itemResolutionError: String?
@@ -41,31 +40,10 @@ struct ContentView: View {
         )
     }
 
-    private var navigationDestinationBinding: Binding<StallyNavigationView.Destination?> {
-        .init(
-            get: {
-                selectedDestination
-            },
-            set: { destination in
-                guard destination != selectedDestination else {
-                    return
-                }
-
-                selectedDestination = destination
-                detailPath.removeAll()
-
-                if destination != nil {
-                    preferredCompactColumn = .detail
-                }
-            }
-        )
-    }
-
     var body: some View {
         StallyNavigationView(
-            selectedDestination: navigationDestinationBinding,
-            preferredCompactColumn: $preferredCompactColumn,
-            detailPath: $detailPath,
+            selectedDestination: $selectedDestination,
+            detailPaths: $detailPaths,
             addAction: presentAddItem,
             restoreAction: presentBackupCenter,
             settingsAction: presentSettings
@@ -122,8 +100,7 @@ struct ContentView: View {
     #if DEBUG
     init() {
         _selectedDestination = .init(initialValue: .library)
-        _preferredCompactColumn = .init(initialValue: .detail)
-        _detailPath = .init(initialValue: [])
+        _detailPaths = .init(initialValue: [:])
         _pendingInitialPreviewRoute = .init(initialValue: nil)
     }
 
@@ -131,15 +108,13 @@ struct ContentView: View {
         _selectedDestination = .init(
             initialValue: Self.navigationDestination(for: initialPreviewRoute)
         )
-        _preferredCompactColumn = .init(initialValue: .detail)
-        _detailPath = .init(initialValue: [])
+        _detailPaths = .init(initialValue: [:])
         _pendingInitialPreviewRoute = .init(initialValue: initialPreviewRoute)
     }
     #else
     init() {
         _selectedDestination = .init(initialValue: .library)
-        _preferredCompactColumn = .init(initialValue: .detail)
-        _detailPath = .init(initialValue: [])
+        _detailPaths = .init(initialValue: [:])
     }
     #endif
 
@@ -207,7 +182,7 @@ struct ContentView: View {
                 return
             }
             selectNavigationDestination(item.isArchived ? .archive : .library)
-            detailPath = [.item(item.uuid)]
+            detailPaths[selectedDestination] = [.item(item.uuid)]
         } catch {
             itemResolutionError = error.localizedDescription
         }
@@ -218,8 +193,7 @@ struct ContentView: View {
     ) {
         presentedSheet = nil
         selectedDestination = destination
-        detailPath.removeAll()
-        preferredCompactColumn = .detail
+        detailPaths[destination] = []
     }
 
     private func showMissingItemLinkAlert() {
@@ -251,7 +225,7 @@ struct ContentView: View {
             }
 
             selectNavigationDestination(item.isArchived ? .archive : .library)
-            detailPath = [.item(item.uuid)]
+            detailPaths[selectedDestination] = [.item(item.uuid)]
             self.pendingInitialPreviewRoute = nil
         case .settings:
             presentedSheet = .settings

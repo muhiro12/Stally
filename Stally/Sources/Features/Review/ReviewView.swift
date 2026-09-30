@@ -12,6 +12,8 @@ import SwiftUI
 struct ReviewView: View {
     @Query(sort: \Item.createdAt, order: .reverse)
     private var items: [Item]
+    @Environment(\.stallyReadingDate)
+    private var readingDate
     @Environment(\.timeZone)
     private var timeZone
     @AppStorage(\.needsFirstMarkAfterDays)
@@ -29,7 +31,7 @@ struct ReviewView: View {
                 dormantAfterDays: dormantAfterDays
             ),
             timeZone: timeZone,
-            now: .now
+            now: readingDate
         )
         Group {
             if snapshot.isEmpty {

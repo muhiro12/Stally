@@ -47,62 +47,25 @@ struct StallyNavigationView: View {
         case item(UUID)
     }
 
-    private struct Sidebar: View {
-        @Binding var selection: Destination?
-
-        let settingsAction: () -> Void
-
-        var body: some View {
-            List(selection: $selection) {
-                Section {
-                    ForEach(Destination.collectionDestinations) { destination in
-                        DestinationLink(destination: destination)
-                    }
-                }
-
-                Section {
-                    ForEach(Destination.reflectionDestinations) { destination in
-                        DestinationLink(destination: destination)
-                    }
-                }
-            }
-            .stallyListChrome(.native)
-            .navigationTitle("Stally")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: settingsAction) {
-                        Label("Settings", systemImage: "gear")
-                    }
-                    .stallyToolbarActionStyle()
-                }
-            }
-        }
-    }
-
-    private struct DestinationLink: View {
-        let destination: Destination
-
-        var body: some View {
-            NavigationLink(value: destination) {
-                Label {
-                    Text(destination.linkDestination.title)
-                } icon: {
-                    Image(systemName: destination.linkDestination.systemImageName)
-                }
-            }
-        }
-    }
-
     private struct Detail: View {
         @Binding var path: [DetailRoute]
 
         let destination: Destination
         let addAction: () -> Void
         let restoreAction: () -> Void
+        let settingsAction: () -> Void
 
         var body: some View {
             NavigationStack(path: $path) {
                 destinationContent
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button(action: settingsAction) {
+                                Label("Settings", systemImage: "gear")
+                            }
+                            .stallyToolbarActionStyle()
+                        }
+                    }
                     .navigationDestination(for: DetailRoute.self) { route in
                         detailDestination(for: route)
                     }
@@ -134,27 +97,41 @@ struct StallyNavigationView: View {
         }
     }
 
-    @Binding var selectedDestination: Destination?
-    @Binding var preferredCompactColumn: NavigationSplitViewColumn
-    @Binding var detailPath: [DetailRoute]
+    @Binding var selectedDestination: Destination
+    @Binding var detailPaths: [Destination: [DetailRoute]]
 
     let addAction: () -> Void
     let restoreAction: () -> Void
     let settingsAction: () -> Void
 
     var body: some View {
-        NavigationSplitView(preferredCompactColumn: $preferredCompactColumn) {
-            Sidebar(
-                selection: $selectedDestination,
-                settingsAction: settingsAction
-            )
-        } detail: {
-            Detail(
-                path: $detailPath,
-                destination: selectedDestination ?? .library,
-                addAction: addAction,
-                restoreAction: restoreAction
-            )
+        TabView(selection: $selectedDestination) {
+            ForEach(Destination.collectionDestinations + Destination.reflectionDestinations) { destination in
+                Tab(value: destination) {
+                    Detail(
+                        path: path(for: destination),
+                        destination: destination,
+                        addAction: addAction,
+                        restoreAction: restoreAction,
+                        settingsAction: settingsAction
+                    )
+                } label: {
+                    Label {
+                        Text(destination.linkDestination.title)
+                    } icon: {
+                        Image(systemName: destination.linkDestination.systemImageName)
+                    }
+                }
+            }
+        }
+        .tabViewStyle(.sidebarAdaptable)
+    }
+
+    private func path(for destination: Destination) -> Binding<[DetailRoute]> {
+        .init {
+            detailPaths[destination, default: []]
+        } set: { path in
+            detailPaths[destination] = path
         }
     }
 }

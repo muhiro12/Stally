@@ -28,9 +28,13 @@ struct StallyApp: App {
     var body: some Scene {
         WindowGroup {
             rootContent
+                .modifier(StallyReadingDateModifier())
                 .stallyPlatformEnvironment(platformEnvironment)
                 .mhTheme(.standard)
                 .mhGlassPolicy(.automatic)
+                #if DEBUG
+                .modifier(StallyPreviewTextSizeModifier(size: Self.previewLaunchConfiguration.textSize))
+            #endif
         }
     }
 

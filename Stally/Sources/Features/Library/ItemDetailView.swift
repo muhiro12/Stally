@@ -8,7 +8,6 @@
 import MHUI
 import SwiftData
 import SwiftUI
-import UIKit
 
 struct ItemDetailView: View {
     private struct HistoryAdjustmentContext {
@@ -41,8 +40,8 @@ struct ItemDetailView: View {
     private var theme
     @Environment(\.locale)
     private var locale
-    @Environment(\.scenePhase)
-    private var scenePhase
+    @Environment(\.stallyReadingDate)
+    private var readingDate
 
     @Environment(Item.self)
     private var item
@@ -52,7 +51,6 @@ struct ItemDetailView: View {
     @State private var errorTitle = ""
     @State private var errorMessage = ""
     @State private var isPresentingError = false
-    @State private var readingDate = Date()
 
     var body: some View {
         let now = readingDate
@@ -117,17 +115,6 @@ struct ItemDetailView: View {
         .mhListChrome(.native)
         .navigationTitle(item.name)
         .navigationBarTitleDisplayMode(.inline)
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
-            readingDate = .now
-        }
-        .onChange(of: timeZone) {
-            readingDate = .now
-        }
-        .onChange(of: scenePhase) {
-            if scenePhase == .active {
-                readingDate = .now
-            }
-        }
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button(action: presentEditItem) {

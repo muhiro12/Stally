@@ -10,6 +10,8 @@ import SwiftData
 import SwiftUI
 
 struct InsightsView: View {
+    @Environment(\.stallyReadingDate)
+    private var readingDate
     @Environment(\.timeZone)
     private var timeZone
 
@@ -29,7 +31,7 @@ struct InsightsView: View {
     }
 
     var body: some View {
-        let now = Date()
+        let now = readingDate
         let snapshot = InsightsOperations.snapshot(
             for: items,
             options: options,

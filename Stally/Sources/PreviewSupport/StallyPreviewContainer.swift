@@ -18,6 +18,7 @@ struct StallyPreviewContainer<Content: View>: View {
 
     var body: some View {
         content(StallyPreviewData.items(in: container))
+            .modifier(StallyReadingDateModifier())
             .stallyPreviewPlatformEnvironment(platformEnvironment)
             .environment(\.timeZone, StallyPreviewData.timeZone)
             .mhTheme(.standard)

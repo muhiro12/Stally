@@ -8,22 +8,20 @@
 import MHPlatform
 import MHUI
 import SwiftUI
-import UIKit
 
 struct ItemLibraryList: View {
     @AppStorage(\.isSubscribeOn)
     private var isSubscribeOn
     @Environment(\.timeZone)
     private var timeZone
-    @Environment(\.scenePhase)
-    private var scenePhase
+    @Environment(\.stallyReadingDate)
+    private var readingDate
 
     @State private var searchText = ""
     @State private var selectedCategory: ItemCategory?
     @State private var selectedFilter = ItemCollectionFilter.all
     @State private var selectedSort = ItemCollectionSort.defaultOrder
     @State private var selectedDate = Date.now
-    @State private var currentDay: LocalDay?
 
     let items: [Item]
     let kind: ItemCollectionKind
@@ -36,7 +34,7 @@ struct ItemLibraryList: View {
     }
 
     var body: some View {
-        let today = currentDay ?? LocalDay(containing: .now, in: timeZone)
+        let today = LocalDay(containing: readingDate, in: timeZone)
         let selectedDay = LocalDay(containing: selectedDate, in: timeZone)
         let refinedItems = ItemCollectionOperations.items(
             from: items,
@@ -58,22 +56,6 @@ struct ItemLibraryList: View {
             text: $searchText,
             prompt: Text(kind.searchPrompt)
         )
-        .onAppear(perform: refreshCurrentDay)
-        .onChange(of: scenePhase) {
-            if scenePhase == .active {
-                refreshCurrentDay()
-            }
-        }
-        .onChange(of: timeZone.identifier) {
-            refreshCurrentDay()
-        }
-        .onReceive(
-            NotificationCenter.default.publisher(
-                for: UIApplication.significantTimeChangeNotification
-            )
-        ) { _ in
-            refreshCurrentDay()
-        }
     }
 
     @ViewBuilder
@@ -121,9 +103,5 @@ struct ItemLibraryList: View {
         selectedFilter = .all
         selectedSort = .defaultOrder
         selectedDate = .now
-    }
-
-    private func refreshCurrentDay() {
-        currentDay = LocalDay(containing: .now, in: timeZone)
     }
 }

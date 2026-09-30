@@ -7,6 +7,7 @@
 
 #if DEBUG
 import SwiftData
+import SwiftUI
 
 struct StallyPreviewLaunchConfiguration {
     static var current: Self {
@@ -16,6 +17,15 @@ struct StallyPreviewLaunchConfiguration {
     let scenario: StallyPreviewScenario?
     let route: StallyPreviewRoute?
     let trackingScreen: StallyTrackingPreviewScreen?
+
+    var textSize: DynamicTypeSize? {
+        guard resolvedScenario != nil else {
+            return nil
+        }
+        return requestedTextSize
+    }
+
+    private let requestedTextSize: DynamicTypeSize?
 
     var modelContainer: ModelContainer? {
         guard let resolvedScenario else {
@@ -42,6 +52,14 @@ struct StallyPreviewLaunchConfiguration {
     }
 
     init(arguments: [String]) {
+        switch Self.value(after: "--stally-preview-text-size", in: arguments) {
+        case "accessibility3":
+            requestedTextSize = .accessibility3
+        case "xxxLarge":
+            requestedTextSize = .xxxLarge
+        default:
+            requestedTextSize = nil
+        }
         scenario = Self.scenario(from: arguments)
         route = Self.route(from: arguments)
         trackingScreen = Self.value(after: "--stally-preview-tracking-screen", in: arguments)
