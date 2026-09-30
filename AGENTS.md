@@ -28,6 +28,9 @@ foundation for continuing the rebuild.
 This repository currently contains:
 
 - `Stally.xcodeproj`, with the `Stally` app target and `Stally` scheme.
+- `StallySystemTests/`, a focused iOS 27 AppIntentsTesting UI bundle and shared
+  `StallySystemTests` scheme for out-of-process adapter journeys. It launches
+  only synthetic DEBUG collections; durable domain tests remain in the library.
 - `Stally/`, a SwiftUI app source tree under `Stally/Sources/`,
   configuration files under `Stally/Configurations/`, and app resources under
   `Stally/Resources/`.
@@ -108,6 +111,8 @@ not authorize production CloudKit changes, real-data operations, or release.
 first-release persistence shape, retained development compatibility, and the
 explicit persistence/interchange version mapping. Use it for current model
 decisions; the earlier integration assessments remain historical evidence.
+`docs/system-interface-contract.md` records the Intent inventory, canonical
+Item entity, schema/indexing decisions, Widget/Watch no-go, and replay rules.
 
 When editing product-intent documents, preserve the existing English voice,
 avoid speculation, and keep the distinction between product intent and
@@ -214,6 +219,8 @@ The app target should stay a thin adapter over the current product surface.
   in the library.
 - App Intents must call public `*Operations` for business behavior and should
   not reimplement domain rules in the app target.
+- Item entity values carry UUID identity and resolved properties, never live
+  models or dependencies. Actions resolve current models before Operations.
 
 `StallyLibrary` is the durable domain and use-case boundary.
 
@@ -380,6 +387,12 @@ python3 "$catalog_root/string-catalog-maintainer/scripts/audit_xcstrings.py" \
 
 For App Intents changes, confirm the app build extracts App Intents metadata
 and that user-facing intent strings remain catalog-backed.
+For selected system journeys, run the `StallySystemTests` scheme through the
+available Xcode test capability. The compatibility entrypoint is
+`bash ci_scripts/tasks/test_stally_intents.sh`; set
+`CI_IOS_SIMULATOR_DESTINATION` to a discovered dedicated iOS 27 Simulator.
+`CI_DERIVED_DATA_PATH` optionally selects its build cache. These adapter tests
+do not replace StallyLibrary tests or prove physical Siri/locked-device behavior.
 
 For CloudKit or SwiftData container changes, run an app runtime check and
 inspect logs for fatal CloudKit, SwiftData, ModelContainer, App Intents, crash,
@@ -436,6 +449,7 @@ bash ci_scripts/tasks/format_swift.sh
 bash ci_scripts/tasks/lint_swift.sh
 bash ci_scripts/tasks/check_repository_rules.sh
 bash ci_scripts/tasks/test_stally_library.sh
+bash ci_scripts/tasks/test_stally_intents.sh
 bash ci_scripts/tasks/verify_task_completion.sh
 ```
 

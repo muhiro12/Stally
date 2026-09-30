@@ -9,14 +9,16 @@ import AppIntents
 import SwiftData
 
 struct StallyItemEntityQuery: EntityStringQuery {
+    private static let suggestionLimit = 40
+
     @Dependency private var modelContainer: ModelContainer
 
     @MainActor
     func entities(for identifiers: [StallyItemEntity.ID]) throws -> [StallyItemEntity] {
-        let identifierSet = Set(identifiers)
-        let items = try ItemOperations.items(context: modelContainer.mainContext).filter { item in
-            identifierSet.contains(item.uuid.uuidString)
-        }
+        let items = try ItemOperations.items(
+            context: modelContainer.mainContext,
+            uuids: identifiers.compactMap(UUID.init(uuidString:))
+        )
         return StallyItemEntity.make(from: items)
     }
 
@@ -31,8 +33,9 @@ struct StallyItemEntityQuery: EntityStringQuery {
 
     @MainActor
     func suggestedEntities() throws -> [StallyItemEntity] {
-        let items = try ItemOperations.activeItems(
-            from: ItemOperations.items(context: modelContainer.mainContext)
+        let items = try ItemOperations.suggestedItems(
+            context: modelContainer.mainContext,
+            limit: Self.suggestionLimit
         )
         return StallyItemEntity.make(from: items)
     }

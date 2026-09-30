@@ -99,23 +99,6 @@
         }
       }
     },
-    "Actions" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actions"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "操作"
-          }
-        }
-      }
-    },
     "Active Days" : {
       "localizations" : {
         "en" : {
@@ -144,23 +127,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アクティビティ"
-          }
-        }
-      }
-    },
-    "Activity, consistency, and collection health at a glance." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activity, consistency, and collection health at a glance."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アクティビティ、継続性、コレクションの状態をひと目で確認できます。"
           }
         }
       }
@@ -321,6 +287,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アーカイブ"
+          }
+        }
+      }
+    },
+    "Archive ${item}" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archive ${item}"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${item}をアーカイブ"
           }
         }
       }
@@ -773,6 +755,22 @@
         }
       }
     },
+    "Create item ${name}" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create item ${name}"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アイテム${name}を作成"
+          }
+        }
+      }
+    },
     "Current Streak" : {
       "localizations" : {
         "en" : {
@@ -1221,23 +1219,6 @@
         }
       }
     },
-    "Export Tools" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Export Tools"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "書き出しツール"
-          }
-        }
-      }
-    },
     "Filter" : {
       "localizations" : {
         "en" : {
@@ -1330,23 +1311,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "読み込みのプレビュー"
-          }
-        }
-      }
-    },
-    "Import Tools" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Import Tools"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "読み込みツール"
           }
         }
       }
@@ -1607,6 +1571,22 @@
         }
       }
     },
+    "Mark ${item} today" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark ${item} today"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${item}に今日のマークを付ける"
+          }
+        }
+      }
+    },
     "Mark Today" : {
       "localizations" : {
         "en" : {
@@ -1767,18 +1747,18 @@
         }
       }
     },
-    "Merge preserves existing details, including starts and Mark settings, and adds missing history." : {
+    "Merge preserves existing details, including start dates and Mark settings, and adds missing history." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Merge preserves existing details, including starts and Mark settings, and adds missing history."
+            "value" : "Merge preserves existing details, including start dates and Mark settings, and adds missing history."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "統合では、開始時期やマーク設定などの既存情報を保持し、不足している履歴を追加します。"
+            "value" : "統合は、開始時期とマーク設定を含む既存の詳細を保持し、不足する履歴を追加します。"
           }
         }
       }
@@ -1843,6 +1823,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使った月"
+          }
+        }
+      }
+    },
+    "Move ${item} back to Library" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Move ${item} back to Library"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${item}をライブラリに戻す"
           }
         }
       }
@@ -2458,23 +2454,6 @@
         }
       }
     },
-    "Read the collection as a pattern, not just a list." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Read the collection as a pattern, not just a list."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "コレクションを単なる一覧ではなく、パターンとして読み解きます。"
-          }
-        }
-      }
-    },
     "Reading Range" : {
       "localizations" : {
         "en" : {
@@ -2647,23 +2626,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "現在のライブラリを置き換えました。"
-          }
-        }
-      }
-    },
-    "Report" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Report"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "レポート"
           }
         }
       }
@@ -3244,23 +3206,6 @@
         }
       }
     },
-    "The selected range shapes every reading below." : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The selected range shapes every reading below."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "以下の読み取りには、選択した期間が反映されます。"
-          }
-        }
-      }
-    },
     "The stored start is invalid. Edit or clear it before saving." : {
       "localizations" : {
         "en" : {
@@ -3401,6 +3346,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今日のマークを取り消す"
+          }
+        }
+      }
+    },
+    "Undo today’s Mark for ${item}" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Undo today’s Mark for ${item}"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "${item}の今日のマークを取り消す"
           }
         }
       }

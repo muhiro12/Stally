@@ -10,7 +10,8 @@ import Foundation
 
 struct OpenStallyRouteIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Open Stally Route", table: "AppIntents")
-    static let openAppWhenRun = true
+    static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
+    static let supportedModes: IntentModes = .foreground
     static let isDiscoverable = false
 
     @Parameter(title: .init("URL", table: "AppIntents"))

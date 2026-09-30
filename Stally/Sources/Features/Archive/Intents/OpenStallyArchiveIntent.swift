@@ -9,11 +9,11 @@ import AppIntents
 
 struct OpenStallyArchiveIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Open Archive", table: "AppIntents")
+    static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
     static let description = IntentDescription(
         .init("Open Stally to Archive.", table: "AppIntents")
     )
-    static let openAppWhenRun = true
-    static let isDiscoverable = false
+    static let supportedModes: IntentModes = .foreground
 
     @MainActor
     func perform() async -> some IntentResult {

@@ -10,10 +10,10 @@ import SwiftData
 
 struct MoveStallyItemBackToLibraryIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Move Item Back to Library", table: "AppIntents")
+    static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
     static let description = IntentDescription(
         .init("Move an archived item back to Library.", table: "AppIntents")
     )
-    static let isDiscoverable = false
 
     private static var movedDialog: IntentDialog {
         .init(.init("Moved item back to Library.", table: "AppIntents"))
@@ -23,19 +23,23 @@ struct MoveStallyItemBackToLibraryIntent: AppIntent {
         .init(.init("Item is already in Library.", table: "AppIntents"))
     }
 
+    static var parameterSummary: some ParameterSummary {
+        Summary("Move \(\.$item) back to Library")
+    }
+
     @Parameter(title: .init("Item", table: "AppIntents"))
     private var item: StallyItemEntity
 
     @Dependency private var modelContainer: ModelContainer
 
     @MainActor
-    func perform() throws -> some IntentResult & ProvidesDialog {
+    func perform() throws -> some ReturnsValue<Bool> & ProvidesDialog {
         let model = try item.model(in: modelContainer.mainContext)
         let didMove = try ItemOperations.moveBackToLibrary(
             model,
             context: modelContainer.mainContext
         )
         let dialog = didMove ? Self.movedDialog : Self.alreadyInLibraryDialog
-        return .result(dialog: dialog)
+        return .result(value: didMove, dialog: dialog)
     }
 }

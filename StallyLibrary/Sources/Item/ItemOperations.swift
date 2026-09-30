@@ -66,6 +66,37 @@ public enum ItemOperations {
         return try context.fetch(descriptor).first
     }
 
+    /// Resolves a batch of stable identities without loading unrelated items.
+    public static func items(context: ModelContext, uuids: [UUID]) throws -> [Item] {
+        guard !uuids.isEmpty else {
+            return []
+        }
+        var descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate { item in
+                uuids.contains(item.uuid)
+            },
+            sortBy: [.init(\.createdAt, order: .reverse)]
+        )
+        descriptor.includePendingChanges = true
+        return try context.fetch(descriptor)
+    }
+
+    /// A bounded recent active collection for system parameter suggestions.
+    public static func suggestedItems(context: ModelContext, limit: Int) throws -> [Item] {
+        guard limit > 0 else {
+            return []
+        }
+        var descriptor = FetchDescriptor<Item>(
+            predicate: #Predicate { item in
+                item.archivedAt == nil
+            },
+            sortBy: [.init(\.createdAt, order: .reverse)]
+        )
+        descriptor.fetchLimit = limit
+        descriptor.includePendingChanges = true
+        return try context.fetch(descriptor)
+    }
+
     /// Fetches items whose user-facing name matches the query.
     public static func items(
         context: ModelContext,

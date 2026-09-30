@@ -42,4 +42,19 @@ enum StallyItemCategoryIntentValue: String, AppEnum {
             .other
         }
     }
+
+    init(_ category: ItemCategory) {
+        switch category {
+        case .clothing:
+            self = .clothing
+        case .shoes:
+            self = .shoes
+        case .bags:
+            self = .bags
+        case .notebooks:
+            self = .notebooks
+        case .other:
+            self = .other
+        }
+    }
 }

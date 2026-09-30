@@ -10,10 +10,10 @@ import SwiftData
 
 struct ArchiveStallyItemIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Archive Item", table: "AppIntents")
+    static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
     static let description = IntentDescription(
         .init("Move an item into Archive while preserving its history.", table: "AppIntents")
     )
-    static let isDiscoverable = false
 
     private static var archivedDialog: IntentDialog {
         .init(.init("Archived item.", table: "AppIntents"))
@@ -23,13 +23,17 @@ struct ArchiveStallyItemIntent: AppIntent {
         .init(.init("Item is already archived.", table: "AppIntents"))
     }
 
+    static var parameterSummary: some ParameterSummary {
+        Summary("Archive \(\.$item)")
+    }
+
     @Parameter(title: .init("Item", table: "AppIntents"))
     private var item: StallyItemEntity
 
     @Dependency private var modelContainer: ModelContainer
 
     @MainActor
-    func perform() throws -> some IntentResult & ProvidesDialog {
+    func perform() throws -> some ReturnsValue<Bool> & ProvidesDialog {
         let model = try item.model(in: modelContainer.mainContext)
         let didArchive = try ItemOperations.archive(
             model,
@@ -37,6 +41,6 @@ struct ArchiveStallyItemIntent: AppIntent {
             context: modelContainer.mainContext
         )
         let dialog = didArchive ? Self.archivedDialog : Self.alreadyArchivedDialog
-        return .result(dialog: dialog)
+        return .result(value: didArchive, dialog: dialog)
     }
 }

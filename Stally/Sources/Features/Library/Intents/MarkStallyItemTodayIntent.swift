@@ -11,6 +11,7 @@ import SwiftData
 
 struct MarkStallyItemTodayIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Mark Today", table: "AppIntents")
+    static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
     static let description = IntentDescription(
         .init("Mark that you chose an item today.", table: "AppIntents")
     )
@@ -23,17 +24,21 @@ struct MarkStallyItemTodayIntent: AppIntent {
         .init(.init("Already marked today.", table: "AppIntents"))
     }
 
+    static var parameterSummary: some ParameterSummary {
+        Summary("Mark \(\.$item) today")
+    }
+
     @Parameter(title: .init("Item", table: "AppIntents"), optionsProvider: StallyMarkItemOptionsProvider())
     private var item: StallyItemEntity
 
     @Dependency private var modelContainer: ModelContainer
 
     @MainActor
-    func perform() throws -> some IntentResult & ProvidesDialog {
+    func perform() throws -> some ReturnsValue<Bool> & ProvidesDialog {
         let now = Date()
         let timeZone = TimeZone.current
         guard let today = LocalDay(containing: now, in: timeZone) else {
-            throw CocoaError(.coderInvalidValue)
+            throw StallyIntentError.currentDayUnavailable
         }
 
         let model = try item.model(in: modelContainer.mainContext)
@@ -44,6 +49,6 @@ struct MarkStallyItemTodayIntent: AppIntent {
             context: modelContainer.mainContext
         )
         let dialog = didMark ? Self.markedDialog : Self.alreadyMarkedDialog
-        return .result(dialog: dialog)
+        return .result(value: didMark, dialog: dialog)
     }
 }

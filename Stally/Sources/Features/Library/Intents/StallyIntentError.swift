@@ -10,6 +10,7 @@ import Foundation
 enum StallyIntentError: LocalizedError, CustomLocalizedStringResourceConvertible {
     case itemNotFound
     case currentDayUnavailable
+    case invalidStartInput
 
     var errorDescription: String? {
         String(localized: localizedStringResource)
@@ -21,6 +22,8 @@ enum StallyIntentError: LocalizedError, CustomLocalizedStringResourceConvertible
             .init("Item could not be found.", table: "AppIntents")
         case .currentDayUnavailable:
             .init("The current calendar day could not be read.", table: "AppIntents")
+        case .invalidStartInput:
+            .init("Enter a valid start as YYYY, YYYY-MM, or YYYY-MM-DD.", table: "AppIntents")
         }
     }
 }

@@ -9,10 +9,11 @@ import AppIntents
 
 struct OpenStallyDestinationIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Open Stally Destination", table: "AppIntents")
+    static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
     static let description = IntentDescription(
         .init("Open Stally to a major app destination.", table: "AppIntents")
     )
-    static let openAppWhenRun = true
+    static let supportedModes: IntentModes = .foreground
     static let isDiscoverable = false
 
     @Parameter(title: .init("Destination", table: "AppIntents"))

@@ -9,10 +9,11 @@ import AppIntents
 
 struct OpenStallyReviewIntent: AppIntent {
     static let title: LocalizedStringResource = .init("Open Review", table: "AppIntents")
+    static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
     static let description = IntentDescription(
         .init("Open Stally to Review.", table: "AppIntents")
     )
-    static let openAppWhenRun = true
+    static let supportedModes: IntentModes = .foreground
 
     @MainActor
     func perform() async -> some IntentResult {

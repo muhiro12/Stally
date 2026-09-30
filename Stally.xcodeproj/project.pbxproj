@@ -12,8 +12,19 @@
 		B8D000012FED000000000003 /* MHPlatform in Frameworks */ = {isa = PBXBuildFile; productRef = B8D000012FED000000000002 /* MHPlatform */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		B81300000000000000000007 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AD75E9882FED371000094EFB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AD75E98F2FED371000094EFB;
+			remoteInfo = Stally;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		AD75E9902FED371000094EFB /* Stally.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stally.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B81300000000000000000002 /* StallySystemTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = StallySystemTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B8AB10002FED000000000002 /* StallyLibrary */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = StallyLibrary; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -36,6 +47,11 @@
 			path = Stally;
 			sourceTree = "<group>";
 		};
+		B81300000000000000000003 /* StallySystemTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = StallySystemTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +63,11 @@
 				B8AB10002FED000000000001 /* StallyLibrary in Frameworks */,
 			);
 		};
+		B81300000000000000000005 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -54,6 +75,7 @@
 			isa = PBXGroup;
 			children = (
 				AD75E9922FED371000094EFB /* Stally */,
+				B81300000000000000000003 /* StallySystemTests */,
 				B8AB10002FED000000000002 /* StallyLibrary */,
 				AD75E9912FED371000094EFB /* Products */,
 			);
@@ -63,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				AD75E9902FED371000094EFB /* Stally.app */,
+				B81300000000000000000002 /* StallySystemTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -93,6 +116,27 @@
 			productReference = AD75E9902FED371000094EFB /* Stally.app */;
 			productType = "com.apple.product-type.application";
 		};
+		B81300000000000000000001 /* StallySystemTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B8130000000000000000000B /* Build configuration list for PBXNativeTarget "StallySystemTests" */;
+			buildPhases = (
+				B81300000000000000000004 /* Sources */,
+				B81300000000000000000005 /* Frameworks */,
+				B81300000000000000000006 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B81300000000000000000008 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				B81300000000000000000003 /* StallySystemTests */,
+			);
+			name = StallySystemTests;
+			productName = StallySystemTests;
+			productReference = B81300000000000000000002 /* StallySystemTests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -105,6 +149,10 @@
 				TargetAttributes = {
 					AD75E98F2FED371000094EFB = {
 						CreatedOnToolsVersion = 27.0;
+					};
+					B81300000000000000000001 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = AD75E98F2FED371000094EFB;
 					};
 				};
 			};
@@ -129,6 +177,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
+				B81300000000000000000001 /* StallySystemTests */,
 				AD75E98F2FED371000094EFB /* Stally */,
 			);
 		};
@@ -136,6 +185,11 @@
 
 /* Begin PBXResourcesBuildPhase section */
 		AD75E98E2FED371000094EFB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		B81300000000000000000006 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -148,7 +202,20 @@
 			files = (
 			);
 		};
+		B81300000000000000000004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B81300000000000000000008 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AD75E98F2FED371000094EFB /* Stally */;
+			targetProxy = B81300000000000000000007 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		AD75E99F2FED371100094EFB /* Debug configuration for PBXNativeTarget "Stally" */ = {
@@ -363,6 +430,52 @@
 			};
 			name = Release;
 		};
+		B81300000000000000000009 /* Debug configuration for PBXNativeTarget "StallySystemTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 66PKF55HK5;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.muhiro12.Stally.SystemTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Stally;
+			};
+			name = Debug;
+		};
+		B8130000000000000000000A /* Release configuration for PBXNativeTarget "StallySystemTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 66PKF55HK5;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.muhiro12.Stally.SystemTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Stally;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -379,6 +492,14 @@
 			buildConfigurations = (
 				AD75E99F2FED371100094EFB /* Debug configuration for PBXNativeTarget "Stally" */,
 				AD75E9A02FED371100094EFB /* Release configuration for PBXNativeTarget "Stally" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		B8130000000000000000000B /* Build configuration list for PBXNativeTarget "StallySystemTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B81300000000000000000009 /* Debug configuration for PBXNativeTarget "StallySystemTests" */,
+				B8130000000000000000000A /* Release configuration for PBXNativeTarget "StallySystemTests" */,
 			);
 			defaultConfigurationName = Release;
 		};

@@ -86,6 +86,22 @@
         }
       }
     },
+    "Archived" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archived"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アーカイブ済み"
+          }
+        }
+      }
+    },
     "Archived item." : {
       "localizations" : {
         "en" : {
@@ -226,6 +242,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "行き先"
+          }
+        }
+      }
+    },
+    "Enter a valid start as YYYY, YYYY-MM, or YYYY-MM-DD." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter a valid start as YYYY, YYYY-MM, or YYYY-MM-DD."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始時期をYYYY、YYYY-MM、またはYYYY-MM-DD形式で入力してください。"
           }
         }
       }
@@ -790,6 +822,22 @@
         }
       }
     },
+    "Optional start as YYYY, YYYY-MM, or YYYY-MM-DD." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Optional start as YYYY, YYYY-MM, or YYYY-MM-DD."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始時期をYYYY、YYYY-MM、またはYYYY-MM-DD形式で指定できます。"
+          }
+        }
+      }
+    },
     "Other" : {
       "localizations" : {
         "en" : {
@@ -818,6 +866,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アイテムの記録を変更せずに、開始時期と経過時間を読み取ります。"
+          }
+        }
+      }
+    },
+    "Record Marks" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Record Marks"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マークを記録"
           }
         }
       }
@@ -898,6 +962,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "靴"
+          }
+        }
+      }
+    },
+    "Start" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "開始時期"
           }
         }
       }
