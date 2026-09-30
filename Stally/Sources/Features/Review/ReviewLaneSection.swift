@@ -21,25 +21,23 @@ struct ReviewLaneSection: View {
                     .mhRow()
             } else {
                 ForEach(items) { item in
-                    NavigationLink(value: StallyNavigationView.DetailRoute.item(item.uuid)) {
-                        ItemRow()
-                            .environment(item)
-                    }
-                    .mhRow()
-                    .tag(item.uuid)
-                    .swipeActions {
-                        Button(
-                            action: { itemAction(item) },
-                            label: {
-                                switch lane {
-                                case .dormant, .needsFirstMark:
-                                    Label("Archive Item", systemImage: "archivebox")
-                                case .recoveryCandidates:
-                                    Label("Move Back to Library", systemImage: "tray.and.arrow.up")
+                    StallyItemNavigationLink()
+                        .environment(item)
+                        .mhRow()
+                        .tag(item.uuid)
+                        .swipeActions {
+                            Button(
+                                action: { itemAction(item) },
+                                label: {
+                                    switch lane {
+                                    case .dormant, .needsFirstMark:
+                                        Label("Archive Item", systemImage: "archivebox")
+                                    case .recoveryCandidates:
+                                        Label("Move Back to Library", systemImage: "tray.and.arrow.up")
+                                    }
                                 }
-                            }
-                        )
-                    }
+                            )
+                        }
                 }
             }
         } header: {

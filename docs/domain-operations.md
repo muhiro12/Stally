@@ -37,7 +37,7 @@ reading rules. It must not overload Archive.
 | Insights | Choice patterns and whole-scope coverage | Read-only; retain |
 | Import/export | Full-data transfer and recovery | Core; retain |
 | Links | Destination and UUID transport | Adapter contract; retain |
-| Sample data | Owned synthetic examples | Retain; unification in #20 |
+| Sample data | Owned synthetic examples | Shared deterministic seeds |
 | Subscription | Entitlement reading | Independent from iCloud; retain |
 | Persistence | Factory and migration plan | Infrastructure; retain |
 
@@ -47,8 +47,8 @@ Public entry points by owner:
   `item`, batch identity resolution, name matching, `suggestedItems`,
   `activeItems`, `archivedItems`,
   `itemsEligibleForHistoryChanges`, `mark`, `undoMark`, `isMarked`,
-  `historySnapshot`, `trackingInput`, `capabilities`, and the history-change,
-  conflict, and disable helpers.
+  `historySnapshot`, `trackingInput`, `capabilities`, `contextSnapshot`, and the
+  history-change, conflict, and disable helpers.
 - Time: `snapshot`, `milestone`, `elapsedText`, `startText`, `report`.
 - Browsing: `ItemCollectionOperations.items`.
 - Photo: `prepare`, `validate`, and size constants.
@@ -135,7 +135,7 @@ System adapters resolve UUIDs in their own context, call Operations there,
 then return purpose-specific values:
 
 - `ItemHistorySnapshot`, `ItemTimeSnapshot`, `ItemMilestone`, and
-  `ItemCapabilities` are immutable Sendable readings.
+  `ItemCapabilities` and `ItemContextSnapshot` are immutable Sendable readings.
 - `ReviewIdentifiersSnapshot` captures ordered lane UUIDs without retaining
   models. Resolve them afresh and recheck live eligibility before writing.
 - Insights and time reports are Strings. The app's model-bearing Insights
@@ -161,5 +161,7 @@ tests cover precision-aware time, archive-independent elapsed time, Review
 transactions, Insights scope, photos, portable round trips, and migrations.
 
 The app build proves the public facade remains usable by existing adapters.
-Visible UI restructuring, system entity redesign, and actual Siri execution
-belong to the following issues.
+Visible UI and native menu evidence live in `combined-interface-design.md`
+and `item-contextual-actions.md`; system entity tests are recorded in
+`system-interface-contract.md`. Physical Siri execution requires its own
+evidence beyond these library and out-of-process tests.

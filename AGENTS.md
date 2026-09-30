@@ -176,6 +176,10 @@ The app target should stay a thin adapter over the current product surface.
   entity identity or name resolution. Library/Archive start browsing, derived
   yearly milestones, native time sharing, and Check Time Together adapt these
   read-only Operations without adding persisted events or a second app shell.
+  Its shared Item row and detail-menu adapters present native contextual
+  actions from `ItemContextSnapshot`, retain ordinary controls, and associate
+  visible Item identity with the canonical App Entity. See
+  `docs/item-contextual-actions.md` for the action matrix and evidence.
 - `Stally/Sources/Features/Archive/` owns the SwiftUI Archive surface and
   Archive-owned App Intents.
 - `Stally/Sources/Features/Review/` owns the SwiftUI Review lane surface and
@@ -247,6 +251,9 @@ The app target should stay a thin adapter over the current product surface.
   `ItemCollectionOperations`, and `ItemOperations`. Time Operations also own
   precision-preserving annual milestones and localized read-only time reports;
   collection Operations own start sorting and tracking-policy filters.
+  `ItemContextSnapshot` and `ItemOperations.contextSnapshot` capture value-only
+  secondary-action readings; adapters resolve UUID and recheck Operations when
+  an action executes.
 - `StallyLibrary/Sources/Review/` owns Review lane values, settings, action
   requests, live snapshots, Sendable `ReviewIdentifiersSnapshot`, and
   `ReviewOperations`. All lanes and bulk actions

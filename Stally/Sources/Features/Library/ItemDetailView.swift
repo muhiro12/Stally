@@ -5,6 +5,7 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import AppIntents
 import MHUI
 import SwiftData
 import SwiftUI
@@ -99,6 +100,8 @@ struct ItemDetailView: View {
 
             ItemDeletionSection(deleteAction: confirmDeleteItem)
         }
+        .appEntityIdentifier(EntityIdentifier(for: StallyItemEntity.self, identifier: item.uuid.uuidString))
+        .modifier(ItemActionsModifier(presentation: .toolbarMenu))
         .scrollEdgeEffectStyle(.soft, for: .bottom)
         .safeAreaBar(edge: .bottom) {
             if canChangeHistory {

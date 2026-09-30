@@ -113,6 +113,41 @@ final class StallySystemIntentTests: XCTestCase {
     }
 
     @MainActor
+    func testOnscreenAnnotationsDisambiguateEqualNamesAndReflectArchive() async throws {
+        let app = launchSyntheticCollection()
+        defer { app.terminate() }
+        let create = definitions.intents["CreateStallyItemIntent"]
+        let firstResult = try await create.makeIntent(name: "Same System Name").run()
+        let secondResult = try await create.makeIntent(
+            name: "Same System Name", recordsMarks: false, start: "2000-02"
+        )
+        .run()
+        let first: AnyAppEntity = try firstResult.value
+        let second: AnyAppEntity = try secondResult.value
+        XCTAssertNotEqual(first.identifier.instanceIdentifier, second.identifier.instanceIdentifier)
+        XCTAssertTrue(app.staticTexts["Same System Name"].firstMatch.waitForExistence(timeout: 5))
+        let entity = definitions.entities["StallyItemEntity"]
+        let rows = try await entity.viewAnnotations()
+        let visibleIDs = Set(rows.map(\.entity.identifier.instanceIdentifier))
+        XCTAssertTrue(visibleIDs.contains(first.identifier.instanceIdentifier))
+        XCTAssertTrue(visibleIDs.contains(second.identifier.instanceIdentifier))
+
+        try await definitions.intents["OpenStallyItemEntityIntent"].makeIntent(target: second).run()
+        XCTAssertTrue(app.navigationBars["Same System Name"].waitForExistence(timeout: 5))
+        let detail = try await entity.viewAnnotations()
+        let detailIDs = Set(detail.map(\.entity.identifier.instanceIdentifier))
+        XCTAssertTrue(detailIDs.contains(second.identifier.instanceIdentifier))
+        XCTAssertFalse(detailIDs.contains(first.identifier.instanceIdentifier))
+        try await assertChanged("ArchiveStallyItemIntent", item: second, expected: true)
+        let archived = try await entity.viewAnnotations()
+        let annotation = try XCTUnwrap(archived.first { entry in
+            entry.entity.identifier.instanceIdentifier == second.identifier.instanceIdentifier
+        })
+        let isArchived: Bool = try annotation.entity.isArchived
+        XCTAssertTrue(isArchived)
+    }
+
+    @MainActor
     private func launchSyntheticCollection() -> XCUIApplication {
         continueAfterFailure = false
         let app = XCUIApplication()

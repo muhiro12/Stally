@@ -141,8 +141,10 @@ preserves each path. Canonical Open resolves identity before routing.
 
 There is no universal-link host or remote publication promise. Opened/shared
 collection files belong to the separately reviewed import contract, never to a
-navigation URL's automatic mutation. Context menus and onscreen entity
-annotations are the separate #15 slice of this system surface.
+navigation URL's automatic mutation. Native Item context menus, the ordinary
+detail menu, and Item row/detail entity associations follow the implemented
+[contextual-action contract](item-contextual-actions.md). Their UUID context
+does not add another entity type or change mutation authorization.
 
 ## Verification Contract
 
@@ -156,6 +158,8 @@ Tests launch only the DEBUG synthetic empty collection, then use real intents
 and queries. They verify partial start round trips, creation/entity chaining,
 non-Mark rejection, Archive/time/restore semantics, repeated Mark/Undo change
 flags, archived-item rejection, missing identity, and schema Open navigation.
+An additional annotation test disambiguates equal names by UUID, limits detail
+context to the displayed Item, and reads its updated Archive property.
 No reset/seed intent or ordinary-data mutation is required.
 
 Use a discovered dedicated iOS 27 Simulator and the `StallySystemTests` scheme
@@ -165,7 +169,7 @@ entrypoint is `bash ci_scripts/tasks/test_stally_intents.sh`, with
 extraction, catalog/formatter/rule checks, and this out-of-process evidence
 remain distinct verification capabilities.
 
-### Current Evidence
+### Initial Implementation Evidence
 
 On September 30, 2026, Xcode 27.0 (27A266a) with iOS 27.0 Simulator (24A434)
 builds the app and test bundle and exports App Intents metadata without errors
@@ -193,6 +197,10 @@ explicit Xcode 27.0 CLI and a discovered dedicated device. The original Xcode
 selection is unchanged. Physical Siri speech, locked-device prompts, Spotlight
 content indexing, real CloudKit sync, and release readiness require separate
 evidence and are not claimed by these tests.
+
+The subsequent [contextual-action verification](item-contextual-actions.md)
+adds a fourth out-of-process test for visible entity identity and current
+Archive properties, alongside native menu evidence.
 
 [open-schema]: https://developer.apple.com/documentation/appintents/appschema/systemintent/open
 [indexing]: https://developer.apple.com/documentation/appintents/indexedentityquery

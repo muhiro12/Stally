@@ -1347,6 +1347,22 @@
         }
       }
     },
+    "Item Actions" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Item Actions"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アイテムの操作"
+          }
+        }
+      }
+    },
     "Item Photo" : {
       "localizations" : {
         "en" : {
@@ -1359,6 +1375,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "アイテムの写真"
+          }
+        }
+      }
+    },
+    "Item Unavailable" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Item Unavailable"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アイテムを開けません"
           }
         }
       }

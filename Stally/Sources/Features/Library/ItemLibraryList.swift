@@ -91,11 +91,9 @@ struct ItemLibraryList: View {
         } else {
             Section {
                 ForEach(refinedItems) { item in
-                    NavigationLink(value: StallyNavigationView.DetailRoute.item(item.uuid)) {
-                        ItemRow()
-                            .environment(item)
-                    }
-                    .mhRow()
+                    StallyItemNavigationLink()
+                        .environment(item)
+                        .mhRow()
                 }
             }
         }
