@@ -16,7 +16,7 @@ public struct BackupSnapshot: Codable, Equatable, Sendable {
     }
 
     /// Current supported backup schema version.
-    public static let currentSchemaVersion = 3
+    public static let currentSchemaVersion = StallyDataContract.interchangeVersion
     static let legacySchemaVersion = 2
 
     /// Backup schema version.

@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 
-/// A personal object the user keeps in the active Library and marks when chosen.
+/// A personally meaningful thing or place, with independent choice and start knowledge.
 @Model
 public final class Item {
     /// Stable item identifier for backups, links, and cross-surface references.
@@ -30,6 +30,16 @@ public final class Item {
     public internal(set) var recordsMarks: Bool = true
     /// Optional canonical partial Gregorian date, independent of creation and Marks.
     public internal(set) var startRawValue: String?
+
+    /// The choice-history capability; it does not determine start knowledge or Archive.
+    public internal(set) var markPolicy: ItemMarkPolicy {
+        get {
+            .init(recordsMarks: recordsMarks)
+        }
+        set {
+            recordsMarks = newValue.recordsMarks
+        }
+    }
 
     // CloudKit requires SwiftData relationships to be optional.
     // swiftlint:disable discouraged_optional_collection

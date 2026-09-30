@@ -99,6 +99,11 @@ Use them alongside `docs/near-term-development-brief.md`. Earlier assessment
 approval gates are historical; implementation evidence does not authorize
 production CloudKit changes, real-data operations, or release.
 
+`docs/first-release-data-model.md` records the selected combined domain,
+first-release persistence shape, retained development compatibility, and the
+explicit persistence/interchange version mapping. Use it for current model
+decisions; the earlier integration assessments remain historical evidence.
+
 When editing product-intent documents, preserve the existing English voice,
 avoid speculation, and keep the distinction between product intent and
 discarded implementation details explicit. Keep owner-directed
@@ -195,7 +200,7 @@ The app target should stay a thin adapter over the current product surface.
 
 - `StallyLibrary/Sources/Item/` owns `Item`, `ItemMark`, `LocalDay`,
   `ItemCategory`, collection browsing options, `ItemHistorySnapshot`,
-  `ItemFormInput`, `ItemTrackingInput`, precision-preserving `ItemStart`,
+  `ItemFormInput`, `ItemTrackingInput`, `ItemMarkPolicy`, precision-preserving `ItemStart`,
   `ItemTimeSnapshot`, `ItemMilestone`, `ItemTimeOperations`, `ItemValidationError`,
   `ItemCollectionOperations`, and `ItemOperations`. Time Operations also own
   precision-preserving annual milestones and localized read-only time reports;
@@ -228,7 +233,8 @@ The app target should stay a thin adapter over the current product surface.
 - `StallyLibrary/Sources/Preferences/` owns app-local preference descriptors
   used by app startup and SwiftUI settings surfaces.
 - `StallyLibrary/Sources/Persistence/` owns `StallyMigrationPlan` and
-  `StallyModelContainerFactory`, including frozen `StallySchemaV1` definitions
+  `StallyModelContainerFactory`, the explicit `StallyDataContract` version mapping,
+  including frozen `StallySchemaV1` definitions
   and the additive V2 migration for Mark policy and optional start knowledge.
 - `StallyLibrary/Sources/Resources/` owns library String Catalogs and is
   processed as a Swift Package resource bundle.
@@ -344,8 +350,8 @@ For localization changes, run the string-catalog audit with the required
 English and Japanese locale set:
 
 ```sh
-CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
-python3 "$CODEX_HOME/skills/string-catalog-maintainer/scripts/audit_xcstrings.py" \
+catalog_root="${CODEX_HOME:-$HOME/.codex}/skills"
+python3 "$catalog_root/string-catalog-maintainer/scripts/audit_xcstrings.py" \
   --project-root . \
   --required-locales en,ja \
   --format markdown
