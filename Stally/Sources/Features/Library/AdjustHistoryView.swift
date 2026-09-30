@@ -16,7 +16,8 @@ struct AdjustHistoryView: View {
     @Environment(\.modelContext)
     private var modelContext
 
-    let item: Item
+    @Environment(Item.self)
+    private var item
     let timeZone: TimeZone
     let today: LocalDay
     let todayDate: Date
@@ -76,12 +77,10 @@ struct AdjustHistoryView: View {
     }
 
     init(
-        item: Item,
         timeZone: TimeZone,
         today: LocalDay,
         todayDate: Date
     ) {
-        self.item = item
         self.timeZone = timeZone
         self.today = today
         self.todayDate = todayDate

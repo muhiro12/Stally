@@ -6,13 +6,15 @@
 //
 
 import MHPlatform
+import SwiftData
 import SwiftUI
 
 struct InsightsView: View {
     @Environment(\.timeZone)
     private var timeZone
 
-    let items: [Item]
+    @Query(sort: \Item.createdAt, order: .reverse)
+    private var items: [Item]
 
     @AppStorage(\.defaultInsightsRange, default: .thirtyDays)
     private var selectedRange: InsightsRange

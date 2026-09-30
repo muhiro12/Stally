@@ -12,19 +12,23 @@ struct InsightItemSummaryRow: View {
     @Environment(\.timeZone)
     private var timeZone
 
-    let summary: ItemInsightSummary
+    @Environment(Item.self)
+    private var item
+
+    let marksInRange: Int
+    let lastMarkedDay: LocalDay?
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text(summary.item.name)
+            Text(item.name)
                 .mhRowTitle()
 
             HStack {
-                Text(summary.item.category.title)
+                Text(item.category.title)
 
-                Text("\(summary.marksInRange) marks")
+                Text("\(marksInRange) marks")
 
-                if let lastMarkedDay = summary.lastMarkedDay {
+                if let lastMarkedDay {
                     if let date = lastMarkedDay.date(in: timeZone) {
                         Text(date, format: .dateTime.month().day())
                     } else {

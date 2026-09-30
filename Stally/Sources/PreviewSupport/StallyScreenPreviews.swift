@@ -9,11 +9,9 @@
 import SwiftUI
 
 #Preview("Library - Empty") {
-    StallyPreviewContainer(.empty) { items in
+    StallyPreviewContainer(.empty) { _ in
         NavigationStack {
             LibraryView(
-                items: ItemOperations.activeItems(from: items),
-                allowsSampleItems: true,
                 addAction: { /* Preview action intentionally left empty. */ },
                 restoreAction: { /* Preview action intentionally left empty. */ }
             )
@@ -22,11 +20,9 @@ import SwiftUI
 }
 
 #Preview("Library - Typical") {
-    StallyPreviewContainer(.typical) { items in
+    StallyPreviewContainer(.typical) { _ in
         NavigationStack {
             LibraryView(
-                items: ItemOperations.activeItems(from: items),
-                allowsSampleItems: false,
                 addAction: { /* Preview action intentionally left empty. */ },
                 restoreAction: { /* Preview action intentionally left empty. */ }
             )
@@ -35,11 +31,9 @@ import SwiftUI
 }
 
 #Preview("Library - Dense Dark") {
-    StallyPreviewContainer(.dense) { items in
+    StallyPreviewContainer(.dense) { _ in
         NavigationStack {
             LibraryView(
-                items: ItemOperations.activeItems(from: items),
-                allowsSampleItems: false,
                 addAction: { /* Preview action intentionally left empty. */ },
                 restoreAction: { /* Preview action intentionally left empty. */ }
             )
@@ -86,9 +80,9 @@ import SwiftUI
 }
 
 #Preview("Archive - Preserved Items") {
-    StallyPreviewContainer(.dense) { items in
+    StallyPreviewContainer(.dense) { _ in
         NavigationStack {
-            ArchiveView(items: ItemOperations.archivedItems(from: items))
+            ArchiveView()
         }
     }
 }
@@ -96,55 +90,39 @@ import SwiftUI
 #Preview("Archive - Empty") {
     StallyPreviewContainer(.empty) { _ in
         NavigationStack {
-            ArchiveView(items: [])
+            ArchiveView()
         }
     }
 }
 
 #Preview("Review - Attention Lanes") {
-    StallyPreviewContainer(.dense) { items in
-        let now = Date()
-
+    StallyPreviewContainer(.dense) { _ in
         NavigationStack {
-            ReviewView(
-                snapshot: ReviewOperations.snapshot(
-                    for: items,
-                    timeZone: StallyPreviewData.timeZone,
-                    now: now
-                )
-            )
+            ReviewView()
         }
     }
 }
 
 #Preview("Review - Empty") {
-    StallyPreviewContainer(.empty) { items in
-        let now = Date()
-
+    StallyPreviewContainer(.empty) { _ in
         NavigationStack {
-            ReviewView(
-                snapshot: ReviewOperations.snapshot(
-                    for: items,
-                    timeZone: StallyPreviewData.timeZone,
-                    now: now
-                )
-            )
+            ReviewView()
         }
     }
 }
 
 #Preview("Insights - Typical") {
-    StallyPreviewContainer(.dense) { items in
+    StallyPreviewContainer(.dense) { _ in
         NavigationStack {
-            InsightsView(items: items)
+            InsightsView()
         }
     }
 }
 
 #Preview("Import & Export - Snapshot") {
-    StallyPreviewContainer(.dense) { items in
+    StallyPreviewContainer(.dense) { _ in
         NavigationStack {
-            BackupCenterView(items: items)
+            BackupCenterView()
         }
     }
 }
@@ -169,8 +147,8 @@ import SwiftUI
 }
 
 #Preview("Settings - Shareable Links") {
-    StallyPreviewContainer(.typical) { items in
-        SettingsView(items: items)
+    StallyPreviewContainer(.typical) { _ in
+        SettingsView()
     }
 }
 
@@ -186,7 +164,8 @@ private struct StallyScreenPreviews: View {
     var body: some View {
         NavigationStack {
             if let selectedItem {
-                ItemDetailView(item: selectedItem)
+                ItemDetailView()
+                    .environment(selectedItem)
             } else {
                 ContentUnavailableView {
                     Label {

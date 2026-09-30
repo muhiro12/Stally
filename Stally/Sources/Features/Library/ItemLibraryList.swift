@@ -102,7 +102,8 @@ struct ItemLibraryList: View {
             Section {
                 ForEach(refinedItems) { item in
                     NavigationLink(value: StallyNavigationView.DetailRoute.item(item.uuid)) {
-                        ItemRow(item: item)
+                        ItemRow()
+                            .environment(item)
                     }
                     .mhRow()
                 }

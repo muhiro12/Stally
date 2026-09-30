@@ -10,24 +10,19 @@ import SwiftData
 import SwiftUI
 
 struct ContentView: View {
-    @Query(sort: \Item.createdAt, order: .reverse)
-    private var items: [Item]
+    @Environment(\.modelContext)
+    private var modelContext
     @Environment(StallyRouteInbox.self)
     private var routeInbox
     @Environment(StallyRoutePipeline.self)
     private var routePipeline
-    @Environment(\.timeZone)
-    private var timeZone
-    @AppStorage(\.needsFirstMarkAfterDays)
-    private var needsFirstMarkAfterDays
-    @AppStorage(\.dormantAfterDays)
-    private var dormantAfterDays
 
     @State private var selectedDestination: StallyNavigationView.Destination?
     @State private var preferredCompactColumn: NavigationSplitViewColumn
     @State private var detailPath: [StallyNavigationView.DetailRoute]
     @State private var presentedSheet: ContentViewPresentedSheet?
     @State private var isPresentingMissingItemLinkAlert = false
+    @State private var itemResolutionError: String?
 
     #if DEBUG
     @State private var pendingInitialPreviewRoute: StallyPreviewRoute?
@@ -67,24 +62,10 @@ struct ContentView: View {
     }
 
     var body: some View {
-        let now = Date()
-        let reviewSnapshot = ReviewOperations.snapshot(
-            for: items,
-            settings: .init(
-                needsFirstMarkAfterDays: needsFirstMarkAfterDays,
-                dormantAfterDays: dormantAfterDays
-            ),
-            timeZone: timeZone,
-            now: now
-        )
-
         StallyNavigationView(
             selectedDestination: navigationDestinationBinding,
             preferredCompactColumn: $preferredCompactColumn,
             detailPath: $detailPath,
-            items: items,
-            reviewSnapshot: reviewSnapshot,
-            allowsSampleItems: items.isEmpty,
             addAction: presentAddItem,
             restoreAction: presentBackupCenter,
             settingsAction: presentSettings
@@ -95,10 +76,10 @@ struct ContentView: View {
                 AddItemView()
             case .backupCenter:
                 NavigationStack {
-                    BackupCenterView(items: items)
+                    BackupCenterView()
                 }
             case .settings:
-                SettingsView(items: items)
+                SettingsView()
             }
         }
         .alert("Unsupported Link", isPresented: $isPresentingMissingItemLinkAlert) {
@@ -107,6 +88,13 @@ struct ContentView: View {
             }
         } message: {
             Text("This link is not supported by this version of Stally.")
+        }
+        .alert("Stally", isPresented: isShowingItemResolutionError) {
+            Button("OK", role: .cancel) {
+                itemResolutionError = nil
+            }
+        } message: {
+            Text(itemResolutionError ?? "")
         }
         .alert(
             "Unsupported Link",
@@ -125,7 +113,7 @@ struct ContentView: View {
         .stallySubscriptionStateSync()
         .stallyTemporaryStorageAlert()
         #if DEBUG
-        .task(id: items.count) {
+        .task {
             applyInitialPreviewRouteIfNeeded()
         }
         #endif
@@ -213,15 +201,16 @@ struct ContentView: View {
     }
 
     private func openItemLink(_ itemID: UUID) {
-        guard let item = items.first(where: { item in
-            item.uuid == itemID
-        }) else {
-            showMissingItemLinkAlert()
-            return
+        do {
+            guard let item = try ItemOperations.item(context: modelContext, uuid: itemID) else {
+                showMissingItemLinkAlert()
+                return
+            }
+            selectNavigationDestination(item.isArchived ? .archive : .library)
+            detailPath = [.item(item.uuid)]
+        } catch {
+            itemResolutionError = error.localizedDescription
         }
-
-        selectNavigationDestination(item.isArchived ? .archive : .library)
-        detailPath = [.item(item.uuid)]
     }
 
     private func selectNavigationDestination(
@@ -251,6 +240,9 @@ struct ContentView: View {
             presentedSheet = .backupCenter
             self.pendingInitialPreviewRoute = nil
         case .itemDetail:
+            guard let items = try? ItemOperations.items(context: modelContext) else {
+                return
+            }
             let activeItems = ItemOperations.activeItems(from: items)
             guard let item = activeItems.first(where: { $0.photoData != nil })
                     ?? activeItems.first
@@ -269,6 +261,18 @@ struct ContentView: View {
         }
     }
     #endif
+}
+
+private extension ContentView {
+    var isShowingItemResolutionError: Binding<Bool> {
+        .init {
+            itemResolutionError != nil
+        } set: { isPresented in
+            if !isPresented {
+                itemResolutionError = nil
+            }
+        }
+    }
 }
 
 #if DEBUG

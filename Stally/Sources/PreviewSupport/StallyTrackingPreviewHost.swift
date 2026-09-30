@@ -9,10 +9,12 @@ struct StallyTrackingPreviewHost: View {
     var body: some View {
         if let item = items.first(where: { $0.name == screen.itemName }) {
             if screen.showsEditor {
-                EditItemView(item: item)
+                EditItemView()
+                    .environment(item)
             } else {
                 NavigationStack {
-                    ItemDetailView(item: item)
+                    ItemDetailView()
+                        .environment(item)
                 }
             }
         }

@@ -22,7 +22,8 @@ struct ReviewLaneSection: View {
             } else {
                 ForEach(items) { item in
                     NavigationLink(value: StallyNavigationView.DetailRoute.item(item.uuid)) {
-                        ItemRow(item: item)
+                        ItemRow()
+                            .environment(item)
                     }
                     .mhRow()
                     .tag(item.uuid)

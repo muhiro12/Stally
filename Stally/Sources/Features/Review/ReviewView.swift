@@ -6,15 +6,31 @@
 //
 
 import MHPlatform
+import SwiftData
 import SwiftUI
 
 struct ReviewView: View {
+    @Query(sort: \Item.createdAt, order: .reverse)
+    private var items: [Item]
+    @Environment(\.timeZone)
+    private var timeZone
+    @AppStorage(\.needsFirstMarkAfterDays)
+    private var needsFirstMarkAfterDays
+    @AppStorage(\.dormantAfterDays)
+    private var dormantAfterDays
     @AppStorage(\.showsCompletedReviewSections)
     private var showsCompletedReviewSections
 
-    let snapshot: ReviewSnapshot
-
     var body: some View {
+        let snapshot = ReviewOperations.snapshot(
+            for: items,
+            settings: .init(
+                needsFirstMarkAfterDays: needsFirstMarkAfterDays,
+                dormantAfterDays: dormantAfterDays
+            ),
+            timeZone: timeZone,
+            now: .now
+        )
         Group {
             if snapshot.isEmpty {
                 EmptyReviewView()

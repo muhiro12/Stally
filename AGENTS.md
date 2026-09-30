@@ -86,6 +86,8 @@ owner-directed rebuild constraints while the implementation is rebuilt.
   direction.
 - `docs/domain-operations.md` records the selected use-case, capability, and
   isolation contracts for the combined product.
+- `docs/swiftdata-app-data-flow.md` records live query ownership, selected-model
+  environment propagation, relationships, and value lifetimes.
 - `docs/rebuild-handoff.md` records the extraction audit and phase boundary.
 - `docs/rebuild-implementation-direction.md` records explicit rebuild
   direction added after the legacy extraction.
@@ -192,6 +194,16 @@ The app target should stay a thin adapter over the current product surface.
 - App views may use SwiftData environment values and `@Query` for the current
   app surface, but durable business behavior should enter through public
   `*Operations`.
+- Independently reading feature screens own `@Query`; the root navigation shell
+  does not relay a broad all-Item collection. Configure predicates and sorts at
+  the query boundary. Never store query results in a second `@State` graph.
+- Selected/current live Items flow through `.environment(item)` and
+  `@Environment(Item.self)`, including row, detail, editor, and action subtrees.
+  Do not relay that context through view initializers. Explicit inputs remain
+  appropriate for values, drafts, snapshots, callbacks, and multiple peers.
+- Traverse an already selected Item's Mark relationship without re-querying it.
+  Stable-ID routing uses bounded Operations lookup. Adopt `ResultsObserver`
+  only for a concrete non-view consumer, rather than replacing screen `@Query`.
 - App views should not directly create `Item`, call item mark/history helper
   methods, declare `@Model` types, or duplicate business branching that belongs
   in the library.

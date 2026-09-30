@@ -23,7 +23,11 @@ struct InsightsRankingSection: View {
                     NavigationLink(
                         value: StallyNavigationView.DetailRoute.item(summary.item.uuid)
                     ) {
-                        InsightItemSummaryRow(summary: summary)
+                        InsightItemSummaryRow(
+                            marksInRange: summary.marksInRange,
+                            lastMarkedDay: summary.lastMarkedDay
+                        )
+                        .environment(summary.item)
                     }
                 }
             }

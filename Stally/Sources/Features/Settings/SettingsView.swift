@@ -19,7 +19,8 @@ struct SettingsView: View {
     @State private var isConfirmingSampleRemoval = false
     @State private var sampleRemovalErrorMessage: String?
 
-    let items: [Item]
+    @Query(sort: \Item.createdAt, order: .reverse)
+    private var items: [Item]
 
     @AppStorage(\.isSubscribeOn)
     private var isSubscribeOn
@@ -129,7 +130,7 @@ struct SettingsView: View {
 
         Section {
             NavigationLink {
-                BackupCenterView(items: items)
+                BackupCenterView()
             } label: {
                 Label("Import & Export", systemImage: "externaldrive")
             }

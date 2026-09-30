@@ -97,19 +97,8 @@ struct StallyNavigationView: View {
         @Binding var path: [DetailRoute]
 
         let destination: Destination
-        let items: [Item]
-        let reviewSnapshot: ReviewSnapshot
-        let allowsSampleItems: Bool
         let addAction: () -> Void
         let restoreAction: () -> Void
-
-        private var activeItems: [Item] {
-            ItemOperations.activeItems(from: items)
-        }
-
-        private var archivedItems: [Item] {
-            ItemOperations.archivedItems(from: items)
-        }
 
         var body: some View {
             NavigationStack(path: $path) {
@@ -124,17 +113,15 @@ struct StallyNavigationView: View {
             switch destination {
             case .library:
                 LibraryView(
-                    items: activeItems,
-                    allowsSampleItems: allowsSampleItems,
                     addAction: addAction,
                     restoreAction: restoreAction
                 )
             case .archive:
-                ArchiveView(items: archivedItems)
+                ArchiveView()
             case .review:
-                ReviewView(snapshot: reviewSnapshot)
+                ReviewView()
             case .insights:
-                InsightsView(items: items)
+                InsightsView()
             }
         }
 
@@ -142,17 +129,7 @@ struct StallyNavigationView: View {
         private func detailDestination(for route: DetailRoute) -> some View {
             switch route {
             case .item(let itemID):
-                if let item = items.first(where: { $0.uuid == itemID }) {
-                    ItemDetailView(item: item)
-                } else {
-                    ContentUnavailableView(
-                        "Unsupported Link",
-                        systemImage: "link.badge.plus",
-                        description: Text(
-                            "This link is not supported by this version of Stally."
-                        )
-                    )
-                }
+                StallyItemDestinationView(itemID: itemID)
             }
         }
     }
@@ -161,9 +138,6 @@ struct StallyNavigationView: View {
     @Binding var preferredCompactColumn: NavigationSplitViewColumn
     @Binding var detailPath: [DetailRoute]
 
-    let items: [Item]
-    let reviewSnapshot: ReviewSnapshot
-    let allowsSampleItems: Bool
     let addAction: () -> Void
     let restoreAction: () -> Void
     let settingsAction: () -> Void
@@ -178,9 +152,6 @@ struct StallyNavigationView: View {
             Detail(
                 path: $detailPath,
                 destination: selectedDestination ?? .library,
-                items: items,
-                reviewSnapshot: reviewSnapshot,
-                allowsSampleItems: allowsSampleItems,
                 addAction: addAction,
                 restoreAction: restoreAction
             )

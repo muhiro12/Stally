@@ -12,7 +12,8 @@ struct ItemDetailSummary: View {
     @Environment(\.mhTheme)
     private var theme
 
-    let item: Item
+    @Environment(Item.self)
+    private var item
     let isMarkedToday: Bool
 
     var body: some View {

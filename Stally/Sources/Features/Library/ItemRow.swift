@@ -18,7 +18,8 @@ struct ItemRow: View {
     @Environment(\.timeZone)
     private var timeZone
 
-    let item: Item
+    @Environment(Item.self)
+    private var item
 
     var body: some View {
         let now = Date()

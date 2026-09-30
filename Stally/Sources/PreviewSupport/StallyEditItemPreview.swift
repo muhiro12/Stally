@@ -21,7 +21,8 @@ struct StallyEditItemPreview: View {
 
     var body: some View {
         if let selectedItem {
-            EditItemView(item: selectedItem)
+            EditItemView()
+                .environment(selectedItem)
         } else {
             ContentUnavailableView {
                 Label {

@@ -13,7 +13,8 @@ struct BackupCenterView: View {
     @Environment(\.modelContext)
     private var modelContext
 
-    let items: [Item]
+    @Query(sort: \Item.createdAt, order: .reverse)
+    private var items: [Item]
 
     @State private var exportDocument: StallyBackupDocument?
     @State private var isPresentingExporter = false

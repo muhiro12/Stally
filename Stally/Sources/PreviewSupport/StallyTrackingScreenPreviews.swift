@@ -5,7 +5,8 @@ import SwiftUI
     StallyPreviewContainer(.timeTogether) { items in
         NavigationStack {
             if let item = items.first(where: { $0.name == "Window Plant" }) {
-                ItemDetailView(item: item)
+                ItemDetailView()
+                    .environment(item)
             }
         }
     }
@@ -15,7 +16,8 @@ import SwiftUI
     StallyPreviewContainer(.timeTogether) { items in
         NavigationStack {
             if let item = items.first(where: { $0.name == "Archived Plant" }) {
-                ItemDetailView(item: item)
+                ItemDetailView()
+                    .environment(item)
             }
         }
     }
@@ -24,17 +26,16 @@ import SwiftUI
 #Preview("Edit Item - Year Precision") {
     StallyPreviewContainer(.timeTogether) { items in
         if let item = items.first(where: { $0.name == "Home" }) {
-            EditItemView(item: item)
+            EditItemView()
+                .environment(item)
         }
     }
 }
 
 #Preview("Library - Mixed Tracking") {
-    StallyPreviewContainer(.integration) { items in
+    StallyPreviewContainer(.integration) { _ in
         NavigationStack {
             LibraryView(
-                items: ItemOperations.activeItems(from: items),
-                allowsSampleItems: false,
                 addAction: { /* Preview action intentionally left empty. */ },
                 restoreAction: { /* Preview action intentionally left empty. */ }
             )
@@ -43,17 +44,17 @@ import SwiftUI
 }
 
 #Preview("Insights - Time Together") {
-    StallyPreviewContainer(.timeTogether) { items in
+    StallyPreviewContainer(.timeTogether) { _ in
         NavigationStack {
-            InsightsView(items: items)
+            InsightsView()
         }
     }
 }
 
 #Preview("Review - Mixed Tracking") {
-    StallyPreviewContainer(.integration) { items in
+    StallyPreviewContainer(.integration) { _ in
         NavigationStack {
-            ReviewView(snapshot: ReviewOperations.snapshot(for: items))
+            ReviewView()
         }
     }
 }

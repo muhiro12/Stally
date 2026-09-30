@@ -28,11 +28,11 @@ struct StallyAdjustHistoryPreview: View {
            let today,
            let todayDate {
             AdjustHistoryView(
-                item: selectedItem,
                 timeZone: timeZone,
                 today: today,
                 todayDate: todayDate
             )
+            .environment(selectedItem)
         } else {
             ContentUnavailableView {
                 Label {

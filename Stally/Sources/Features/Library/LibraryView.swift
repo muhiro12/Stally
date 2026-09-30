@@ -9,6 +9,8 @@ import SwiftData
 import SwiftUI
 
 struct LibraryView: View {
+    @Query(sort: \Item.createdAt, order: .reverse)
+    private var collection: [Item]
     @Environment(\.modelContext)
     private var modelContext
     @Environment(\.locale)
@@ -16,10 +18,12 @@ struct LibraryView: View {
 
     @State private var sampleErrorMessage: String?
 
-    let items: [Item]
-    let allowsSampleItems: Bool
     let addAction: () -> Void
     let restoreAction: () -> Void
+
+    private var items: [Item] {
+        ItemOperations.activeItems(from: collection)
+    }
 
     private var isShowingSampleError: Binding<Bool> {
         .init(
@@ -33,7 +37,7 @@ struct LibraryView: View {
     }
 
     private var sampleAction: (() -> Void)? {
-        guard allowsSampleItems else {
+        guard collection.isEmpty else {
             return nil
         }
 

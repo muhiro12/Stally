@@ -11,20 +11,15 @@ import SwiftUI
 import UIKit
 
 struct ItemDetailView: View {
-    private struct HistoryAdjustmentContext: Identifiable {
-        let item: Item
+    private struct HistoryAdjustmentContext {
         let timeZone: TimeZone
         let today: LocalDay
         let todayDate: Date
-
-        var id: UUID {
-            item.uuid
-        }
     }
 
     private enum PresentedSheet: Identifiable {
         case adjustHistory(HistoryAdjustmentContext)
-        case editItem(Item)
+        case editItem
 
         var id: String {
             switch self {
@@ -49,7 +44,8 @@ struct ItemDetailView: View {
     @Environment(\.scenePhase)
     private var scenePhase
 
-    let item: Item
+    @Environment(Item.self)
+    private var item
 
     @State private var presentedSheet: PresentedSheet?
     @State private var isConfirmingDeleteItem = false
@@ -72,7 +68,6 @@ struct ItemDetailView: View {
         List {
             Section {
                 ItemDetailSummary(
-                    item: item,
                     isMarkedToday: isMarkedToday
                 )
             }
@@ -150,13 +145,14 @@ struct ItemDetailView: View {
             switch sheet {
             case .adjustHistory(let context):
                 AdjustHistoryView(
-                    item: context.item,
                     timeZone: context.timeZone,
                     today: context.today,
                     todayDate: context.todayDate
                 )
-            case .editItem(let item):
-                EditItemView(item: item)
+                .environment(item)
+            case .editItem:
+                EditItemView()
+                    .environment(item)
             }
         }
         .alert("Delete Item?", isPresented: $isConfirmingDeleteItem) {
@@ -271,7 +267,7 @@ private extension ItemDetailView {
     }
 
     private func presentEditItem() {
-        presentedSheet = .editItem(item)
+        presentedSheet = .editItem
     }
 
     private func presentHistoryAdjustment() {
@@ -293,7 +289,6 @@ private extension ItemDetailView {
 
         presentedSheet = .adjustHistory(
             .init(
-                item: item,
                 timeZone: capturedTimeZone,
                 today: today,
                 todayDate: todayDate
