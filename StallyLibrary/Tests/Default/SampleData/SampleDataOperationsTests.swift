@@ -218,7 +218,7 @@ extension SwiftDataOperationsTests {
         @Test
         func `failed removal restores every sample record`() throws {
             let context = try makeContext()
-            try makeSampleItems(in: context)
+            let sampleIdentifiers = try makeSampleItems(in: context).map(\.uuid)
 
             #expect(throws: ExpectedSampleDataSaveError.self) {
                 try SampleDataOperations.removeSampleItems(in: context) { pendingContext in
@@ -229,6 +229,7 @@ extension SwiftDataOperationsTests {
 
             let restoredContext = ModelContext(context.container)
             let restoredItems = try ItemOperations.items(context: restoredContext)
+            #expect(Set(restoredItems.map(\.uuid)) == Set(sampleIdentifiers))
             #expect(
                 SampleDataOperations.summary(for: restoredItems)
                     == .init(itemCount: 5, markCount: 23)

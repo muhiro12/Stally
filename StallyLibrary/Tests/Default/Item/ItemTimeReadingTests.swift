@@ -49,6 +49,7 @@ extension SwiftDataOperationsTests {
         func `time reports are repeatable read only and omit unrelated private fields`() throws {
             let context = ModelContext(try StallyModelContainerFactory.inMemory())
             let today = try #require(LocalDay(year: 2_026, month: 9, day: 14))
+            let start = try #require(ItemStart(rawValue: "2020"))
             let item = try ItemOperations.create(
                 context: context,
                 input: .init(
@@ -57,7 +58,7 @@ extension SwiftDataOperationsTests {
                     note: "Private address",
                     photoData: try TestPhotoFixtures.preparedData()
                 ),
-                tracking: .init(recordsMarks: false, start: try #require(ItemStart(rawValue: "2020"))),
+                tracking: .init(recordsMarks: false, start: start),
                 today: today
             )
             try ItemOperations.archive(item, on: .now, context: context)

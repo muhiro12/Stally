@@ -59,10 +59,11 @@ extension SwiftDataOperationsTests {
         func `mark conflicts block the whole merge but permit a valid replacement`(_ version: Int) throws {
             let context = ModelContext(try StallyModelContainerFactory.inMemory())
             let today = try #require(LocalDay(year: 2_026, month: 9, day: 13))
+            let start = try #require(ItemStart(rawValue: "2020"))
             let local = try ItemOperations.create(
                 context: context,
                 input: .init(name: "Local Plant", category: .other),
-                tracking: .init(recordsMarks: false, start: try #require(ItemStart(rawValue: "2020"))),
+                tracking: .init(recordsMarks: false, start: start),
                 today: today
             )
             let mark = BackupMark(id: .init(), day: today, createdAt: .now)

@@ -62,10 +62,11 @@ extension SwiftDataOperationsTests {
             try ItemOperations.mark(item, on: markedDay, today: today, context: context)
             let identifier = try #require(item.marks.first?.uuid)
             for rawValue in ["2000", "2026-09-13"] {
+                let start = try #require(ItemStart(rawValue: rawValue))
                 try ItemOperations.update(
                     item,
                     input: .init(name: "Bag", category: .bags),
-                    tracking: .init(recordsMarks: true, start: try #require(ItemStart(rawValue: rawValue))),
+                    tracking: .init(recordsMarks: true, start: start),
                     today: today,
                     context: context
                 )
@@ -120,10 +121,11 @@ extension SwiftDataOperationsTests {
         func `archive never pauses or resets elapsed time`() throws {
             let context = try makeContext()
             let today = try readingDay()
+            let start = try #require(ItemStart(rawValue: "2026-09-01"))
             let item = try ItemOperations.create(
                 context: context,
                 input: .init(name: "Home", category: .other),
-                tracking: .init(recordsMarks: false, start: try #require(ItemStart(rawValue: "2026-09-01"))),
+                tracking: .init(recordsMarks: false, start: start),
                 today: today
             )
             let before = ItemTimeOperations.snapshot(for: item, today: today)

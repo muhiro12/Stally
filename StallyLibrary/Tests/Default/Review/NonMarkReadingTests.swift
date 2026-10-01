@@ -57,6 +57,7 @@ extension SwiftDataOperationsTests {
             let today = try #require(LocalDay(year: 2_026, month: 9, day: 13))
             let zone = try #require(TimeZone(secondsFromGMT: 0))
             let now = try #require(today.date(in: zone))
+            let start = try #require(ItemStart(rawValue: "2000"))
             let marked = try createItem(context: context)
             try ItemOperations.mark(marked, on: today, today: today, context: context)
             let nonMark = try ItemOperations.create(
@@ -64,7 +65,7 @@ extension SwiftDataOperationsTests {
                 input: .init(
                     name: "Plant", category: .other, note: "Growing", photoData: try TestPhotoFixtures.preparedData()
                 ),
-                tracking: .init(recordsMarks: false, start: try #require(ItemStart(rawValue: "2000"))),
+                tracking: .init(recordsMarks: false, start: start),
                 today: today
             )
             let options = InsightsOptions(range: .allTime, includesArchivedItems: includesArchive)

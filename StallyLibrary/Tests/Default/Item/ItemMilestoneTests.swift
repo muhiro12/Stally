@@ -47,10 +47,11 @@ extension SwiftDataOperationsTests {
         func `milestone reads preserve identity history photos and archive continuity`() throws {
             let context = ModelContext(try StallyModelContainerFactory.inMemory())
             let today = try #require(LocalDay(year: 2_026, month: 9, day: 14))
+            let start = try #require(ItemStart(rawValue: "2020-09"))
             let item = try ItemOperations.create(
                 context: context,
                 input: .init(name: "Bag", category: .bags, photoData: try TestPhotoFixtures.preparedData()),
-                tracking: .init(recordsMarks: true, start: try #require(ItemStart(rawValue: "2020-09"))),
+                tracking: .init(recordsMarks: true, start: start),
                 today: today
             )
             try ItemOperations.mark(item, on: today, today: today, context: context)

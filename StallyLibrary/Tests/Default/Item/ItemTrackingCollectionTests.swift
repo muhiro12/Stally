@@ -10,10 +10,11 @@ extension SwiftDataOperationsTests {
         func `non Mark items are discoverable without entering Mark prompts`() throws {
             let context = ModelContext(try StallyModelContainerFactory.inMemory())
             let today = try #require(LocalDay(year: 2_026, month: 9, day: 14))
+            let start = try #require(ItemStart(rawValue: "2020-09"))
             let plant = try ItemOperations.create(
                 context: context,
                 input: .init(name: "Plant", category: .other),
-                tracking: .init(recordsMarks: false, start: try #require(ItemStart(rawValue: "2020-09"))),
+                tracking: .init(recordsMarks: false, start: start),
                 today: today
             )
             let bag = try ItemOperations.create(context: context, input: .init(name: "Bag", category: .bags))
