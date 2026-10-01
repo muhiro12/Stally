@@ -1115,8 +1115,18 @@ English/Japanese catalog audits, app build, and patch whitespace checks passed.
 Native Xcode integration was unavailable in that task, so official command-line
 tools addressed only the dedicated device and build cache. The device was shut
 down without deletion; shared Xcode selections and Simulator settings were not
-changed. Library behavior was unchanged and its suites were not rerun. Physical
-VoiceOver, other text sizes/orientations, and the remaining release checks in
-issue #8 remain separate evidence gaps.
+changed. Library behavior was unchanged and its suites were not rerun.
+
+A subsequent focused probe also passed in Japanese at `accessibility3` on the
+same portrait iPhone and in English at `xxxLarge` on a separate dedicated
+11-inch iPad Pro (M5, 12 GB), iOS 27.0, in landscape. The invalid-input footer
+remained reachable while the keyboard was open; clearing Year disabled Save,
+and entering `2000` enabled Save and removed the feedback in both configurations.
+The iPad window's landscape dimensions were checked in the test. These runs
+also used synthetic Preview data, and the temporary probe and environment
+modifier were removed afterwards. Both dedicated devices were shut down
+without deletion. Physical VoiceOver, untested text-size/orientation
+combinations, and the remaining release checks in issue #8 remain separate
+evidence gaps.
 
 [start-validation-hig]: https://developer.apple.com/design/human-interface-guidelines/entering-data
