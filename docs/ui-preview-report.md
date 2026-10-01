@@ -1083,3 +1083,40 @@ provides the separate system, VoiceOver, and device-size procedures. Release
 account, public-page, signing, and device checks remain in
 [issue #8](https://github.com/muhiro12/Stally/issues/8); the older development
 archive does not verify this later app surface.
+
+## October 1, 2026: Start Validation Feedback
+
+At baseline `3572cd9`, clearing Year in the synthetic Home editor disabled
+Save, but the Start footer gave only general guidance. The shared Add/Edit
+Start section now shows the existing English/Japanese invalid-date explanation
+when `ItemTrackingFormState.input()` rejects the draft. Valid input restores
+the general guidance; the dedicated stored-start repair explanation remains.
+This follows Apple's [data-entry guidance][start-validation-hig] to provide
+feedback when an input problem is detected. Validation and saving are unchanged.
+
+A focused temporary probe in the existing system-test bundle passed on a new
+dedicated portrait iPhone 18 Pro, iOS 27.0 `24A434`, with Xcode 27.0 `27A266a`
+and the iOS 27.0 SDK. In both English and Japanese, it cleared Year, confirmed
+Save was disabled and the explanation appeared in the accessibility hierarchy,
+scrolled to capture the visible footer, then entered `2000` and confirmed Save
+was enabled and the explanation disappeared. The captures below show the
+invalid state.
+
+![English start validation](ui-preview-screenshots/start-validation/edit-missing-year-en.png)
+
+![Japanese start validation](ui-preview-screenshots/start-validation/edit-missing-year-ja.png)
+
+The isolated verification checkout used the existing Preview environment
+modifier temporarily to omit runtime lifecycle tasks. Each inspected launch
+logged `model_container.preview_created`; no ordinary local or CloudKit
+container startup was observed. The probe and temporary modifier change were
+removed before the normal app build. Formatter, repository rules, the six
+English/Japanese catalog audits, app build, and patch whitespace checks passed.
+Native Xcode integration was unavailable in that task, so official command-line
+tools addressed only the dedicated device and build cache. The device was shut
+down without deletion; shared Xcode selections and Simulator settings were not
+changed. Library behavior was unchanged and its suites were not rerun. Physical
+VoiceOver, other text sizes/orientations, and the remaining release checks in
+issue #8 remain separate evidence gaps.
+
+[start-validation-hig]: https://developer.apple.com/design/human-interface-guidelines/entering-data

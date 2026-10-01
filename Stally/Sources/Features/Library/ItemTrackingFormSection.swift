@@ -52,7 +52,11 @@ struct ItemTrackingFormSection: View {
         } header: {
             Text("Start")
         } footer: {
-            Text("Enter only what you know. Time keeps passing while an item is archived.")
+            if !state.requiresStartRepair, (try? state.input()) == nil {
+                Text("Choose a valid year, month, and day for the selected precision.")
+            } else {
+                Text("Enter only what you know. Time keeps passing while an item is archived.")
+            }
         }
         .onChange(of: state.precision) {
             state.changePrecision()
