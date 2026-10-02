@@ -59,8 +59,9 @@ remain regression checks. Distribution prerequisites are tracked separately in
 
 ## Scope
 
-This assessment follows `AGENTS.md`, the near-term development brief, and the
-preserved rebuild documents. It evaluates Stally as the selected delivery
+This assessment followed the repository guidance and preserved rebuild
+documents at its recorded baseline. Use the [current documentation map](../README.md#rebuild-documentation)
+for later implementation decisions. It evaluates Stally as the selected delivery
 host. It does not authorize a persisted schema, navigation, branding, or
 data-transfer change.
 

@@ -388,8 +388,9 @@ through an incomplete vertical slice.
 Run the library suite and repository rules for domain changes, Xcode-native
 app builds for public/model/adapter changes, the en/ja string-catalog audit for
 copy, and targeted runtime checks for the implemented UI. No new UI test target
-or Fluel importer is needed. Update `AGENTS.md` when these source boundaries
-actually exist.
+or Fluel importer is needed. Keep the [current repository state](../README.md#current-repository-state)
+and [verification entry points](../README.md#build-and-test) aligned with the
+implemented boundaries.
 
 ## Accepted Implementation Choices
 
