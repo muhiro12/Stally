@@ -24,20 +24,13 @@ record_failure() {
 
 search_swift_sources() {
   local rg_pattern=$1
-  local grep_pattern=$2
-  shift 2
+  shift 1
 
-  if command -v rg >/dev/null 2>&1; then
-    rg \
-      --line-number \
-      "$rg_pattern" \
-      "$@" \
-      -g '*.swift' || true
-    return 0
-  fi
-
-  find "$@" -type f -name '*.swift' -print0 |
-    xargs -0 grep -nE "$grep_pattern" 2>/dev/null || true
+  ci_task_rg \
+    --line-number \
+    "$rg_pattern" \
+    "$@" \
+    -g '*.swift'
 }
 
 missing_operations=$(
@@ -51,7 +44,6 @@ fi
 app_model_declarations=$(
   search_swift_sources \
     "@Model" \
-    "@Model" \
     "${app_sources[@]}"
 )
 
@@ -63,7 +55,6 @@ fi
 app_direct_model_mutations=$(
   search_swift_sources \
     "\bitem\.(addMark|removeMark|historySnapshot|isMarked)\(" \
-    '(^|[^[:alnum:]_])item\.(addMark|removeMark|historySnapshot|isMarked)\(' \
     "${app_sources[@]}"
 )
 
@@ -75,7 +66,6 @@ fi
 app_direct_item_creation=$(
   search_swift_sources \
     "\bItem\(" \
-    '(^|[^[:alnum:]_])Item\(' \
     "${app_sources[@]}"
 )
 
@@ -87,7 +77,6 @@ fi
 public_business_helpers=$(
   search_swift_sources \
     "^[[:space:]]*public[[:space:]]+func[[:space:]]+(historySnapshot|mark|isMarked|addMark|removeMark)\\b" \
-    '^[[:space:]]*public[[:space:]]+func[[:space:]]+(historySnapshot|mark|isMarked|addMark|removeMark)([^[:alnum:]_]|$)' \
     "${library_sources[@]}"
 )
 
