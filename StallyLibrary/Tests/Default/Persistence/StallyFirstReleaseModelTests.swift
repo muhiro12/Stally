@@ -34,11 +34,7 @@ extension SwiftDataOperationsTests {
 
         @Test
         func `combined subjects reopen every policy and start precision without changing portable meaning`() throws {
-            let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-            defer {
-                try? FileManager.default.removeItem(at: directory)
-            }
+            let directory = try persistentTestDirectory(fileManager: .default)
             let storeURL = directory.appendingPathComponent("Stally.store")
             let today = try #require(LocalDay(year: 2_026, month: 9, day: 30))
             let photo = try TestPhotoFixtures.preparedData()

@@ -160,16 +160,14 @@ extension SwiftDataOperationsTests {
             subdirectory: String? = nil,
             _ body: (URL) throws -> Void
         ) throws {
-            let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+            let directory = try persistentTestDirectory(fileManager: .default)
+            let storeCopy = directory.appendingPathComponent("V1", isDirectory: true)
             let source = try fixtureDirectory()
             try FileManager.default.copyItem(
                 at: subdirectory.map { source.appendingPathComponent($0) } ?? source,
-                to: directory
+                to: storeCopy
             )
-            defer {
-                try? FileManager.default.removeItem(at: directory)
-            }
-            try body(directory.appendingPathComponent("Stally.store"))
+            try body(storeCopy.appendingPathComponent("Stally.store"))
         }
 
         private func makeContext(at storeURL: URL) throws -> ModelContext {

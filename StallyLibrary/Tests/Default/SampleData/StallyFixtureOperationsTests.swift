@@ -88,9 +88,7 @@ extension SwiftDataOperationsTests {
             }
             #expect(try ItemOperations.items(context: occupied).map(\.uuid) == [existing.uuid])
 
-            let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
-            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-            defer { try? FileManager.default.removeItem(at: directory) }
+            let directory = try persistentTestDirectory(fileManager: .default)
             let schema = StallyModelContainerFactory.schema
             let configuration = ModelConfiguration(
                 schema: schema,

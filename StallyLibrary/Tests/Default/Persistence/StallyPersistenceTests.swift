@@ -16,17 +16,9 @@ extension SwiftDataOperationsTests {
         @Test
         func `versioned schema reopens timezone independent mark days from disk`() throws {
             let fileManager = FileManager.default
-            let directoryURL = fileManager.temporaryDirectory.appendingPathComponent(
-                UUID().uuidString,
-                isDirectory: true
-            )
+            let directoryURL = try persistentTestDirectory(fileManager: fileManager)
             let storeURL = directoryURL.appendingPathComponent("Stally.store")
             let markedDay = try #require(LocalDay(year: 2_026, month: 6, day: 26))
-
-            try fileManager.createDirectory(at: directoryURL, withIntermediateDirectories: true)
-            defer {
-                try? fileManager.removeItem(at: directoryURL)
-            }
 
             let itemID = try writeItem(to: storeURL)
             try writeMark(for: itemID, on: markedDay, to: storeURL)
