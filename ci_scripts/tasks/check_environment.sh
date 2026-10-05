@@ -91,6 +91,7 @@ check_tests_environment() {
 
 check_rules_environment() {
   check_swiftlint_environment
+  ensure_command "rg" "Repository rules require a working source search; report verification incomplete until it is available."
 }
 
 case "$profile" in

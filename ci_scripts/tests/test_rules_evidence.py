@@ -26,5 +26,11 @@ class SearchEvidenceTests(unittest.TestCase):
                         self.assertIn("search incomplete", result.stderr)
 
 
+    def test_rules_preflight_reports_missing_search_before_lint(self):
+        result = subprocess.run(["/bin/bash", "ci_scripts/tasks/check_environment.sh", "--profile", "rules"],
+            cwd=REPOSITORY, capture_output=True, text=True, env={**os.environ, "PATH": "/usr/bin:/bin"})
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("Missing command: rg", result.stderr)
+
 if __name__ == "__main__":
     unittest.main()
