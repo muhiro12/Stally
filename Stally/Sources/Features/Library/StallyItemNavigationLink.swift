@@ -10,6 +10,10 @@ struct StallyItemNavigationLink: View {
         NavigationLink(value: StallyNavigationView.DetailRoute.item(item.uuid)) {
             ItemRow()
         }
+        .draggable(StallyLinkOperations.url(for: .item(item.uuid))) {
+            Label("Share Item Link", systemImage: "link")
+                .padding()
+        }
         .modifier(ItemActionsModifier(presentation: .contextMenu))
         .appEntityIdentifier(EntityIdentifier(for: StallyItemEntity.self, identifier: item.uuid.uuidString))
     }

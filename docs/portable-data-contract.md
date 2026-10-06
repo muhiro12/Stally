@@ -156,6 +156,17 @@ file-oriented services to receive a temporary copy. Transient share staging is
 in temporary storage and is not a second durable store or portable dataset.
 Cancelling either native presentation does not mutate the collection.
 
+Library, Archive, and Review Item rows also offer native outbound dragging of
+that Item's existing `StallyLink` URL. The representation carries only the
+canonical UUID reference; it does not export names, notes, photos, Marks, or
+start knowledge. Like Share Item Link, it opens the receiving device's matching
+Item and is not a way to copy an Item to another collection. Normal row
+navigation, contextual actions, and the visible Share Item Link remain available.
+
+Dragging is a read-only accelerator. There is no collection reordering, internal
+move/copy, generic content drop target, or new transfer format. Complete
+collection transfer continues to use the explicitly reviewed data file flow.
+
 Files/another app can open the registered document type into Stally. Root URL
 handling discriminates file URLs before passing navigation URLs to MHPlatform;
 this prevents a data file from being reported as an unsupported deep link.
