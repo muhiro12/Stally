@@ -106,36 +106,59 @@ Xcode 27.0 (27A266a), iOS 27.0 SDK (24A430). It does not reproduce a wrong UUID
 mapping. The demonstrated gaps are the primary activity and the individual
 Insights ranking links described above.
 
-AppIntentsTesting execution stops before the annotation assertions: the first
-intent execution is rejected with `AppIntentsServicesSecurityErrorDomain` code
-803, `Unable to run internal tests on a Customer build`. That environment
-restriction is not bypassed. New system annotation assertions are compiled but
-remain unverified; the baseline successful run below is historical evidence.
+AppIntentsTesting execution stops at the first `AnyAppIntent.run()` request
+for `CreateStallyItemIntent`, before the test receives an Item entity or calls
+`viewAnnotations()`. It returns `AppIntentsServicesSecurityErrorDomain` code
+803, `Unable to run internal tests on a Customer build`. The artifacts for
+this run contain an ad-hoc app and an Apple-signed runner, with no matching
+Development Team. Apple's [testing setup][intent-testing-setup] requires the
+app and runner to use the same Development Team. This prerequisite was not
+satisfied; code 803 alone does not establish its root cause or imply that Siri
+is physical-device only. New system assertions remain unverified; the
+successful baseline below is historical evidence.
 
 During native revalidation, a shared Xcode selection change invalidated the
 27.0 CoreSimulator client. Running its built bundle through Xcode 27.2 also
-failed to load AppIntentsTesting because that framework and the iOS 27.0 runtime
-have incompatible symbols. An independent native bundle was then built in a
-throwaway source copy that excludes only the system-test source; its execution and a no-build retry stopped
-because Xcode reported the iOS 27.0 runtime path missing, even though `simctl`
-reported that runtime as available. The production project and scheme do not change.
-The initial native run passed the detail/tab/back-navigation and delete
-Cancel/confirm regression in 54.197 seconds. The menu regression initially
-stopped at a collapsed search field; its corrected source compiles, but subsequent
-runtime failures prevented completion. Siri speech, primary-activity
-advertisement, current system annotations, and the corrected menu regression
-remain separate verification gaps.
+failed to load AppIntentsTesting because that framework and the iOS 27.0
+runtime have incompatible symbols. An independent native bundle was then built
+in a throwaway source copy that excludes only the system-test source; its
+execution and a no-build retry stopped because Xcode reported the iOS 27.0
+runtime path missing, even though `simctl` reported that runtime as available.
+The production project and scheme do not change. The initial native run passed
+the detail/tab/back-navigation and delete Cancel/confirm regression in 54.197
+seconds. The menu regression initially stopped at a collapsed search field;
+its corrected source compiles, but subsequent runtime failures prevented
+completion. Siri speech, primary-activity advertisement, current system
+annotations, and the corrected menu regression remain separate verification
+gaps.
 
 The expanded system regression compiles and specifies resolution of both
-same-name UUIDs, rejection of malformed or missing identifiers, detail switching,
-return to Library, and restoration of Archive's retained detail through native
-tab selection. It also expects Insights to omit the previous Archive detail.
-These new assertions have not executed. The activity lifecycle uses the public
-SwiftUI API and explicit current-route gating; `viewAnnotations()` checks the
-visible entity surface, separately from Siri speech or activity advertisement.
-Human QA on an Apple Intelligence-capable device must confirm that Siri's
-references to the current Item and native Ask Siri presentation follow these
-transitions. This check does not require Spotlight indexing.
+same-name UUIDs, rejection of malformed or missing identifiers, detail
+switching, return to Library, and restoration of Archive's retained detail
+through native tab selection. It also expects Insights to omit the previous
+Archive detail. These new assertions have not executed. The activity lifecycle
+uses the public SwiftUI API and explicit current-route gating;
+`viewAnnotations()` checks the visible entity surface, separately from Siri
+speech or activity advertisement. Human QA on an Apple Intelligence-capable
+device must confirm that Siri's references to the current Item and native Ask
+Siri presentation follow these transitions. This check does not require
+Spotlight indexing.
+
+A resumption check used fresh processes with the existing Xcode 27.0 SDK and
+its registered iOS 27.0 runtime (24A434), retaining the assigned iPhone.
+Ordinary `simctl boot` still returned code 401, `runtime path not found`,
+although the registered bundle and runtime-root paths exist. Public runtime
+signature reverification returned `-67054: a sealed resource is missing or
+invalid`; its cause remains unconfirmed. No runtime was added, erased,
+unmounted, or re-registered, and no shared service or global Xcode setting was
+reset.
+
+The minimum native-test prerequisite is a normally bootable, supported runtime
+for the assigned device with a matching process-specific Xcode SDK. System
+integration tests additionally need compatible AppIntentsTesting libraries and
+the documented matching-Team signing setup. These are separate from human QA
+of spoken references and automatic Ask Siri behavior on an Apple Intelligence
+capable physical device.
 
 ### Baseline contextual-actions verification
 
@@ -215,3 +238,5 @@ Ask Siri availability is not forced as an acceptance mechanism.
 [ipad-menu-proof]: ui-preview-screenshots/contextual-actions/ipad-ordinary-menu-en.png
 
 [onscreen-awareness]: https://developer.apple.com/videos/play/wwdc2026/343/
+
+[intent-testing-setup]: https://developer.apple.com/videos/play/wwdc2026/295/
