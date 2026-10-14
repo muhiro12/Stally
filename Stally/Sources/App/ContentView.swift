@@ -45,6 +45,7 @@ struct ContentView: View {
         StallyNavigationView(
             selectedDestination: $selectedDestination,
             detailPaths: $detailPaths,
+            isPresentingSheet: presentedSheet != nil,
             addAction: presentAddItem,
             restoreAction: presentBackupCenter,
             settingsAction: presentSettings

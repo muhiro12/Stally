@@ -113,7 +113,7 @@ final class StallySystemIntentTests: XCTestCase {
     }
 
     @MainActor
-    func testOnscreenAnnotationsDisambiguateEqualNamesAndReflectArchive() async throws {
+    func testOnscreenContextFollowsDetailIdentityAndNavigation() async throws {
         let app = launchSyntheticCollection()
         defer { app.terminate() }
         let create = definitions.intents["CreateStallyItemIntent"]
@@ -145,6 +145,60 @@ final class StallySystemIntentTests: XCTestCase {
         })
         let isArchived: Bool = try annotation.entity.isArchived
         XCTAssertTrue(isArchived)
+        try await verifyContextAfterArchive(app: app, entity: entity, first: first, second: second)
+    }
+
+    @MainActor
+    private func verifyContextAfterArchive(
+        app: XCUIApplication,
+        entity: AppEntityDefinition,
+        first: AnyAppEntity,
+        second: AnyAppEntity
+    ) async throws {
+        let resolvedIDs = try await entity.entities(identifiers: [
+            first.identifier.instanceIdentifier,
+            second.identifier.instanceIdentifier,
+            "invalid-identifier",
+            UUID().uuidString
+        ])
+        XCTAssertEqual(
+            Set(resolvedIDs.map(\.identifier.instanceIdentifier)),
+            [first.identifier.instanceIdentifier, second.identifier.instanceIdentifier]
+        )
+
+        try await definitions.intents["OpenStallyItemEntityIntent"].makeIntent(target: first).run()
+        XCTAssertTrue(app.navigationBars["Same System Name"].waitForExistence(timeout: 5))
+        let otherDetail = try await entity.viewAnnotations()
+        XCTAssertEqual(
+            Set(otherDetail.map(\.entity.identifier.instanceIdentifier)),
+            [first.identifier.instanceIdentifier]
+        )
+
+        app.navigationBars["Same System Name"].buttons.element(boundBy: 0).tap()
+        XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 5))
+        let collection = try await entity.viewAnnotations()
+        XCTAssertEqual(
+            Set(collection.map(\.entity.identifier.instanceIdentifier)),
+            [first.identifier.instanceIdentifier]
+        )
+
+        try await definitions.intents["OpenStallyItemEntityIntent"].makeIntent(target: second).run()
+        XCTAssertTrue(app.navigationBars["Same System Name"].waitForExistence(timeout: 5))
+        try await definitions.intents["OpenStallyDestinationIntent"].makeIntent(destination: "insights").run()
+        XCTAssertTrue(app.navigationBars["Insights"].waitForExistence(timeout: 5))
+        let insights = try await entity.viewAnnotations()
+        XCTAssertFalse(insights.contains { annotation in
+            annotation.entity.identifier.instanceIdentifier == second.identifier.instanceIdentifier
+        })
+
+        // Tab selection preserves the Archive stack, so its detail must become current again.
+        app.tabBars.buttons["Archive"].tap()
+        XCTAssertTrue(app.navigationBars["Same System Name"].waitForExistence(timeout: 5))
+        let returningDetail = try await entity.viewAnnotations()
+        XCTAssertEqual(
+            Set(returningDetail.map(\.entity.identifier.instanceIdentifier)),
+            [second.identifier.instanceIdentifier]
+        )
     }
 
     @MainActor

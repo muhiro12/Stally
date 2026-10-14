@@ -12,6 +12,7 @@ struct StallyItemDestinationView: View {
     private var modelContext
 
     let itemID: UUID
+    private let isCurrentDetail: Bool
     private let presentation: Presentation
 
     private var resolution: Result<Item?, any Error> {
@@ -26,7 +27,7 @@ struct StallyItemDestinationView: View {
             Group {
                 switch presentation {
                 case .detail:
-                    ItemDetailView()
+                    ItemDetailView(isCurrentDetail: isCurrentDetail)
                 case .edit:
                     EditItemView()
                 }
@@ -51,13 +52,15 @@ struct StallyItemDestinationView: View {
         }
     }
 
-    init(itemID: UUID) {
+    init(itemID: UUID, isCurrentDetail: Bool) {
         self.itemID = itemID
+        self.isCurrentDetail = isCurrentDetail
         presentation = .detail
     }
 
     init(editingItemID: UUID) {
         itemID = editingItemID
+        isCurrentDetail = false
         presentation = .edit
     }
 }

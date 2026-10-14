@@ -51,6 +51,7 @@ struct StallyNavigationView: View {
         @Binding var path: [DetailRoute]
 
         let destination: Destination
+        let isCurrent: Bool
         let addAction: () -> Void
         let restoreAction: () -> Void
         let settingsAction: () -> Void
@@ -92,7 +93,10 @@ struct StallyNavigationView: View {
         private func detailDestination(for route: DetailRoute) -> some View {
             switch route {
             case .item(let itemID):
-                StallyItemDestinationView(itemID: itemID)
+                StallyItemDestinationView(
+                    itemID: itemID,
+                    isCurrentDetail: isCurrent && path.last == route
+                )
             }
         }
     }
@@ -100,6 +104,7 @@ struct StallyNavigationView: View {
     @Binding var selectedDestination: Destination
     @Binding var detailPaths: [Destination: [DetailRoute]]
 
+    let isPresentingSheet: Bool
     let addAction: () -> Void
     let restoreAction: () -> Void
     let settingsAction: () -> Void
@@ -111,6 +116,7 @@ struct StallyNavigationView: View {
                     Detail(
                         path: path(for: destination),
                         destination: destination,
+                        isCurrent: selectedDestination == destination && !isPresentingSheet,
                         addAction: addAction,
                         restoreAction: restoreAction,
                         settingsAction: settingsAction

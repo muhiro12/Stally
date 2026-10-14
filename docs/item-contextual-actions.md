@@ -53,8 +53,9 @@ domain Item. The entity remains a small value resolved by the existing query;
 private notes, photos, and full history are not added to it.
 
 This is limited to actual Item rows and the selected Item's detail content.
-Buttons, labels, aggregate reports, and unrelated screens are not independently
-annotated. Native list/navigation context supplies presentation and selection;
+Insights ranking links also represent individual Items and now use the same UUID
+association. Buttons, labels, aggregate reports, and unrelated screens are not
+independently annotated. Native list/navigation context supplies presentation and selection;
 the app does not invent selected entities to influence Siri.
 
 Apple's current [contextual-cues guidance][context] supports associating views
@@ -62,16 +63,81 @@ with their represented App Entities. The ordinary [SwiftUI association][entity]
 matches these native row/detail surfaces. The selection-type variant is useful
 for explicit list selection contracts; this navigation row needs no second
 selection provider. `appEntityUIElements` serves custom drawn regions, which
-these native Lists do not have. A parallel `NSUserActivity` entity association
-is unnecessary without an actual Handoff activity. Existing native sharing
-does not require adding drag handlers, notifications, Widget, or Watch targets.
+these native Lists do not have.
+
+The primary Item Detail also advertises a foreground `NSUserActivity` with the
+same canonical entity identifier and the current Item name. This follows Apple's
+[onscreen-awareness guidance][onscreen-awareness] for one primary entity, without
+requiring Handoff. The activity is active only for the top detail route in the
+selected tab, while no app-level sheet or detail editor/history sheet covers it. Returning to
+the collection or switching tabs disables the old detail; returning to a retained
+detail stack reactivates its Item. SwiftUI manages the activity's view lifetime.
+Handoff, search indexing, and prediction eligibility are disabled for this
+foreground context. Private notes, photos, and history are not activity payloads.
+Existing native sharing does not require notifications, Widget, or Watch targets.
 
 Apple describes automatic Ask Siri presentation in its [menu guidance][menus].
 Stally supplies native menus and useful entity context, and leaves
 availability and presentation to the system. It adds no custom Ask Siri command
 and no runtime heuristic or persistent override to force that entry.
 
+## Surface Coverage
+
+| Surface | Entity context |
+| --- | --- |
+| Library and Archive Item rows | Shared native row annotation; current refined Items only |
+| Review lane Item rows | Same shared row annotation and native actions |
+| Insights ranking Item links | Individual Item UUID annotation; aggregate values remain unannotated |
+| Item Detail and its native Item Actions menu | Selected Item annotation plus foreground primary activity |
+| Add Item, Settings, Backup, aggregate controls and reports | No invented Item context |
+
+These navigation Lists do not implement multi-selection or retain offscreen
+selected Items. Per-row association matches their actual contract; adding
+`forSelectionType:` would require a selection identity contract they do not
+currently expose. Filtering removes hidden row views, while the detail activity
+uses the canonical route UUID rather than a displayed index or name.
+
 ## Verification
+
+### Siri-context follow-up
+
+The October 14 follow-up builds the app and the expanded system-test source with
+Xcode 27.0 (27A266a), iOS 27.0 SDK (24A430). It does not reproduce a wrong UUID
+mapping. The demonstrated gaps are the primary activity and the individual
+Insights ranking links described above.
+
+AppIntentsTesting execution stops before the annotation assertions: the first
+intent execution is rejected with `AppIntentsServicesSecurityErrorDomain` code
+803, `Unable to run internal tests on a Customer build`. That environment
+restriction is not bypassed. New system annotation assertions are compiled but
+remain unverified; the baseline successful run below is historical evidence.
+
+During native revalidation, a shared Xcode selection change invalidated the
+27.0 CoreSimulator client. Running its built bundle through Xcode 27.2 also
+failed to load AppIntentsTesting because that framework and the iOS 27.0 runtime
+have incompatible symbols. An independent native bundle was then built in a
+throwaway source copy that excludes only the system-test source; its execution and a no-build retry stopped
+because Xcode reported the iOS 27.0 runtime path missing, even though `simctl`
+reported that runtime as available. The production project and scheme do not change.
+The initial native run passed the detail/tab/back-navigation and delete
+Cancel/confirm regression in 54.197 seconds. The menu regression initially
+stopped at a collapsed search field; its corrected source compiles, but subsequent
+runtime failures prevented completion. Siri speech, primary-activity
+advertisement, current system annotations, and the corrected menu regression
+remain separate verification gaps.
+
+The expanded system regression compiles and specifies resolution of both
+same-name UUIDs, rejection of malformed or missing identifiers, detail switching,
+return to Library, and restoration of Archive's retained detail through native
+tab selection. It also expects Insights to omit the previous Archive detail.
+These new assertions have not executed. The activity lifecycle uses the public
+SwiftUI API and explicit current-route gating; `viewAnnotations()` checks the
+visible entity surface, separately from Siri speech or activity advertisement.
+Human QA on an Apple Intelligence-capable device must confirm that Siri's
+references to the current Item and native Ask Siri presentation follow these
+transitions. This check does not require Spotlight indexing.
+
+### Baseline contextual-actions verification
 
 Xcode 27.0 (27A266a), iOS 27.0 SDK (24A430), and Simulator runtime (24A434)
 build the app and extract App Intents metadata without compiler warnings or
@@ -79,8 +145,8 @@ errors. StallyLibrary passes 173 tests in 42 suites, including the full policy,
 placement, and today's-Mark matrix, invalid/unknown start knowledge, captured
 value lifetime, and missing identity after deletion.
 
-All four out-of-process AppIntentsTesting tests pass with zero failures in
-31.098 seconds. The added annotation test creates two Items with identical
+All four baseline out-of-process AppIntentsTesting tests passed with zero
+failures in 31.098 seconds. The added annotation test creates two Items with identical
 names, obtains both UUIDs from visible Library rows, opens the second Item and
 obtains only its detail identity, then reads its changed Archive property.
 This uses Apple's [view annotation testing API][annotation-testing] through the
@@ -147,3 +213,5 @@ Ask Siri availability is not forced as an acceptance mechanism.
 [japanese-proof]: ui-preview-screenshots/contextual-actions/detail-ordinary-menu-ja.png
 [ipad-context-proof]: ui-preview-screenshots/contextual-actions/ipad-canvas-context-en.png
 [ipad-menu-proof]: ui-preview-screenshots/contextual-actions/ipad-ordinary-menu-en.png
+
+[onscreen-awareness]: https://developer.apple.com/videos/play/wwdc2026/343/

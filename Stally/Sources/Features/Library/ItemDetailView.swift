@@ -53,6 +53,8 @@ struct ItemDetailView: View {
     @State private var errorMessage = ""
     @State private var isPresentingError = false
 
+    var isCurrentDetail = true
+
     var body: some View {
         let now = readingDate
         let today = LocalDay(containing: now, in: timeZone)
@@ -101,6 +103,20 @@ struct ItemDetailView: View {
             ItemDeletionSection(deleteAction: confirmDeleteItem)
         }
         .appEntityIdentifier(EntityIdentifier(for: StallyItemEntity.self, identifier: item.uuid.uuidString))
+        .userActivity(
+            "com.muhiro12.Stally.viewItem",
+            isActive: isCurrentDetail && presentedSheet == nil
+                && !isConfirmingDeleteItem && !isPresentingError
+        ) { activity in
+            activity.title = item.name
+            activity.appEntityIdentifier = .init(
+                for: StallyItemEntity.self,
+                identifier: item.uuid.uuidString
+            )
+            activity.isEligibleForHandoff = false
+            activity.isEligibleForSearch = false
+            activity.isEligibleForPrediction = false
+        }
         .modifier(ItemActionsModifier(presentation: .toolbarMenu))
         .scrollEdgeEffectStyle(.soft, for: .bottom)
         .safeAreaBar(edge: .bottom) {

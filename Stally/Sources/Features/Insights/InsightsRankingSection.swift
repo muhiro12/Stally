@@ -5,6 +5,7 @@
 //  Created by Codex on 2026/06/26.
 //
 
+import AppIntents
 import MHUI
 import SwiftUI
 
@@ -29,6 +30,10 @@ struct InsightsRankingSection: View {
                         )
                         .environment(summary.item)
                     }
+                    .appEntityIdentifier(.init(
+                        for: StallyItemEntity.self,
+                        identifier: summary.item.uuid.uuidString
+                    ))
                 }
             }
         }
