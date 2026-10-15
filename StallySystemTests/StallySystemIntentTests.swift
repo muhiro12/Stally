@@ -182,7 +182,7 @@ final class StallySystemIntentTests: XCTestCase {
             [first.identifier.instanceIdentifier]
         )
 
-        app.navigationBars["Same System Name"].buttons.element(boundBy: 0).tap()
+        app.buttons["BackButton"].tap()
         XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 5))
         let collection = try await entity.viewAnnotations()
         XCTAssertEqual(
@@ -200,7 +200,7 @@ final class StallySystemIntentTests: XCTestCase {
         })
 
         // Tab selection preserves the Archive stack, so its detail must become current again.
-        app.tabBars.buttons["Archive"].tap()
+        app.buttons["Archive"].tap()
         XCTAssertTrue(app.navigationBars["Same System Name"].waitForExistence(timeout: 5))
         let returningDetail = try await entity.viewAnnotations()
         XCTAssertEqual(

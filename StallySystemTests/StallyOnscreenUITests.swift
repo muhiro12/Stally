@@ -11,12 +11,13 @@ final class StallyOnscreenUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Black Wool Coat"].waitForExistence(timeout: 10))
         capture(app, name: "primary-detail")
 
-        app.tabBars.buttons["Insights"].tap()
+        // Adaptive navigation can place destination and Back buttons outside bars.
+        app.buttons["Insights"].tap()
         XCTAssertTrue(app.navigationBars["Insights"].waitForExistence(timeout: 5))
         capture(app, name: "unrelated-insights")
-        app.tabBars.buttons["Library"].tap()
+        app.buttons["Library"].tap()
         XCTAssertTrue(app.navigationBars["Black Wool Coat"].waitForExistence(timeout: 5))
-        app.navigationBars["Black Wool Coat"].buttons.element(boundBy: 0).tap()
+        app.buttons["BackButton"].tap()
         XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 5))
 
         let search = app.searchFields.firstMatch
