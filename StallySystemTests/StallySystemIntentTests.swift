@@ -182,7 +182,9 @@ final class StallySystemIntentTests: XCTestCase {
             [first.identifier.instanceIdentifier]
         )
 
-        app.buttons["BackButton"].tap()
+        let backButton = app.buttons["BackButton"]
+        XCTAssertTrue(backButton.wait(for: \.isHittable, toEqual: true, timeout: 5))
+        backButton.tap()
         XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 5))
         let collection = try await entity.viewAnnotations()
         XCTAssertEqual(

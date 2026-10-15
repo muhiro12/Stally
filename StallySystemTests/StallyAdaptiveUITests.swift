@@ -76,11 +76,14 @@ final class StallyAdaptiveUITests: XCTestCase {
     @MainActor
     private func rotate(_ app: XCUIApplication, to orientation: UIDeviceOrientation) {
         XCUIDevice.shared.orientation = orientation
-        if orientation.isLandscape {
-            XCTAssertGreaterThan(app.frame.width, app.frame.height)
-        } else {
-            XCTAssertLessThan(app.frame.width, app.frame.height)
-        }
+        let resized = XCTNSPredicateExpectation(
+            predicate: .init { _, _ in
+                let frame = app.frame
+                return orientation.isLandscape ? frame.width > frame.height : frame.width < frame.height
+            },
+            object: nil
+        )
+        wait(for: [resized], timeout: 5)
     }
 
     @MainActor
