@@ -95,7 +95,9 @@ extension SampleDataOperations {
                 referenceDate: createdAt,
                 calendar: calendar,
                 context: context
-            ) { _ in .init() }
+            ) { _ in
+                .init()
+            }
         }
 
         try ItemOperations.saveOrRollback(context, saving: save)

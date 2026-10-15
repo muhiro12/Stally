@@ -8,7 +8,9 @@ final class StallySystemIntentTests: XCTestCase {
     @MainActor
     func testNonMarkTimeJourneyPreservesPrecisionAndIdentity() async throws {
         let app = launchSyntheticCollection()
-        defer { app.terminate() }
+        defer {
+            app.terminate()
+        }
 
         let create = definitions.intents["CreateStallyItemIntent"].makeIntent(
             name: "System Home",
@@ -53,7 +55,9 @@ final class StallySystemIntentTests: XCTestCase {
     @MainActor
     func testMarkAndUndoAreIdempotentAndRejectArchivedItems() async throws {
         let app = launchSyntheticCollection()
-        defer { app.terminate() }
+        defer {
+            app.terminate()
+        }
         let create = definitions.intents["CreateStallyItemIntent"].makeIntent(
             name: "System Tote",
             category: definitions.enums["StallyItemCategoryIntentValue"].makeCase("bags")
@@ -78,7 +82,9 @@ final class StallySystemIntentTests: XCTestCase {
     @MainActor
     func testPartialStartsAndInvalidInputUseTheRealResolutionPipeline() async throws {
         let app = launchSyntheticCollection()
-        defer { app.terminate() }
+        defer {
+            app.terminate()
+        }
         for start in ["2000-02", "2000-02-29"] {
             let create = definitions.intents["CreateStallyItemIntent"].makeIntent(
                 name: "System \(start)",
@@ -115,7 +121,9 @@ final class StallySystemIntentTests: XCTestCase {
     @MainActor
     func testOnscreenContextFollowsDetailIdentityAndNavigation() async throws {
         let app = launchSyntheticCollection()
-        defer { app.terminate() }
+        defer {
+            app.terminate()
+        }
         let create = definitions.intents["CreateStallyItemIntent"]
         let firstResult = try await create.makeIntent(name: "Same System Name").run()
         let secondResult = try await create.makeIntent(

@@ -5,7 +5,9 @@ final class StallyOnscreenUITests: XCTestCase {
     @MainActor
     func testDetailContextFollowsTabSelectionAndConfirmedDeletion() {
         let app = launchCollection(route: "itemDetail")
-        defer { app.terminate() }
+        defer {
+            app.terminate()
+        }
         XCTAssertTrue(app.navigationBars["Black Wool Coat"].waitForExistence(timeout: 10))
         capture(app, name: "primary-detail")
 
@@ -46,7 +48,9 @@ final class StallyOnscreenUITests: XCTestCase {
     @MainActor
     func testContextAndOrdinaryMenusKeepTheEditedItem() {
         let app = launchCollection(route: "library")
-        defer { app.terminate() }
+        defer {
+            app.terminate()
+        }
         XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 10))
         let search = app.searchFields.firstMatch
         if !search.exists {

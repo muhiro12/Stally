@@ -134,7 +134,7 @@ import SwiftUI
                 summary: .init(items: items),
                 preview: StallyPreviewData.backupValidationPreview,
                 isReplacingExistingItems: .constant(false),
-                statusMessage: "Data saved.",
+                statusMessage: String(localized: "Data saved."),
                 exportAction: { /* Preview action intentionally left empty. */ },
                 chooseBackupAction: { /* Preview action intentionally left empty. */ },
                 mergeAction: { /* Preview action intentionally left empty. */ },

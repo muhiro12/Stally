@@ -78,7 +78,9 @@ struct ItemActionsModifier: ViewModifier {
         if let snapshot {
             ItemContextActions(
                 snapshot: snapshot,
-                editAction: { editor = .init(id: snapshot.itemID) },
+                editAction: {
+                    editor = .init(id: snapshot.itemID)
+                },
                 mutationAction: { mutation in
                     perform(mutation, itemID: snapshot.itemID)
                 }
