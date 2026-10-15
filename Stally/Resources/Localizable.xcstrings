@@ -884,6 +884,8 @@
       }
     },
     "Data saved." : {
+      "comment" : "Feedback shown only by the import preview. Managed manually because Xcode does not extract this Preview-only string.",
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
