@@ -12,19 +12,15 @@ final class StallyOnscreenUITests: XCTestCase {
         capture(app, name: "primary-detail")
 
         // Adaptive navigation can place destination and Back buttons outside bars.
-        app.buttons["Insights"].tap()
+        app.buttons["Insights"].firstMatch.tap()
         XCTAssertTrue(app.navigationBars["Insights"].waitForExistence(timeout: 5))
         capture(app, name: "unrelated-insights")
-        app.buttons["Library"].tap()
+        app.buttons["Library"].firstMatch.tap()
         XCTAssertTrue(app.navigationBars["Black Wool Coat"].waitForExistence(timeout: 5))
         app.buttons["BackButton"].tap()
         XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 5))
 
-        let search = app.searchFields.firstMatch
-        if !search.exists {
-            app.swipeDown()
-        }
-        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        let search = revealSearch(in: app)
         search.tap()
         search.typeText("Canvas Tote")
         app.staticTexts["Canvas Tote"].firstMatch.tap()
@@ -53,11 +49,7 @@ final class StallyOnscreenUITests: XCTestCase {
             app.terminate()
         }
         XCTAssertTrue(app.navigationBars["Library"].waitForExistence(timeout: 10))
-        let search = app.searchFields.firstMatch
-        if !search.exists {
-            app.swipeDown()
-        }
-        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        let search = revealSearch(in: app)
         search.tap()
         search.typeText("Home")
         let row = app.staticTexts["Home"].firstMatch
@@ -85,6 +77,21 @@ final class StallyOnscreenUITests: XCTestCase {
         XCTAssertEqual(name.value as? String, "Context Home")
         app.buttons["Cancel"].tap()
         XCTAssertTrue(app.navigationBars["Context Home"].waitForExistence(timeout: 5))
+    }
+
+    @MainActor
+    private func revealSearch(in app: XCUIApplication) -> XCUIElement {
+        let search = app.searchFields.firstMatch
+        if !search.exists {
+            let searchButton = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Search")).firstMatch
+            if searchButton.exists {
+                searchButton.tap()
+            } else {
+                app.swipeDown()
+            }
+        }
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
+        return search
     }
 
     @MainActor
