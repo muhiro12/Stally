@@ -64,17 +64,41 @@ ensure_command() {
 }
 
 check_swiftlint_environment() {
-  local project_file="Stally.xcodeproj/project.pbxproj"
+  local project_directory="Stally.xcodeproj"
+  local project_file
+  local project_configuration
+  local candidate
+  local -a project_files=()
 
   ensure_command "xcodebuild" "Install Xcode and ensure xcodebuild is available from the command line."
+  ensure_command "plutil" "Install the macOS command-line tools so project configurations can be inspected."
 
-  if [[ ! -f "$project_file" ]]; then
-    record_failure "Missing file: $project_file"
-    record_next_step "Restore $project_file so the repository-managed SwiftLint package can be resolved."
+  for candidate in "$project_directory/project.pbxproj" "$project_directory/"*.xcproj; do
+    if [[ -f "$candidate" ]]; then
+      project_files+=("$candidate")
+    fi
+  done
+
+  if [[ ${#project_files[@]} -eq 0 ]]; then
+    record_failure "Missing project configuration in $project_directory."
+    record_next_step "Restore a project.pbxproj or JSON .xcproj configuration so the repository-managed SwiftLint package can be resolved."
     return 0
   fi
 
-  if ! grep -q --fixed-strings "https://github.com/SimplyDanny/SwiftLintPlugins" "$project_file"; then
+  if [[ ${#project_files[@]} -ne 1 ]]; then
+    record_failure "Multiple project configurations in $project_directory."
+    record_next_step "Keep one authoritative project.pbxproj or JSON .xcproj configuration before resolving SwiftLint."
+    return 0
+  fi
+
+  project_file=${project_files[0]}
+  if ! project_configuration=$(plutil -p "$project_file" 2>/dev/null); then
+    record_failure "Unreadable project configuration: $project_file"
+    record_next_step "Restore a valid project configuration before resolving SwiftLint."
+    return 0
+  fi
+
+  if [[ "$project_configuration" != *"https://github.com/SimplyDanny/SwiftLintPlugins"* ]]; then
     record_failure "Stally.xcodeproj is missing the SwiftLintPlugins package dependency."
     record_next_step "Add https://github.com/SimplyDanny/SwiftLintPlugins to Stally.xcodeproj."
   fi
