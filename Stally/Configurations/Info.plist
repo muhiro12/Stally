@@ -188,6 +188,7 @@
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>com.muhiro12.Stally.viewItem</string>
+		<string>com.apple.corespotlightitem</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

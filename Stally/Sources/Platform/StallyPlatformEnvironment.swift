@@ -18,6 +18,7 @@ struct StallyPlatformEnvironment {
 
     let logging: MHLoggingBootstrap
     let modelContainer: ModelContainer
+    let searchIndex: StallySearchIndexCoordinator
     let persistenceStatus: PersistenceStatus
     let routeInbox: StallyRouteInbox
     let routePipeline: StallyRoutePipeline

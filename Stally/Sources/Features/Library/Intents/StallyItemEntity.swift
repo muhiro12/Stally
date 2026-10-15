@@ -1,8 +1,9 @@
 import AppIntents
+import CoreSpotlight
 import SwiftData
 
 /// A system value snapshot; actions resolve its UUID against the current store.
-struct StallyItemEntity: AppEntity {
+struct StallyItemEntity: IndexedEntity {
     static let defaultQuery = StallyItemEntityQuery()
 
     static var typeDisplayRepresentation: TypeDisplayRepresentation {
@@ -26,6 +27,17 @@ struct StallyItemEntity: AppEntity {
 
     let id: String
     let uuid: UUID
+    private(set) var hideInSpotlight = false
+
+    var attributeSet: CSSearchableItemAttributeSet {
+        let attributes = CSSearchableItemAttributeSet(contentType: .item)
+        let placement = isArchived ? String(localized: "Archive") : String(localized: "Library")
+        attributes.title = name
+        attributes.contentDescription = "\(categoryName) • \(placement)"
+        attributes.keywords = [categoryName, placement]
+        attributes.contentURL = StallyLinkOperations.url(for: .item(uuid))
+        return attributes
+    }
 
     @Property(title: .init("Name", table: "AppIntents"))
     var name: String
@@ -47,6 +59,12 @@ struct StallyItemEntity: AppEntity {
         isArchived = model.isArchived
         recordsMarks = model.recordsMarks
         start = model.startRawValue
+    }
+
+    @MainActor
+    init(_ model: Item, hidesInSpotlight: Bool) {
+        self.init(model)
+        hideInSpotlight = hidesInSpotlight
     }
 
     @MainActor

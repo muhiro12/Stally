@@ -83,14 +83,17 @@ Calendar, reminders, notes, journal, and health domains do not describe choice
 Marks or partially known starts accurately. Their schemas are not adopted.
 The custom Item and atomic Mark/time actions remain valid App Intents.
 
-[IndexedEntity and IndexedEntityQuery][indexing] could provide a searchable
-name/category projection and system-driven reindexing. They also require
-ownership of updates, deletions, restore, and Cloud-originated changes in a
-second store. The selected journey already uses live entity search and stable
-identity; a broad Spotlight content index is not adopted for the first release.
-This is an explicit scope/value decision, not a claim that App Entity metadata
-alone indexes every Item. Private notes/photos are not indexed. Computed or
-deferred properties are unnecessary for these small resolved snapshots.
+The first-release Spotlight surface uses IndexedEntity metadata and an app-owned
+Core Spotlight index for Item name/category search with Archive placement.
+Identifiers remain canonical UUID strings. An app-owned adapter reconciles
+saved changes, imports, observed Cloud updates and foreground activation with
+the derived index. Private notes/photos and Marks history are not searchable
+attributes. The explicit lifecycle does not require SwiftData `.spotlight`
+attributes or a persisted-model migration. See [the index contract][item-index]
+for namespace isolation, recovery, result opening and verification limits.
+System reindex requests use CSSearchableIndexDelegate, matching the ordinary
+searchable-item writes. IndexedEntityQuery is reserved for indexAppEntities
+donations and is not the recovery hook for this adapter.
 
 ## Widget and Watch Decisions
 
@@ -207,3 +210,5 @@ Archive properties, alongside native menu evidence.
 [testing]: https://developer.apple.com/documentation/appintentstesting/testing-your-app-intents-code
 
 [library-proof]: ui-preview-screenshots/system-interface/library-integration.png
+
+[item-index]: spotlight-indexing.md

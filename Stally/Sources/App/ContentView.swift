@@ -5,6 +5,8 @@
 //  Created by Hiromu Nakano on 2026/06/25.
 //
 
+import AppIntents
+import CoreSpotlight
 import MHPlatform
 import SwiftData
 import SwiftUI
@@ -16,6 +18,8 @@ struct ContentView: View {
     private var routeInbox
     @Environment(StallyRoutePipeline.self)
     private var routePipeline
+    @Environment(StallySearchIndexCoordinator.self)
+    private var searchIndex
 
     @State private var selectedDestination: StallyNavigationView.Destination
     @State private var detailPaths: [StallyNavigationView.Destination: [StallyNavigationView.DetailRoute]]
@@ -97,6 +101,9 @@ struct ContentView: View {
             if let url = activity.webpageURL {
                 receiveURL(url)
             }
+        }
+        .onContinueUserActivity(CSSearchableItemActionType) { activity in
+            receiveSpotlightActivity(activity)
         }
         .onChange(of: routePipeline.inbox.pendingURL) {
             Task {
@@ -283,6 +290,21 @@ private extension ContentView {
             if !isPresented {
                 itemResolutionError = nil
             }
+        }
+    }
+
+    func receiveSpotlightActivity(_ activity: NSUserActivity) {
+        guard let namespace = searchIndex.scope.namespace,
+              let identifier = activity.userInfo?[CSSearchableItemActivityIdentifier] as? String else {
+            return
+        }
+        if let itemID = ItemSearchIndexOperations.itemID(activityIdentifier: identifier, namespace: namespace) {
+            openItemLink(itemID)
+        } else if case .production = searchIndex.scope,
+                  let entity = EntityIdentifier(activityIdentifier: identifier),
+                  ObjectIdentifier(entity.entityType) == ObjectIdentifier(StallyItemEntity.self),
+                  let itemID = UUID(uuidString: entity.identifier) {
+            openItemLink(itemID)
         }
     }
 }

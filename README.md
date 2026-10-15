@@ -40,6 +40,7 @@ Start with the documentation relevant to the changed boundary:
 | Selected first-release model and retained compatibility | [First release data model](docs/first-release-data-model.md) |
 | Export/import identity, versions, validation, and review | [Portable data contract](docs/portable-data-contract.md) |
 | App Intents, entity identity, replay, and Widget/Watch scope | [System interface contract](docs/system-interface-contract.md) |
+| Derived Item search, index recovery, and synthetic isolation | [Spotlight indexing](docs/spotlight-indexing.md) |
 | Samples, DEBUG profiles, frozen migration evidence, and scale | [Fixture architecture](docs/fixture-architecture.md), [original V1 fixtures](StallyLibrary/Tests/Default/Fixtures/V1/README.md), [current interchange fixtures](StallyLibrary/Tests/Default/Fixtures/Interchange/README.md) |
 | Accepted combined Item behavior | [Item start and elapsed time](docs/item-start-and-elapsed-time-proposal.md) |
 | Current UI and integration evidence | [Tracking verification](docs/item-tracking-verification.md), [combined interface](docs/combined-interface-design.md), [near-term brief](docs/near-term-development-brief.md) |

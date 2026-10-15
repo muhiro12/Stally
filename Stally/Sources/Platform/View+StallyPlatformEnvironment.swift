@@ -13,7 +13,8 @@ extension View {
     func stallyPlatformEnvironment(
         _ environment: StallyPlatformEnvironment
     ) -> some View {
-        stallyBasePlatformEnvironment(environment)
+        modifier(StallySearchIndexSyncModifier())
+            .stallyBasePlatformEnvironment(environment)
             .mhAppRuntimeEnvironment(environment.runtimeBootstrap)
             .mhAppRuntimeLifecycle(
                 runtime: environment.runtimeBootstrap.runtime,
@@ -37,5 +38,6 @@ extension View {
             .environment(\.stallyPersistenceStatus, environment.persistenceStatus)
             .environment(environment.routeInbox)
             .environment(environment.routePipeline)
+            .environment(environment.searchIndex)
     }
 }

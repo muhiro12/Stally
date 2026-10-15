@@ -27,6 +27,11 @@ enum StallyPlatformEnvironmentFactory {
         return .init(
             logging: logging,
             modelContainer: modelContainer,
+            searchIndex: StallySearchIndexCoordinator(
+                modelContainer: modelContainer,
+                scope: searchIndexScope(modelContainer: modelContainer, platformMode: platformMode),
+                logging: logging
+            ),
             persistenceStatus: persistenceStatus,
             routeInbox: routeInbox,
             routePipeline: routePipeline,
@@ -35,6 +40,27 @@ enum StallyPlatformEnvironmentFactory {
                 routePipeline: routePipeline
             )
         )
+    }
+
+    private static func searchIndexScope(
+        modelContainer: ModelContainer,
+        platformMode: StallyPlatformMode
+    ) -> StallySearchIndexCoordinator.Scope {
+        if case .preview = platformMode {
+            return .disabled
+        }
+        guard modelContainer.configurations.contains(where: \.isStoredInMemoryOnly) else {
+            return .production
+        }
+        #if DEBUG
+        let arguments = CommandLine.arguments
+        if let position = arguments.firstIndex(of: "--stally-search-index-test-namespace"),
+           arguments.indices.contains(position + 1),
+           let identifier = UUID(uuidString: arguments[position + 1]) {
+            return .test(identifier)
+        }
+        #endif
+        return .disabled
     }
 
     private static func makeAppConfiguration(
