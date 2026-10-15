@@ -202,7 +202,7 @@ final class StallySystemIntentTests: XCTestCase {
         })
 
         // Tab selection preserves the Archive stack, so its detail must become current again.
-        app.buttons["Archive"].tap()
+        app.buttons["Archive"].firstMatch.tap()
         XCTAssertTrue(app.navigationBars["Same System Name"].waitForExistence(timeout: 5))
         let returningDetail = try await entity.viewAnnotations()
         XCTAssertEqual(
@@ -217,6 +217,7 @@ final class StallySystemIntentTests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = [
             "--stally-preview-scenario", "empty", "--stally-preview-route", "library",
+            "-com.apple.TipKit.HideAllTips", "1",
             "-AppleLanguages", "(en)", "-AppleLocale", "en_US"
         ]
         app.launch()

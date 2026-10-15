@@ -100,6 +100,7 @@ final class StallyOnscreenUITests: XCTestCase {
         let app = XCUIApplication()
         app.launchArguments = [
             "--stally-preview-scenario", "integration", "--stally-preview-route", route,
+            "-com.apple.TipKit.HideAllTips", "1",
             "-AppleLanguages", "(en)", "-AppleLocale", "en_US"
         ]
         app.launch()

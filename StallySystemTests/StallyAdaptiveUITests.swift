@@ -99,6 +99,7 @@ final class StallyAdaptiveUITests: XCTestCase {
     private func arguments(route: String) -> [String] {
         [
             "--stally-preview-scenario", "integration", "--stally-preview-route", route,
+            "-com.apple.TipKit.HideAllTips", "1",
             "-AppleLanguages", "(en)", "-AppleLocale", "en_US"
         ]
     }
