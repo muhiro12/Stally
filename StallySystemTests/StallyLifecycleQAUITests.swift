@@ -21,8 +21,15 @@ final class StallyLifecycleQAUITests: XCTestCase {
         scrollTo(support, in: app)
         support.tap()
         let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+        defer {
+            safari.terminate()
+        }
         XCTAssertTrue(safari.wait(for: .runningForeground, timeout: 15))
-        assertRetainedInBackground(app)
+        // Windowed apps can remain foreground while another app is active.
+        let retainedStates: [XCUIApplication.State] = [
+            .runningForeground, .runningBackground, .runningBackgroundSuspended
+        ]
+        XCTAssertTrue(retainedStates.contains(app.state))
         app.activate()
         XCTAssertTrue(app.navigationBars["Settings"].waitForExistence(timeout: 10))
         capture("safari-return-settings")
@@ -136,7 +143,7 @@ final class StallyLifecycleQAUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Black Wool Coat"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Undo Today's Mark"].firstMatch.isHittable)
         let history = app.buttons["Adjust History"].firstMatch
-        scrollTo(history, in: app)
+        scrollTo(history, in: app, aboveFixedActions: true)
         history.tap()
         XCTAssertTrue(app.navigationBars["Adjust History"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.datePickers.firstMatch.exists)
@@ -203,12 +210,13 @@ private extension StallyLifecycleQAUITests {
     }
 
     @MainActor
-    func scrollTo(_ element: XCUIElement, in app: XCUIApplication) {
+    func scrollTo(_ element: XCUIElement, in app: XCUIApplication, aboveFixedActions: Bool = false) {
         // Begin inside sheets and above the fixed, large-text action bar.
         let start = app.coordinate(withNormalizedOffset: .init(dx: 0.4, dy: 0.5))
         let end = app.coordinate(withNormalizedOffset: .init(dx: 0.4, dy: 0.15))
         for _ in 0..<Self.maximumScrollAttempts {
-            if element.exists, element.isHittable {
+            if element.exists, element.isHittable,
+               !aboveFixedActions || element.frame.maxY < app.frame.minY + app.frame.height * 0.6 {
                 return
             }
             start.press(forDuration: 0.1, thenDragTo: end)
