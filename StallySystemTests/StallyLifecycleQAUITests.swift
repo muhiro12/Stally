@@ -3,6 +3,8 @@ import XCTest
 
 /// Qualifies lifecycle and large-text journeys using disposable in-memory data.
 final class StallyLifecycleQAUITests: XCTestCase {
+    private static let maximumScrollAttempts = 20
+
     @MainActor
     func testSafariReturnKeepsTheSyntheticCollection() {
         let app = launch(route: "addItem")
@@ -15,7 +17,7 @@ final class StallyLifecycleQAUITests: XCTestCase {
         app.buttons["Add"].tap()
         XCTAssertTrue(app.staticTexts["Safari Return Sentinel"].waitForExistence(timeout: 5))
         app.buttons["Settings"].firstMatch.tap()
-        let support = app.buttons["Support"].firstMatch
+        let support = app.links["Support"].firstMatch
         scrollTo(support, in: app)
         support.tap()
         let safari = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
@@ -202,8 +204,14 @@ private extension StallyLifecycleQAUITests {
 
     @MainActor
     func scrollTo(_ element: XCUIElement, in app: XCUIApplication) {
-        for _ in 0..<10 where !element.isHittable {
-            app.swipeUp()
+        // Begin inside sheets and above the fixed, large-text action bar.
+        let start = app.coordinate(withNormalizedOffset: .init(dx: 0.4, dy: 0.5))
+        let end = app.coordinate(withNormalizedOffset: .init(dx: 0.4, dy: 0.15))
+        for _ in 0..<Self.maximumScrollAttempts {
+            if element.exists, element.isHittable {
+                return
+            }
+            start.press(forDuration: 0.1, thenDragTo: end)
         }
         XCTAssertTrue(element.isHittable)
     }
