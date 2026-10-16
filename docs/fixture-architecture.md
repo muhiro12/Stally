@@ -68,9 +68,19 @@ Optional `--stally-preview-route` values remain `library`, `archive`, `review`,
 `--stally-preview-tracking-screen monthDetail` (or `yearDetail`,
 `archivedDetail`, `editYear`, `editMonth`) to host the actual selected screen.
 Tracking hosts resolve the same UUID across English/Japanese launches. Existing
-`--stally-preview-text-size xxxLarge` or `accessibility3` affects only a
+`--stally-preview-text-size xxxLarge`, `accessibility3`, or `accessibility5` affects only a
 synthetic launch. Use the platform's ordinary language/appearance launch
 configuration for localized capture; no system setting override is persisted.
+
+For lifecycle checks, `--stally-preview-advance-day-after 45` starts the synthetic
+clock one second before midnight UTC and advances it to one second after
+midnight after 45 elapsed seconds, including time spent in the background.
+The delay accepts finite positive seconds up to 3,600; invalid values retain
+the fixed reference clock. Add `--stally-preview-send-time-change` to post
+`UIApplication.significantTimeChangeNotification` at that transition while
+the app is running. Without that flag, returning to the foreground exercises
+the normal scene-activation refresh. These options require a recognized
+synthetic profile, route, or tracking screen and never change the system clock.
 
 An explicit route without a profile uses `typical`; a tracking screen uses
 `integration`. No recognized synthetic profile/route/screen means normal
@@ -79,7 +89,7 @@ launch parser, and synthetic hosts are compiled out of Release. Shared sample
 creation stays available as a deliberate product action in Release.
 Ordinary UI actions read the current execution instant, rather than reusing an
 older display reading as a mutation/export timestamp. Only explicit synthetic
-launches freeze that instant. System intents retain their real current-day
+launches control that instant. System intents retain their real current-day
 contract.
 
 Migration stores retain their original schema, bytes, external photos, and

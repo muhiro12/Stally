@@ -25,7 +25,7 @@ struct StallyApp: App {
 
     private static var readingDateModifier: StallyReadingDateModifier {
         #if DEBUG
-        .init(previewDate: previewLaunchConfiguration.referenceDate)
+        .init(previewClock: previewLaunchConfiguration.clock)
         #else
         .init()
         #endif
@@ -43,6 +43,7 @@ struct StallyApp: App {
                 #if DEBUG
                 .modifier(StallyPreviewTextSizeModifier(size: Self.previewLaunchConfiguration.textSize))
                 .modifier(StallyPreviewTimeZoneModifier(referenceDate: Self.previewLaunchConfiguration.referenceDate))
+                .modifier(StallyPreviewClockRefreshModifier(clock: Self.previewLaunchConfiguration.clock))
             #endif
         }
     }

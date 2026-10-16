@@ -11,9 +11,7 @@ import SwiftData
 import SwiftUI
 
 struct StallyPreviewLaunchConfiguration {
-    static var current: Self {
-        .init(arguments: CommandLine.arguments)
-    }
+    static let current: Self = .init(arguments: CommandLine.arguments)
 
     let scenario: StallyPreviewScenario?
     let route: StallyPreviewRoute?
@@ -27,10 +25,15 @@ struct StallyPreviewLaunchConfiguration {
     }
 
     var referenceDate: Date? {
-        resolvedScenario == nil ? nil : StallyFixtureOperations.referenceDate
+        clock?.date
+    }
+
+    var clock: StallyPreviewClock? {
+        resolvedScenario == nil ? nil : requestedClock
     }
 
     private let requestedTextSize: DynamicTypeSize?
+    private let requestedClock: StallyPreviewClock
 
     var modelContainer: ModelContainer? {
         guard let resolvedScenario else {
@@ -57,7 +60,14 @@ struct StallyPreviewLaunchConfiguration {
     }
 
     init(arguments: [String]) {
+        requestedClock = .init(
+            advanceAfter: Self.value(after: "--stally-preview-advance-day-after", in: arguments)
+                .flatMap(TimeInterval.init),
+            sendsTimeChange: arguments.contains("--stally-preview-send-time-change")
+        )
         switch Self.value(after: "--stally-preview-text-size", in: arguments) {
+        case "accessibility5":
+            requestedTextSize = .accessibility5
         case "accessibility3":
             requestedTextSize = .accessibility3
         case "xxxLarge":

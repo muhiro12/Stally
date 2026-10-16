@@ -8,22 +8,37 @@ struct StallyReadingDateModifier: ViewModifier {
     @Environment(\.timeZone)
     private var timeZone
 
-    private let fixedDate: Date?
-    @State private var readingDate = Date.now
+    private let currentDate: () -> Date
+    @State private var readingDate: Date
 
     init() {
-        fixedDate = nil
+        self.init {
+            .now
+        }
     }
 
     #if DEBUG
     init(previewDate: Date?) {
-        fixedDate = previewDate
+        self.init {
+            previewDate ?? .now
+        }
+    }
+
+    init(previewClock: StallyPreviewClock?) {
+        self.init {
+            previewClock?.date ?? .now
+        }
     }
     #endif
 
+    private init(currentDate: @escaping () -> Date) {
+        self.currentDate = currentDate
+        _readingDate = .init(initialValue: currentDate())
+    }
+
     func body(content: Content) -> some View {
         content
-            .environment(\.stallyReadingDate, fixedDate ?? readingDate)
+            .environment(\.stallyReadingDate, readingDate)
             .onAppear(perform: refresh)
             .onChange(of: scenePhase) {
                 if scenePhase == .active {
@@ -43,8 +58,6 @@ struct StallyReadingDateModifier: ViewModifier {
     }
 
     private func refresh() {
-        if fixedDate == nil {
-            readingDate = .now
-        }
+        readingDate = currentDate()
     }
 }

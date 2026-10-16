@@ -99,7 +99,8 @@ Never regenerate or open checked-in original V1 stores for writing; tests use
 disposable copies, retain external photo storage, and disable CloudKit. Current
 golden interchange files remain independent of these original fixtures.
 
-`StallySystemTests` is a focused iOS 27 out-of-process App Intents test bundle;
+`StallySystemTests` covers focused iOS 27 out-of-process App Intents, native
+navigation, adaptive drafts, lifecycle refresh, and accessibility UI journeys;
 durable domain tests stay in `StallyLibrary`. Synthetic launch profiles and
 their argument vocabulary are documented in the fixture architecture and are
 absent from Release builds. Ordinary launch retains real clock and storage.
