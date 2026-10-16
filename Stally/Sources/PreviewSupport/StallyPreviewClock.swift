@@ -8,6 +8,8 @@ struct StallyPreviewClock {
         static let afterMidnight: TimeInterval = 43_201
     }
 
+    private static let maximumTransitionDelay: TimeInterval = 3_600
+
     let sendsTimeChange: Bool
     private let transition: ContinuousClock.Instant?
 
@@ -27,7 +29,7 @@ struct StallyPreviewClock {
     }
 
     init(advanceAfter seconds: TimeInterval?, sendsTimeChange: Bool) {
-        if let seconds, seconds.isFinite, seconds > .zero, seconds <= 3_600 {
+        if let seconds, seconds.isFinite, seconds > .zero, seconds <= Self.maximumTransitionDelay {
             transition = ContinuousClock().now.advanced(by: .seconds(seconds))
         } else {
             transition = nil
