@@ -22,17 +22,24 @@ struct QuietHistoryGrid: View {
     @Environment(\.stallyReadingDate)
     private var readingDate
 
+    @ScaledMetric(relativeTo: .caption)
+    private var minimumColumnWidth = Layout.minimumColumnWidth
+    @ScaledMetric(relativeTo: .caption)
+    private var maximumColumnWidth = Layout.maximumColumnWidth
+
     let markedDays: [LocalDay]
 
-    private let columns = [
-        GridItem(
-            .adaptive(
-                minimum: Layout.minimumColumnWidth,
-                maximum: Layout.maximumColumnWidth
-            ),
-            spacing: Layout.columnSpacing
-        )
-    ]
+    private var columns: [GridItem] {
+        [
+            .init(
+                .adaptive(
+                    minimum: minimumColumnWidth,
+                    maximum: maximumColumnWidth
+                ),
+                spacing: Layout.columnSpacing
+            )
+        ]
+    }
 
     var body: some View {
         let now = readingDate

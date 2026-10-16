@@ -143,7 +143,8 @@ final class StallyLifecycleQAUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Black Wool Coat"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Undo Today's Mark"].firstMatch.isHittable)
         let history = app.buttons["Adjust History"].firstMatch
-        scrollTo(history, in: app, aboveFixedActions: true)
+        scrollTo(history, in: app, above: app.buttons["Undo Today's Mark"].firstMatch)
+        capture("maximum-type-readable-history-grid")
         history.tap()
         XCTAssertTrue(app.navigationBars["Adjust History"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.datePickers.firstMatch.exists)
@@ -210,13 +211,14 @@ private extension StallyLifecycleQAUITests {
     }
 
     @MainActor
-    func scrollTo(_ element: XCUIElement, in app: XCUIApplication, aboveFixedActions: Bool = false) {
+    func scrollTo(_ element: XCUIElement, in app: XCUIApplication, above fixedAction: XCUIElement? = nil) {
         // Begin inside sheets and above the fixed, large-text action bar.
         let start = app.coordinate(withNormalizedOffset: .init(dx: 0.4, dy: 0.5))
         let end = app.coordinate(withNormalizedOffset: .init(dx: 0.4, dy: 0.15))
+        let maximumY = fixedAction?.frame.minY ?? app.frame.maxY
         for _ in 0..<Self.maximumScrollAttempts {
             if element.exists, element.isHittable,
-               !aboveFixedActions || element.frame.maxY < app.frame.minY + app.frame.height * 0.6 {
+               element.frame.maxY < maximumY {
                 return
             }
             start.press(forDuration: 0.1, thenDragTo: end)
