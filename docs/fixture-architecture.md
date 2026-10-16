@@ -68,9 +68,11 @@ Optional `--stally-preview-route` values remain `library`, `archive`, `review`,
 `--stally-preview-tracking-screen monthDetail` (or `yearDetail`,
 `archivedDetail`, `editYear`, `editMonth`) to host the actual selected screen.
 Tracking hosts resolve the same UUID across English/Japanese launches. Existing
-`--stally-preview-text-size xxxLarge`, `accessibility3`, or `accessibility5` affects only a
-synthetic launch. Use the platform's ordinary language/appearance launch
+`--stally-preview-text-size xxxLarge`, `accessibility3`, or `accessibility5`
+affects only a synthetic launch. Use the platform's ordinary language/appearance launch
 configuration for localized capture; no system setting override is persisted.
+Maximum-type UI tests also supply UIKit's preferred content-size category as a
+per-process launch argument so sheets and native controls use the same size.
 
 For lifecycle checks, `--stally-preview-advance-day-after 45` starts the synthetic
 clock one second before midnight UTC and advances it to one second after

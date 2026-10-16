@@ -204,7 +204,10 @@ private extension StallyLifecycleQAUITests {
             "-AppleLanguages", japanese ? "(ja)" : "(en)", "-AppleLocale", japanese ? "ja_JP" : "en_US"
         ] + extra
         if maximumType {
-            app.launchArguments += ["--stally-preview-text-size", "accessibility5"]
+            app.launchArguments += [
+                "--stally-preview-text-size", "accessibility5",
+                "-UIPreferredContentSizeCategoryName", UIContentSizeCategory.accessibilityExtraExtraExtraLarge.rawValue
+            ]
         }
         app.launch()
         return app

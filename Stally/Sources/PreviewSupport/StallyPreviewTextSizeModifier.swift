@@ -8,7 +8,7 @@ struct StallyPreviewTextSizeModifier: ViewModifier {
     @ViewBuilder
     func body(content: Content) -> some View {
         if let size {
-            content.environment(\.dynamicTypeSize, size)
+            content.dynamicTypeSize(size)
         } else {
             content
         }
