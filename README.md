@@ -116,10 +116,11 @@ purchases, production ad serving, or authorization for real-data/release actions
 ## Build and Test
 
 The project uses `project.xcproj` as a local, unpushed migration candidate.
-The original trial passed local configuration and build checks, but the shared
-push-verification tooling still requires the legacy format. Implementation and
-local commits can proceed while that tooling is updated; final verification
-and publication remain pending. See the
+The original trial passed local configuration and build checks. The updated
+shared verification helpers now support JSON, and evidence-mode repository
+rules passed through Stally's existing adapter. Source-commit lint matching
+also passed with the updated shared checker.
+Final app/test verification and publication evidence remain pending. See the
 [qualification and shared-tooling handoff](docs/project-format-qualification.md)
 before reusing evidence or completing the migration.
 

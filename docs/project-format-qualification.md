@@ -6,8 +6,11 @@ The October 18, 2026 local trial for
 [issue #23](https://github.com/muhiro12/Stally/issues/23) confirmed that Xcode
 can convert Stally to `project.xcproj` without changing effective app settings.
 The JSON configuration is now retained as a local, unpushed implementation.
-Final qualification remains deferred: the installed shared push-verification
-helpers still require `project.pbxproj` and its object model.
+The shared verification helpers now support both project formats. A follow-up
+on the retained JSON candidate passed evidence-mode repository rules through
+the existing adapter, plus lint matching against its source commit with the
+updated shared checker. The original shared-tooling blocker is resolved;
+final app/test qualification and publication evidence remain pending.
 
 Commit `12c180a` isolates the supported conversion. Commit `304eda1` restored
 the original configuration and recorded the trial. Commit `fc923f3` reapplies
@@ -26,10 +29,10 @@ temporary implementation decision, not a hook requirement.
 The existing hook remains enabled and unchanged. Local staging does not assert
 that the final verification contract passed or that the Issue is complete.
 Shared-tooling work is handled separately; Stally retains the candidate and
-the handoff below until that prerequisite is ready. No new app build, library
-or system test run, archive, or publication receipt was produced for this
-reapplication. The trial results below remain historical evidence, not a
-current-commit push receipt.
+uses the updated helpers without changing its adapter or hook. No new app
+build, library or system test run, archive, or publication receipt was produced
+for the reapplication or shared-tooling follow-up. The trial results below
+remain historical evidence, not a current-commit push receipt.
 
 ## Toolchain Requirements
 
@@ -47,8 +50,14 @@ The migration sources were Apple's guide and the installed `xcodebuild` help.
 No skill dedicated to JSON project migration was included in the 11 skills
 exported from this Xcode build on October 18. This does not establish which
 skills other Xcode versions or separate distributions provide.
+The updated shared verification skill now includes a
+[project-format guide][shared-guide] incorporating the adopter observations;
+that guide is separate from the skills exported by Xcode.
 
-## Dependency Audit
+## Initial Dependency Audit
+
+The following findings describe the original trial, before the shared helpers
+were updated. Their resolved state is recorded in the follow-up below.
 
 - `ci_scripts/tasks/check_environment.sh` already discovers one authoritative
   `project.pbxproj` or `.xcproj` file and inspects it with `plutil`. It accepted
@@ -81,7 +90,9 @@ CI_VERIFICATION_EVIDENCE=1 bash ci_scripts/tasks/check_repository_rules.sh
 
 The helper exited with status 2 when it tried to read the removed
 `Stally.xcodeproj/project.pbxproj`. The same command passed after restoration.
-Ordinary checks passing therefore do not establish push-evidence compatibility.
+Ordinary checks passing did not establish push-evidence compatibility. The
+follow-up reproduced the same command successfully without restoring the old
+format.
 
 ## Converter Run Notes for the Next Adopter
 
@@ -115,7 +126,8 @@ observations separate from app behavior and shared-verifier compatibility:
   retrying an ambiguous invocation.
 - **Verification tooling:** conversion does not update repository-owned checks
   or shared evidence adapters. Audit their filename and syntax dependencies
-  independently. The reproducible shared-tool failure is recorded above.
+  independently. The original shared-tool failure above was resolved in the
+  follow-up; Stally did not need its own copy of the shared parser.
 
 ## Semantic Comparison
 
@@ -185,55 +197,77 @@ preserve the chosen counting level and compare like-for-like native fields.
 The response timeout, SDK warning, and result-reader cache permissions are
 execution/evidence observations; none was established as a JSON-converter bug.
 
-## Shared-Tooling Handoff
+## Shared-Tooling Follow-up
 
-Collect migration experience in Stally, then Cookle, then Incomes, and use that
-combined evidence for the subsequent verification-skill update. Shared-skill
-implementation remains a separate task. This repository supplies the following
-reproducible requirements rather than changing the shared skill now:
+The October 18 Incomes handoff incorporated Stally, Cookle, and Incomes
+observations into the shared verification skill. The installed skill contains
+`4fdbbcc` (both-format SwiftLint evidence), `8c9b934` (source-commit matching),
+and `f71f613` (format and recovery guidance). Its implementation is maintained
+separately; no parser was copied into Stally and no hook was changed.
 
-1. With the JSON project present, run the evidence-mode command in the
-   dependency audit. The current adapter fails while reading the removed
-   `project.pbxproj`. Ordinary lint passing does not resolve that failure.
-2. In `swiftlint_evidence.py`, select exactly one authoritative configuration.
-   Support the old property-list package references and JSON `packages` while
-   preserving canonical remote, version-range, artifact, and pin validation.
-   Xcode's JSON output contains trailing commas; the original trial confirmed
-   that native `plutil` reads it.
-3. In `check_push_verification.py`, resolve the configuration from the evidence
-   source commit and bind its path and content hash. Reject missing, ambiguous,
-   unsupported, or tampered configurations; do not trust an arbitrary proof
-   path or substitute the current working tree for the captured source.
-4. Retain compatible adapter/proof contracts, or update consumers explicitly
-   if those contracts change. Stally's delegate checks `CHECKER_API_VERSION`.
-   Test both formats and negative cases, including configuration ambiguity,
-   changed dependency requirements, mismatched source hashes, and invalid pins.
-5. Account for adopter-local checks. Cookle still has old-filename dependencies
-   in environment, test-posture, package-boundary, and project-link checks.
-   Incomes retains local evidence/matcher implementations plus environment
-   and MHPlatform-boundary parsing. Updating the shared skill alone does not
-   establish that those repository-local paths support JSON.
+The updated adapters:
 
-Only those adopter files and hooks were inspected; their full verification
-was not run and their source was not changed by this work. Hook disabling or
-bypassing is not needed to stage the implementations locally.
+- Select exactly one `project.pbxproj` or `project.xcproj`, rejecting missing,
+  ambiguous, or symlinked configurations. Normalize with native `plutil` and
+  parse the object model appropriate to the selected filename.
+- Follow legacy package references from the project root, or JSON `packages`,
+  preserving canonical remote, version requirement, package resolution,
+  actual binary, artifact manifest, and tracked-pin checks.
+- Match the authoritative configuration from the evidence source commit and
+  its content hash. New proofs include `project_path`; when present it must
+  match. An arbitrary proof path or current working-tree file cannot select
+  the input.
+- Retain checker API 1, contract and proof schema 1, and receipt schema 2.
+  Stally's existing `runpy` delegate remains compatible, with no new Python
+  dependency. The checker hash changed, so an old receipt is not current proof.
 
-At Cookle and Incomes, append the actual toolchain and command result, reviewed
-configuration differences, app-local parser failures, and deferred checks.
-Distinguish repeated cross-app cases from adopter-specific exceptions before
-incorporating them into the shared verification skill. Preserve backward
-compatibility with consumers still using the property-list format.
+Stally reran the evidence-mode command from the dependency audit on the clean
+`be45a898f71a3f9a5d6b13159eb1b54a8cedcaa7` source snapshot. It completed with
+exit status 0 using SwiftLint 0.65.1 across all 300 tracked Swift files;
+captured output contained zero warnings and errors. The shared execution
+helper recorded an unchanged clean snapshot and hashed raw output.
+
+The installed matcher's `passed_record` and `lint_quality_record` checks also
+accepted that actual result and output against the source commit. The proof
+identified `Stally.xcodeproj/project.xcproj` with SHA-256:
+
+```text
+fae0e1ecedda444920b5fe5f6386ab0f1ccb13bd01ba200416e66906e63aed69
+```
+
+This matches the retained converter output. These were lint-record checks,
+not a full publication-gate invocation; no receipt was installed or rewritten.
+The subsequent documentation changes do not relabel that source snapshot as a
+new execution.
+
+The handoff separately reports 24 shared reader tests and 41 matcher tests
+passing, alongside broader skill-repository checks. Those suites were not
+rerun by Stally's follow-up. The direct Stally results above establish local
+delegate compatibility; they do not establish another app's local rules or
+app build/test results.
+
+Adopter-specific package boundaries remain with each repository. Incomes
+observed reordered Frameworks inputs; Stally's own comparison preserved their
+order. Do not transfer an adopter's difference or normalize ordered build
+inputs merely because membership and evaluated settings match.
 
 ## Remaining Verification and Rollback
 
-After shared tooling is ready, confirm adapter compatibility, compare current
-settings and project relationships, and complete the affected build/test and
-archive checks with explicitly selected toolchains. Produce fresh evidence
-for the current source and run the existing publication gate before any
-separately authorized push.
-Qualify the actual Xcode Cloud path when a candidate is available; do not treat
-local success as a Cloud or distribution result. Duo qualification stays
-independent of this migration.
+Shared adapter compatibility is now confirmed for the tested snapshot. Before
+publication, complete the required app, library, and system verification plus
+diagnostic review for the intended source and explicitly selected toolchain.
+Recheck settings and project relationships if their inputs change. Xcode 27.1
+scheme discovery remains discovery evidence, not a build result.
+
+Follow the [receipt compatibility procedure][receipt-guide] and produce
+appropriate current-source evidence and a new receipt before any separately
+authorized push. Do not replace an old receipt's helper hash or disable the
+existing hook to bypass its source or checker binding.
+
+Archive and Xcode Cloud execution remain explicitly deferred, outside this
+follow-up. Their results cannot be inferred from local checks, and neither is
+introduced as an additional gate for this task. Duo qualification stays
+independent of this migration. The Issue remains open and no push was made.
 
 To roll back the current candidate, revert its reapplication commit and review
 the associated documentation changes. For an uncommitted conversion, restore
@@ -242,3 +276,5 @@ Keep exactly one authoritative configuration. A generated round-trip file is
 useful for comparison, but Git restoration preserves the exact original file.
 
 [conversion]: https://developer.apple.com/documentation/xcode/updating-your-xcode-project-configuration-file-format
+[shared-guide]: https://github.com/muhiro12/agent-skills/blob/main/ci-verify-and-summarize/references/xcode-project-format.md
+[receipt-guide]: https://github.com/muhiro12/agent-skills/blob/main/ci-verify-and-summarize/references/push-verification.md
