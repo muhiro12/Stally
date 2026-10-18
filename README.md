@@ -115,11 +115,13 @@ purchases, production ad serving, or authorization for real-data/release actions
 
 ## Build and Test
 
-The project retains `project.pbxproj`. A reversible JSON-format trial passed
-local configuration and build checks, but the shared push-verification tooling
-still requires the legacy format. See the
-[project-format qualification](docs/project-format-qualification.md) before
-converting the project or reusing verification evidence.
+The project uses `project.xcproj` as a local, unpushed migration candidate.
+The original trial passed local configuration and build checks, but the shared
+push-verification tooling still requires the legacy format. Implementation and
+local commits can proceed while that tooling is updated; final verification
+and publication remain pending. See the
+[qualification and shared-tooling handoff](docs/project-format-qualification.md)
+before reusing evidence or completing the migration.
 
 Use the Xcode-native integration available in the environment for app build,
 run, runtime-log, Preview, live UI, and screenshot evidence. Resolve current

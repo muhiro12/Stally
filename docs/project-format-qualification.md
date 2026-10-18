@@ -5,13 +5,30 @@
 The October 18, 2026 local trial for
 [issue #23](https://github.com/muhiro12/Stally/issues/23) confirmed that Xcode
 can convert Stally to `project.xcproj` without changing effective app settings.
-Adoption remains deferred: the installed shared push-verification helpers still
-require `project.pbxproj` and its object model.
+The JSON configuration is now retained as a local, unpushed implementation.
+Final qualification remains deferred: the installed shared push-verification
+helpers still require `project.pbxproj` and its object model.
 
-Commit `12c180a` isolates the supported format conversion. The subsequent
-restoration retains the original project configuration byte for byte, together
-with this qualification record. The Issue remains unfinished. No source was
-pushed, no Cloud build was triggered, and no archive was produced by this trial.
+Commit `12c180a` isolates the supported conversion. Commit `304eda1` restored
+the original configuration and recorded the trial. The subsequent local change
+reapplies exactly the same converter output, following the decision to retain
+implementation while shared-tooling verification is pending. The Issue remains
+unfinished. No source was pushed, no Cloud build was triggered, and no archive
+was produced by this work.
+
+## Local Implementation and Publication Boundary
+
+The October 18 hook inspection found active `pre-push` checks, with no active
+`pre-commit` or `commit-msg` checks, in Stally, Cookle, and Incomes. The hooks
+do not prevent source changes or local commits. Restoring the old format was a
+temporary implementation decision, not a hook requirement.
+
+The existing hook remains enabled and unchanged. Local staging does not assert
+that the final verification contract passed or that the Issue is complete.
+Shared-tooling work is handled separately; Stally retains the candidate and
+the handoff below until that prerequisite is ready. No new build, test,
+archive, or publication receipt was produced for this reapplication. The trial
+results below remain historical evidence, not a current-commit push receipt.
 
 ## Toolchain Requirements
 
@@ -94,7 +111,7 @@ for both targets on the same My Mac destination: 571 app settings and 572
 UI-test settings matched with zero differences. Schemes, package pins, the Cloud
 manifest, application sources, and stored-data contracts were unchanged.
 
-## Verification Evidence
+## Original Trial Verification Evidence
 
 - Xcode 27.2 opened the converted project and discovered `Stally`,
   `StallyLibrary`, and `StallySystemTests`.
@@ -120,24 +137,51 @@ manifest, application sources, and stored-data contracts were unchanged.
 The original scheme and destination were restored, the owned test process
 was stopped, and the workspace opened for this trial was closed.
 
-## Resumption and Rollback
+## Shared-Tooling Handoff
 
-The remaining scope decision is whether to include changes to the canonical
-shared verifier, whose consumers include other repositories. If authorized,
-support both formats without relaxing dependency, artifact, pin, or source-hash
-validation. Reject missing, ambiguous, unsupported, and tampered configurations;
-test legacy consumers as well as the JSON path.
+The canonical skill update is planned separately in the Incomes development
+context. This repository supplies the following reproducible requirements:
 
-After that prerequisite passes, repeat the supported conversion in a standalone
-commit, compare settings and project relationships again, and complete the
-affected build/test and archive checks with explicitly selected toolchains.
+1. With the JSON project present, run the evidence-mode command in the
+   dependency audit. The current adapter fails while reading the removed
+   `project.pbxproj`. Ordinary lint passing does not resolve that failure.
+2. In `swiftlint_evidence.py`, select exactly one authoritative configuration.
+   Support the old property-list package references and JSON `packages` while
+   preserving canonical remote, version-range, artifact, and pin validation.
+   Xcode's JSON output contains trailing commas; the original trial confirmed
+   that native `plutil` reads it.
+3. In `check_push_verification.py`, resolve the configuration from the evidence
+   source commit and bind its path and content hash. Reject missing, ambiguous,
+   unsupported, or tampered configurations; do not trust an arbitrary proof
+   path or substitute the current working tree for the captured source.
+4. Retain compatible adapter/proof contracts, or update consumers explicitly
+   if those contracts change. Stally's delegate checks `CHECKER_API_VERSION`.
+   Test both formats and negative cases, including configuration ambiguity,
+   changed dependency requirements, mismatched source hashes, and invalid pins.
+5. Account for adopter-local checks. Cookle still has old-filename dependencies
+   in environment, test-posture, package-boundary, and project-link checks.
+   Incomes retains local evidence/matcher implementations plus environment
+   and MHPlatform-boundary parsing. Updating the shared skill alone does not
+   establish that those repository-local paths support JSON.
+
+Only those adopter files and hooks were inspected; their full verification
+was not run and their source was not changed by this work. Hook disabling or
+bypassing is not needed to stage the implementations locally.
+
+## Remaining Verification and Rollback
+
+After shared tooling is ready, confirm adapter compatibility, compare current
+settings and project relationships, and complete the affected build/test and
+archive checks with explicitly selected toolchains. Produce fresh evidence
+for the current source and run the existing publication gate before any
+separately authorized push.
 Qualify the actual Xcode Cloud path when a candidate is available; do not treat
 local success as a Cloud or distribution result. Duo qualification stays
 independent of this migration.
 
-For a committed format-only change, `git revert <format-commit>` restores the
-previous configuration. For an uncommitted conversion, restore the removed
-tracked property-list file and remove only the newly generated JSON file.
+To roll back the current candidate, revert its reapplication commit and review
+the associated documentation changes. For an uncommitted conversion, restore
+the removed tracked property-list file and remove only the generated JSON file.
 Keep exactly one authoritative configuration. A generated round-trip file is
 useful for comparison, but Git restoration preserves the exact original file.
 
