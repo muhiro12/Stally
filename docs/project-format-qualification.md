@@ -10,8 +10,8 @@ Final qualification remains deferred: the installed shared push-verification
 helpers still require `project.pbxproj` and its object model.
 
 Commit `12c180a` isolates the supported conversion. Commit `304eda1` restored
-the original configuration and recorded the trial. The subsequent local change
-reapplies exactly the same converter output, following the decision to retain
+the original configuration and recorded the trial. Commit `fc923f3` reapplies
+exactly the same converter output, following the decision to retain
 implementation while shared-tooling verification is pending. The Issue remains
 unfinished. No source was pushed, no Cloud build was triggered, and no archive
 was produced by this work.
@@ -26,9 +26,10 @@ temporary implementation decision, not a hook requirement.
 The existing hook remains enabled and unchanged. Local staging does not assert
 that the final verification contract passed or that the Issue is complete.
 Shared-tooling work is handled separately; Stally retains the candidate and
-the handoff below until that prerequisite is ready. No new build, test,
-archive, or publication receipt was produced for this reapplication. The trial
-results below remain historical evidence, not a current-commit push receipt.
+the handoff below until that prerequisite is ready. No new app build, library
+or system test run, archive, or publication receipt was produced for this
+reapplication. The trial results below remain historical evidence, not a
+current-commit push receipt.
 
 ## Toolchain Requirements
 
@@ -41,6 +42,11 @@ Conversion support does not establish release-toolchain qualification.
 The selected local Xcode was 27.2 beta, build `27B5038j`. The other installed
 toolchain was Xcode 27.1, build `27A9275`. No global developer-directory
 setting, SDK requirement, deployment target, or Cloud workflow was changed.
+
+The migration sources were Apple's guide and the installed `xcodebuild` help.
+No skill dedicated to JSON project migration was included in the 11 skills
+exported from this Xcode build on October 18. This does not establish which
+skills other Xcode versions or separate distributions provide.
 
 ## Dependency Audit
 
@@ -76,6 +82,40 @@ CI_VERIFICATION_EVIDENCE=1 bash ci_scripts/tasks/check_repository_rules.sh
 The helper exited with status 2 when it tried to read the removed
 `Stally.xcodeproj/project.pbxproj`. The same command passed after restoration.
 Ordinary checks passing therefore do not establish push-evidence compatibility.
+
+## Converter Run Notes for the Next Adopter
+
+The supported conversion completed on both the disposable copy and the actual
+Stally project. No converter failure was confirmed. Keep the following
+observations separate from app behavior and shared-verifier compatibility:
+
+- **Format selector:** the tested JSON selector was `Xcode Project`; the
+  round-trip selector was `Xcode 27.0`. Check the command below and the selected
+  Xcode's help rather than assuming the UI label is a CLI argument.
+- **JSON reader compatibility:** the generated file contains trailing commas.
+  A later read-only check rejected the raw output with Python's strict
+  `json.loads` at line 6, while `plutil -convert json -o -` followed by the same
+  reader succeeded. This parser mismatch does not establish a corrupt Xcode
+  project. Use a reader supporting the actual format or native normalization
+  before strict JSON parsing; do not remove commas with a text substitution.
+- **Comparison scope:** conversion regenerated internal identifiers and
+  reorganized some declarations. The serializer-only differences listed below
+  were reviewed for Stally. Do not copy that normalization list into another
+  app without reviewing its meaning, or sort executable build phases and
+  framework links merely to make a comparison pass.
+- **Execution context:** a restricted shell emitted cache-access and
+  CoreSimulator-connection diagnostics during disposable-copy probing. The
+  successful conversion used the approved Xcode execution context. Classify
+  permission/service errors separately from format errors; this trial needed
+  no global developer-directory change or Simulator data reset.
+- **Shell reporting:** a disposable-copy wrapper assigned to zsh's read-only
+  `status` variable after the JSON file had been written. The wrapper failed;
+  that was not evidence that conversion failed. Capture the exit code with a
+  task-specific name such as `conversion_result`, and inspect the output before
+  retrying an ambiguous invocation.
+- **Verification tooling:** conversion does not update repository-owned checks
+  or shared evidence adapters. Audit their filename and syntax dependencies
+  independently. The reproducible shared-tool failure is recorded above.
 
 ## Semantic Comparison
 
@@ -137,10 +177,20 @@ manifest, application sources, and stored-data contracts were unchanged.
 The original scheme and destination were restored, the owned test process
 was stopped, and the workspace opened for this trial was closed.
 
+The retained native summary reports 184 overall test cases and 224 passes at
+the device/configuration level. Its statistics identify 11 dynamically
+parameterized tests with 51 runs. These are different aggregation levels, not
+two independent suites to add together. Future verification adapters should
+preserve the chosen counting level and compare like-for-like native fields.
+The response timeout, SDK warning, and result-reader cache permissions are
+execution/evidence observations; none was established as a JSON-converter bug.
+
 ## Shared-Tooling Handoff
 
-The canonical skill update is planned separately in the Incomes development
-context. This repository supplies the following reproducible requirements:
+Collect migration experience in Stally, then Cookle, then Incomes, and use that
+combined evidence for the subsequent verification-skill update. Shared-skill
+implementation remains a separate task. This repository supplies the following
+reproducible requirements rather than changing the shared skill now:
 
 1. With the JSON project present, run the evidence-mode command in the
    dependency audit. The current adapter fails while reading the removed
@@ -167,6 +217,12 @@ context. This repository supplies the following reproducible requirements:
 Only those adopter files and hooks were inspected; their full verification
 was not run and their source was not changed by this work. Hook disabling or
 bypassing is not needed to stage the implementations locally.
+
+At Cookle and Incomes, append the actual toolchain and command result, reviewed
+configuration differences, app-local parser failures, and deferred checks.
+Distinguish repeated cross-app cases from adopter-specific exceptions before
+incorporating them into the shared verification skill. Preserve backward
+compatibility with consumers still using the property-list format.
 
 ## Remaining Verification and Rollback
 
