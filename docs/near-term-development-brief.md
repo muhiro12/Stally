@@ -9,7 +9,8 @@
 Release a coherent, trustworthy iOS 27-or-later Stally that uses current Apple
 platform capabilities extensively while preserving its quiet item-choice
 domain. Stally is the primary full-MHUI proving ground and consumes the complete
-MHPlatform runtime. Current pins are MHPlatform 1.13.0 and MHUI 1.18.0.
+MHPlatform runtime. Use the project and package declarations and their
+`Package.resolved` files for the current dependency baseline.
 
 Stally is the release product. The accepted integration adds optional starts,
 calendar date precision, elapsed time, and items that do not record Marks.
