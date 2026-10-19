@@ -141,9 +141,10 @@ final class StallyLifecycleQAUITests: XCTestCase {
             app.terminate()
         }
         XCTAssertTrue(app.navigationBars["Black Wool Coat"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.buttons["Undo Today's Mark"].firstMatch.isHittable)
+        let undo = app.buttons["Undo Today's Mark"].firstMatch
+        XCTAssertTrue(undo.wait(for: \.isHittable, toEqual: true, timeout: 10))
         let history = app.buttons["Adjust History"].firstMatch
-        scrollTo(history, in: app, above: app.buttons["Undo Today's Mark"].firstMatch)
+        scrollTo(history, in: app, above: undo)
         capture("maximum-type-readable-history-grid")
         history.tap()
         XCTAssertTrue(app.navigationBars["Adjust History"].waitForExistence(timeout: 5))
