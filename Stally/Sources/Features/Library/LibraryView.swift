@@ -11,6 +11,8 @@ import SwiftUI
 struct LibraryView: View {
     @Query(sort: \Item.createdAt, order: .reverse)
     private var collection: [Item]
+    @Environment(RemoteUpdateOperations.self)
+    private var remoteUpdates
     @Environment(\.modelContext)
     private var modelContext
     @Environment(\.locale)
@@ -82,19 +84,22 @@ struct LibraryView: View {
     }
 
     private func addSampleItems() {
-        do {
-            let createdItems = try SampleDataOperations.createItemsIfLibraryIsEmpty(
-                in: modelContext,
-                locale: locale
-            )
-
-            if createdItems.isEmpty {
-                sampleErrorMessage = String(
-                    localized: "Sample items can only be added when the collection is empty."
+        Task {
+            do {
+                try await remoteUpdates.checkMutationAllowed()
+                let createdItems = try SampleDataOperations.createItemsIfLibraryIsEmpty(
+                    in: modelContext,
+                    locale: locale
                 )
+
+                if createdItems.isEmpty {
+                    sampleErrorMessage = String(
+                        localized: "Sample items can only be added when the collection is empty."
+                    )
+                }
+            } catch {
+                sampleErrorMessage = error.localizedDescription
             }
-        } catch {
-            sampleErrorMessage = error.localizedDescription
         }
     }
 }

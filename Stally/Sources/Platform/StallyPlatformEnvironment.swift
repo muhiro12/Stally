@@ -22,5 +22,6 @@ struct StallyPlatformEnvironment {
     let persistenceStatus: PersistenceStatus
     let routeInbox: StallyRouteInbox
     let routePipeline: StallyRoutePipeline
+    let remoteUpdates: RemoteUpdateOperations
     let runtimeBootstrap: MHAppRuntimeBootstrap
 }

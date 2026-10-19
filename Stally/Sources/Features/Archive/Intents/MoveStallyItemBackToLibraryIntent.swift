@@ -31,9 +31,11 @@ struct MoveStallyItemBackToLibraryIntent: AppIntent {
     private var item: StallyItemEntity
 
     @Dependency private var modelContainer: ModelContainer
+    @Dependency private var remoteUpdates: RemoteUpdateOperations
 
     @MainActor
-    func perform() throws -> some ReturnsValue<Bool> & ProvidesDialog {
+    func perform() async throws -> some ReturnsValue<Bool> & ProvidesDialog {
+        try await remoteUpdates.checkMutationAllowed()
         let model = try item.model(in: modelContainer.mainContext)
         let didMove = try ItemOperations.moveBackToLibrary(
             model,

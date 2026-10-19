@@ -32,12 +32,14 @@ extension View {
     private func stallyBasePlatformEnvironment(
         _ environment: StallyPlatformEnvironment
     ) -> some View {
-        modelContainer(environment.modelContainer)
+        modifier(StallyUpdateRequiredModifier())
+            .modelContainer(environment.modelContainer)
             .tint(.accent)
             .environment(environment.logging)
             .environment(\.stallyPersistenceStatus, environment.persistenceStatus)
             .environment(environment.routeInbox)
             .environment(environment.routePipeline)
             .environment(environment.searchIndex)
+            .environment(environment.remoteUpdates)
     }
 }

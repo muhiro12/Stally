@@ -11,6 +11,8 @@ import SwiftData
 import SwiftUI
 
 struct SettingsView: View {
+    @Environment(RemoteUpdateOperations.self)
+    private var remoteUpdates
     @Environment(\.modelContext)
     private var modelContext
     @Environment(\.stallyPersistenceStatus)
@@ -86,6 +88,7 @@ struct SettingsView: View {
                 Text(sampleRemovalErrorMessage)
             }
         }
+        .modifier(StallyUpdateRequiredModifier())
     }
 
     private var settingsList: some View {
@@ -161,10 +164,13 @@ struct SettingsView: View {
     }
 
     private func removeSampleItems() {
-        do {
-            try SampleDataOperations.removeSampleItems(in: modelContext)
-        } catch {
-            sampleRemovalErrorMessage = error.localizedDescription
+        Task {
+            do {
+                try await remoteUpdates.checkMutationAllowed()
+                try SampleDataOperations.removeSampleItems(in: modelContext)
+            } catch {
+                sampleRemovalErrorMessage = error.localizedDescription
+            }
         }
     }
 }

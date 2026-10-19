@@ -14,6 +14,8 @@ struct AddItemView: View {
         static let noteLineLimit = 3
     }
 
+    @Environment(RemoteUpdateOperations.self)
+    private var remoteUpdates
     @Environment(\.dismiss)
     private var dismiss
 
@@ -27,6 +29,7 @@ struct AddItemView: View {
     @State private var note = ""
     @State private var photoData: Data?
     @State private var isLoadingPhoto = false
+    @State private var isSaving = false
     @State private var saveErrorMessage: String?
     @State private var tracking = ItemTrackingFormState()
 
@@ -71,6 +74,7 @@ struct AddItemView: View {
                 Text(saveErrorMessage ?? "")
             }
         }
+        .modifier(StallyUpdateRequiredModifier())
     }
 
     @ToolbarContentBuilder private var toolbarItems: some ToolbarContent {
@@ -82,31 +86,41 @@ struct AddItemView: View {
         ToolbarItem(placement: .confirmationAction) {
             Button("Add", action: addItem)
                 .stallyToolbarActionStyle()
-                .disabled(isAddDisabled)
+                .disabled(isAddDisabled || isSaving)
         }
     }
 
     private func addItem() {
-        do {
-            let now = StallyActionDate.current
-            guard let today = LocalDay(containing: now, in: timeZone) else {
-                throw CocoaError(.coderInvalidValue)
+        guard !isSaving else {
+            return
+        }
+        isSaving = true
+        Task {
+            defer {
+                isSaving = false
             }
-            try ItemOperations.create(
-                context: modelContext,
-                input: .init(
-                    name: name,
-                    category: category,
-                    note: note,
-                    photoData: photoData
-                ),
-                tracking: try tracking.input(),
-                today: today,
-                createdAt: now
-            )
-            dismiss()
-        } catch {
-            saveErrorMessage = error.localizedDescription
+            do {
+                try await remoteUpdates.checkMutationAllowed()
+                let now = StallyActionDate.current
+                guard let today = LocalDay(containing: now, in: timeZone) else {
+                    throw CocoaError(.coderInvalidValue)
+                }
+                try ItemOperations.create(
+                    context: modelContext,
+                    input: .init(
+                        name: name,
+                        category: category,
+                        note: note,
+                        photoData: photoData
+                    ),
+                    tracking: try tracking.input(),
+                    today: today,
+                    createdAt: now
+                )
+                dismiss()
+            } catch {
+                saveErrorMessage = error.localizedDescription
+            }
         }
     }
 

@@ -32,9 +32,11 @@ struct MarkStallyItemTodayIntent: AppIntent {
     private var item: StallyItemEntity
 
     @Dependency private var modelContainer: ModelContainer
+    @Dependency private var remoteUpdates: RemoteUpdateOperations
 
     @MainActor
-    func perform() throws -> some ReturnsValue<Bool> & ProvidesDialog {
+    func perform() async throws -> some ReturnsValue<Bool> & ProvidesDialog {
+        try await remoteUpdates.checkMutationAllowed()
         let now = Date()
         let timeZone = TimeZone.current
         guard let today = LocalDay(containing: now, in: timeZone) else {

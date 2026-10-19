@@ -32,9 +32,11 @@ struct CreateStallyItemIntent: AppIntent {
     private var start: String?
 
     @Dependency private var modelContainer: ModelContainer
+    @Dependency private var remoteUpdates: RemoteUpdateOperations
 
     @MainActor
-    func perform() throws -> some ReturnsValue<StallyItemEntity> & ProvidesDialog {
+    func perform() async throws -> some ReturnsValue<StallyItemEntity> & ProvidesDialog {
+        try await remoteUpdates.checkMutationAllowed()
         guard let today = LocalDay(containing: .now, in: .current) else {
             throw StallyIntentError.currentDayUnavailable
         }

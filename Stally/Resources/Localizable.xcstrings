@@ -435,6 +435,23 @@
         }
       }
     },
+    "Check Again" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check Again"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "もう一度確認"
+          }
+        }
+      }
+    },
     "Check time together for ${item}" : {
       "localizations" : {
         "en" : {
@@ -1345,6 +1362,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "振り返り"
+          }
+        }
+      }
+    },
+    "Install the latest version of Stally to continue." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Install the latest version of Stally to continue."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "続けるには、Stallyを最新バージョンにアップデートしてください。"
           }
         }
       }
@@ -3512,6 +3546,23 @@
         }
       }
     },
+    "Update Required" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update Required"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アップデートが必要です"
+          }
+        }
+      }
+    },
     "Update Selected" : {
       "localizations" : {
         "en" : {
@@ -3524,6 +3575,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "選択したアイテムを更新"
+          }
+        }
+      }
+    },
+    "Update Stally" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update Stally"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stallyをアップデート"
           }
         }
       }

@@ -11,6 +11,8 @@ import SwiftUI
 import TipKit
 
 struct ReviewLaneList: View {
+    @Environment(RemoteUpdateOperations.self)
+    private var remoteUpdates
     @Environment(\.modelContext)
     private var modelContext
     @Environment(\.mhTheme)
@@ -111,26 +113,33 @@ struct ReviewLaneList: View {
         for item: Item,
         in lane: ReviewLane
     ) {
-        do {
-            try ReviewOperations.performPrimaryAction(
-                for: item,
-                in: lane,
-                context: modelContext
-            )
-        } catch {
-            actionErrorMessage = error.localizedDescription
+        Task {
+            do {
+                try await remoteUpdates.checkMutationAllowed()
+                try ReviewOperations.performPrimaryAction(
+                    for: item,
+                    in: lane,
+                    context: modelContext
+                )
+            } catch {
+                actionErrorMessage = error.localizedDescription
+            }
         }
     }
 
     private func performSelectedActions() {
-        do {
-            try ReviewOperations.performPrimaryActions(
-                selectedRequests,
-                context: modelContext
-            )
-            selectedItemIDs.removeAll()
-        } catch {
-            actionErrorMessage = error.localizedDescription
+        let requests = selectedRequests
+        Task {
+            do {
+                try await remoteUpdates.checkMutationAllowed()
+                try ReviewOperations.performPrimaryActions(
+                    requests,
+                    context: modelContext
+                )
+                selectedItemIDs.subtract(requests.map(\.item.uuid))
+            } catch {
+                actionErrorMessage = error.localizedDescription
+            }
         }
     }
 }

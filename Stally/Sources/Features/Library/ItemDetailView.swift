@@ -31,6 +31,8 @@ struct ItemDetailView: View {
         }
     }
 
+    @Environment(RemoteUpdateOperations.self)
+    private var remoteUpdates
     @Environment(\.dismiss)
     private var dismiss
     @Environment(\.modelContext)
@@ -240,14 +242,17 @@ private extension ItemDetailView {
         return .init(containing: now, in: timeZone)
     }
 
-    private func performSave(_ action: () throws -> Void) {
-        do {
-            try action()
-        } catch {
-            presentError(
-                title: String(localized: "Could Not Save"),
-                message: error.localizedDescription
-            )
+    private func performSave(_ action: @escaping () throws -> Void) {
+        Task {
+            do {
+                try await remoteUpdates.checkMutationAllowed()
+                try action()
+            } catch {
+                presentError(
+                    title: String(localized: "Could Not Save"),
+                    message: error.localizedDescription
+                )
+            }
         }
     }
 
@@ -311,14 +316,17 @@ private extension ItemDetailView {
     }
 
     private func deleteItem() {
-        do {
-            try ItemOperations.delete(item, context: modelContext)
-            dismiss()
-        } catch {
-            presentError(
-                title: String(localized: "Could Not Delete"),
-                message: error.localizedDescription
-            )
+        Task {
+            do {
+                try await remoteUpdates.checkMutationAllowed()
+                try ItemOperations.delete(item, context: modelContext)
+                dismiss()
+            } catch {
+                presentError(
+                    title: String(localized: "Could Not Delete"),
+                    message: error.localizedDescription
+                )
+            }
         }
     }
 

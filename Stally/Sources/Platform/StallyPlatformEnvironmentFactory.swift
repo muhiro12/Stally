@@ -23,6 +23,9 @@ enum StallyPlatformEnvironmentFactory {
             logging: logging
         )
         StallyIntentRouteStore.registerLiveRoutePipeline(routePipeline)
+        let remoteUpdates = StallyRemoteUpdateConfiguration.makeOperations(
+            platformMode: platformMode
+        )
 
         return .init(
             logging: logging,
@@ -35,9 +38,12 @@ enum StallyPlatformEnvironmentFactory {
             persistenceStatus: persistenceStatus,
             routeInbox: routeInbox,
             routePipeline: routePipeline,
+            remoteUpdates: remoteUpdates,
             runtimeBootstrap: makeRuntimeBootstrap(
                 configuration: makeAppConfiguration(for: platformMode),
-                routePipeline: routePipeline
+                routePipeline: routePipeline,
+                remoteUpdates: remoteUpdates,
+                logging: logging
             )
         )
     }
@@ -156,14 +162,19 @@ enum StallyPlatformEnvironmentFactory {
     @MainActor
     private static func makeRuntimeBootstrap(
         configuration: MHAppConfiguration,
-        routePipeline: StallyRoutePipeline
+        routePipeline: StallyRoutePipeline,
+        remoteUpdates: RemoteUpdateOperations,
+        logging: MHLoggingBootstrap
     ) -> MHAppRuntimeBootstrap {
         .init(
             configuration: configuration,
             routePipeline: routePipeline,
             lifecyclePlan: .init(
                 commonTasks: [
-                    routePipeline.task(name: "synchronizePendingRoutes")
+                    routePipeline.task(name: "synchronizePendingRoutes"),
+                    .init(name: "prepareRemoteUpdates") {
+                        await StallyRemoteUpdateConfiguration.prepare(remoteUpdates, logging: logging)
+                    }
                 ]
             )
         )

@@ -10,6 +10,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct BackupCenterView: View {
+    @Environment(RemoteUpdateOperations.self)
+    private var remoteUpdates
     @Environment(\.modelContext)
     private var modelContext
 
@@ -132,6 +134,7 @@ struct BackupCenterView: View {
         } message: {
             Text(alertMessage)
         }
+        .modifier(StallyUpdateRequiredModifier())
     }
 
     init() {
@@ -265,30 +268,36 @@ private extension BackupCenterView {
             return
         }
         cancelImportConfirmation()
-        do {
-            let result = try BackupOperations.importReviewed(pendingReview, context: modelContext)
-            self.selectedReview = nil
-            statusMessage = importStatusMessage(
-                prefix: result.didReplaceLibrary
-                    ? String(localized: "Replaced the current library.")
-                    : String(localized: "Merged into the current library."),
-                result: result
-            )
-        } catch {
-            handleBackupMutationError(error)
+        Task {
+            do {
+                try await remoteUpdates.checkMutationAllowed()
+                let result = try BackupOperations.importReviewed(pendingReview, context: modelContext)
+                self.selectedReview = nil
+                statusMessage = importStatusMessage(
+                    prefix: result.didReplaceLibrary
+                        ? String(localized: "Replaced the current library.")
+                        : String(localized: "Merged into the current library."),
+                    result: result
+                )
+            } catch {
+                handleBackupMutationError(error)
+            }
         }
     }
 
     private func deleteEverything() {
-        do {
-            let result = try BackupOperations.deleteEverything(context: modelContext)
-            selectedReview = nil
-            statusMessage = deleteStatusMessage(for: result)
-        } catch {
-            presentError(
-                title: String(localized: "Library could not be cleared."),
-                message: error.localizedDescription
-            )
+        Task {
+            do {
+                try await remoteUpdates.checkMutationAllowed()
+                let result = try BackupOperations.deleteEverything(context: modelContext)
+                selectedReview = nil
+                statusMessage = deleteStatusMessage(for: result)
+            } catch {
+                presentError(
+                    title: String(localized: "Library could not be cleared."),
+                    message: error.localizedDescription
+                )
+            }
         }
     }
 

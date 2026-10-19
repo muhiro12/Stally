@@ -217,6 +217,9 @@ private extension StallyApp {
         AppDependencyManager.shared.add {
             platformEnvironment.modelContainer
         }
+        AppDependencyManager.shared.add {
+            platformEnvironment.remoteUpdates
+        }
         startupLogger.notice("startup.dependencies_registered")
     }
 }

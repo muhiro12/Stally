@@ -17,6 +17,10 @@ struct StallyPreviewLaunchConfiguration {
     let route: StallyPreviewRoute?
     let trackingScreen: StallyTrackingPreviewScreen?
 
+    var usesPreviewData: Bool {
+        resolvedScenario != nil
+    }
+
     var textSize: DynamicTypeSize? {
         guard resolvedScenario != nil else {
             return nil

@@ -11,6 +11,8 @@ struct ItemActionsModifier: ViewModifier {
         let id: UUID
     }
 
+    @Environment(RemoteUpdateOperations.self)
+    private var remoteUpdates
     @Environment(Item.self)
     private var item
     @Environment(\.modelContext)
@@ -89,25 +91,28 @@ struct ItemActionsModifier: ViewModifier {
     }
 
     private func perform(_ mutation: ItemContextMutation, itemID: UUID) {
-        do {
-            guard let currentItem = try ItemOperations.item(context: modelContext, uuid: itemID) else {
-                throw StallyIntentError.itemNotFound
+        Task {
+            do {
+                try await remoteUpdates.checkMutationAllowed()
+                guard let currentItem = try ItemOperations.item(context: modelContext, uuid: itemID) else {
+                    throw StallyIntentError.itemNotFound
+                }
+                guard let today = LocalDay(containing: StallyActionDate.current, in: timeZone) else {
+                    throw StallyIntentError.currentDayUnavailable
+                }
+                switch mutation {
+                case .markToday:
+                    try ItemOperations.mark(currentItem, on: today, today: today, context: modelContext)
+                case .undoToday:
+                    try ItemOperations.undoMark(currentItem, on: today, context: modelContext)
+                case .archive:
+                    try ItemOperations.archive(currentItem, on: StallyActionDate.current, context: modelContext)
+                case .moveBackToLibrary:
+                    try ItemOperations.moveBackToLibrary(currentItem, context: modelContext)
+                }
+            } catch {
+                errorMessage = error.localizedDescription
             }
-            guard let today = LocalDay(containing: StallyActionDate.current, in: timeZone) else {
-                throw StallyIntentError.currentDayUnavailable
-            }
-            switch mutation {
-            case .markToday:
-                try ItemOperations.mark(currentItem, on: today, today: today, context: modelContext)
-            case .undoToday:
-                try ItemOperations.undoMark(currentItem, on: today, context: modelContext)
-            case .archive:
-                try ItemOperations.archive(currentItem, on: StallyActionDate.current, context: modelContext)
-            case .moveBackToLibrary:
-                try ItemOperations.moveBackToLibrary(currentItem, context: modelContext)
-            }
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 }

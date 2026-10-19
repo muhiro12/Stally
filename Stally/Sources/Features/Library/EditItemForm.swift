@@ -7,6 +7,8 @@ struct EditItemForm: View {
         static let noteLineLimit = 3
     }
 
+    @Environment(RemoteUpdateOperations.self)
+    private var remoteUpdates
     @Environment(\.dismiss)
     private var dismiss
 
@@ -67,6 +69,7 @@ struct EditItemForm: View {
                 Text(saveErrorMessage ?? "")
             }
         }
+        .modifier(StallyUpdateRequiredModifier())
     }
 
     @ToolbarContentBuilder private var toolbarItems: some ToolbarContent {
@@ -91,26 +94,29 @@ struct EditItemForm: View {
     }
 
     private func updateItem() {
-        do {
-            let now = StallyActionDate.current
-            guard let today = LocalDay(containing: now, in: timeZone) else {
-                throw CocoaError(.coderInvalidValue)
+        Task {
+            do {
+                try await remoteUpdates.checkMutationAllowed()
+                let now = StallyActionDate.current
+                guard let today = LocalDay(containing: now, in: timeZone) else {
+                    throw CocoaError(.coderInvalidValue)
+                }
+                try ItemOperations.update(
+                    item,
+                    input: .init(
+                        name: name,
+                        category: category,
+                        note: note,
+                        photoData: photoData
+                    ),
+                    tracking: try tracking.input(),
+                    today: today,
+                    context: modelContext
+                )
+                dismiss()
+            } catch {
+                saveErrorMessage = error.localizedDescription
             }
-            try ItemOperations.update(
-                item,
-                input: .init(
-                    name: name,
-                    category: category,
-                    note: note,
-                    photoData: photoData
-                ),
-                tracking: try tracking.input(),
-                today: today,
-                context: modelContext
-            )
-            dismiss()
-        } catch {
-            saveErrorMessage = error.localizedDescription
         }
     }
 

@@ -10,6 +10,8 @@ import SwiftData
 import SwiftUI
 
 struct AdjustHistoryView: View {
+    @Environment(RemoteUpdateOperations.self)
+    private var remoteUpdates
     @Environment(\.dismiss)
     private var dismiss
 
@@ -74,6 +76,7 @@ struct AdjustHistoryView: View {
             }
         }
         .environment(\.timeZone, timeZone)
+        .modifier(StallyUpdateRequiredModifier())
     }
 
     init(
@@ -109,17 +112,20 @@ struct AdjustHistoryView: View {
     }
 
     private func performHistoryUpdate(
-        _ action: (LocalDay) throws -> Void
+        _ action: @escaping (LocalDay) throws -> Void
     ) {
         guard let selectedDay else {
             presentError(message: String(localized: "Choose a valid day no later than today."))
             return
         }
 
-        do {
-            try action(selectedDay)
-        } catch {
-            presentError(message: error.localizedDescription)
+        Task {
+            do {
+                try await remoteUpdates.checkMutationAllowed()
+                try action(selectedDay)
+            } catch {
+                presentError(message: error.localizedDescription)
+            }
         }
     }
 
