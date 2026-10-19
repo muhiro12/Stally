@@ -1,16 +1,20 @@
 # Xcode Project Format Qualification
 
+This record describes the October 18, 2026 conversion and shared-tooling
+checkpoint. It preserves the evidence and deferred work at that time;
+publication requires the current-source checks documented in the README.
+
 ## Outcome
 
 The October 18, 2026 local trial for
 [issue #23](https://github.com/muhiro12/Stally/issues/23) confirmed that Xcode
 can convert Stally to `project.xcproj` without changing effective app settings.
-The JSON configuration is now retained as a local, unpushed implementation.
+At that checkpoint, the JSON configuration was retained locally and unpushed.
 The shared verification helpers now support both project formats. A follow-up
 on the retained JSON candidate passed evidence-mode repository rules through
 the existing adapter, plus lint matching against its source commit with the
-updated shared checker. The original shared-tooling blocker is resolved;
-final app/test qualification and publication evidence remain pending.
+updated shared checker. The original shared-tooling blocker was resolved;
+final app/test qualification and publication evidence were still pending.
 
 Commit `12c180a` isolates the supported conversion. Commit `304eda1` restored
 the original configuration and recorded the trial. Commit `fc923f3` reapplies
@@ -267,7 +271,8 @@ existing hook to bypass its source or checker binding.
 Archive and Xcode Cloud execution remain explicitly deferred, outside this
 follow-up. Their results cannot be inferred from local checks, and neither is
 introduced as an additional gate for this task. Duo qualification stays
-independent of this migration. The Issue remains open and no push was made.
+independent of this migration. The Issue remained open and no push had been
+made at the October 18 checkpoint.
 
 To roll back the current candidate, revert its reapplication commit and review
 the associated documentation changes. For an uncommitted conversion, restore

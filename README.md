@@ -115,14 +115,12 @@ purchases, production ad serving, or authorization for real-data/release actions
 
 ## Build and Test
 
-The project uses `project.xcproj` as a local, unpushed migration candidate.
-The original trial passed local configuration and build checks. The updated
-shared verification helpers now support JSON, and evidence-mode repository
-rules passed through Stally's existing adapter. Source-commit lint matching
-also passed with the updated shared checker.
-Final app/test verification and publication evidence remain pending. See the
-[qualification and shared-tooling handoff](docs/project-format-qualification.md)
-before reusing evidence or completing the migration.
+The project uses the JSON `project.xcproj` configuration. Xcode 27 or later
+can read it; conversion requires Xcode 27.2 or later. See the
+[conversion and qualification record](docs/project-format-qualification.md)
+for the original comparison, shared-verifier compatibility, and exact rollback.
+Historical trial results do not replace current-source verification below or
+qualify a beta toolchain for release.
 
 Use the Xcode-native integration available in the environment for app build,
 run, runtime-log, Preview, live UI, and screenshot evidence. Resolve current
