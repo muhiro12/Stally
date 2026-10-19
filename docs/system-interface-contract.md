@@ -151,26 +151,20 @@ does not add another entity type or change mutation authorization.
 
 ## Verification Contract
 
-`StallySystemTests` is a focused UI testing bundle using the iOS 27
-[AppIntentsTesting framework][testing]. Apple requires that bundle because calls
-run out of process through the installed app's real App Intents infrastructure.
-The tests import neither app implementation nor library models. Durable business
-tests stay in StallyLibrary. No Widget, Watch, or new runtime package is added.
+Run the complete StallyLibrary unit-test plan for durable behavior and build
+the Stally app for adapter compilation, App Intents metadata extraction, and
+catalog-backed strings. These checks are the automated publication gate along
+with repository rules and publication review.
 
-Tests launch only the DEBUG synthetic empty collection, then use real intents
-and queries. They verify partial start round trips, creation/entity chaining,
-non-Mark rejection, Archive/time/restore semantics, repeated Mark/Undo change
-flags, archived-item rejection, missing identity, and schema Open navigation.
-An additional annotation test disambiguates equal names by UUID, limits detail
-context to the displayed Item, and reads its updated Archive property.
-No reset/seed intent or ordinary-data mutation is required.
+Automated UI tests are not maintained. The former out-of-process
+[AppIntentsTesting][testing] UI bundle, scheme, and shell entrypoint were removed.
+Library tests and an app build do not establish installed-app intent execution,
+view annotations, spoken Siri, or locked-device behavior. Use focused manual
+verification with disposable synthetic data when those boundaries need evidence;
+do not mutate ordinary user data to prepare a check.
 
-Use a discovered dedicated iOS 27 Simulator and the `StallySystemTests` scheme
-through the available Xcode test capability. The repository compatibility
-entrypoint is `bash ci_scripts/tasks/test_stally_intents.sh`, with
-`CI_IOS_SIMULATOR_DESTINATION` set explicitly. Library tests, app metadata
-extraction, catalog/formatter/rule checks, and this out-of-process evidence
-remain distinct verification capabilities.
+The dated implementation evidence below records previous runs and does not
+define the current verification gate.
 
 ### Initial Implementation Evidence
 

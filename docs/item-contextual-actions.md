@@ -99,6 +99,11 @@ uses the canonical route UUID rather than a displayed index or name.
 
 ## Verification
 
+The current automated gate is the full StallyLibrary unit-test plan, Stally app
+build, and repository rules described in the [README](../README.md#build-and-test).
+The UI test bundle has been removed. The following dated runs are historical
+evidence, not instructions to restore or run automated UI tests.
+
 ### Siri-context follow-up
 
 The October 14 follow-up builds the app and the expanded system-test source with

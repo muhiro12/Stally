@@ -14,14 +14,6 @@
         "StallyLibraryTests"
       ],
       "test_plan": "StallyLibrary"
-    },
-    "intents": {
-      "kind": "tests",
-      "scheme": "StallySystemTests",
-      "project": "Stally.xcodeproj",
-      "targets": [
-        "StallySystemTests"
-      ]
     }
   },
   "lint": {

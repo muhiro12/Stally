@@ -198,7 +198,7 @@ catalog checks cover registration, adapters, and English/Japanese copy. Native
 saving, sharing to an available receiving app, opened-file preview, cancellation,
 and deep-link continuity require separate runtime evidence.
 
-Current synthetic verification uses Xcode 27.0 (27A266a) and iOS 27.0
+Historical synthetic verification used Xcode 27.0 (27A266a) and iOS 27.0
 (24A434). The library passes 166 tests in 40 suites, including the hand-authored
 v3 interchange fixture and original V1/v2 compatibility evidence. Three
 AppIntentsTesting journeys pass after the root URL handling change, including

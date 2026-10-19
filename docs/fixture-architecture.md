@@ -99,7 +99,11 @@ checksums. Tests copy them before opening with CloudKit disabled. The v3 golden
 interchange JSON and malformed validation cases stay independent of the current
 seed builder, so changing a seed cannot silently bless migration/wire behavior.
 
-## Current Evidence
+## Historical Implementation Evidence
+
+The following observations record the original fixture implementation. The
+current automated gate uses unit tests, the app build, and repository rules;
+the former UI testing bundle is no longer maintained.
 
 Xcode 27.0 (27A266a) / iOS 27.0 (24A434) passes 171 library tests in 41 suites.
 New checks compare complete repeated snapshots, validate/restore every small

@@ -99,11 +99,13 @@ Never regenerate or open checked-in original V1 stores for writing; tests use
 disposable copies, retain external photo storage, and disable CloudKit. Current
 golden interchange files remain independent of these original fixtures.
 
-`StallySystemTests` covers focused iOS 27 out-of-process App Intents, native
-navigation, adaptive drafts, lifecycle refresh, and accessibility UI journeys;
-durable domain tests stay in `StallyLibrary`. Synthetic launch profiles and
-their argument vocabulary are documented in the fixture architecture and are
-absent from Release builds. Ordinary launch retains real clock and storage.
+Automated verification centers on the `StallyLibrary` unit tests and the
+`Stally` consumer build. Do not add, run, or maintain automated UI test suites
+or make them a publication requirement. App Intents use the same tested library
+operations; the app build verifies adapter compilation and metadata extraction.
+Synthetic launch profiles support previews and focused manual review. Their
+argument vocabulary is documented in the fixture architecture and is absent
+from Release builds. Ordinary launch retains real clock and storage.
 Keep this current-state map and the verification entry points aligned when
 adding targets, schemes, scripts, or app surfaces.
 
@@ -142,18 +144,15 @@ Choose the smallest evidence set proving the changed boundary:
   build `Stally.xcodeproj`, scheme `Stally`, on a discovered iOS 27 Simulator.
 - Swift or Xcode project changes: build the `Stally` app scheme.
 - App Intents: confirm app-build metadata extraction and catalog-backed intent
-  strings. For selected system journeys, use `StallySystemTests` on a discovered
-  dedicated iOS 27 Simulator. The compatibility entry point is
-  `bash ci_scripts/tasks/test_stally_intents.sh`, with
-  `CI_IOS_SIMULATOR_DESTINATION` required and `CI_DERIVED_DATA_PATH` optional.
-  These journeys do not replace library tests or physical Siri/locked-device
-  evidence.
+  strings, and test the underlying library behavior with unit tests. These
+  checks do not prove out-of-process intent execution, spoken Siri, or
+  locked-device behavior; obtain separate manual evidence when needed.
 - Runtime persistence, CloudKit, or monetization wiring: run the app and review
   relevant SwiftData, CloudKit, ModelContainer, App Intents, StoreKit, Google
   Mobile Ads, fatal, crash, and exception logs.
-- Visible UI: add targeted Preview, live UI, or screenshot evidence. When beta
-  UI automation is unavailable, report the gap and use logs, screenshots, and
-  domain tests; launch success alone does not prove visible behavior.
+- Visible UI: use targeted Preview, manual smoke review, or screenshots when
+  the changed risk warrants it. Do not introduce an automated UI test runner.
+  Launch success alone does not prove visible behavior.
 - Localization: audit catalogs for `en,ja`, confirm app resource processing,
   and capture the affected English/Japanese surfaces. When the
   `string-catalog-maintainer` skill is available, resolve its audit script from
@@ -184,10 +183,11 @@ erase Simulator data, reset containers, or add test targets solely for an audit
 unless explicitly requested. Keep UI review reports separate from preserved
 product-intent documents.
 
-
 ## Optional Local Push Verification
 
-`ci_scripts/push_verification.json` declares `Stally` build, all `StallyLibraryTests` and `StallySystemTests`, and retained rules.
+`ci_scripts/push_verification.json` declares the `Stally` app build, the complete
+`StallyLibraryTests` unit-test plan, and retained rules. Automated UI tests and
+out-of-process AppIntentsTesting UI runners are not part of this contract.
 The optional local hook invokes
 `python3 ci_scripts/lib/agent_verification.py push <remote-name> <remote-location>`.
 It requires the installed `ci-verify-and-summarize` skill; set

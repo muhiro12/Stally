@@ -77,9 +77,9 @@ OpenIntent continues to use the same live model resolver.
 
 Library tests cover the selected fields, duplicate names, Archive/edit snapshots,
 actual Replace import, deletion, stale revisions, interrupted writes, retry and
-ledger recovery. Run the repository's full StallyLibrary test plan and build the
-Stally consumer using a discovered iOS 27 destination. Keep normal signing for
-the StallySystemTests AppIntentsTesting journeys.
+ledger recovery. Run the repository's full StallyLibrary unit-test plan and build
+the Stally consumer using a discovered iOS 27 destination. The consumer build
+checks App Intents adapter compilation and metadata extraction.
 
 Library tests and an app build do not prove OS index delivery. Verify actual
 index writes, result visibility/opening, reindex callbacks and Cloud-originated
