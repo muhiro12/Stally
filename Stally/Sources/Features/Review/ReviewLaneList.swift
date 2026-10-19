@@ -13,6 +13,8 @@ import TipKit
 struct ReviewLaneList: View {
     @Environment(\.modelContext)
     private var modelContext
+    @Environment(\.mhTheme)
+    private var theme
 
     @State private var actionErrorMessage: String?
     @State private var selectedItemIDs = Set<UUID>()
@@ -77,18 +79,21 @@ struct ReviewLaneList: View {
                 }
             }
         }
+        .scrollEdgeEffectStyle(.soft, for: .bottom)
+        .safeAreaBar(edge: .bottom) {
+            if !selectedRequests.isEmpty {
+                Button(bulkActionTitle, action: performSelectedActions)
+                    .buttonStyle(.mhPrimary)
+                    .frame(maxWidth: theme.layout.readableContentWidth)
+                    .padding(.horizontal, theme.spacing.content)
+                    .padding(.vertical, theme.spacing.inline)
+            }
+        }
         .stallyListChrome(.content)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 EditButton()
                     .stallyToolbarActionStyle()
-            }
-
-            if !selectedRequests.isEmpty {
-                ToolbarItem(placement: .bottomBar) {
-                    Button(bulkActionTitle, action: performSelectedActions)
-                        .stallyToolbarActionStyle()
-                }
             }
         }
         .alert("Could Not Update Item", isPresented: isShowingActionError) {

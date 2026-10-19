@@ -14,6 +14,32 @@ Its subsequent isolated interaction audit records one precision-Picker layout
 correction, Dynamic Type/appearance comparisons, and explicit manual checks
 where runtime operation or accessibility tools could not connect.
 
+## MHUI 2.4 Adoption
+
+The October 20 dependency update adopts MHUI 2.4.0 and its
+[background ownership contract][mhui-2-4-adoption]. Library, Archive, Review,
+and their empty states retain the `.content` route and accept its new native
+background default. The platform now owns both the plain rows and surrounding
+scroll surface, including selection and press feedback. Stally does not opt
+back into the previous themed content-list canvas.
+
+Settings and Item Detail retain the `.native` list route and its themed
+background. Add Item, Edit Item, and Adjust History retain the `.content` form
+route and its themed background. The native adaptive tab sidebar remains
+system-owned. Background ownership is a container choice, so no global theme,
+palette, or per-row workaround is needed.
+
+Review's selected-item action uses a native `safeAreaBar` with MHUI primary
+button styling. This keeps the action above the compact tab bar and reserves
+its height in the scrolling content, matching Item Detail's existing pattern.
+
+The Simulator's embedded subscription section clipped StoreKit's unavailable
+message in Settings. Its cause and the layout with loaded products remain
+unverified. This update does not change StoreKitWrapper 1.4.0 or the runtime's
+paywall factory; purchase and restore behavior require separate evidence.
+
+[mhui-2-4-adoption]: https://github.com/muhiro12/MHUI/blob/2.4.0/Designs/Guides/ADOPTION_GUIDE.md#migration-to-24
+
 ## MHUI 2.3 Adoption
 
 The September 29 package update moves Stally from MHUI 1.19 to 2.3.0. MHUI 2.0
