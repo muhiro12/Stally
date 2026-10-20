@@ -1,8 +1,57 @@
 # Xcode Project Format Qualification
 
-This record describes the October 18, 2026 conversion and shared-tooling
-checkpoint. It preserves the evidence and deferred work at that time;
-publication requires the current-source checks documented in the README.
+This record preserves the October 18, 2026 conversion checkpoint and the
+October 20 RC requalification. Each result belongs to its named source and
+toolchain; publication requires the current-source checks in the README.
+
+## October 20 RC Requalification
+
+Xcode 27.2 RC, build `27B48`, was checked against clean source commit `6ddd96c`.
+Apple's [conversion guide][conversion] identifies JSON as the default for new
+projects in Xcode 27.2 and later, with readers supported from Xcode 27. The
+[RC release notes][rc-notes] retain this format and compatibility boundary.
+
+The existing `Stally.xcodeproj/project.xcproj` already matches the RC's native
+output. On a disposable project copy, the official converter ran both steps:
+
+```sh
+xcodebuild -project Stally.xcodeproj -convert-project 'Xcode 27.0'
+xcodebuild -project Stally.xcodeproj -convert-project 'Xcode Project'
+```
+
+The resulting JSON was byte-identical to the original, with SHA-256:
+
+```text
+4b397ce937cdec93e9dd795c1eecdfe4c3e39d8eac88fbf3957da55c87d252c4
+```
+
+No format, target, package, ordered Frameworks input, membership, signing, or
+deployment-setting adjustment was required. The RC also retained the `27.0`
+values in `last-upgrade` and `last-swift-update`; they were left unchanged.
+
+Verification on that source snapshot completed as follows:
+
+- The Xcode-native iOS Simulator app build succeeded. Its complete,
+  untruncated warning-or-higher build log contained no entries.
+- The complete `StallyLibrary` unit-test plan passed 193 tests on iOS 27.2
+  runtime `24B114`, with no failures, skips, expected failures, or runtime
+  warnings. Complete native result review passed. The 24 captured ImageIO and
+  Core Data diagnostic lines were individually matched to passed negative
+  tests for malformed synthetic images and refused read-only migration.
+- Strict SwiftLint 0.65.1 checked 303 tracked Swift files, and repository rules
+  passed with no captured warnings or errors. Both retained search-rule tests
+  also passed. Lint provenance identified `project.xcproj` correctly.
+
+The first unit-test attempt stopped before execution because a registered
+Simulator's data directory was absent. A new dedicated Simulator booted
+successfully and ran the full plan. No existing device was erased or repaired.
+Only the library route omitted irrelevant App Intents metadata extraction;
+the ordinary app build retained it. No automated UI tests were run.
+
+The project configuration was not changed. This documentation update does not
+relabel the tested source as a new execution or qualify Archive, Xcode Cloud,
+App Store distribution, or physical-device Siri behavior. The sections below
+retain the original October 18 checkpoint, including its former UI-test target.
 
 ## Outcome
 
@@ -257,11 +306,11 @@ inputs merely because membership and evaluated settings match.
 
 ## Remaining Verification and Rollback
 
-Shared adapter compatibility is now confirmed for the tested snapshot. Before
-publication, complete the required app, library, and system verification plus
-diagnostic review for the intended source and explicitly selected toolchain.
-Recheck settings and project relationships if their inputs change. Xcode 27.1
-scheme discovery remains discovery evidence, not a build result.
+For publication, follow the current README contract: app build, the complete
+library unit-test plan, repository rules, and diagnostic review for the intended
+source and selected toolchain. Automated UI tests are not part of that contract.
+Recheck settings and project relationships if their inputs change. The October
+18 Xcode 27.1 scheme-discovery record above remains discovery evidence only.
 
 Follow the [receipt compatibility procedure][receipt-guide] and produce
 appropriate current-source evidence and a new receipt before any separately
@@ -274,12 +323,15 @@ introduced as an additional gate for this task. Duo qualification stays
 independent of this migration. The Issue remained open and no push had been
 made at the October 18 checkpoint.
 
-To roll back the current candidate, revert its reapplication commit and review
-the associated documentation changes. For an uncommitted conversion, restore
-the removed tracked property-list file and remove only the generated JSON file.
-Keep exactly one authoritative configuration. A generated round-trip file is
-useful for comparison, but Git restoration preserves the exact original file.
+Reverting the original reapplication commit restores the October 18 snapshot;
+it must not be used as a current rollback after later project changes. To keep
+those changes while switching formats, reverse-convert a copy of the current
+configuration with Xcode, compare effective settings and ordered relationships,
+and review the resulting replacement before applying it. For an uncommitted
+conversion, restoring its original tracked file provides exact recovery only
+when it does not discard later edits. Keep one authoritative configuration.
 
 [conversion]: https://developer.apple.com/documentation/xcode/updating-your-xcode-project-configuration-file-format
 [shared-guide]: https://github.com/muhiro12/agent-skills/blob/main/ci-verify-and-summarize/references/xcode-project-format.md
 [receipt-guide]: https://github.com/muhiro12/agent-skills/blob/main/ci-verify-and-summarize/references/push-verification.md
+[rc-notes]: https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes
