@@ -3,8 +3,10 @@
 ## Status and Scope
 
 Recorded on October 22, 2026. Product decisions below come from the owner's
-current design discussion. The model tables are an engineering recommendation,
-not an implemented schema or a claim of owner approval for every field name.
+current design discussion. The owner confirmed the three base models and their
+exact names for version 1.0: `Item`, `ItemMark`, and `ItemPeriod`. The property
+tables remain engineering recommendations, not an implemented schema or owner
+approval of attribute names, types, relationships, or deletion rules.
 
 Stally has no released or beta users. Breaking development-model and file-format
 changes are acceptable. Preserve actual development data until an explicit
@@ -18,6 +20,10 @@ mandatory retention of development formats are not constraints on this design.
 
 ## Confirmed Product Decisions
 
+- Version 1.0 uses three base persisted models: `Item`, `ItemMark`, and
+  `ItemPeriod`. These type names are decided, not naming candidates. `ItemMark`
+  and `ItemPeriod` represent history belonging to an Item; their model status
+  does not introduce a generic event or period system for unrelated domains.
 - An Item is a subject the person chooses to treat as one continuing record.
   It can represent an individual object, a repeatedly purchased product, or a
   place. Categories do not decide identity or ownership semantics.
@@ -81,8 +87,9 @@ wording remains separate from the persisted attribute name.
 
 ## Mark Facts and Calendar Presentation
 
-Recommend one `ItemMark` per deliberate recording action. Keep the established
-domain noun rather than introducing a generic activity/event framework.
+Use the confirmed `ItemMark` model for each deliberate recording action.
+Keep the established domain noun rather than introducing a generic
+activity/event framework.
 Each Mark stores identity, its chosen local day, its registration instant,
 and its owning Item. The chosen day survives travel. Registration time does
 not claim to be the instant the subject was used, especially for backdating.
@@ -116,8 +123,9 @@ rules and deliberate correction paths as the app.
 
 ## Periods: Keep Reopening History Without Splitting Identity
 
-Recommend owned `ItemPeriod` models, rather than one overwritten start/end pair
-or requiring a new Item on every return. A person may still choose a new Item.
+The selected structure uses owned `ItemPeriod` models, rather than one
+overwritten start/end pair or requiring a new Item on every return.
+A person may still choose a new Item.
 This preserves their choice of identity while retaining a closed period when
 the same subject returns. A single pair cannot retain both periods; requiring
 separate Items fragments Marks, favorites, links, and the continuous record.
@@ -157,9 +165,10 @@ calculation and display specification belongs in the period implementation.
 
 ## Recommended Persisted Names and Types
 
-These are the names to validate in a bounded implementation prototype. They
-are not permission to promote a CloudKit schema. The existing physical schema
-remains unchanged in this design commit.
+The three model type names are confirmed. The proposed attribute names, types,
+defaults, relationships, and deletion rules below still need design review
+and validation in a bounded implementation prototype. This decision does not
+promote a CloudKit schema or change the existing physical schema.
 
 ### Item
 
@@ -323,10 +332,11 @@ facts without an explicit product tradeoff.
    freezing/publishing identifiers. Confirm the live production-schema state;
    an unreleased app alone does not prove that no schema was promoted.
 
-Outstanding choices are limited to export media/precision, heatmap scale and
-settings placement, localized action wording, the paid-feature boundary, and
-results of the native schema/sync prototype. Future decisions should update
-this document rather than treating chat proposals as completed implementation.
+Outstanding choices include the proposed attributes, types, relationships,
+deletion rules, export media/precision, heatmap scale and settings placement,
+localized action wording, the paid-feature boundary, and results of the native
+schema/sync prototype. Future decisions should update this document rather
+than treating chat proposals as completed implementation.
 
 [schema]: https://developer.apple.com/videos/play/wwdc2023/10195/
 [sync]: https://developer.apple.com/documentation/swiftdata/syncing-model-data-across-a-persons-devices
