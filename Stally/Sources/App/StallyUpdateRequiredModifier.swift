@@ -18,7 +18,6 @@ struct StallyUpdateRequiredModifier: ViewModifier {
                     StallyUpdateRequiredView()
                         .environment(\.isEnabled, true)
                         .accessibilityHidden(false)
-                        .ignoresSafeArea()
                 }
             }
             .interactiveDismissDisabled(isRequired)
