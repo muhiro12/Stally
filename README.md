@@ -39,6 +39,7 @@ Start with the documentation relevant to the changed boundary:
 | Durable writes and cross-surface use cases | [Domain Operations](docs/domain-operations.md) |
 | Shared update policy, offline behavior, and protected writes | [Remote update control](docs/remote-update.md) |
 | Selected first-release model and retained compatibility | [First release data model](docs/first-release-data-model.md) |
+| Publication identities, stored preferences, and support lifetimes | [Publication contracts](docs/publication-contracts.md) |
 | Export/import identity, versions, validation, and review | [Portable data contract](docs/portable-data-contract.md) |
 | App Intents, entity identity, replay, and Widget/Watch scope | [System interface contract](docs/system-interface-contract.md) |
 | Derived Item search, index recovery, and synthetic isolation | [Spotlight indexing](docs/spotlight-indexing.md) |

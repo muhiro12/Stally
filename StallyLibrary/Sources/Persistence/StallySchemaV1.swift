@@ -17,7 +17,8 @@ extension StallySchemaV1 {
     final class Item {
         var uuid = UUID()
         var name: String = ""
-        var categoryRawValue: String = ItemCategory.other.rawValue
+        // A historical schema must not follow changes to the current domain enum.
+        var categoryRawValue: String = "Other"
         var note: String = ""
         @Attribute(.externalStorage)
         var photoData: Data?

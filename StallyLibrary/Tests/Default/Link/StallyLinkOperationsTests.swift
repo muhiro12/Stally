@@ -10,14 +10,23 @@ import StallyLibrary
 import Testing
 
 struct StallyLinkOperationsTests {
-    @Test
-    func `builds and parses destination links`() {
-        for destination in StallyLinkDestination.allCases {
-            let url = StallyLinkOperations.url(for: .destination(destination))
+    @Test(arguments: [
+        (StallyLinkDestination.library, "stally://library"),
+        (.archive, "stally://archive"),
+        (.review, "stally://review"),
+        (.insights, "stally://insights"),
+        (.backupCenter, "stally://backup-center"),
+        (.createItem, "stally://create-item"),
+        (.settings, "stally://settings")
+    ])
+    func `builds and opens the first release destination URLs`(
+        destination: StallyLinkDestination,
+        absoluteString: String
+    ) throws {
+        let savedURL = try #require(URL(string: absoluteString))
 
-            #expect(url.absoluteString == "stally://\(destination.rawValue)")
-            #expect(StallyLinkOperations.parse(url) == .supported(.destination(destination)))
-        }
+        #expect(StallyLinkOperations.url(for: .destination(destination)) == savedURL)
+        #expect(StallyLinkOperations.parse(savedURL) == .supported(.destination(destination)))
     }
 
     @Test
