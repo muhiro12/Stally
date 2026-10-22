@@ -79,12 +79,12 @@ struct AddItemView: View {
 
     @ToolbarContentBuilder private var toolbarItems: some ToolbarContent {
         ToolbarItem(placement: .cancellationAction) {
-            Button("Cancel", role: .cancel, action: dismissSheet)
+            Button("Cancel", systemImage: "xmark", role: .cancel, action: dismissSheet)
                 .stallyToolbarActionStyle()
         }
 
         ToolbarItem(placement: .confirmationAction) {
-            Button("Add", action: addItem)
+            Button("Add", systemImage: "plus", action: addItem)
                 .stallyToolbarActionStyle()
                 .disabled(isAddDisabled || isSaving)
         }

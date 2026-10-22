@@ -64,6 +64,11 @@ struct ItemActionsModifier: ViewModifier {
             }
         case .toolbarMenu:
             content.toolbar {
+                #if os(iOS) || os(visionOS)
+                ToolbarOverflowMenu {
+                    actions(for: snapshot, includesProminentActions: false)
+                }
+                #else
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         actions(for: snapshot)
@@ -71,15 +76,20 @@ struct ItemActionsModifier: ViewModifier {
                         Label("Item Actions", systemImage: "ellipsis.circle")
                     }
                 }
+                #endif
             }
         }
     }
 
     @ViewBuilder
-    private func actions(for snapshot: ItemContextSnapshot?) -> some View {
+    private func actions(
+        for snapshot: ItemContextSnapshot?,
+        includesProminentActions: Bool = true
+    ) -> some View {
         if let snapshot {
             ItemContextActions(
                 snapshot: snapshot,
+                includesProminentActions: includesProminentActions,
                 editAction: {
                     editor = .init(id: snapshot.itemID)
                 },

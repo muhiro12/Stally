@@ -74,12 +74,12 @@ struct EditItemForm: View {
 
     @ToolbarContentBuilder private var toolbarItems: some ToolbarContent {
         ToolbarItem(placement: .cancellationAction) {
-            Button("Cancel", role: .cancel, action: dismissSheet)
+            Button("Cancel", systemImage: "xmark", role: .cancel, action: dismissSheet)
                 .stallyToolbarActionStyle()
         }
 
         ToolbarItem(placement: .confirmationAction) {
-            Button("Save", action: updateItem)
+            Button("Save", systemImage: "checkmark", action: updateItem)
                 .stallyToolbarActionStyle()
                 .disabled(isSaveDisabled)
         }

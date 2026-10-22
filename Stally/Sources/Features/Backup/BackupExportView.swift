@@ -16,7 +16,7 @@ struct BackupExportView: View {
                 .navigationTitle("Export Data")
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Done") {
+                        Button("Done", systemImage: "checkmark") {
                             dismiss()
                         }
                     }

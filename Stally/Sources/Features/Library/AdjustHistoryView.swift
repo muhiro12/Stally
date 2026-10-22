@@ -65,7 +65,7 @@ struct AdjustHistoryView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done", action: dismissSheet)
+                    Button("Done", systemImage: "checkmark", action: dismissSheet)
                         .stallyToolbarActionStyle()
                 }
             }

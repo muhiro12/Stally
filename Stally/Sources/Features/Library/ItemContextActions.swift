@@ -3,6 +3,7 @@ import SwiftUI
 /// One concise action vocabulary for context menus and ordinary native menus.
 struct ItemContextActions: View {
     let snapshot: ItemContextSnapshot
+    let includesProminentActions: Bool
     let editAction: () -> Void
     let mutationAction: (ItemContextMutation) -> Void
 
@@ -22,10 +23,12 @@ struct ItemContextActions: View {
                 }
             }
         }
-        Button(action: editAction) {
-            Label("Edit Item", systemImage: "pencil")
+        if includesProminentActions {
+            Button(action: editAction) {
+                Label("Edit Item", systemImage: "pencil")
+            }
+            StallyLinkShareButton(link: .item(snapshot.itemID), title: "Share Item Link")
         }
-        StallyLinkShareButton(link: .item(snapshot.itemID), title: "Share Item Link")
         if let timeReport = snapshot.timeReport {
             ShareLink(item: timeReport) {
                 Label("Share Time Together", systemImage: "clock")
