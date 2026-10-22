@@ -15,11 +15,13 @@ struct ReviewLaneList: View {
     private var remoteUpdates
     @Environment(\.modelContext)
     private var modelContext
-    @Environment(\.mhTheme)
-    private var theme
 
     @State private var actionErrorMessage: String?
     @State private var selectedItemIDs = Set<UUID>()
+
+    #if os(iOS) || os(visionOS)
+    @State private var editMode = EditMode.inactive
+    #endif
 
     private let overviewTip = ReviewOverviewTip()
 
@@ -56,6 +58,18 @@ struct ReviewLaneList: View {
         return "Update Selected"
     }
 
+    private var bulkActionSystemImage: String {
+        let lanes = Set(selectedRequests.map(\.lane))
+
+        if lanes == [.recoveryCandidates] {
+            return "tray.and.arrow.up"
+        }
+        if lanes.isSubset(of: [.dormant, .needsFirstMark]) {
+            return "archivebox"
+        }
+        return "checkmark.circle"
+    }
+
     private var isShowingActionError: Binding<Bool> {
         .init(
             get: { actionErrorMessage != nil },
@@ -82,17 +96,21 @@ struct ReviewLaneList: View {
             }
         }
         .scrollEdgeEffectStyle(.soft, for: .bottom)
-        .safeAreaBar(edge: .bottom) {
-            if !selectedRequests.isEmpty {
-                Button(bulkActionTitle, action: performSelectedActions)
-                    .buttonStyle(.mhPrimary)
-                    .frame(maxWidth: theme.layout.readableContentWidth)
-                    .padding(.horizontal, theme.spacing.content)
-                    .padding(.vertical, theme.spacing.inline)
-            }
-        }
         .stallyListChrome(.content)
         .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                if !selectedRequests.isEmpty {
+                    Button(action: performSelectedActions) {
+                        Label {
+                            Text(bulkActionTitle)
+                        } icon: {
+                            Image(systemName: bulkActionSystemImage)
+                        }
+                    }
+                    .stallyToolbarActionStyle()
+                }
+            }
+
             ToolbarItem(placement: .topBarTrailing) {
                 EditButton()
                     .stallyToolbarActionStyle()
@@ -107,6 +125,9 @@ struct ReviewLaneList: View {
                 Text(actionErrorMessage)
             }
         }
+        #if os(iOS) || os(visionOS)
+        .environment(\.editMode, $editMode)
+        #endif
     }
 
     private func performPrimaryAction(
