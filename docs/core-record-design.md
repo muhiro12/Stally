@@ -176,7 +176,7 @@ promote a CloudKit schema or change the existing physical schema.
 | --- | --- | --- |
 | `uuid` | `UUID`, generated once | Portable record identity |
 | `name` | `String`, empty storage default | Required nonblank user name |
-| `categoryRawValue` | `String`, current Other value | Classification only |
+| Classification | Pending product choice | Current fixed categories not confirmed |
 | `note` | `String`, empty | Optional user context |
 | `photoData` | `Data?`, nil, external storage | Existing single-photo scope |
 | `createdAt` | `Date`, creation instant | Registration, not relationship start |
@@ -186,11 +186,79 @@ promote a CloudKit schema or change the existing physical schema.
 | `marks` | `[ItemMark]?` | Owned recording facts |
 | `periods` | `[ItemPeriod]?` | Owned relationship knowledge |
 
-Keep existing context fields unless their own review finds a semantic problem.
-Do not expand categories or photos solely to make this table more general.
+The existing `categoryRawValue` and fixed category values are an implemented
+baseline, not confirmed 1.0 attributes. Select the intended single-category,
+multiple-tag, or unclassified workflow before choosing their representation.
+Do not expand photos solely to make this table more general.
 Prefer `isHidden` over `archivedAt`: the selected visibility intent does not
 require a historical timestamp. Prefer `isMarkRecordingEnabled` over a record
 kind: enabled/disabled is a mutable preference, not whether history may exist.
+
+#### Item Attribute Review
+
+The following recommendations refine the field table. Only the model names
+have been confirmed; this review does not mark the attributes as approved or
+change application behavior.
+
+- `uuid`: generate once when creating a new record, preserve it through edits,
+  hide/show, export, and restoration. Duplicating an Item creates a new UUID.
+  Equal names do not establish identity. Keep the name distinct from the
+  framework's store-scoped `persistentModelID`; declaring an application-owned
+  `id` is not inherently wrong, but `uuid` makes the two roles clear here.
+- `name`: use a nonoptional String. Require a nonblank value at creation/edit
+  boundaries and allow duplicate names. A schema default is not a valid
+  user-confirmed name; temporarily incomplete synced content must not be
+  deleted or assigned a fabricated name. A display placeholder is not stored.
+- `note`: use a nonoptional String with an empty default. No note and an empty
+  note have the same domain meaning. Keep ordinary text and intentional line
+  breaks; do not add rich-text serialization without a selected workflow.
+- `createdAt`: the instant this Item was first registered, never purchase,
+  relationship start, first Mark, or last import time. Preserve it during
+  restoration. It supports registration ordering and collection-age readings.
+- `photoData`: retain an optional single representative photo, with nil meaning
+  no photo. Store prepared bytes with SwiftData external storage, not a Photos
+  library identifier or a temporary file URL. External storage remains part of
+  the persistent store's recovery boundary. A representative photo is not a
+  photo timeline; multiple-photo history needs a separate product decision.
+- `isHidden`: a synced Item-level visibility choice, default false. Exclude it
+  from routine lists and proactive suggestions; retain deliberate access.
+  This does not change recording preference, favorites, or relationship facts.
+- `isFavorite`: a synced Item-level preference, default false. Do not derive it
+  from Mark counts. It is neither a pinned position nor a ranking score.
+- `isMarkRecordingEnabled`: default true; controls new deliberate capture from
+  app and system surfaces. Existing Marks remain readable and included in
+  historical readings for the selected Item scope. Explicit corrections and
+  restoration of earlier facts remain possible while capture is paused.
+- `marks` and `periods`: optional stored to-many relationships with explicit
+  inverses and Item-to-child cascade deletion. Their Swift array shape does not
+  promise ordered storage. Read interfaces may expose empty collections where
+  appropriate, but must tolerate partial synchronization without deleting data
+  or claiming the remote history is complete.
+
+Do not persist `totalMarks`, active-day count, last marked day, elapsed time,
+heatmap intensity, or current ownership as additional Item truth. Derive the
+first five from history and display settings; relationship knowledge belongs
+to periods and may be incomplete. Do not keep Item-level start/end copies.
+
+Do not add `updatedAt` solely as a conventional audit field. Cookle currently
+updates recipe modification timestamps, but that does not define which Stally
+actions should count as an Item edit. Add it if a selected edit-history,
+recency, or interchange use requires a precisely defined last-edit instant.
+Starting to capture it later cannot recover earlier edit times; that is the
+explicit tradeoff, and one timestamp would not preserve a full edit history.
+It would not be a substitute for CloudKit conflict handling.
+
+The current source review also identifies consumers that must change with the
+proposed schema: Insights filters out `recordsMarks == false` Items, so merely
+relaxing the write guard would still hide paused history. Review uses
+`archivedAt` for recovery ordering; replacing it with visibility requires an
+explicit Review behavior change, not a mechanical field rename. Names, photos,
+creation dates, and category values also cross the portable-file boundary.
+
+Apple distinguishes a model's [store identity][persistent-id] from application
+identity and documents [external storage][external-storage] as binary data
+adjacent to the model store. These support the representation choices; the
+field meanings and defaults above are Stally-specific recommendations.
 
 ### ItemMark
 
@@ -348,3 +416,5 @@ than treating chat proposals as completed implementation.
 The paid-feature boundary references [App Review Guideline 4.10][review].
 
 [review]: https://developer.apple.com/app-store/review/guidelines/#monetizing-built-in-capabilities
+[persistent-id]: https://developer.apple.com/documentation/swiftdata/persistentidentifier
+[external-storage]: https://developer.apple.com/documentation/swiftdata/schema/attribute/option/externalstorage
