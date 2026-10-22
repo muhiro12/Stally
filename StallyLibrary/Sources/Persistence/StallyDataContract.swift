@@ -1,5 +1,8 @@
 /// The explicit correspondence between persisted and portable durable data.
 public enum StallyDataContract {
+    /// Exported document type for the complete portable collection.
+    public static let fileTypeIdentifier = "com.muhiro12.Stally.data"
+
     private static let legacyInterchangeVersion = 2
     private static let legacyPersistenceVersion = 1
     /// Current SwiftData schema: Items with independent Mark policy and partial starts.

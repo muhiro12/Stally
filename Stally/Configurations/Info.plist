@@ -15,7 +15,7 @@
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.muhiro12.stally.backup</string>
+				<string>com.muhiro12.Stally.data</string>
 			</array>
 		</dict>
 	</array>
@@ -256,7 +256,7 @@
 			<key>UTTypeDescription</key>
 			<string>Stally Data</string>
 			<key>UTTypeIdentifier</key>
-			<string>com.muhiro12.stally.backup</string>
+			<string>com.muhiro12.Stally.data</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>

@@ -8,11 +8,14 @@ restore that collection. The internal Backup types and `backup-center` route
 continue to implement this capability; they do not narrow the visible product
 purpose to recovery.
 
-Keep `.stallybackup` and `com.muhiro12.stally.backup`, conforming to `public.json`.
-The registered document name is Stally Data. These identifiers already describe
-a complete restorable snapshot and have development fixtures and links. A new
-extension would add conversion and type-resolution work without improving
-readability. Sharing suggests `Stally Data.stallybackup`; saving suggests the
+The first public type is `com.muhiro12.Stally.data`, conforming to `public.json`,
+with the registered document name Stally Data. Its product namespace matches
+the bundle, Incomes, and Cookle. `StallyDataContract.fileTypeIdentifier` supplies
+the runtime type; both Info.plist document declarations must match it. The
+earlier `com.muhiro12.stally.backup` type was development-only and has no alias.
+Retain `.stallybackup`: existing v2/v3 files keep the same bytes and extension
+and remain readable through the current document type. Sharing suggests
+`Stally Data.stallybackup`; saving suggests the
 localized Stally Data title with the same extension. The JSON content, rather
 than the extension alone, determines compatibility.
 

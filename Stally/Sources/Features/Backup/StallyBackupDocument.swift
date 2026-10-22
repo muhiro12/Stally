@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import StallyLibrary
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -33,7 +34,7 @@ struct StallyBackupDocument: FileDocument, Identifiable {
 extension UTType {
     nonisolated static var stallyBackup: UTType {
         .init(
-            exportedAs: "com.muhiro12.stally.backup",
+            exportedAs: StallyDataContract.fileTypeIdentifier,
             conformingTo: .json
         )
     }
