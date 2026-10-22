@@ -10,6 +10,7 @@ import SwiftUI
 struct QuietHistoryGrid: View {
     private enum Layout {
         static let recentDayCount = 35
+        static let regularColumnGroupCount = 2
         static let minimumColumnWidth: CGFloat = 34
         static let maximumColumnWidth: CGFloat = 44
         static let columnSpacing: CGFloat = 8
@@ -18,6 +19,8 @@ struct QuietHistoryGrid: View {
 
     @Environment(\.timeZone)
     private var timeZone
+    @Environment(\.horizontalSizeClass)
+    private var horizontalSizeClass
 
     @Environment(\.stallyReadingDate)
     private var readingDate
@@ -30,15 +33,16 @@ struct QuietHistoryGrid: View {
     let markedDays: [LocalDay]
 
     private var columns: [GridItem] {
-        [
-            .init(
+        .init(
+            repeating: .init(
                 .adaptive(
                     minimum: minimumColumnWidth,
                     maximum: maximumColumnWidth
                 ),
                 spacing: Layout.columnSpacing
-            )
-        ]
+            ),
+            count: horizontalSizeClass == .regular ? Layout.regularColumnGroupCount : 1
+        )
     }
 
     var body: some View {
