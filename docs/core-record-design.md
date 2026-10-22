@@ -27,6 +27,9 @@ mandatory retention of development formats are not constraints on this design.
 - An Item is a subject the person chooses to treat as one continuing record.
   It can represent an individual object, a repeatedly purchased product, or a
   place. Categories do not decide identity or ownership semantics.
+- Classification is user-defined. App-provided examples or starter samples
+  are acceptable; a fixed vocabulary or mandatory built-in category picker is
+  not. Single classification versus multiple tags remains undecided.
 - Multiple Marks on the same day must be supported. Stored history and the
   calendar's visual intensity are separate. People can choose how to see it;
   recording once per day must not look like inadequate participation.
@@ -82,8 +85,8 @@ Favoriting records personal preference, not a calculated usage rank or a pinned
 position. There is no speculative favorite timestamp or ordering column.
 The UI may offer a convenient combined action, but it must say which facts it
 changes. No single `active/archived/disposed/favorite` enum can express these
-combinations. Suggested UI wording for visibility is Hide/Show; final localized
-wording remains separate from the persisted attribute name.
+combinations. Hide/Show and Archive/Unarchive remain wording candidates;
+neither the user-facing term nor the persisted visibility name is confirmed.
 
 ## Mark Facts and Calendar Presentation
 
@@ -176,7 +179,7 @@ promote a CloudKit schema or change the existing physical schema.
 | --- | --- | --- |
 | `uuid` | `UUID`, generated once | Portable record identity |
 | `name` | `String`, empty storage default | Required nonblank user name |
-| Classification | Pending product choice | Current fixed categories not confirmed |
+| Classification | Representation pending | User-defined, never a fixed vocabulary |
 | `note` | `String`, empty | Optional user context |
 | `photoData` | `Data?`, nil, external storage | Existing single-photo scope |
 | `createdAt` | `Date`, creation instant | Registration, not relationship start |
@@ -187,12 +190,13 @@ promote a CloudKit schema or change the existing physical schema.
 | `periods` | `[ItemPeriod]?` | Owned relationship knowledge |
 
 The existing `categoryRawValue` and fixed category values are an implemented
-baseline, not confirmed 1.0 attributes. Select the intended single-category,
-multiple-tag, or unclassified workflow before choosing their representation.
+baseline that does not match the confirmed direction. Select the intended
+single-category or multiple-tag workflow before choosing its representation.
 Do not expand photos solely to make this table more general.
-Prefer `isHidden` over `archivedAt`: the selected visibility intent does not
-require a historical timestamp. Prefer `isMarkRecordingEnabled` over a record
-kind: enabled/disabled is a mutable preference, not whether history may exist.
+The visibility intent does not itself require an `archivedAt` timestamp.
+The `isHidden` name remains provisional. Prefer a recording preference over a
+record kind: enabled/disabled is a mutable preference, not whether history may
+exist.
 
 #### Item Attribute Review
 
@@ -259,6 +263,59 @@ Apple distinguishes a model's [store identity][persistent-id] from application
 identity and documents [external storage][external-storage] as binary data
 adjacent to the model store. These support the representation choices; the
 field meanings and defaults above are Stally-specific recommendations.
+
+#### Attribute Alternatives and Sibling-App Evidence
+
+The October 22 source comparison found no record-specific UUID on Incomes Item
+or Cookle Recipe. Incomes `repeatID` identifies a repeat series instead. Both
+apps use SwiftData identifiers in their persistence-facing APIs. Cookle's
+archive code maps those identifiers to file references and reconstructs
+relationships during restoration. Those designs do not establish a universal
+requirement to add UUIDs to every SwiftData model.
+
+Stally's reason to keep application-owned UUIDs is continuity across exports
+and imports, including identifying individual Marks without matching names or
+days. Apple's [history guidance][history-identity] distinguishes local store
+identity from an attribute usable across devices or services. Native CloudKit
+mirroring does not itself require an app UUID. UUIDs also do not resolve merge
+conflicts or prevent duplicate imports without defined operation semantics.
+
+`createdAt`, `createdTimestamp` (used by Cookle), and `creationDate` are viable
+names. Apple does not prescribe `createdAt`. The recommendation uses it for a
+concise registration instant, consistently with `recordedAt` on a Mark. The
+fact supports registration ordering and cannot be recovered reliably from
+relationship dates or Marks. Its meaning matters more than its spelling;
+the spelling is still under review.
+
+For photos, the proposed single-image field stores an app-owned copy of image
+bytes. Deleting the source photo after successful ingestion does not remove
+that copy. External storage delegates the binary representation to SwiftData;
+it is not a reference to iCloud Photos or a user-managed file path. Cookle
+instead has a Photo asset model and ordered PhotoObject relationships for
+multiple, reusable photos. A representative image and a photo history are
+different requirements; the latter would justify a separate photo model.
+
+Current Stally prepares orientation-normalized, metadata-stripped JPEGs with a
+1,600-pixel longest side and a 2 MiB encoded-size ceiling. It flattens alpha
+onto white and does not preserve the original. These are existing policies,
+not newly approved 1.0 requirements. Decide single versus multiple images,
+original retention, transparency, and quality before freezing photo storage.
+Export packaging remains a separate contract choice.
+
+`isHidden` emphasizes presentation; `isArchived` emphasizes putting a record
+aside while retaining it. `isVisible` expresses the inverse, and a `visibility`
+enum can make the presentation scope explicit. None automatically defines
+ownership or period ending. Choose the name with the intended action wording.
+
+Independent two-state facts can be separate Bools: hidden, favorite, and
+recording-enabled have eight meaningful combinations. Mutually exclusive
+states of one concern should instead use an enum when that clarifies the
+domain. A domain enum does not require a different physical representation:
+current Stally already wraps its persisted `recordsMarks` Bool in an
+`ItemMarkPolicy` enum. Keep one stored source of truth, not an independently
+editable Bool and enum for the same fact. If a selected workflow needs a
+third recording policy, compare explicit raw-value storage then; do not add
+speculative states solely to avoid Bools.
 
 ### ItemMark
 
@@ -418,3 +475,4 @@ The paid-feature boundary references [App Review Guideline 4.10][review].
 [review]: https://developer.apple.com/app-store/review/guidelines/#monetizing-built-in-capabilities
 [persistent-id]: https://developer.apple.com/documentation/swiftdata/persistentidentifier
 [external-storage]: https://developer.apple.com/documentation/swiftdata/schema/attribute/option/externalstorage
+[history-identity]: https://developer.apple.com/documentation/swiftdata/fetching-and-filtering-time-based-model-changes
