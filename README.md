@@ -33,6 +33,7 @@ Start with the documentation relevant to the changed boundary:
 
 | Decision | Current entry point |
 | --- | --- |
+| Current pre-release redesign decisions and proposed model names | [Core record design](docs/core-record-design.md) |
 | Product purpose, domain, workflows, and language | [Product brief](docs/product-brief.md), [purpose](docs/product-purpose.md), [preserved concepts](docs/preserved-concepts.md), [domain](docs/domain-concepts.md), [workflows](docs/user-workflows.md), [experience principles](docs/user-experience-principles.md), [language](docs/product-language.md) |
 | Owner-directed baseline and scope | [Rebuild implementation direction](docs/rebuild-implementation-direction.md), [implementation principles](docs/rebuild-implementation-principles.md) |
 | Live SwiftData read ownership and value lifetimes | [App data flow](docs/swiftdata-app-data-flow.md) |
@@ -50,6 +51,9 @@ Start with the documentation relevant to the changed boundary:
 
 These documents describe what Stally is, why it exists, which concepts must
 survive, and which legacy implementation details were intentionally discarded.
+The October 22 [core record design](docs/core-record-design.md) records the
+latest product decisions and a proposed schema. It supersedes earlier design
+constraints where stated, but has not changed the implemented model or formats.
 `docs/rebuild-implementation-direction.md` separately records explicit rebuild
 direction that did not come from the removed legacy source.
 
@@ -87,8 +91,9 @@ license integration, and MHUI presentation. `StallyLibrary` stays on
 `MHPlatformCore` for library-safe route and preference primitives. MHUI
 re-exports MHDesign. Product linking is distinct from package declaration;
 recheck manifests and the owner-directed package baseline when changing it.
-Subscription removes ads; it does not gate iCloud sync. Follow the
+The implemented subscription removes ads; it does not gate iCloud sync. See the
 [monetization direction](docs/rebuild-implementation-direction.md#monetization-direction)
+for the newer paid-cloud intent and unresolved paid-feature boundary,
 and keep production native ads disabled until a Stally-owned production native
 ad unit exists. Do not borrow another app's identifiers.
 

@@ -1,5 +1,11 @@
 # Portable Data Contract
 
+The [October 22 core record design](core-record-design.md#export-and-import-direction)
+sets the newer direction: export for external use, with import as a complement.
+The v3/v2 specification below remains the implemented baseline. Readable
+timestamps, multiple Marks per day, periods, and media packaging require an
+explicit new format decision; this design work has not changed the codecs.
+
 ## First Public Format
 
 Import & Export transfers the complete collection selected in the

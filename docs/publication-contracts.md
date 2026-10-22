@@ -1,5 +1,10 @@
 # Publication Contracts
 
+The [October 22 core record design](core-record-design.md) reopens selected
+pre-release contracts. This inventory describes the current implementation;
+development names and formats are not already-shipped obligations. Proposed
+changes have not altered the live schema, file codecs, or external identities.
+
 Stally's first public release establishes the commitments below. Development
 history alone does not make every prototype name permanent. Change a contract
 according to what survives on a device, in a file, or in a saved system action.

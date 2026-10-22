@@ -2,6 +2,11 @@
 
 ## Purpose
 
+The [October 22 core record design](core-record-design.md) is the newer source
+for user-defined Item identity, multiple Marks, independent state, export
+purpose, and the current design reference weighting. It supersedes conflicting
+earlier direction here without claiming the implementation has changed.
+
 This document records owner-directed rebuild constraints that were added after
 the legacy product-intent extraction.
 
@@ -95,16 +100,23 @@ Operations boundary, routes, and English/Japanese product language.
 
 ## Monetization Direction
 
-Stally's subscription removes ads. iCloud sync remains available without a
-subscription and must not be sold as access to iCloud storage or syncing. Ads
-and StoreKit integration belong in the app target through MHPlatform, while the
+The implemented subscription removes ads and iCloud sync is available without
+a subscription. On October 22, the owner expressed a new paid-cloud direction
+and asked that synchronization engineering remain proportionate. Record this
+as current product intent, with the app-owned paid value still to be defined
+against [App Review Guideline 4.10][paid-capabilities]. No entitlement gate or
+change to existing local/cloud data is implemented by this design update. See
+the [core record design](core-record-design.md#native-synchronization-and-cost-boundary).
+
+Ads and StoreKit integration belong in the app target through MHPlatform, while the
 durable subscription-state calculation belongs in StallyLibrary so app UI,
-settings, and future surfaces share the same ad-removal rule. This decision
-supersedes the earlier rebuild direction that coupled iCloud sync to premium.
+settings, and future surfaces share the same ad-removal rule.
 
 Do not invent production AdMob identifiers or borrow identifiers from another
 app. Use official Google test identifiers only for development and preview
 builds until Stally-owned production AdMob identifiers exist.
+
+[paid-capabilities]: https://developer.apple.com/app-store/review/guidelines/#monetizing-built-in-capabilities
 
 ## Package Direction
 

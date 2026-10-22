@@ -1,5 +1,15 @@
 # First Release Data Model
 
+## October 22 Design Review
+
+This document describes the implemented V2 baseline. The newer
+[core record design](core-record-design.md) records confirmed product changes
+and a proposed replacement model, including multiple Marks per day, preserved
+history while recording is paused, independent visibility/favorites, and
+relationship periods. Its field tables are recommendations, not deployed
+schema. Development compatibility may be reconsidered under the owner's
+pre-release direction; the migration and stores below remain unchanged today.
+
 ## Decision
 
 Stally owns a collection of personally meaningful things and places. An Item
