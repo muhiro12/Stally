@@ -504,6 +504,23 @@ Cookle 20%, engineering judgment 20%, iOS practitioner experience 10%, and
 general software principles 10%. These are judgment priorities, not a numerical
 vote or a claim that the proposed product model is prescribed by Apple.
 
+The owner clarified on October 24 that the Incomes/Cookle share primarily
+represents system-wide architecture and operating philosophy: responsibility
+boundaries, maintainability, and how the apps are developed and operated.
+Their existing database schemas, persistence contracts, and uses of Apple APIs
+are comparison material, not correctness authorities. They may reflect an
+incomplete understanding at the time they were designed.
+
+For technical foundations, establish correctness independently through current
+official API documentation, relevant Apple samples, and verification against
+the supported runtimes. A documented platform constraint is not subject to a
+weighted vote. Where Apple leaves a design choice open, evaluate Stally's
+requirements and tradeoffs; do not prefer a sibling-app pattern simply to meet
+the nominal 20% share. Existing selected designs remain accountable to these
+criteria and may be revised when stronger evidence warrants it. This
+clarification does not itself establish a defect in either sibling app or
+invalidate an independently supported Stally decision.
+
 - [Apple's schema session][schema] demonstrates model, relationship, deletion,
   and versioned migration choices. Its SampleTrips excerpts were reviewed;
   no downloaded sample project or new model prototype was executed here.
