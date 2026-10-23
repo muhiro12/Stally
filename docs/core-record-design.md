@@ -2,11 +2,14 @@
 
 ## Status and Scope
 
-Recorded on October 22, 2026. Product decisions below come from the owner's
-current design discussion. The owner confirmed the three base models and their
-exact names for version 1.0: `Item`, `ItemMark`, and `ItemPeriod`. The property
-tables remain engineering recommendations, not an implemented schema or owner
-approval of attribute names, types, relationships, or deletion rules.
+Recorded on October 22, 2026; updated on October 24, 2026. The owner confirmed
+three base model names for version 1.0: `Item`, `ItemMark`, and `ItemPeriod`.
+The October 24 discussion also accepts application UUIDs, registration times,
+multiple user-defined classifications, and multiple photos with captions.
+The owner delegated naming and state representation to the stated evidence
+priorities. Selected engineering decisions below exercise that delegation;
+they are not an implemented or CloudKit-promoted schema. Other proposals and
+prototype validation remain explicitly distinguished.
 
 Stally has no released or beta users. Breaking development-model and file-format
 changes are acceptable. Preserve actual development data until an explicit
@@ -29,7 +32,11 @@ mandatory retention of development formats are not constraints on this design.
   place. Categories do not decide identity or ownership semantics.
 - Classification is user-defined. App-provided examples or starter samples
   are acceptable; a fixed vocabulary or mandatory built-in category picker is
-  not. Single classification versus multiple tags remains undecided.
+  not. An Item can have multiple classifications; classification is optional.
+- Keep application-owned UUIDs and Item registration times. Attribute naming
+  and state representation are delegated engineering decisions.
+- Support multiple photos per Item and a caption for each photo. Cookle is
+  useful evidence, not an architecture that must be copied or presumed best.
 - Multiple Marks on the same day must be supported. Stored history and the
   calendar's visual intensity are separate. People can choose how to see it;
   recording once per day must not look like inadequate participation.
@@ -65,28 +72,29 @@ No required individual-versus-series selector, automatic category rule, or
 replacement graph is needed. A future explicit link between Items can add
 context without changing existing identities.
 
-The recommended representation separates four concerns because their valid
+The selected representation separates four concerns because their valid
 combinations matter, not because four switches must appear in the interface:
 
-| Concern | Recommended representation | Does not imply |
+| Concern | Selected representation | Does not imply |
 | --- | --- | --- |
-| Everyday visibility | `Item.isHidden` | Disposal or the end of a period |
+| Everyday organization | `Item.isArchived` | Disposal or the end of a period |
 | Personal preference | `Item.isFavorite` | Visibility or current possession |
 | New Mark capture | `Item.isMarkRecordingEnabled` | Whether history exists |
 | Relationship periods | Owned `ItemPeriod` records | Visibility or Mark count |
 
-`isHidden` means excluded from ordinary lists and proactive Review suggestions.
-It is not a security or privacy boundary. A deliberate hidden-items view and
-direct identity resolution retain access. A favorite can be hidden; favorite
-filtering must still respect the selected visibility scope. Showing an Item
-again does not alter its favorite flag, recording preference, or periods.
+`isArchived` means put aside from ordinary lists and proactive Review
+suggestions while retaining the record. It is not a security or privacy
+boundary. An explicit archive view and direct identity resolution retain
+access. A favorite can be archived; favorite filtering still respects the
+selected archive scope. Unarchiving does not alter the favorite flag,
+recording preference, or periods.
 
 Favoriting records personal preference, not a calculated usage rank or a pinned
 position. There is no speculative favorite timestamp or ordering column.
 The UI may offer a convenient combined action, but it must say which facts it
 changes. No single `active/archived/disposed/favorite` enum can express these
-combinations. Hide/Show and Archive/Unarchive remain wording candidates;
-neither the user-facing term nor the persisted visibility name is confirmed.
+combinations. Select Archive/Unarchive as the action concepts; final localized
+labels remain a UI decision. Archiving never asserts that ownership ended.
 
 ## Mark Facts and Calendar Presentation
 
@@ -120,9 +128,9 @@ added later without reconstructing missing historical facts.
 
 Pausing new capture preserves readable, exportable, countable history and
 explicit corrections to that history. Resuming does not create catch-up Marks.
-Hidden Items do not receive routine capture prompts, but hiding does not rewrite
-the independent recording preference. App Intents must use the same eligibility
-rules and deliberate correction paths as the app.
+Archived Items do not receive routine capture prompts, but archiving does not
+rewrite the independent recording preference. App Intents must use the same
+eligibility rules and deliberate correction paths as the app.
 
 ## Periods: Keep Reopening History Without Splitting Identity
 
@@ -150,7 +158,8 @@ Recommended operation semantics:
   the end knowledge the person supplies. Ending today is an explicit action.
 - Resume a relationship: retain ended periods and add an ongoing period.
   Correcting an accidental end edits the existing period instead.
-- Hide/show, favorite/unfavorite, or pause/resume Marks: change no periods.
+- Archive/unarchive, favorite/unfavorite, or pause/resume Marks: change no
+  periods.
 - Delete a period: explicitly remove that period knowledge, not its Item or
   Marks. Marks are owned by the Item, not assigned to periods.
 
@@ -168,10 +177,13 @@ calculation and display specification belongs in the period implementation.
 
 ## Recommended Persisted Names and Types
 
-The three model type names are confirmed. The proposed attribute names, types,
-defaults, relationships, and deletion rules below still need design review
-and validation in a bounded implementation prototype. This decision does not
-promote a CloudKit schema or change the existing physical schema.
+The three base model names are confirmed. `uuid`, `createdAt`, `isArchived`,
+and the independent Bool representation are selected below. `ItemPhoto` and
+`Tag` extend the design for the clarified photo and classification needs; the
+base-model decision was not a cap of three entities. Their field tables and
+relationships are the selected engineering direction, subject to generated
+schema, disk-store, and synchronization validation. Other existing field
+proposals remain under review. No existing physical schema changes here.
 
 ### Item
 
@@ -179,34 +191,31 @@ promote a CloudKit schema or change the existing physical schema.
 | --- | --- | --- |
 | `uuid` | `UUID`, generated once | Portable record identity |
 | `name` | `String`, empty storage default | Required nonblank user name |
-| Classification | Representation pending | User-defined, never a fixed vocabulary |
+| `tags` | `[Tag]?` | Optional multiple user-defined classifications |
 | `note` | `String`, empty | Optional user context |
-| `photoData` | `Data?`, nil, external storage | Existing single-photo scope |
+| `photos` | `[ItemPhoto]?` | Owned photos with individual captions and order |
 | `createdAt` | `Date`, creation instant | Registration, not relationship start |
-| `isHidden` | `Bool`, false | Exclude from everyday presentation |
+| `isArchived` | `Bool`, false | Put aside while retaining the record |
 | `isFavorite` | `Bool`, false | Explicit personal preference |
 | `isMarkRecordingEnabled` | `Bool`, true | Permit new deliberate recordings |
 | `marks` | `[ItemMark]?` | Owned recording facts |
 | `periods` | `[ItemPeriod]?` | Owned relationship knowledge |
 
 The existing `categoryRawValue` and fixed category values are an implemented
-baseline that does not match the confirmed direction. Select the intended
-single-category or multiple-tag workflow before choosing its representation.
-Do not expand photos solely to make this table more general.
-The visibility intent does not itself require an `archivedAt` timestamp.
-The `isHidden` name remains provisional. Prefer a recording preference over a
-record kind: enabled/disabled is a mutable preference, not whether history may
-exist.
+baseline that does not match the confirmed direction. Tags and photo records
+replace the fixed category and single-photo proposals. The archive intent does
+not itself require an `archivedAt` timestamp. Recording is a mutable preference,
+not a record kind that determines whether history may exist.
 
 #### Item Attribute Review
 
-The following recommendations refine the field table. Only the model names
-have been confirmed; this review does not mark the attributes as approved or
-change application behavior.
+The following definitions refine the field table. The status above distinguishes
+accepted product facts, delegated selections, and remaining proposals. None
+changes application behavior until implemented and verified.
 
 - `uuid`: generate once when creating a new record, preserve it through edits,
-  hide/show, export, and restoration. Duplicating an Item creates a new UUID.
-  Equal names do not establish identity. Keep the name distinct from the
+  archive/unarchive, export, and restoration. Duplicating an Item creates a new
+  UUID. Equal names do not establish identity. Keep the name distinct from the
   framework's store-scoped `persistentModelID`; declaring an application-owned
   `id` is not inherently wrong, but `uuid` makes the two roles clear here.
 - `name`: use a nonoptional String. Require a nonblank value at creation/edit
@@ -219,13 +228,12 @@ change application behavior.
 - `createdAt`: the instant this Item was first registered, never purchase,
   relationship start, first Mark, or last import time. Preserve it during
   restoration. It supports registration ordering and collection-age readings.
-- `photoData`: retain an optional single representative photo, with nil meaning
-  no photo. Store prepared bytes with SwiftData external storage, not a Photos
-  library identifier or a temporary file URL. External storage remains part of
-  the persistent store's recovery boundary. A representative photo is not a
-  photo timeline; multiple-photo history needs a separate product decision.
-- `isHidden`: a synced Item-level visibility choice, default false. Exclude it
-  from routine lists and proactive suggestions; retain deliberate access.
+- `photos`: own multiple `ItemPhoto` records, each with its image and caption.
+  Use explicit ordering rather than the relationship array's incidental order.
+- `tags`: share user-defined classifications with other Items. Removing a tag
+  assignment changes neither the Item nor the Tag's other assignments.
+- `isArchived`: a synced Item-level organization choice, default false. Exclude
+  it from routine lists and proactive suggestions; retain deliberate access.
   This does not change recording preference, favorites, or relationship facts.
 - `isFavorite`: a synced Item-level preference, default false. Do not derive it
   from Mark counts. It is neither a pinned position nor a ranking score.
@@ -284,30 +292,37 @@ conflicts or prevent duplicate imports without defined operation semantics.
 names. Apple does not prescribe `createdAt`. The recommendation uses it for a
 concise registration instant, consistently with `recordedAt` on a Mark. The
 fact supports registration ordering and cannot be recovered reliably from
-relationship dates or Marks. Its meaning matters more than its spelling;
-the spelling is still under review.
+relationship dates or Marks. Select `createdAt` for the Item registration
+instant. This is a Stally naming decision, not an Apple-mandated spelling.
 
-For photos, the proposed single-image field stores an app-owned copy of image
-bytes. Deleting the source photo after successful ingestion does not remove
-that copy. External storage delegates the binary representation to SwiftData;
-it is not a reference to iCloud Photos or a user-managed file path. Cookle
-instead has a Photo asset model and ordered PhotoObject relationships for
-multiple, reusable photos. A representative image and a photo history are
-different requirements; the latter would justify a separate photo model.
+Photos use app-owned image bytes. Deleting the source after successful
+ingestion does not remove that copy. External storage delegates the binary
+representation to SwiftData; it is not a reference to iCloud Photos or a
+user-managed path. Cookle's Photo assets and ordered PhotoObject relationships
+support shared image reuse. Stally selects one owned `ItemPhoto` per attachment:
+the image, caption, and order have the same lifetime. It does not need shared
+asset deletion or deduplication semantics to meet the current requirements.
 
 Current Stally prepares orientation-normalized, metadata-stripped JPEGs with a
 1,600-pixel longest side and a 2 MiB encoded-size ceiling. It flattens alpha
 onto white and does not preserve the original. These are existing policies,
-not newly approved 1.0 requirements. Decide single versus multiple images,
-original retention, transparency, and quality before freezing photo storage.
-Export packaging remains a separate contract choice.
+not approved 1.0 requirements. The new direction preserves the supported
+representation supplied at ingestion and generates smaller display images
+separately. This does not promise the Photos library's RAW original, edit
+history, or Live Photo video. Supported formats, limits, metadata treatment,
+and export packaging still need a media-contract decision and measurements;
+do not silently inherit the JPEG-only, white-background conversion.
 
 `isHidden` emphasizes presentation; `isArchived` emphasizes putting a record
 aside while retaining it. `isVisible` expresses the inverse, and a `visibility`
 enum can make the presentation scope explicit. None automatically defines
-ownership or period ending. Choose the name with the intended action wording.
+ownership or period ending. Select `isArchived`: the owner's intent is to put
+a retained record aside, which is a durable collection-organizing action rather
+than transient filtering. Keep `isFavorite` and `isMarkRecordingEnabled` as
+independent Bools, along with the proposed period's `isOngoing`. Do not persist
+an overlapping aggregate status enum.
 
-Independent two-state facts can be separate Bools: hidden, favorite, and
+Independent two-state facts can be separate Bools: archived, favorite, and
 recording-enabled have eight meaningful combinations. Mutually exclusive
 states of one concern should instead use an enum when that clarifies the
 domain. A domain enum does not require a different physical representation:
@@ -316,6 +331,84 @@ current Stally already wraps its persisted `recordsMarks` Bool in an
 editable Bool and enum for the same fact. If a selected workflow needs a
 third recording policy, compare explicit raw-value storage then; do not add
 speculative states solely to avoid Bools.
+
+### ItemPhoto
+
+Use `ItemPhoto` for one photo attached to one Item. Like `ItemMark`, its name
+expresses ownership rather than a reusable asset library. A caption describes
+this photo in this Item's context; it does not belong to a globally shared
+image asset. Ingesting the same image for another Item creates a separate
+attachment with its own UUID and caption.
+
+| Stored property | Type / initial value | Meaning |
+| --- | --- | --- |
+| `uuid` | `UUID`, generated once | Portable attachment identity |
+| `imageData` | `Data?`, nil, external storage | App-owned image representation |
+| `caption` | `String`, empty | Optional plain-text description |
+| `sortOrder` | `Int`, zero | Explicit user-controlled display order |
+| `createdAt` | `Date`, registration instant | When the attachment was created |
+| `item` | `Item?` | Owning Item |
+
+Item-to-photo deletion cascades; deleting a photo never deletes its Item.
+Declare the inverse explicitly on one relationship end. Local confirmation
+requires a decodable image, even though storage permits nil to tolerate
+incomplete sync. Preserve captions and attachment identity while image data
+is unavailable. A new import must distinguish deliberately omitted media from
+invalid or missing required media; omission never silently erases saved bytes.
+
+Sort by `sortOrder`, then UUID as a deterministic tie-breaker. Concurrent
+reordering can produce ties; display every photo rather than dropping one or
+running an automatic renumbering loop. Local reordering saves the intended
+order together; native sync does not promise atomic remote arrival. Initially,
+the first ordered photo is the cover, with no competing `isCover` flags.
+Do not call attachment registration time the photo's shooting date or infer a
+relationship start from it. A dated photo journal is a separate product scope.
+
+Use image data from the selected source as the durable representation, with
+derived thumbnails for lists and grids. Thumbnails are rebuildable caches,
+not additional historical facts. Avoid decoding every full-sized image during
+list rendering; choose cache placement and invalidation after a bounded
+implementation measurement. Apple's [Wishlist code-along][wishlist] separates
+image models and thumbnails from full-sized image data. This supports the
+loading boundary, not a mandate for Stally's exact schema or image limits.
+
+Splitting a shared Photo asset from each attachment could reduce repeated
+bytes if cross-Item reuse becomes a significant workflow. It also introduces
+shared lifetime, reference tracking, and edit propagation choices. Keep one
+owned model now; an eventual asset layer can retain each ItemPhoto's UUID,
+caption, and order while moving only its binary storage.
+
+### Tag
+
+Use `Tag` for a user-defined classification shared by multiple Items. Unlike
+ItemPhoto, a Tag is not owned by one Item; `ItemTag` would suggest that it is
+an assignment record. Direct many-to-many relationships are sufficient while
+an assignment has no caption, date, or other independent facts.
+
+| Stored property | Type / initial value | Meaning |
+| --- | --- | --- |
+| `uuid` | `UUID`, generated once | Portable classification identity |
+| `name` | `String`, empty storage default | Required user-defined label |
+| `items` | `[Item]?` | Items using this classification |
+
+`Item.tags` and `Tag.items` have an explicit inverse and nullify deletion rules.
+Deleting a Tag removes assignments but never Items. Deleting an Item never
+deletes its Tags; an unused Tag remains available for reuse until explicitly
+deleted. Renaming a Tag preserves its identity and updates the shared label.
+An Item may have zero or many Tags. Tag assignment order has no domain meaning.
+
+Reuse a selected existing Tag rather than copying its name into each Item.
+Store neither a parallel string array nor a comma-separated label list.
+Local creation should offer existing matching labels using a documented name
+comparison rule. Do not impose a CloudKit-incompatible uniqueness constraint
+or silently merge different UUIDs because their names match after sync.
+Normalization, explicit duplicate consolidation, and matching rules remain
+part of the Tag Operations design, without a custom synchronization engine.
+
+Apple Notes demonstrates [multiple user-created tags][notes-tags] as a familiar
+classification interaction. This is UX evidence, not evidence of its private
+database schema. Incomes' shared Tag relationships provide local architecture
+evidence; Stally does not inherit its finance-specific tag types or date tags.
 
 ### ItemMark
 
@@ -389,7 +482,7 @@ where needed. No mandatory AI explanation, provider integration, or embedded
 prompt is part of this design.
 
 Design an explicit public representation independently of SwiftData/Codable
-defaults. Prefer readable JSON keys such as `category`, `day`, `recordedAt`,
+defaults. Prefer readable JSON keys such as `tags`, `day`, `recordedAt`,
 `start`, and `end`. Use RFC 3339 UTC timestamps for instants and the explicit
 partial-date grammar for date knowledge. Specify fractional precision and
 round-trip expectations before freezing the codec; do not claim arbitrary
@@ -441,7 +534,7 @@ facts without an explicit product tradeoff.
 
 ## Implementation Order and Required Evidence
 
-1. Prototype the three models, generated schema, validated date values, and
+1. Prototype the base models, photos, tags, generated schema, date values, and
    Operations on synthetic stores. Verify all state combinations and deletion
    directions. Keep actual production promotion out of this step.
 2. Implement multiple Marks, capture pause/resume, corrections, counts, and
@@ -457,8 +550,14 @@ facts without an explicit product tradeoff.
    freezing/publishing identifiers. Confirm the live production-schema state;
    an unreleased app alone does not prove that no schema was promoted.
 
-Outstanding choices include the proposed attributes, types, relationships,
-deletion rules, export media/precision, heatmap scale and settings placement,
+Photo and Tag checks must include individual caption edits, image omission on
+import, explicit photo order after reopening, tied order after sync, deleting
+one photo, deleting one Tag, deleting an Item, and concurrent same-name Tag
+creation. Verify that unrelated Items and shared Tags survive the relevant
+deletions. No new-model runtime or device-sync evidence is claimed here.
+
+Outstanding choices include remaining base-model field proposals, media limits
+and metadata policy, export media/precision, heatmap scale, settings placement,
 localized action wording, the paid-feature boundary, and results of the native
 schema/sync prototype. Future decisions should update this document rather
 than treating chat proposals as completed implementation.
@@ -476,3 +575,5 @@ The paid-feature boundary references [App Review Guideline 4.10][review].
 [persistent-id]: https://developer.apple.com/documentation/swiftdata/persistentidentifier
 [external-storage]: https://developer.apple.com/documentation/swiftdata/schema/attribute/option/externalstorage
 [history-identity]: https://developer.apple.com/documentation/swiftdata/fetching-and-filtering-time-based-model-changes
+[wishlist]: https://developer.apple.com/videos/play/wwdc2026/275/
+[notes-tags]: https://support.apple.com/en-gb/guide/iphone/iphedddbfdf9/ios
