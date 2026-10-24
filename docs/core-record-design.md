@@ -30,6 +30,9 @@ mandatory retention of development formats are not constraints on this design.
 
 ## Confirmed Product Decisions
 
+- Protect recorded facts and user intent. Similarity is grounds for suggestions,
+  not inferred identity. Distinct Tag UUIDs remain distinct even with identical
+  names; users choose reuse, separate creation, edits, and explicit consolidation.
 - Version 1.0 uses three base persisted models: `Item`, `ItemMark`, and
   `ItemPeriod`. These type names are decided, not naming candidates. `ItemMark`
   and `ItemPeriod` represent history belonging to an Item; their model status
@@ -580,28 +583,25 @@ deletes its Tags; an unused Tag remains available for reuse until explicitly
 deleted. Renaming a Tag preserves its identity and updates the shared label.
 An Item may have zero or many Tags. Tag assignment order has no domain meaning.
 
-Reuse a selected existing classification rather than copying its name into
+Reuse a specifically selected existing Tag rather than copying its name into
 each Item. Store neither a parallel string array nor a comma-separated label
-list. The revised [Tag review](tag-design.md) recommends one visible
-classification for equivalent names, even if native sync produces several
-backing Tag records. Preserve their UUIDs and references; derive filtering and
-counts from the union of their Items.
+list. Different UUIDs remain separate Tags in storage, display, filtering, and
+navigation, including exact same-name records. A Tag link resolves that UUID
+only. Rename changes only that record and does not implicitly combine it with
+another Tag bearing the same name.
 
-The follow-up recommendation uses direct Foundation case/width comparison
-under a fixed locale, allowing its native kana equivalence while preserving
-cleaned user spelling. Search uses standard localized matching plus the same
-whole-name equivalence. These are application rules, not automatic SwiftData
-grouping; the Tag report details costs across readers, editing, and export.
-Rename to an existing label now supports a user-committed combination: rename source members to the destination spelling,
-without deleting backing records or moving relationships. This supersedes
-collision rejection and separate same-name picker choices. A wholly new old-
-name record arriving later is retained without a permanent name redirect.
+The owner selected protection of facts and user intent. Foundation comparison
+and standard search may suggest existing Tags, but choosing a suggestion and
+creating a separate Tag are distinct user actions. Preserve confirmed spelling,
+including boundary spaces; do not silently trim, replace, or reassign names.
+The earlier automatic name-based grouping and representative-UUID selection
+recommendations are superseded. See the [Tag design](tag-design.md).
 
-These are revised recommendations awaiting owner acceptance, with bounded
-local persistence evidence. They add no uniqueness constraint, stored group,
-alias table, or synchronization repair engine. Explicitly deleting a visible
-classification removes its known backing tags; merely renaming or combining
-classifications does not delete them.
+The owner wants an explicit consolidation feature. Its destination and affected
+Tags must be visible choices. Source-record removal, late CloudKit assignments,
+and old UUID references remain to be designed; manual initiation does not
+establish safe deletion during synchronization. Ordinary operations need no
+new fields, but consolidation's potential storage needs remain open.
 
 Apple Notes demonstrates [multiple user-created tags][notes-tags] as a familiar
 classification interaction. This is UX evidence, not evidence of its private
@@ -877,19 +877,17 @@ a concrete requirement can still justify an explained revision before release.
 
 | Order | Topic | Remaining decision | Effect on the model contract |
 | --- | --- | --- | --- |
-| 1 | Tag identity and editing | Review and accept the tested recommendation in the Tag design report | Usually Operations rules over uuid/name/items; add no uniqueness key or extra field without a demonstrated need |
+| 1 | Explicit Tag consolidation | Define source-record lifecycle, late assignments, failure, and old UUID references; ordinary UUID identity and suggestions are selected | Current fields serve ordinary operations; determine any concrete consolidation state before freezing |
 | 2 | Export and import | Public format/version, image packaging and metadata controls, matching UUIDs, existing-value conflicts, duplicate versus restore, missing/omitted media, and failure behavior | Defines portable identity and field meaning; may reveal a concrete need for additional stored facts before freezing |
 | 3 | Native synchronization lifecycle | Enabling/disabling sync, handling incomplete arrival and conflicting records in the UI, and retaining access to existing data across account/plan changes | Tests the selected optional relationships and store lifecycle; does not authorize a custom merge engine or a paid sync gate |
 | 4 | Derived readings and presentation | Elapsed-since-start versus active-period totals, partial-date uncertainty, day-boundary counting, calendar intensity scale, and settings scope | Primarily calculations and preferences; retain source facts without adding persisted totals |
 | 5 | Schema integration and transition | Versioned-schema placement, current development-data transfer/retirement, generated CloudKit fields, and final consumer verification | Physical contract freeze and implementation readiness; no silent store reset or production schema promotion |
 
-The [Tag design report](tag-design.md) supplies the next recommendation for
-acceptance. It keeps shared UUID identity, multiple assignments, shared rename,
-no assignment ordering, and deletion that preserves Items. It compares native
-name rules, physical deduplication, and non-destructive classification
-combination, with bounded disk-store evidence. No
-production implementation or owner acceptance of the detailed rules is implied.
-After accepting or adjusting that recommendation, proceed to export/import.
+The [Tag design report](tag-design.md) records the selected UUID-based identity,
+separate same-name records, faithful spelling, and user-controlled reuse or
+creation. Suggestions do not merge classifications. Explicit consolidation is
+the remaining Tag-specific design decision, especially with native sync.
+After resolving its identity and source-record lifecycle, proceed to export/import.
 
 Export/import follows Tag because imported records must preserve or resolve
 those identities. In particular, equal UUIDs with differing contents need an

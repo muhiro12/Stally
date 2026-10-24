@@ -197,14 +197,14 @@ The owner accepted the [photo storage policy](photo-storage-design.md),
 including conditional byte preservation, ingestion limits, metadata handling,
 and persistent previews. ItemPhoto now includes optional thumbnailData
 as a rebuildable derivative alongside the authoritative imageData.
-The revised [Tag report](tag-design.md) recommends one visible classification
-for equivalent names and user-committed combination when renaming into an
-existing label. Several backing records may participate without deleting
-identities or relationships; no stored group or additional field is needed.
-The follow-up review makes the application grouping cost explicit and uses
-direct Foundation comparison, including native kana equivalence, rather than
-a folded hash key. Portable identity belongs to each stored Tag record.
-Those detailed rules await owner acceptance.
+The [Tag report](tag-design.md) records the owner's selected direction:
+preserve distinct UUID identities, including identical names; suggest existing
+Tags without automatically grouping, rewriting, or reassigning them. Selection,
+filtering, links, and rename operate on the chosen UUID. Preserve confirmed
+spelling, including spaces. The previous derived classification recommendation
+is superseded. Explicit consolidation is desired, but its source-record
+lifecycle under sync and possible storage needs remain open. The three-field
+Tag illustration supports ordinary operations, not a completed merge protocol.
 Export/import conflict semantics, native sync lifecycle, and final
 reading/presentation behavior remain to be settled.
 Follow the [remaining decision sequence](core-record-design.md#remaining-decisions-after-photo-acceptance),

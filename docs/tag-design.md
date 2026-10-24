@@ -1,87 +1,72 @@
-# Tag Classification and Naming Design
+# Tag Identity, Suggestions, and Explicit Consolidation
 
-## Status and Recommendation
+## Status and Governing Principle
 
-This is the revised recommendation requested after the first Tag review.
-The previous recommendation to expose same-name records separately and block
-renaming to an existing label is superseded. The owner asked for a natural
-Stally design using public Apple capabilities, not similarity to or difference
-from Incomes or Cookle. The detailed revised recommendation awaits acceptance.
-No production model, Operations implementation, actual store, or cloud schema
-was changed by this review.
+The owner selected protection of recorded facts and user intent as the governing
+principle. The app supports decisions; it does not infer that similarly named
+records represent one classification. This supersedes the previous recommendation
+to present all equivalent names as one classification with several backing Tags.
+The earlier acceptance of Foundation comparison now applies to suggestions, not
+record identity, assignment, or automatic grouping.
 
-Recommend one user-visible classification for names considered equivalent by
-the documented comparison rule. An Item can have several classifications, but
-showing two indistinguishable labels to represent different sets of Items has
-no selected Stally purpose. Different meanings should use different names.
+Use the existing Tag shape: uuid, name, and optional items. Distinct UUIDs mean
+distinct Tags, including records with identical names. Preserve existing names
+and relationships until the user edits, deletes, or explicitly consolidates
+selected Tags. Preserving facts does not require an immutable event log or
+prohibit deliberate correction and removal.
 
-Keep the current Tag model: uuid, name, and optional items. UUID identifies a
-stored record. Normally one record represents a classification; native sync
-may produce several. Compute the user-visible classification from all matching
-records. A classification is not another persisted model, a permanent name
-identifier, or an alias/redirect record.
+This document records the owner's product direction and bounded engineering
+recommendations. No production model, Operations code, actual store, or cloud
+schema changed. The owner wants an explicit consolidation feature; its synced
+persistence algorithm and source-record lifecycle are not yet finalized.
 
-## Alternatives Reconsidered
+## Identity and User Operations
 
-| Alternative | Product fit | Persistence cost or limitation | Judgment |
-| --- | --- | --- | --- |
-| Different UUIDs always mean separately selectable classifications | Useful if users need same-name categories with different meanings | Simple individual rename, but exposes storage duplicates and makes filtering ambiguous | No current Stally requirement justifies this behavior |
-| Require exactly one physical Tag for every name | Clean record count and a familiar single-row model | Cross-device uniqueness needs deduplication and careful treatment of separately arriving relationships | Do not make physical uniqueness a 1.0 requirement |
-| Store independent name values directly on every Item | Natural for independent labels without shared editing | Collection-wide rename updates many Items; abandons the selected shared-reference model without solving offline rename semantics | Valid alternative, but weaker fit for shared management |
-| One visible classification, permitting several same-name backing records | Same name selects all relevant Items; rename can combine classifications | Shared grouping, multi-record editing, and consumer identity resolution; no automatic record deletion | Recommended |
+| Action or condition | Contract |
+| --- | --- |
+| Two different UUIDs have the same name | Keep and present two Tags; do not automatically group or delete either |
+| Similar spelling, case, width, kana, or spaces | Offer candidates without changing identity or the entered spelling |
+| Select an existing suggestion | Assign that specific Tag UUID; preserve its stored name |
+| Explicitly create using the entered name | Create a new Tag with that name, including when another name is identical |
+| Assign a Tag already assigned to this Item | Do not add the same UUID twice |
+| Tap a Tag on an Item | Show Items related to that Tag UUID only |
+| Open a Tag deep link | Resolve the specified UUID, not all Tags sharing its name |
+| Rename a Tag | Change only that Tag's name; retain its UUID and assignments |
+| Rename to a name already in use | May offer consolidation; rename alone neither consolidates nor fails solely because of the collision |
+| Detach or delete a Tag | Affect only the selected UUID; preserve other Tags and Items |
+| Receive another Tag through sync/import | Retain its identity and references; no name-based reassignment |
+| Explicitly consolidate selected Tags | Perform a separate deliberate operation with a chosen destination; see the open persistence boundary below |
 
-The previous review treated successful implementation of collision rejection
-as evidence that rejection was the best product rule. It also conflated
-user-initiated grouping with automatic destructive deduplication. These are
-separate decisions. A portable UUID does not require users to distinguish two
-otherwise identical classifications.
+A typed name alone is not authority to choose an existing UUID. Make selecting
+an existing suggestion and creating a new Tag distinct actions. Default focus,
+return-key behavior, and labels need UI verification so a suggestion does not
+silently become a decision. Do not add repetitive confirmation dialogs merely
+because a suggestion exists.
 
-## Apple Evidence and Its Boundary
+The proposal to choose a representative by UUID order or usage count is retired.
+If A has 99 related Items and B has one, selecting B assigns B. Popularity may
+inform suggestion presentation later, but must not silently substitute A.
 
-Apple Notes on Mac permits renaming a tag to a name already in use to bring
-similarly tagged notes together. Its [user guide][notes-mac] supports that
-interaction, not an assertion about Notes' private model or sync algorithms.
-Adopt the ability to combine through rename rather than mechanically copying
-Notes' single-word hashtag syntax or automatic removal of unused tags.
+## Names and Suggestions
 
-[Public SwiftData/CloudKit guidance][cloudkit] does not support unique
-constraints and
-warns that relationships may synchronize separately. Apple's
-[Core Data sharing sample][sharing-sample] specifically explains how deleting
-a duplicate before all related objects arrive can lose relationships. Its
-solution includes history processing, a deduplication date, deterministic
-record selection, and delayed removal around import/export events.
+Preserve user-confirmed spelling, including leading, trailing, and interior
+spaces. In particular, くつ, クツ, く つ, and a leading-space version of くつ
+can coexist as independently named Tags. Do not silently trim a stored name or
+render a trimmed replacement as if it were the saved value.
 
-The locally cached sample's PersistenceController+Deduplicate.swift and
-related Tag/History source were inspected; its documented hazard and strategy
-match the current Apple article. It is Core Data sharing code, not a SwiftData
-API recipe. Do not reach into SwiftData's underlying Core Data container or
-copy that machinery merely to ensure one physical row. This review uses the
-sample to identify the cost of destructive deduplication, not as proof that
-Apple prescribes Stally's derived grouping.
+For local input, recommend requiring at least one non-whitespace character and
+rejecting control characters and line/paragraph separators rather than silently
+rewriting them. This validation does not require trimming accepted names. Keep
+emoji format characters such as joiners. These are input-validity rules, not
+a name-uniqueness constraint. Preserve invalid incoming records for explicit
+handling rather than deleting them or grouping them into an empty-name Tag.
 
-## Meaning of Same Name
-
-The follow-up review replaces folding followed by Swift equality with direct
-Foundation comparison. The owner prefers the equivalences supplied by standard
-APIs rather than extra rules to keep hiragana and katakana separate. This is
-not a request for translation, synonym inference, or a custom normalizer.
-
-The owner accepted this direct-comparison policy in the subsequent review.
-Their description of multiple stored Tags appearing as one classification was
-a request to confirm understanding, not approval of the entire grouping design.
-
-Trim boundary whitespace, then compare complete names with caseInsensitive and
-widthInsensitive under a fixed en_US_POSIX locale. Preserve the cleaned user
-spelling. This is a Stally choice of standard comparison options, not an Apple
-prescription for tag identity. A fixed locale avoids changing classification
-merely because a device changes language; it does not freeze Unicode behavior
-across future OS versions or provide culturally tailored matching everywhere.
+The previously verified Foundation comparison can suggest an existing Tag:
 
 ```swift
 import Foundation
 
-func tagNamesMatch(_ first: String, _ second: String) -> Bool {
+func tagNamesSuggestReuse(_ first: String, _ second: String) -> Bool {
     first.trimmingCharacters(in: .whitespacesAndNewlines).compare(
         second.trimmingCharacters(in: .whitespacesAndNewlines),
         options: [.caseInsensitive, .widthInsensitive],
@@ -90,258 +75,113 @@ func tagNamesMatch(_ first: String, _ second: String) -> Bool {
 }
 ```
 
-Do not manufacture a hash key assumed to be equivalent to this comparator:
-Foundation folding and comparison differed in the verified kana cases. Group
-fetched Tags using the same comparator, for example by sorting then collecting
-adjacent equivalent names, with UUID as the within-group tie-breaker. Localized
-user-visible sorting is a separate step. No comparison key is persisted.
+Trimming here affects only candidate discovery; it never changes saved input.
+Under the verified runtime this suggests Shoes for case/width variants and
+くつ for kana-script/width variants. It does not infer that 靴, くつ, and Shoes
+mean the same thing. Interior-space variants need not all match. Do not build
+custom transliteration, whitespace removal, translation, or synonym rules just
+to ensure every potentially related Tag is suggested.
 
-| Names | Same classification in the verified runtime? |
-| --- | --- |
-| Shoes / shoes / full-width SHOES | Yes |
-| くつ / クツ / half-width katakana equivalent | Yes |
-| cafe / cafe-with-acute | No |
-| はな / ばな | No |
-| 靴 / くつ; 靴 / Shoes | No |
-| 革 靴 / 革靴; one internal space / two internal spaces | No |
-| 靴01 / 靴1; circled digit one / plain digit one | No |
-| Straße / STRASSE | Yes |
+The fixed locale is the previously tested engineering choice for candidate
+comparison, not an identity contract. Locale-aware localizedStandardContains
+remains suitable for broader user-facing searches. Matching behavior can evolve
+without changing stored Tag identity, unlike the retired grouping proposal.
+The Foundation method and its options are not a complete suggestion UI.
 
-A follow-up isolated four option sets across five pairs. Under en_US_POSIX,
-Shoes/shoes required caseInsensitive; shoes/full-width uppercase SHOES required
-both caseInsensitive and widthInsensitive. The tested hiragana/katakana and
-full-width/half-width kana pairs compared equal even with no options. Their
-equivalence comes from the native localized collation in this configuration,
-not a Stally kana conversion or an assertion that kana has uppercase/lowercase.
-These are runtime observations on macOS 27.2, not a promise for every locale or
-comparison/search API.
+## Search, Display, and References
 
-Adding diacriticInsensitive also equated はな and ばな in the experiment.
-Do not enable every permissive option merely to maximize grouping. It is
-reasonable for search to offer approximate candidates without automatically
-making them one editable classification. The recommendation retains accent
-and voiced-kana differences without special language-specific exclusions.
+Text search may find several Tags. Present them as separate results even when
+their names look identical. Selecting one result filters by that UUID only.
+A general Item text search may match through several Tag names and return each
+Item once; deduplicating Item results is not consolidating the matching Tags.
+If a future UI permits explicitly selecting several Tags, it must state its
+union/intersection semantics rather than infer a multi-Tag selection from a name.
 
-There is no single standard API whose equality, substring search, and sort
-ordering all agree. In the tested ja_JP environment, localizedStandardCompare
-ordered variants separately, and localizedStandardContains did not match
-くつ against クツ even though the selected whole-name comparison did. Its
-[documented purpose][search] is user-facing, locale-aware, case- and
-diacritic-insensitive search, with options allowed to evolve over time.
+Identical-looking results need useful selection context. Related Item counts
+and an Item preview are candidate UI aids; a count alone is not sufficient when
+counts tie. Show saved names faithfully, and make edge whitespace inspectable
+in editing or management without rewriting the stored value. Ordinary users
+need not see UUIDs. Specific presentation needs screen-level verification.
 
-Use localizedStandardContains for candidate search over all member names,
-supplemented by the same whole-name equivalence used for classification. This
-ensures a recognized equivalent full tag name finds its classification. It
-adds one shared matching rule, not transliteration or a synonym dictionary.
-Do not promise arbitrary kana-substring equivalence beyond the standard search
-API. Search hits do not themselves trigger grouping or rename.
+No persistent logical-group identity, name-to-group resolver, or representative
+Tag is required for ordinary navigation, filtering, counts, rename, or deletion.
+All surfaces keep the familiar relationship between a selected Tag UUID and its
+related Items. Preserve UUID references through export/import; never collapse
+different UUIDs merely because names compare equal. Conflicting contents with
+the same UUID remain a separate import-conflict question.
 
-Trim whitespacesAndNewlines at the edges for local input; reject an empty
-result, internal control characters, line separators, and paragraph separators.
-Retain ordinary internal spaces, case, width, accents, and emoji sequences.
-Do not strip format characters such as emoji joiners. Missing/invalid incoming
-names remain explicit incomplete data, never silently grouped into a valid
-empty-name classification or deleted.
+## Explicit Consolidation: Product Intent and Open Persistence Boundary
 
-The existing model permits adding semantic search later without rewriting Tag
-identity: expand search candidates while preserving names and UUIDs. Automatic
-semantic merging would be a separate, consequential contract, not an equally
-trivial extension. The owner can already explicitly combine 靴 and Shoes by
-renaming one into the other; Foundation does not infer that they mean the same.
+The owner wants a way to combine deliberately selected Tags, including exact
+same-name duplicates and different labels such as 靴 and Shoes. The app does not
+need to infer semantic equivalence when the person selects the sources.
 
-A per-user or per-tag exception to grouping is not recommended for 1.0. Use
-meaningfully different labels when separate classifications are wanted. A
-setting that changes editable classification identity also changes rename and
-removal scope and is more than a display preference. This remains a product
-recommendation, not an accepted owner requirement.
+The proposed interaction should make the following concrete:
 
-## User Operations
+1. Which Tag UUIDs are being combined.
+2. Which destination Tag survives, and its resulting name.
+3. Which Item assignments change; an Item assigned to both must not acquire a
+   duplicate destination assignment.
+4. What happens to the source Tags, existing links, and undo/recovery.
 
-| Action | Recommended result |
-| --- | --- |
-| Enter a new name | Create a Tag and assign it to the Item |
-| Enter an existing equivalent name | Reuse the classification without creating another record or changing its display spelling |
-| Choose a classification backed by several records | Present one choice; it covers all those records |
-| Add it to an Item already carrying any member | No duplicate visible assignment or new relationship is needed |
-| Rename to an unused name | Update all currently known members of the source classification; preserve UUIDs and assignments |
-| Rename to an existing classification | Explain that the classifications will be combined; committing changes source members to the destination spelling |
-| Correct case/width spelling within a classification | Update its known members to the entered spelling |
-| Receive another same-name record through sync/import | Include it in the same read grouping; perform no cleanup write |
-| Remove a classification from one Item | Remove all matching member references from that Item only |
-| Explicitly delete a classification | Delete its currently known member records through standard nullify rules; retain Items and their history/photos |
+Choosing the destination is a user decision, not an implicit lowest-UUID or
+highest-count policy. A suggested destination is allowed if the result is
+visible and selectable. Renaming one Tag to the other's text is not a substitute
+for consolidation now that identity is explicitly UUID-based.
 
-A rename to an existing classification is supported in 1.0. Its commit action
-must say that it combines classifications, rather than presenting an ordinary
-rename and silently changing its scope. Keep editing as a draft until commit;
-cancellation changes nothing. This is a domain action through Operations,
-not a requirement for a new settings screen or repeated confirmation dialogs.
+For a complete local graph, changing source assignments to a destination and
+removing the sources is conceptually straightforward. The earlier local probe
+of this alternative passed five assertions; it did not establish safe behavior
+with asynchronous CloudKit changes. Do not present that local check as a final
+synced consolidation implementation.
 
-For a collision, retain the destination's existing display spelling. If several
-records have equivalent but different spellings, choose the member with the
-lowest UUID as a deterministic display/assignment representative. Trim boundary
-whitespace for display without silently rewriting incoming records. Do not
-rewrite other members merely to enforce that choice. A case-only spelling
-correction updates the source classification's known members explicitly.
-Localized sort order is independent of the representative rule.
+User authorization resolves who decides to consolidate, but does not make
+CloudKit relationship delivery atomic. A source Tag may have relationships on
+another device that have not reached this device. Deleting it immediately after
+moving only locally known assignments can remove relationships that were never
+transferred. A currently empty inverse relationship or a recent successful local
+save does not establish that all peers have finished.
 
-## Non-Destructive Combination
+Apple's [sharing sample][sharing-sample] explicitly documents this loss hazard
+and delays duplicate deletion while transferring arriving relationships. It is
+Core Data sample evidence, not a direct SwiftData implementation recipe and not
+a mandate to adopt its history/deduplication machinery. The [SwiftData sync
+contract][cloudkit] likewise does not guarantee atomic relationship updates.
 
-For example, Items A and B use a record named Travel, and Items B and C use a
-record named Trips. When the person renames Travel to Trips and commits the
-combination:
+The next focused design decision is the source-record lifecycle and concurrency
+contract for this explicit operation. It must consider late assignments,
+concurrent consolidation, destination deletion, failure, and old UUID links.
+Do not silently add permanent redirect records, automatic name grouping,
+custom sync, or a claim of safe immediate deletion. If a complete merge requires
+excessive machinery, simplify or bound the feature openly before implementation.
+The presence of duplicates is acceptable in the meantime and is never a reason
+for automatic data repair.
 
-1. Change the name of the Travel record to Trips.
-2. Keep both record UUIDs and every existing Item relationship.
-3. Present one Trips classification whose Items are the union A, B, and C.
-4. Show one Trips chip on B and count B once in that classification's results.
+Keeping the current three Tag fields is sufficient for the accepted ordinary
+operations. Whether explicit consolidation needs additional persisted state is
+open; do not freeze that part of the physical schema prematurely.
 
-There is no relationship transfer or redundant-record deletion in this action.
-If another Item's reference to the former Travel record arrives later, that
-record still exists and participates in Trips. This property addresses the
-specific premature-deletion hazard without introducing a synchronization
-repair engine.
+## Evidence and Superseded Experiments
 
-Implement grouping as a derived read using the native Foundation comparator
-and Swift collections. Use UUID-based sets when combining Item results so Items that
-reference multiple member records appear once. Keep this logic in the shared
-library's read/Operations boundary so lists, filters, counts, and system
-surfaces agree; do not implement grouping only in the tag picker. Do not fetch
-photos merely to compare Tag names.
+The existing Foundation probes remain evidence for suggestions. They compared
+seven approaches across 23 pairs, followed by 14 pairs across five approaches
+and five pairs with isolated comparison options. Under the tested en_US_POSIX
+locale, the kana pairs compared equal even without case/width options; this is
+native collation behavior, not an app conversion. These observations on macOS
+27.2 / Xcode 27.2 do not promise the same results for every OS, locale, or API.
 
-New assignments can use the deterministic representative when the Item has no
-member already. Read grouping must always consider every member, including
-records temporarily lacking their inverse Item relationships. Do not use only
-the representative's items. Unused tags remain until explicitly deleted, as
-already selected. No global name uniqueness, normalizedName column, alias
-chain, tombstone field, or background reconciliation task is added.
+Earlier SwiftData probes verified retained same-name records, shared rename,
+nullify deletion, UUID-based Item filtering, and a limited Codable graph round
+trip. The 32-assertion grouping probe and the 22-assertion grouping/export probe
+also tested behavior that is now superseded. Their passing results do not mean
+that the accepted UUID-specific UI has been implemented or tested end to end.
+Sources and results remain in the previously recorded temporary directories;
+no personal images were added to the repository.
 
-## Application Work and Framework Boundary
+This revision updates design records only. No new runtime test, production
+implementation, real multi-device CloudKit verification, or full import/export
+contract is claimed. The explicit consolidation feature remains the outstanding
+Tag-specific technical decision.
 
-This design does add application logic. SwiftData does not provide an automatic
-name-based classification spanning several model identities. The previous
-review understated that cost by describing only a small grouping operation.
-Using Foundation does not make the entire behavior platform-provided.
-
-| Surface | Framework capability | Stally responsibility |
-| --- | --- | --- |
-| Tag list and Item chips | Fetch/observe models and compare strings | Derive groups, choose a display spelling, show one chip per group |
-| Candidate search | localizedStandardContains | Search all member spellings and include whole-name equivalent groups |
-| Item filtering and count | Persistent relationship predicate over member UUIDs | Resolve the group first; count each matching Item once |
-| Rename and combine | Edit names and save | Update all currently known source members; explain combination scope |
-| Detach and delete | Change relationships or use nullify deletion | Apply the operation to all currently known matching members |
-| Saved selection and external references | Resolve a stored Tag UUID | Use that record's current name to resolve its current group |
-| Export/import | Codable and ordinary model insertion/assignment | Preserve raw Tag UUIDs, names, and Item references; do not invent a group ID |
-
-Centralize these rules in the shared library. A representative UUID is a record
-identifier, not a newly promised permanent classification identity. A saved
-reference may use any surviving member UUID and resolve its current group;
-choosing a different display representative must not invalidate that reference.
-Handling actual deletion remains an ordinary missing-reference case.
-
-Grouping requires reading the Tag collection, but does not require loading all
-Items or photos. Resolve matching member UUIDs, then use a native relationship
-predicate for the Item results. The probe executed that predicate against a
-persistent SwiftData store; an arbitrary Foundation comparison is not inserted
-into a database predicate. Live observation, pagination, and realistic collection
-size still need verification during integration.
-
-The recommendation is framework-compatible application behavior, not a
-zero-cost standard feature or a proven universal best practice. For Stally's
-selected desire to present one equivalent-name classification, it avoids the
-larger obligation of destructive cross-device deduplication. If even this
-shared projection is too costly, the simpler honest alternative is to expose
-separate UUID-backed tags and accept visible duplicates. There is no demonstrated
-public switch that supplies clean grouping, global rename, and cross-device
-uniqueness together. Do not build a custom sync engine to hide that tradeoff.
-
-## Native Sync Limits and Export Implications
-
-Names and relationships may arrive at different times. A multi-record rename
-is not a distributed transaction: intermediate views can show old and new
-classifications. Conflicting edits follow native sync behavior. The local
-read grouping is deterministic for the records currently available; it does
-not establish cross-device atomicity or convergence of arbitrary conflicts.
-
-A wholly new old-name Tag created on another offline device can arrive after a
-rename. It remains an old-name classification, with its information intact.
-There is no permanent old-name redirect, and reusing an old name later is
-allowed. Do not promise that a rename also rewrites unknown future records or
-old export files. This is an explicit scope boundary rather than a hidden
-claim of durable global merge semantics.
-
-Retaining several small backing records is a chosen storage tradeoff. Physical
-consolidation is not needed for the visible combination action. Revisit it only
-if measured scale or a concrete contract requires it, including the relationship
-arrival concerns demonstrated by Apple. Native sync integration still requires
-bounded multi-device tests before release.
-
-Export/import is the next contract discussion. Identity-preserving round trips
-must retain backing UUIDs and memberships; a human-readable summary can present
-one classification per name. Do not discard extra member identities merely
-because the UI displays one row. Restoration can reintroduce historical names;
-exact UUID conflict rules belong to that separate design. No stable logical
-classification UUID or permanent alias mapping is promised by this proposal.
-
-## Latest Verification Evidence
-
-The follow-up compared 14 name pairs with five native approaches on macOS 27.2
-using Xcode 27.2. Five additional pairs were checked with whole-name comparison
-and range search under en_US_POSIX, ja_JP, en_US, and tr_TR. The observations
-above are runtime evidence, not guarantees for every OS version or language.
-
-A new throwaway full-five-model SwiftData probe passed 22 assertions across
-four processes: source creation/export, fresh-store import, unchanged replay,
-and reopen. It exercised kana/width grouping, union counts, standard candidate
-search plus whole-name equality, explicit rename into an existing group,
-retained member UUID lookup, a persistent Item predicate using matching Tag
-UUIDs, and a Codable Tag/Item graph round trip. All nine Tag records and four
-Items retained their identities and assignments; replay did not multiply rows.
-
-This was an isolated identity/relationship export probe, not the final Stally
-file format or a complete import implementation. It did not resolve edited-UUID
-conflicts, restore photos, test malicious input, or prove partial-import recovery.
-The standard macOS store-change notification registration emitted sandbox
-warnings while the persistence assertions passed; observation is not verified.
-The same source compiled for iOS Simulator without warnings. No iOS runtime,
-real CloudKit sync, UI refresh, App Intents lifecycle, or scale benchmark is
-claimed. Sources and artifacts remain under /private/tmp/stally-tag-native-review.
-
-## Previous Verification Evidence
-
-The first review's Foundation comparison records the superseded folding policy:
-seven approaches across 23 pairs and 61 name-rule assertions on macOS 27.2 / Xcode 27.2. Its
-29 local persistence assertions demonstrated shared rename and retained
-same-name records. Its five physical-merge assertions established only a local
-alternative, not safe cleanup across asynchronous CloudKit arrivals.
-
-The reconsidered design passed 32 assertions across nine fresh macOS processes
-using the complete current five-model schema, including thumbnailData, in a
-throwaway SwiftData store with CloudKit disabled. It covered:
-
-- Same-name filtering as a union, including an Item assigned to both records.
-- Draft rollback, reopen, and rename into an existing classification.
-- Unchanged record UUIDs and Item memberships during combination and rename.
-- A later Item assignment referencing the former source record.
-- Renaming all known members of a combined classification.
-- A later independent old-name record remaining visible without redirection.
-- Removing every matching reference from one Item while preserving others.
-- Explicit classification deletion preserving unrelated tags, all Items, and
-  existing Mark history.
-
-The same final source compiled for iOS Simulator. Local sources and results are
-under /private/tmp/stally-tag-reconsidered. The late-arrival cases are
-deliberately ordered local insertions, not actual CloudKit events. Rollback
-verification is not disk-full or save-failure injection. No iOS runtime, UI,
-cross-device sync, large-tag-set performance, or cross-OS Unicode guarantee is
-claimed.
-
-No sibling Tag implementation was read for this reconsideration. The relevant
-Apple sample was inspected read-only in the external sample cache; its cached
-check date was October 22, 2026, and the current official article was consulted.
-No sample code was copied into Stally and no production code was changed.
-
-[notes-mac]: https://support.apple.com/guide/notes/use-tags-apdc88ed7f1d/4.13/mac/27
 [sharing-sample]: https://developer.apple.com/documentation/coredata/sharing-core-data-objects-between-icloud-users
-
-[search]: https://developer.apple.com/documentation/swift/stringprotocol/localizedstandardcontains(_:)
 [cloudkit]: https://developer.apple.com/documentation/swiftdata/syncing-model-data-across-a-persons-devices
