@@ -733,9 +733,9 @@ writes for equal content, keep current values by default, and apply file values
 only through explicit record choices. File absence is not deletion; omitted
 images never erase saved images. The proposal has bounded local probe evidence
 for its mechanics. The owner accepted conservative omission handling and the
-1.0 scope without whole-library replacement or Import as Copy. Public file
-versioning now proposes a schemaVersion aligned with SwiftData and a separate
-file formatVersion, with direct value-type historical readers, shared semantic
+1.0 scope without whole-library replacement or Import as Copy. The owner also
+accepted public file versioning with a schemaVersion aligned with SwiftData and
+a separate file formatVersion, with direct value-type historical readers, shared semantic
 conversion rules, and absent-field preservation. Shared numbering does not
 require executing a SwiftData migration during import. It adds no edit-history
 or revision columns and does not establish the final wire format or cross-device

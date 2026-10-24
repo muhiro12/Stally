@@ -5,8 +5,9 @@
 The owner accepted conservative omission handling, review of absent identities,
 and a 1.0 workflow without whole-library replacement or Import as Copy. The
 record-level resolution details remain the engineering recommendation below.
-The owner also requires planning for old exports in future model versions;
-the versioning approach below is a new recommendation. These decisions apply
+The owner also accepted aligned store/export schema versions, a separate file
+format version, and shared semantic conversion rules without mandatory reuse
+of SwiftData migration execution. These decisions apply
 protection of recorded facts and user intent to the five planned models.
 No production importer, store, or cloud schema was changed.
 The [portable data contract](portable-data-contract.md) still describes the
@@ -160,12 +161,13 @@ This is not a migration-free promise or an implemented feature.
 
 ## Public File Evolution and Older Exports
 
-The follow-up recommendation aligns the file's data schemaVersion with the
+The accepted policy aligns the file's data schemaVersion with the
 SwiftData version that wrote it, while keeping file decoding independent of
 SchemaMigrationPlan execution. The previous recommendation for a wholly
 independent single portable revision conflated two choices: version alignment
 and implementation reuse. External usability does not itself require separate
-data-schema numbering. This revised recommendation awaits owner acceptance.
+data-schema numbering. The owner accepted this revised policy on October 24,
+2026; the concrete wire format and its implementation remain pending.
 
 | Version | Responsibility |
 | --- | --- |
