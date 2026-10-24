@@ -580,18 +580,25 @@ deletes its Tags; an unused Tag remains available for reuse until explicitly
 deleted. Renaming a Tag preserves its identity and updates the shared label.
 An Item may have zero or many Tags. Tag assignment order has no domain meaning.
 
-Reuse a selected existing Tag rather than copying its name into each Item.
-Store neither a parallel string array nor a comma-separated label list.
-Local creation should offer existing matching labels using a documented name
-comparison rule. Do not impose a CloudKit-incompatible uniqueness constraint
-or silently merge different UUIDs because their names match after sync.
-The [Tag review](tag-design.md) now recommends trimming boundary whitespace,
-preserving user spelling, and Foundation case/width folding under a fixed
-locale for local reuse/collision checks. Ordinary rename preserves identity;
-new collisions are blocked, while separately identified incoming duplicates
-remain visible. Dedicated consolidation is deferred from the initial scope.
-These are reviewed recommendations awaiting owner acceptance, with local
-persistence evidence; they do not introduce a synchronization engine.
+Reuse a selected existing classification rather than copying its name into
+each Item. Store neither a parallel string array nor a comma-separated label
+list. The revised [Tag review](tag-design.md) recommends one visible
+classification for equivalent names, even if native sync produces several
+backing Tag records. Preserve their UUIDs and references; derive filtering and
+counts from the union of their Items.
+
+The comparison retains Foundation case/width folding under a fixed locale and
+preserves cleaned user spelling. Rename to an existing label now supports a
+user-committed combination: rename source members to the destination spelling,
+without deleting backing records or moving relationships. This supersedes
+collision rejection and separate same-name picker choices. A wholly new old-
+name record arriving later is retained without a permanent name redirect.
+
+These are revised recommendations awaiting owner acceptance, with bounded
+local persistence evidence. They add no uniqueness constraint, stored group,
+alias table, or synchronization repair engine. Explicitly deleting a visible
+classification removes its known backing tags; merely renaming or combining
+classifications does not delete them.
 
 Apple Notes demonstrates [multiple user-created tags][notes-tags] as a familiar
 classification interaction. This is UX evidence, not evidence of its private
@@ -876,7 +883,8 @@ a concrete requirement can still justify an explained revision before release.
 The [Tag design report](tag-design.md) supplies the next recommendation for
 acceptance. It keeps shared UUID identity, multiple assignments, shared rename,
 no assignment ordering, and deletion that preserves Items. It compares native
-name rules and explicit consolidation, with bounded disk-store evidence. No
+name rules, physical deduplication, and non-destructive classification
+combination, with bounded disk-store evidence. No
 production implementation or owner acceptance of the detailed rules is implied.
 After accepting or adjusting that recommendation, proceed to export/import.
 

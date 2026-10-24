@@ -1,233 +1,249 @@
-# Tag Naming and Identity Design
+# Tag Classification and Naming Design
 
-## Status
+## Status and Recommendation
 
-This is the recommended Stally 1.0 behavior after comparing native Foundation
-text handling, SwiftData persistence, and Apple's public tag interactions.
-The owner requested this comparison and recommendation; explicit acceptance
-of these detailed rules has not yet been recorded. Production models,
-Operations, and UI have not changed.
+This is the revised recommendation requested after the first Tag review.
+The previous recommendation to expose same-name records separately and block
+renaming to an existing label is superseded. The owner asked for a natural
+Stally design using public Apple capabilities, not similarity to or difference
+from Incomes or Cookle. The detailed revised recommendation awaits acceptance.
+No production model, Operations implementation, actual store, or cloud schema
+was changed by this review.
 
-Keep the selected Tag schema: uuid, name, and optional items. UUID identifies
-the record; the name is its editable label. No persisted comparison key,
-alias table, uniqueness constraint, merge log, or background deduplicator is
-required for the recommendation.
+Recommend one user-visible classification for names considered equivalent by
+the documented comparison rule. An Item can have several classifications, but
+showing two indistinguishable labels to represent different sets of Items has
+no selected Stally purpose. Different meanings should use different names.
 
-## Stored Spelling
+Keep the current Tag model: uuid, name, and optional items. UUID identifies a
+stored record. Normally one record represents a classification; native sync
+may produce several. Compute the user-visible classification from all matching
+records. A classification is not another persisted model, a permanent name
+identifier, or an alias/redirect record.
 
-For ordinary local creation and renaming, trim leading and trailing characters
-in Foundation's whitespacesAndNewlines set. Reject an empty result and embedded
-control characters, line separators, or paragraph separators. Internal spaces,
-including repeated spaces, remain meaningful. Preserve case, width, accents,
-emoji sequences, and other user spelling. Do not require a hash prefix,
-convert spaces to underscores, transliterate, or lowercase stored names.
+## Alternatives Reconsidered
 
-The control check uses Unicode general categories control, lineSeparator, and
-paragraphSeparator, rather than stripping all format characters. Emoji joiners
-and variation selectors must remain intact. Foundation's whitespace set also
-recognizes some invisible spacing characters; the probe includes trailing
-U+200B. This is ordinary single-line input handling, not a custom confusable-
-character or security-normalization system.
+| Alternative | Product fit | Persistence cost or limitation | Judgment |
+| --- | --- | --- | --- |
+| Different UUIDs always mean separately selectable classifications | Useful if users need same-name categories with different meanings | Simple individual rename, but exposes storage duplicates and makes filtering ambiguous | No current Stally requirement justifies this behavior |
+| Require exactly one physical Tag for every name | Clean record count and a familiar single-row model | Cross-device uniqueness needs deduplication and careful treatment of separately arriving relationships | Do not make physical uniqueness a 1.0 requirement |
+| Store independent name values directly on every Item | Natural for independent labels without shared editing | Collection-wide rename updates many Items; abandons the selected shared-reference model without solving offline rename semantics | Valid alternative, but weaker fit for shared management |
+| One visible classification, permitting several same-name backing records | Same name selects all relevant Items; rename can combine classifications | A small derived grouping and ordinary name updates; no automatic record deletion | Recommended |
 
-No additional NFC field or normalization pass is needed for equality: Swift
-String equality already recognizes canonical equivalence. Composed and
-combining forms of the same accented letter or voiced kana can compare equal
-while preserving the entered spelling. The [Swift language guide][swift-equal]
-documents this behavior.
+The previous review treated successful implementation of collision rejection
+as evidence that rejection was the best product rule. It also conflated
+user-initiated grouping with automatic destructive deduplication. These are
+separate decisions. A portable UUID does not require users to distinguish two
+otherwise identical classifications.
 
-These input rules do not authorize silently rewriting or deleting incomplete
-records received through sync. Import validation and error reporting remain
-part of the separate portable-data contract.
+## Apple Evidence and Its Boundary
 
-## Comparing Names
+Apple Notes on Mac permits renaming a tag to a name already in use to bring
+similarly tagged notes together. Its [user guide][notes-mac] supports that
+interaction, not an assertion about Notes' private model or sync algorithms.
+Adopt the ability to combine through rename rather than mechanically copying
+Notes' single-word hashtag syntax or automatic removal of unused tags.
 
-Use Foundation folding with caseInsensitive and widthInsensitive under the
-fixed en_US_POSIX locale, followed by Swift String equality. Compute this from
-name in memory. The fixed locale is a Stally comparison choice: a user's
-language/region change must not redefine a creation or rename collision.
-It is not a claim that English rules are the linguistically correct collation
-for every language. Use localized behavior for presentation and search instead.
+[Public SwiftData/CloudKit guidance][cloudkit] does not support unique
+constraints and
+warns that relationships may synchronize separately. Apple's
+[Core Data sharing sample][sharing-sample] specifically explains how deleting
+a duplicate before all related objects arrive can lose relationships. Its
+solution includes history processing, a deduplication date, deterministic
+record selection, and delayed removal around import/export events.
+
+The locally cached sample's PersistenceController+Deduplicate.swift and
+related Tag/History source were inspected; its documented hazard and strategy
+match the current Apple article. It is Core Data sharing code, not a SwiftData
+API recipe. Do not reach into SwiftData's underlying Core Data container or
+copy that machinery merely to ensure one physical row. This review uses the
+sample to identify the cost of destructive deduplication, not as proof that
+Apple prescribes Stally's derived grouping.
+
+## Meaning of Same Name
+
+Keep the independently justified native comparison from the first review:
+trim boundary whitespace; fold case and width using Foundation under a fixed
+en_US_POSIX locale; compare the resulting Swift Strings. Save the cleaned
+user spelling, not the folded text. No comparison key is persisted.
+
+This makes common input variants one classification, while keeping accents,
+kana script, and meaningful interior spacing distinct in the tested cases.
+It is a Stally policy over [Foundation folding][folding], not a universal
+Apple tag rule. A fixed
+locale avoids redefining classification when the device language changes.
+Localized searching and sorting can still use the person's locale.
 
 ```swift
 import Foundation
 
-func tagNamesMatch(_ first: String, _ second: String) -> Bool {
-    let locale = Locale(identifier: "en_US_POSIX")
-    let options: String.CompareOptions = [.caseInsensitive, .widthInsensitive]
-    let firstValue = first
+func tagComparisonKey(_ name: String) -> String {
+    name
         .trimmingCharacters(in: .whitespacesAndNewlines)
-        .folding(options: options, locale: locale)
-    let secondValue = second
-        .trimmingCharacters(in: .whitespacesAndNewlines)
-        .folding(options: options, locale: locale)
-    return firstValue == secondValue
+        .folding(
+            options: [.caseInsensitive, .widthInsensitive],
+            locale: Locale(identifier: "en_US_POSIX")
+        )
 }
 ```
 
-This function compares labels for local reuse/collision decisions. It does not
-compare Tag identity, merge records, establish distributed uniqueness, or
-supply a permanent export key. Foundation/Unicode behavior can evolve across
-OS versions; do not persist the result as independent truth or rewrite stored
-labels following a rule change.
+[Swift String equality][swift-equal] recognizes canonical equivalence, so a
+second NFC
+normalization pass is unnecessary. The key is a temporary comparison value,
+not a portable identity. Unicode/Foundation behavior may change across OS
+versions; retaining source names and references avoids turning a new comparison
+result into destructive cleanup.
 
-### Alternatives Compared
-
-All comparisons first trimmed the same leading/trailing whitespace.
-
-| Candidate | Observed behavior and tradeoff | Decision |
-| --- | --- | --- |
-| Swift String equality | Canonical forms compare equal; case and width remain distinct | Too narrow for routine tag reuse |
-| Lowercasing then equality | Handles common case differences, but misses width and Unicode case-fold expansions | No need to approximate Foundation folding |
-| Foundation compare with case/width options | Also equated hiragana and katakana in the tested fixed locale | Too broad for the intended collision rule |
-| Foundation case/width folding then equality | Handles spelling variants while retaining tested accents, kana script, and internal spaces | Recommended |
-| Adding diacritic-insensitive folding | Equated cafe and cafe-with-acute, and expanded dotted-I equivalence | Useful broad-search idea, too broad for collisions |
-| Compatibility normalization (NFKC) | Also equated circled digit one with plain digit one | More normalization than the chosen meaning requires |
-| User-current-locale folding | Turkish I comparisons changed with locale | Suitable for localized interactions, not the fixed collision rule |
-
-The difference between compare and folding is a measured current-platform
-result, not a universal statement about every locale or all future OS versions.
-[Foundation folding][folding] is a standard API intended for comparison forms;
-Stally adds no Unicode mapping table or custom comparison algorithm.
-
-### Selected Examples
-
-| Names | Match for local reuse/collision? |
+| Names | Same classification? |
 | --- | --- |
 | Shoes / shoes / full-width SHOES | Yes |
-| Half-width voiced katakana / its full-width equivalent | Yes |
-| Composed cafe-with-acute / the same text with a combining acute | Yes |
-| Composed voiced kana / the same kana with combining voicing | Yes |
+| Half-width voiced katakana / the full-width equivalent | Yes |
+| Composed accented letter or voiced kana / equivalent combining form | Yes |
 | cafe / cafe-with-acute | No |
-| はな / ばな | No |
-| くつ / クツ | No |
-| 革 靴 / 革靴 | No |
-| A followed by two spaces and B / A followed by one space and B | No |
-| 靴01 / 靴1; circled digit one / digit one | No |
-| Straße / STRASSE; ff ligature / ff | Yes, through native Unicode case folding |
-| I / i | Yes |
-| Dotted capital I / i; I / dotless small i | No under the selected locale |
-| Distinct emoji, skin-tone variants, or variation-selector spellings | Distinct in the tested cases |
+| はな / ばな; くつ / クツ | No |
+| 革 靴 / 革靴; one internal space / two internal spaces | No |
+| 靴01 / 靴1; circled digit one / plain digit one | No |
+| Straße / STRASSE; ff ligature / ff | Yes, following native case folding |
 
-Do not implement special exceptions for individual languages to change the
-native folding results. Tags that need distinct meanings should have visibly
-distinct labels rather than relying only on distinctions intentionally ignored
-by the selected rule.
+The first comparison found that Foundation compare with the same case/width
+options also equated hiragana and katakana under the tested locale, while
+folding then Swift equality retained the distinction. Lowercasing alone missed
+width/case-fold behavior; broad diacritic folding or compatibility normalization
+collapsed additional distinctions. Keep the chosen folding for these reasons,
+not because a sibling app does the same.
 
-## Search and Candidate Presentation
+Trim whitespacesAndNewlines at the edges for local input; reject an empty
+result, internal control characters, line separators, and paragraph separators.
+Retain ordinary internal spaces, case, width, accents, and emoji sequences.
+Do not strip format characters such as emoji joiners. Missing/invalid incoming
+names remain explicit incomplete data, never silently grouped into a valid
+empty-name classification or deleted.
 
-Search is not the equality rule. For discovery, Apple's
-localizedStandardContains supports locale-aware case/diacritic-insensitive
-substring search. It may offer cafe-with-acute when the person types cafe;
-that does not prohibit creating the distinct unaccented label. Present all
-existing candidates that satisfy tagNamesMatch even if a broader search path
-would omit one. Prefer exact/reuse matches, then broader localized suggestions.
+## User Operations
 
-Initially compare the fetched Tag set in the Operations context using the same
-function for candidate resolution and final validation. Do not assume an SQL
-predicate, SwiftData predicate translation, or a stored lowercased value has
-identical semantics. The selected schema needs no normalizedName field. Avoid
-loading Items or photos merely to compare names. Revisit fetching/caching only
-if actual tag counts demonstrate a performance issue; no benchmark is claimed.
-
-## Creation, Renaming, and Duplicates
-
-| Action or state | Recommended behavior |
+| Action | Recommended result |
 | --- | --- |
-| Create with no matching name | Create one Tag with a new UUID and the cleaned user spelling |
-| Create with one matching existing name | Offer that existing Tag for selection; do not create another or overwrite its spelling |
-| Create with several matching names | Show the candidates and require selection of the intended record; never silently take the first |
-| Attach an existing Tag again | Keep one assignment to that record; use record identity, not name, to decide |
-| Rename to an unused label | Change only name; preserve UUID and every Item assignment |
-| Change only the current label's case/width spelling | Allow it; update the shared visible spelling |
-| Rename to match a different existing Tag | Explain the collision and leave the name and assignments unchanged |
-| Receive separately identified same-name records | Retain and display each; no automatic merge, deletion, or UUID replacement |
-| Remove a Tag from one Item | Remove that assignment only |
-| Delete a Tag | Explicitly remove its assignments, retaining Items and their owned history/photos |
+| Enter a new name | Create a Tag and assign it to the Item |
+| Enter an existing equivalent name | Reuse the classification without creating another record or changing its display spelling |
+| Choose a classification backed by several records | Present one choice; it covers all those records |
+| Add it to an Item already carrying any member | No duplicate visible assignment or new relationship is needed |
+| Rename to an unused name | Update all currently known members of the source classification; preserve UUIDs and assignments |
+| Rename to an existing classification | Explain that the classifications will be combined; committing changes source members to the destination spelling |
+| Correct case/width spelling within a classification | Update its known members to the entered spelling |
+| Receive another same-name record through sync/import | Include it in the same read grouping; perform no cleanup write |
+| Remove a classification from one Item | Remove all matching member references from that Item only |
+| Explicitly delete a classification | Delete its currently known member records through standard nullify rules; retain Items and their history/photos |
 
-The creation UI can make reuse its clearly labeled primary action, without an
-extra confirmation dialog. It must not make name entry silently rename the
-existing record. Candidate selection is by identity, with associated Items or
-an editing affordance when equal names need disambiguation; raw UUIDs need not
-become user-facing labels.
+A rename to an existing classification is supported in 1.0. Its commit action
+must say that it combines classifications, rather than presenting an ordinary
+rename and silently changing its scope. Keep editing as a draft until commit;
+cancellation changes nothing. This is a domain action through Operations,
+not a requirement for a new settings screen or repeated confirmation dialogs.
 
-Validate against the current local context at commit time, excluding the
-record being renamed. If the proposed spelling still matches its own current
-label, allow that spelling correction even when a same-name duplicate already
-exists. This does not introduce a new collision and avoids making those
-records uneditable. Renaming to a different collision class is blocked before
-mutation. An unchanged submission is an ordinary no-op.
+For a collision, retain the destination's existing display spelling. If several
+records have equivalent but different spellings, choose the member with the
+lowest UUID as a deterministic display/assignment representative. Trim boundary
+whitespace for display without silently rewriting incoming records. Do not
+rewrite other members merely to enforce that choice. A case-only spelling
+correction updates the source classification's known members explicitly.
+Localized sort order is independent of the representative rule.
 
-Serialize ordinary writes through the existing Operations/context ownership.
-This prevents avoidable local duplicates; a fetch-before-insert check does not
-promise uniqueness across devices, processes, stale contexts, or concurrent
-imports. Apple's [CloudKit integration guidance][cloudkit] explicitly excludes
-unique constraints and atomic relationship synchronization. Keep the selected
-native synchronization behavior and tolerate duplicate arrivals.
+## Non-Destructive Combination
 
-## Explicit Consolidation as a Separate Feature
+For example, Items A and B use a record named Travel, and Items B and C use a
+record named Trips. When the person renames Travel to Trips and commits the
+combination:
 
-Apple Notes on Mac permits renaming a tag to an existing name to group notes.
-Its [public guide][notes-mac] establishes that interaction, not Notes' private
-schema, UUID policy, or synchronization implementation. Stally's tags have
-portable UUID identity, so silently treating rename as a graph merge would
-expand the meaning of an otherwise simple edit.
+1. Change the name of the Travel record to Trips.
+2. Keep both record UUIDs and every existing Item relationship.
+3. Present one Trips classification whose Items are the union A, B, and C.
+4. Show one Trips chip on B and count B once in that classification's results.
 
-Compare three choices:
+There is no relationship transfer or redundant-record deletion in this action.
+If another Item's reference to the former Travel record arrives later, that
+record still exists and participates in Trips. This property addresses the
+specific premature-deletion hazard without introducing a synchronization
+repair engine.
 
-- Allow every local duplicate: minimal validation, but makes accidental
-  duplicate classification easy and ordinary selection ambiguous.
-- Merge on rename or synchronized name equality: convenient, but changes
-  assignments and record identities as well as a label. Do not choose it.
-- Encourage local reuse, block new rename collisions, and retain incoming
-  duplicates: chosen for the initial release, with explicit identity intact.
+Implement grouping as a derived read using the native Foundation key and Swift
+collections. Use UUID-based sets when combining Item results so Items that
+reference multiple member records appear once. Keep this logic in the shared
+library's read/Operations boundary so lists, filters, counts, and system
+surfaces agree; do not implement grouping only in the tag picker. Do not fetch
+photos merely to compare Tag names.
 
-A dedicated user-initiated consolidation is possible with ordinary SwiftData
-relationship updates and deletion. A bounded local probe verified unioning
-assignments without doubling an Item already assigned to both tags. This does
-not prove multi-device merge atomicity or define how older exports referencing
-the removed UUID should import.
+New assignments can use the deterministic representative when the Item has no
+member already. Read grouping must always consider every member, including
+records temporarily lacking their inverse Item relationships. Do not use only
+the representative's items. Unused tags remain until explicitly deleted, as
+already selected. No global name uniqueness, normalizedName column, alias
+chain, tombstone field, or background reconciliation task is added.
 
-Do not require a dedicated bulk-consolidation feature in 1.0. People can change
-an Item's selected Tag and explicitly delete an unused label. Later, a dedicated
-consolidation can choose a retained UUID and preview the affected Items. That
-feature does not inherently require a new model; permanent redirect/alias
-behavior would be a separate contract if actually needed. Deferral is a scope
-recommendation, not an Apple restriction or a claim that native merging is
-impossible.
+## Native Sync Limits and Export Implications
+
+Names and relationships may arrive at different times. A multi-record rename
+is not a distributed transaction: intermediate views can show old and new
+classifications. Conflicting edits follow native sync behavior. The local
+read grouping is deterministic for the records currently available; it does
+not establish cross-device atomicity or convergence of arbitrary conflicts.
+
+A wholly new old-name Tag created on another offline device can arrive after a
+rename. It remains an old-name classification, with its information intact.
+There is no permanent old-name redirect, and reusing an old name later is
+allowed. Do not promise that a rename also rewrites unknown future records or
+old export files. This is an explicit scope boundary rather than a hidden
+claim of durable global merge semantics.
+
+Retaining several small backing records is a chosen storage tradeoff. Physical
+consolidation is not needed for the visible combination action. Revisit it only
+if measured scale or a concrete contract requires it, including the relationship
+arrival concerns demonstrated by Apple. Native sync integration still requires
+bounded multi-device tests before release.
+
+Export/import is the next contract discussion. Identity-preserving round trips
+must retain backing UUIDs and memberships; a human-readable summary can present
+one classification per name. Do not discard extra member identities merely
+because the UI displays one row. Restoration can reintroduce historical names;
+exact UUID conflict rules belong to that separate design. No stable logical
+classification UUID or permanent alias mapping is promised by this proposal.
 
 ## Verification Evidence
 
-On macOS 27.2 with Xcode 27.2 / Swift 6.4.2:
+The first review's Foundation comparison remains relevant: seven approaches
+across 23 pairs and 61 name-rule assertions on macOS 27.2 / Xcode 27.2. Its
+29 local persistence assertions demonstrated shared rename and retained
+same-name records. Its five physical-merge assertions established only a local
+alternative, not safe cleanup across asynchronous CloudKit arrivals.
 
-- Compared seven approaches across 23 pairs, including Japanese script/width,
-  canonical Unicode forms, accents, Turkish locale differences, ligatures,
-  spacing, numbers, and emoji.
-- Passed 61 name-rule assertions: the selected 23 cases in both directions,
-  invalid single-line input, trimming, and retained spelling/emoji sequences.
-- Used the current five-model Swift illustration, including thumbnailData,
-  in a local SwiftData disk store with CloudKit explicitly disabled. Passed
-  29 assertions across eight separate processes: shared rename and UUID
-  retention, validation before mutation, preserved duplicates, case-only edit
-  amid duplicates, detachment, nullify deletion, and unused-tag retention.
-- An alternative explicit-consolidation probe passed five assertions across
-  three processes, including reopening the unioned assignments and retained
-  destination UUID. This is comparison evidence, not an implemented feature.
-- The recommended schema/rename probe also compiled for iOS Simulator.
+The reconsidered design passed 32 assertions across nine fresh macOS processes
+using the complete current five-model schema, including thumbnailData, in a
+throwaway SwiftData store with CloudKit disabled. It covered:
 
-A restricted macro invocation failed because the compiler plugin could not
-start under the sandbox; the same source compiled with normal local toolchain
-permissions. Synthetic probes and results are under
-/private/tmp/stally-tag-design. No app source, actual store, cloud container,
-or sibling repository was changed.
+- Same-name filtering as a union, including an Item assigned to both records.
+- Draft rollback, reopen, and rename into an existing classification.
+- Unchanged record UUIDs and Item memberships during combination and rename.
+- A later Item assignment referencing the former source record.
+- Renaming all known members of a combined classification.
+- A later independent old-name record remaining visible without redirection.
+- Removing every matching reference from one Item while preserving others.
+- Explicit classification deletion preserving unrelated tags, all Items, and
+  existing Mark history.
 
-The duplicate-arrival scenario inserted separate records in a local store; it
-was not a real CloudKit event or multi-device test. No iOS runtime, interactive
-UI, save-failure injection, large-tag-set performance, or cross-OS-version
-Unicode compatibility proof is claimed. Normal save failures must preserve
-previous data using the app's established transaction boundaries when this
-recommendation is implemented.
+The same final source compiled for iOS Simulator. Local sources and results are
+under /private/tmp/stally-tag-reconsidered. The late-arrival cases are
+deliberately ordered local insertions, not actual CloudKit events. Rollback
+verification is not disk-full or save-failure injection. No iOS runtime, UI,
+cross-device sync, large-tag-set performance, or cross-OS Unicode guarantee is
+claimed.
 
-[swift-equal]: https://docs.swift.org/swift-book/LanguageGuide/StringsAndCharacters.html
-[folding]: https://developer.apple.com/documentation/foundation/nsstring/folding(options:locale:)
-[cloudkit]: https://developer.apple.com/documentation/swiftdata/syncing-model-data-across-a-persons-devices
+No sibling Tag implementation was read for this reconsideration. The relevant
+Apple sample was inspected read-only in the external sample cache; its cached
+check date was October 22, 2026, and the current official article was consulted.
+No sample code was copied into Stally and no production code was changed.
+
 [notes-mac]: https://support.apple.com/guide/notes/use-tags-apdc88ed7f1d/4.13/mac/27
+[sharing-sample]: https://developer.apple.com/documentation/coredata/sharing-core-data-objects-between-icloud-users
+
+[folding]: https://developer.apple.com/documentation/foundation/nsstring/folding(options:locale:)
+[swift-equal]: https://docs.swift.org/swift-book/LanguageGuide/StringsAndCharacters.html
+[cloudkit]: https://developer.apple.com/documentation/swiftdata/syncing-model-data-across-a-persons-devices
