@@ -8,8 +8,9 @@ The October 24 discussion also accepts application UUIDs, registration times,
 multiple user-defined classifications, and multiple photos with captions.
 After the temporal comparison, the owner accepted ItemMark's canonical local
 date/time text, optional minute precision, UUID, creation instant, and Item
-ownership. The next design discussion addresses ItemPeriod boundaries and
-lifecycle; its existing field proposal is not yet an implemented schema.
+ownership. The subsequent ItemPeriod probe selects partial civil-date text,
+continuation state, creation metadata, and owned relationships. These decisions
+have standalone runtime evidence, not an implemented application schema.
 The owner delegated naming and state representation to the stated evidence
 priorities. Selected engineering decisions below exercise that delegation;
 they are not an implemented or CloudKit-promoted schema. Other proposals and
@@ -273,7 +274,7 @@ mean ongoing. No periods means the relationship has not been described; it
 must not mean the person never had the subject. Do not create an implicit
 purchase, start date, or period when an Item is created.
 
-Recommended operation semantics:
+Selected operation semantics:
 
 - End a period: retain its start and identity; set it ended and record only
   the end knowledge the person supplies. Ending today is an explicit action.
@@ -285,7 +286,8 @@ Recommended operation semantics:
   Marks. Marks are owned by the Item, not assigned to periods.
 
 Normally allow at most one ongoing period through local Operations. Reject
-definitely reversed boundaries and definitely overlapping entered periods;
+definitely reversed boundaries and definite positive-day overlaps. Permit
+ending and resuming on the same date without inventing clock times;
 partial-date uncertainty must remain visible instead of acquiring invented
 days. Preserve conflicting or incompletely synchronized periods for review;
 do not silently choose a winner or sum overlapping intervals twice.
@@ -411,7 +413,7 @@ conflicts or prevent duplicate imports without defined operation semantics.
 
 `createdAt`, `createdTimestamp` (used by Cookle), and `creationDate` are viable
 names. Apple does not prescribe `createdAt`. The recommendation uses it for a
-concise registration instant, consistently across Items, Marks, and photos. The
+concise registration instant across Items, Marks, periods, and photos. The
 fact supports registration ordering and cannot be recovered reliably from
 relationship dates or Marks. Select `createdAt` for the Item registration
 instant. This is a Stally naming decision, not an Apple-mandated spelling.
@@ -556,17 +558,20 @@ that two offline devices must reconcile. No unique constraint on UUID or day.
 | Stored property | Type / initial value | Meaning |
 | --- | --- | --- |
 | `uuid` | `UUID`, generated once | Period identity through corrections |
-| `startDateRawValue` | `String?`, nil | Partial Gregorian start knowledge |
-| `endDateRawValue` | `String?`, nil | Partial Gregorian end knowledge |
+| `startLocalDate` | `String?`, nil | Partial Gregorian start knowledge |
+| `endLocalDate` | `String?`, nil | Partial Gregorian end knowledge |
 | `isOngoing` | `Bool`, true | Known continuation versus known ending |
+| `createdAt` | `Date`, creation instant | Entry metadata, never a start/end substitute |
 | `item` | `Item?` | Owning subject |
 
-Use `YYYY`, `YYYY-MM`, or `YYYY-MM-DD`, with a shared validated partial-date
-value type at operation boundaries. Ongoing implies no entered end. Ended
-with nil end means the end date is unknown. The flag is needed for that case,
+Use `YYYY`, `YYYY-MM`, or `YYYY-MM-DD`, validated with Foundation calendar
+operations at operation boundaries. Empty strings are invalid; nil is unknown.
+Ongoing implies no entered end. Ended with nil end means the end date is
+unknown. The flag is needed for that case,
 not as a second independently editable copy of a known end date.
 
-The next review uses this field proposal to settle lifecycle semantics. Keep
+The [period validation](period-schema-validation.md) selects this schema and
+its local lifecycle semantics after disk-store checks on macOS and iOS. Keep
 period boundaries at day precision or less; there is no current requirement
 for hours and minutes here. An unknown component is not a default January,
 first day, or midnight. Foundation DateComponents can represent the known
@@ -579,8 +584,18 @@ not an ended relationship. Incomplete dates require semantic validation:
 `2024` followed by `2023` is definitely reversed; a start of `2024-05` and an
 end of `2024` are not definitely reversed and must not be rejected simply
 because their raw strings sort that way. Possible overlaps caused solely by
-unknown components do not justify inventing exact boundaries. These period
-rules are design recommendations; the Mark probe did not validate them.
+unknown components do not justify inventing exact boundaries. The independent
+Period probe verified these rules, queries, corrections, and deletion
+directions; it does not establish CloudKit conflict convergence or old-store
+migration.
+
+Use `startLocalDate` and `endLocalDate` rather than the earlier RawValue names,
+aligning the civil-date terminology with `ItemMark.localDateTime`. Keep
+`isOngoing` as one two-state fact. Add `createdAt` consistently with Item and
+ItemMark for entry metadata and registration ordering when dates are unknown.
+It is not relationship chronology and never supplies a missing boundary.
+Preserve UUID and createdAt during corrections and identity-preserving import.
+No additional precision, duration, timezone, or modification field is selected.
 
 For both child models, declare an explicit inverse from the Item relationship.
 Item deletion cascades to its Marks and periods; deleting a child must never
@@ -733,10 +748,11 @@ does not supply new runtime evidence for Stally's unimplemented schema.
 
 The review also distinguishes our own unverified assumptions from sibling
 influence. The integer day-key proposal was subsequently replaced by the
-[verified civil-text choice](mark-temporal-schema-comparison.md). Partial-date
-period strings remain a separate representation decision; existing Stally
-code alone does not establish their suitability. Photo `sortOrder` needs
-saved-store and concurrent-reorder evidence;
+[verified civil-text choice](mark-temporal-schema-comparison.md). The separate
+[Period probe](period-schema-validation.md) subsequently verified partial-date
+strings and lifecycle semantics; existing Stally code alone did not establish
+their suitability. Photo `sortOrder` needs saved-store and concurrent-reorder
+evidence;
 the existence of Cookle's order field is not that evidence. Preserving ingested
 image data with derived thumbnails remains the selected direction, but the
 Apple example does not establish optimal image limits or metadata policy.
