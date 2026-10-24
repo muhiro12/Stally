@@ -407,8 +407,12 @@ part of the Tag Operations design, without a custom synchronization engine.
 
 Apple Notes demonstrates [multiple user-created tags][notes-tags] as a familiar
 classification interaction. This is UX evidence, not evidence of its private
-database schema. Incomes' shared Tag relationships provide local architecture
-evidence; Stally does not inherit its finance-specific tag types or date tags.
+database schema. Incomes' Tag model is comparison material only. The independent
+reason for a shared Tag entity is reusable identity and collection-wide rename
+and removal, rather than separate label strings on every Item. Multiple labels
+alone would not require an entity. Shared label management is a selected Stally
+interaction, not an additional owner requirement or an Apple prescription.
+Stally does not inherit finance-specific tag types or date tags.
 
 ### ItemMark
 
@@ -548,6 +552,44 @@ Multiple Mark rows cost more storage than a daily counter, but avoid shared
 counter updates and preserve individual undo, import identity, and future
 readings. Confirm useful scale before publication; do not optimize by losing
 facts without an explicit product tradeoff.
+
+### October 24 Sibling-Influence Review
+
+Scope: review the core design and its linked direction/contract documents,
+using the owner's clarified reference policy. Recheck the relevant sibling
+declarations and current official identity, relationship, CloudKit, storage,
+and naming guidance. This is not a correctness audit of Incomes or Cookle and
+does not supply new runtime evidence for Stally's unimplemented schema.
+
+| Decision | Sibling influence found | Independent judgment and disposition |
+| --- | --- | --- |
+| Library and Operations boundaries | Deliberate architectural influence | Keep: the app and system surfaces need the same durable domain operations; do not mechanically duplicate helper layers. |
+| Package selection | Older direction required following Incomes' package set | Correct that directive: choose capabilities for Stally independently, retaining explicit app-specific choices. |
+| `Item`, `ItemMark`, `ItemPeriod` | `Item` also appears in Incomes; no requirement to reuse its meaning | Keep confirmed names: user-chosen subject identity, individual recording facts, and retained periods justify these concepts. |
+| Application UUIDs | Sibling store identifiers were a comparison point | Keep: portable identity is a Stally requirement; native CloudKit does not require the added UUID. |
+| `ItemPhoto` | Cookle's shared asset and attachment layers framed the initial comparison | Keep one owned attachment model for caption, order, and lifetime; shared assets are not required by current use cases. |
+| `Tag` | Incomes' model was cited too readily as architectural support | Keep with independent justification: shared rename/reuse/removal. A string collection remains a valid simpler alternative for independent labels. |
+| Creation and modification timestamps | Cookle supplied a familiar naming and audit-field precedent | Keep `createdAt` for an independently useful registration fact; do not add `updatedAt` merely to match Cookle. |
+| Archive and independent Bools | No sibling-specific requirement identified | Keep: the owner's valid state combinations justify separate facts; the names are Stally choices, not official mandated spellings. |
+| Optional relationships and deletion rules | Similar declarations exist in sibling apps | Keep based on native CloudKit requirements and owned versus shared lifetimes, not similarity to sibling declarations. |
+| Export/import and old-format support | Sibling review/cancellation flows were references; old Stally formats were another source of inertia | Keep deliberate review and source preservation. No requirement to inherit a sibling codec or retain development formats forever. |
+
+The review also distinguishes our own unverified assumptions from sibling
+influence. The proposed integer day key and partial-date strings remain
+representation candidates, not conclusions established by existing Stally
+code. Photo `sortOrder` needs saved-store and concurrent-reorder evidence;
+the existence of Cookle's order field is not that evidence. Preserving ingested
+image data with derived thumbnails remains the selected direction, but the
+Apple example does not establish optimal image limits or metadata policy.
+No evidence here establishes all of these choices as uniquely best.
+
+The five-entity direction survives this review. Correct the overly broad
+reference/package instructions and the rationale for shared Tags, without
+renaming models or changing the schema simply to differ from sibling apps.
+The existing baseline contract documents describe currently implemented
+formats; their compatibility constraints do not override the newer pre-release
+design scope. Actual development data still needs an explicit transition when
+implementation begins, rather than deletion on failed store initialization.
 
 ## Implementation Order and Required Evidence
 

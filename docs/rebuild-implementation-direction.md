@@ -46,16 +46,20 @@ well-structured record that platform intelligence can understand and act on.
 
 ## Reference Projects
 
-Origami and Incomes are the highest-priority app reference projects for the
-Stally rebuild.
+Origami and Incomes were the original reference projects for the rebuild.
+The owner's October 24 clarification narrows the role of sibling apps to
+system-wide architecture and operating philosophy. The current
+[evidence policy](core-record-design.md#evidence-and-alternatives) governs
+technical decisions, including persistence, API usage, and package selection.
 
 - Use Origami and Incomes as read-only reference projects when they are
   available in the local workspace.
 - Inspect those projects before major app shell, UI, package, workflow,
   domain-interface, App Intents, or platform-integration decisions.
-- Treat Incomes as the concrete Apple app architecture, package, verification,
-  and workflow reference when a more specific Stally decision has not yet been
-  made.
+- Treat Incomes as evidence of responsibility boundaries, maintainability,
+  verification practices, and workflow intent. Validate its technical patterns
+  independently before adopting them; absence of a Stally-specific decision
+  does not make the sibling implementation the default correct solution.
 - Do not copy product-specific behavior, domain language, screen flows, data
   models, or accidental complexity from either reference project.
 
@@ -106,39 +110,45 @@ and asked that synchronization engineering remain proportionate. Record this
 as current product intent, with the app-owned paid value still to be defined
 against [App Review Guideline 4.10][paid-capabilities]. No entitlement gate or
 change to existing local/cloud data is implemented by this design update. See
-the [core record design](core-record-design.md#native-synchronization-and-cost-boundary).
+the [sync design][sync-direction].
 
-Ads and StoreKit integration belong in the app target through MHPlatform, while the
-durable subscription-state calculation belongs in StallyLibrary so app UI,
-settings, and future surfaces share the same ad-removal rule.
+Ads and StoreKit integration belong in the app target through MHPlatform,
+while the durable subscription-state calculation belongs in StallyLibrary so
+app UI, settings, and future surfaces share the same ad-removal rule.
 
 Do not invent production AdMob identifiers or borrow identifiers from another
 app. Use official Google test identifiers only for development and preview
 builds until Stally-owned production AdMob identifiers exist.
 
 [paid-capabilities]: https://developer.apple.com/app-store/review/guidelines/#monetizing-built-in-capabilities
+[sync-direction]: core-record-design.md#native-synchronization-and-cost-boundary
 
 ## Package Direction
 
-The rebuilt Stally project should use the same package family as Incomes unless
-the owner explicitly changes that direction.
+Prefer the shared package family where it serves Stally's platform needs.
+The owner's October 24 clarification supersedes automatic alignment with
+Incomes: evaluate each dependency and product against Stally's requirements,
+current official APIs, supported platforms, and maintenance cost. Keep explicit
+Stally choices such as the MHUI direction below; do not change them merely
+because a sibling app adds or removes a dependency.
 
-As of June 22, 2026, the Incomes package baseline includes:
+The June 22, 2026 reference snapshot listed the following packages. This is
+historical context, not a current dependency prescription:
 
 - `MHPlatform` from `https://github.com/muhiro12/MHPlatform.git`.
 - `MHUI` from `https://github.com/muhiro12/MHUI`.
 - `SwiftLintPlugins` from
   `https://github.com/SimplyDanny/SwiftLintPlugins`.
 
-For the shared library package, use Incomes as the reference for choosing
-library-level package products such as `MHPlatformCore` when only core platform
-support is needed. The current StallyLibrary package follows this for
-shareable-link deep-link route encoding.
+For the shared library package, choose products according to the capabilities
+needed by that library. Incomes can illustrate the boundary, but does not
+determine the product choice. The existing StallyLibrary uses `MHPlatformCore`
+for shareable-link deep-link route encoding.
 
-For app targets, use Incomes as the reference for package products such as
-`MHPlatform`, `MHPreferences`, and the relevant MHUI products. Recheck Incomes
-at project creation time and align with its then-current package set rather
-than freezing this document as a stale package lock.
+For app targets, inspect current package APIs and Stally's consumers before
+selecting products such as `MHPlatform`, `MHPreferences`, or MHUI products.
+Do not copy a sibling's then-current package set or freeze this historical
+snapshot as a package lock.
 
 ## MHUI Direction
 
