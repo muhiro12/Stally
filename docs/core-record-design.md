@@ -513,6 +513,14 @@ import. This replaces the earlier preference for preserving delivered bytes
 unchanged. It keeps the ItemPhoto schema and does not promise camera-original
 archiving or continued access to an external library or file provider.
 
+For users, the saved attachment is a record-oriented copy; original-quality
+photo management stays with the source library or provider. Its independent
+lifetime does not turn Stally into an original-photo archive. Keep only the
+normalized imageData durably; app-owned raw staging lasts only through
+processing. SwiftData-managed external storage is part of that same saved
+attribute, not a second original. The photo policy distinguishes these
+lifetimes and the optional display cache explicitly.
+
 The [photo storage design](photo-storage-design.md) selects a 2,560-pixel
 long-edge limit and a five-MiB saved-image limit, JPEG/HEIC/PNG output matching
 the input family, preserved transparency and color profiles, SDR output,

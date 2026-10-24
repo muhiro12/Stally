@@ -13,6 +13,29 @@ authoritative image for that attachment after ingestion and a successful
 save. Stally is not promising preservation of the camera original. The
 original photo or provider file remains independently owned by its source.
 
+### User-Facing Meaning
+
+The owner clarified that application storage authority and the user's idea
+of an original are different questions. Stally keeps a record-oriented copy
+of a source image. The photo library or selected provider remains where the
+user manages the original and its full fidelity; Stally does not take over
+that archival responsibility when a photo is added.
+
+The copy is nevertheless independently durable. Its role as a copy does not
+make it a disposable cache or a live view of the source. Later source edits
+do not invalidate it, and source deletion must not remove it. If the user
+deletes the source, Stally can return only its saved copy, not reconstruct
+the original quality. There is no promise of an original-opening link or
+automatic retrieval of a higher-quality version.
+
+Use three distinct terms in design: source original, saved attachment copy,
+and rebuildable display thumbnail. The saved copy is the sole authoritative
+representation of the Stally attachment, not the universal master of that
+photograph. Compression follows the product's promise to retain a useful
+record-oriented copy, not the fact that SwiftData owns its storage. A concise
+UI explanation can say that photos are resized for storage and source images
+are unchanged; ordinary users do not need database or SSOT terminology.
+
 ## Ownership and Source of Truth
 
 | Approach | Authoritative image | Consequence |
@@ -31,7 +54,7 @@ source library to reconcile.
 PhotosPicker supplies a selected representation, not a durable source path.
 Use the system picker and Transferable. Prefer FileRepresentation for large
 or multiple selections, copy the temporary delivery into app-controlled
-staging, and remove staging when the operation finishes or is cancelled.
+staging only for processing, and clean it up as described below.
 Request a generic image with the current encoding policy to avoid a picker
 transcode followed by an application transcode. It does not promise unedited
 camera bytes or retention of every auxiliary resource.
@@ -41,9 +64,32 @@ must not create a completed attachment or discard an existing one. A file in
 iCloud Drive or a third-party File Provider uses the document picker/import
 boundary instead. A service such as Google Drive can participate when its
 provider is installed, enabled, and exposes the file; PhotosPicker does not
-browse arbitrary providers. Materialize authorized bytes, normalize, save,
-then release external access. Do not persist temporary URLs as attachment
+browse arbitrary providers. Materialize authorized bytes under the required
+access scope, release that scope after the read or copy, then normalize and
+save app-owned content. Do not persist temporary URLs as attachment
 identity or build a provider-specific synchronization layer.
+
+### Storage Locations and Lifetime
+
+The only durable application image is ItemPhoto.imageData with
+`@Attribute(.externalStorage)`. SwiftData may put those bytes beside its
+database internally; that is still the same model attribute and store
+lifetime, not an additional original managed by the app. Never delete or
+purge SwiftData-managed external files as a cache-cleaning operation.
+
+| Data | Lifetime |
+| --- | --- |
+| Provider-owned delivery file | Read or copy within the API's permitted access lifetime; never save its URL as permanent identity |
+| App-owned raw staging file, when needed | Only until normalization and validation produce independently owned prepared bytes; also remove on failure or cancellation |
+| Prepared image in an unconfirmed draft | Retain with the draft until save or cancellation; a save failure keeps the draft available for retry |
+| Saved imageData | Retain until an explicit attachment/Item deletion or image replacement changes it |
+| Display thumbnail | Discardable cache; rebuild from saved imageData |
+
+Do not keep a second full-resolution original after normalization. If the
+process terminates before cleanup, remove abandoned files in the dedicated
+app-owned staging area on a later startup, without touching the model store
+or active imports. Unconfirmed in-memory drafts are not a durable save
+promise. Raw staging is not needed to retry saving already prepared bytes.
 
 ## Selected Ingestion Policy
 
@@ -68,9 +114,9 @@ changes must not silently rewrite existing saved attachment bytes.
 
 Inspect alpha before choosing the output; a format decision must not silently
 flatten transparency. Use ImageIO thumbnail decoding with its orientation
-transform and an explicit
-SDR decode request, followed by the matching image destination. Do not decode
-the full source bitmap merely to draw a small destination. Color profiles and
+transform and an explicit SDR decode request, followed by the matching image
+destination. Do not decode the full source bitmap merely to draw a small
+destination. Color profiles and
 encoder-generated image properties are needed to interpret the saved pixels;
 they are not the source metadata that is omitted above. HDR headroom, depth,
 motion, and original pixel resolution are not retained by this policy. This
@@ -102,6 +148,20 @@ separate export operation and must not replace the saved image.
 
 ## Thumbnail and Capacity Policy
 
+Memory-only caching is the selected initial implementation, not an Apple
+mandate or a generally proven optimum. It avoids persistent cache lifecycle
+and synchronization work, but cache misses require reading the saved image
+and generating the thumbnail again. The earlier fixture checks do not prove
+collection scrolling or cold-launch performance.
+
+Apple's [Wishlist demonstration][wishlist] persists thumbnail bytes inline
+and loads full-size images separately. Persisted thumbnails are therefore
+also a legitimate native design: they can avoid repeated generation and
+full-size data reads, at the cost of additional stored state and invalidation.
+Stally starts with NSCache because images are bounded and no measured problem
+yet requires another persisted representation. This reasoning is independent
+of a desire to eliminate every additional byte after the owner's question.
+
 Initially keep decoded thumbnails in a process-local NSCache, with a 32-MiB
 totalCostLimit using decoded byte cost. This is an eviction hint, not a strict
 upper bound on process memory. Clear invalidated entries when image content
@@ -127,6 +187,8 @@ that preserves already saved data, not permission to purge attachments.
 
 ## Caption and Ordering
 
+The owner accepted the attachment-local caption and ordering rationale.
+
 `caption` and `sortOrder` belong to the attachment: the caption describes this
 image in this Item, and the position belongs to this Item's photo collection.
 An integer position is an ordinary representation for a user-reorderable
@@ -135,9 +197,10 @@ selected because SwiftData relationship arrays do not promise persisted order.
 This rationale does not depend on Cookle's schema or shared-asset architecture.
 
 Keep the existing `sortOrder` followed by UUID presentation order and the
-first-photo cover rule. Duplicate positions after synchronization remain visible. There is
-no distributed ranking algorithm, mandatory renumbering repair, or separate
-isCover truth. No source-path or source-library identifier field is needed.
+first-photo cover rule. Duplicate positions after synchronization remain
+visible. There is no distributed ranking algorithm, mandatory renumbering
+repair, or separate `isCover` truth. No source-path or source-library
+identifier field is needed.
 
 ## Evidence and Limits
 
@@ -199,3 +262,4 @@ image validation.
 [image-memory]: https://developer.apple.com/documentation/xcode/making-changes-to-reduce-memory-use
 [image-destination]: https://developer.apple.com/documentation/imageio/cgimagedestination
 [cache-limit]: https://developer.apple.com/documentation/foundation/nscache/totalcostlimit
+[wishlist]: https://developer.apple.com/videos/play/wwdc2026/275/
