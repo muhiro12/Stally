@@ -184,10 +184,11 @@ ownership engine.
 - Preserve incomplete or contradictory incoming data for explicit handling;
   this design does not add automatic orphan deletion or a sync repair engine.
 
-Versioned-schema integration, image ingestion limits, tag matching rules,
-presentation-setting scope, and export/import field mapping remain separate
-implementation decisions. This illustration does not add speculative stored
-fields for those concerns.
+The [photo storage policy](photo-storage-design.md) now selects ingestion
+limits and memory-only thumbnails without changing these model fields.
+Versioned-schema integration, tag matching rules, presentation-setting scope,
+and export/import field mapping remain separate implementation decisions.
+This illustration does not add speculative stored fields for those concerns.
 
 ## Consolidated Graph Verification
 

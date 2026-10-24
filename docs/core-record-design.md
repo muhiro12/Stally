@@ -489,11 +489,13 @@ the first ordered photo is the cover, with no competing `isCover` flags.
 Do not call attachment registration time the photo's shooting date or infer a
 relationship start from it. A dated photo journal is a separate product scope.
 
-Use image data from the selected source as the durable representation, with
-derived thumbnails for lists and grids. Thumbnails are rebuildable caches,
-not additional historical facts. Avoid decoding every full-sized image during
-list rendering; choose cache placement and invalidation after a bounded
-implementation measurement. Apple's [Wishlist code-along][wishlist] separates
+Use the normalized attachment image as the durable representation, with
+derived thumbnails for lists and grids. The selected
+[photo storage policy](photo-storage-design.md) bounds saved dimensions and
+bytes while preserving JPEG, HEIC, and PNG as supported output families.
+Thumbnails are rebuildable, initially memory-only caches, not additional
+historical facts. Avoid decoding every full-sized image during list rendering.
+Apple's [Wishlist code-along][wishlist] separates
 image models and thumbnails from full-sized image data. This supports the
 loading boundary, not a mandate for Stally's exact schema or image limits.
 
@@ -503,33 +505,29 @@ shared lifetime, reference tracking, and edit propagation choices. Keep one
 owned model now; an eventual asset layer can retain each ItemPhoto's UUID,
 caption, and order while moving only its binary storage.
 
-#### Photo Ingestion Direction
+#### Photo Ingestion Decision
 
-After accepting the conceptual consistency of Item, ItemMark, and ItemPeriod,
-the next design topic is the photo ingestion contract. Keep the selected
-ItemPhoto fields while reviewing what its durable image bytes represent.
+The owner requested an ownership and capacity decision in this session.
+Select an app-owned optimized copy, independently managed after successful
+import. This replaces the earlier preference for preserving delivered bytes
+unchanged. It keeps the ItemPhoto schema and does not promise camera-original
+archiving or continued access to an external library or file provider.
 
-Prefer the system PhotosPicker and Transferable boundary. Request the current
-representation with a generic image content type when preserving supported
-image information; a specific JPEG request can cause transcoding even with
-the current encoding policy. The delivered representation is not a promise
-of an unedited camera original. Respect the user's picker metadata choices.
-Apple describes these behaviors in its [Photos picker session][photo-picker].
+The [photo storage design](photo-storage-design.md) selects a 2,560-pixel
+long-edge limit and a five-MiB saved-image limit, JPEG/HEIC/PNG output matching
+the input family, preserved transparency and color profiles, SDR output,
+source-metadata omission, and memory-only thumbnails. It records the native
+ImageIO comparison and its limits. These are Stally choices, not Apple limits.
+The old 1,600-pixel, two-MiB, forced-sRGB-JPEG normalization is superseded as
+redesign direction; the application implementation has not yet changed.
 
-The present application normalizes accepted images into an sRGB JPEG with a
-maximum dimension of 1,600 pixels and a two-MiB encoded limit, flattening alpha
-onto white and removing source metadata. These are existing implementation
-choices, not Apple requirements or accepted first-release contracts. Review
-them against preserving supported source representations plus independently
-generated thumbnails. The latter remains the preferred design direction.
-
-The image-format acceptance list, resource limits, metadata/export handling,
-and thumbnail placement still need bounded image-fixture evidence before
-implementation. Preserve orientation, transparency, and supported color
-information deliberately rather than silently adopting the old conversion.
-Do not promise RAW, Live Photo, animated-image, or lossless camera-original
-archiving merely because the attachment stores Data. This review has not yet
-changed the application's ingestion behavior or selected new numeric limits.
+Use PhotosPicker and Transferable for Photos library selections, and the
+system document import boundary for files exposed by providers. Request a
+current generic image representation to avoid an unnecessary intermediate
+transcode before deliberate normalization. Respect picker metadata choices;
+do not restore source metadata excluded by the picker. Temporary delivery
+URLs are not durable attachment identity. Apple's
+[Photos picker session][photo-picker] describes these delivery behaviors.
 
 ### Tag
 
