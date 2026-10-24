@@ -8,8 +8,10 @@ The October 24 discussion also accepts application UUIDs, registration times,
 multiple user-defined classifications, and multiple photos with captions.
 After the temporal comparison, the owner accepted ItemMark's canonical local
 date/time text, optional minute precision, UUID, creation instant, and Item
-ownership. The subsequent ItemPeriod probe selects partial civil-date text,
-continuation state, creation metadata, and owned relationships. These decisions
+ownership. After the subsequent ItemPeriod probe, the owner also accepted
+partial civil-date text, continuation state, creation metadata, and owned
+relationships. The [consolidated Swift schema](model-schema-design.md) brings
+these choices together with Item, ItemPhoto, and Tag. These decisions
 have standalone runtime evidence, not an implemented application schema.
 The owner delegated naming and state representation to the stated evidence
 priorities. Selected engineering decisions below exercise that delegation;

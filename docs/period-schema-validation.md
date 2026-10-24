@@ -3,7 +3,9 @@
 ## Selected Schema
 
 On October 24, 2026, select the following ItemPeriod attributes for the 1.0
-redesign. This is a design decision with standalone runtime evidence, not an
+redesign. The owner subsequently accepted this proposal. The complete model
+graph is shown in the [consolidated Swift schema](model-schema-design.md).
+This is a design decision with standalone runtime evidence, not an
 application-schema deployment or an old-store migration.
 
 ```swift
