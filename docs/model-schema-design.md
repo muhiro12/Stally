@@ -208,7 +208,8 @@ Tag illustration supports ordinary operations, not a completed merge protocol.
 Export/import conflict semantics, native sync lifecycle, and final
 reading/presentation behavior remain to be settled.
 Follow the [remaining decision sequence](core-record-design.md#remaining-decisions-after-photo-acceptance),
-starting with Tag, before physical schema integration and final verification.
+starting with export/import identity, then native sync and explicit Tag
+consolidation, before physical schema integration and final verification.
 This illustration does not add speculative stored fields for those concerns.
 
 ## Consolidated Graph Verification

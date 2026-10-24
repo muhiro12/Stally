@@ -32,7 +32,7 @@ persistence algorithm and source-record lifecycle are not yet finalized.
 | Tap a Tag on an Item | Show Items related to that Tag UUID only |
 | Open a Tag deep link | Resolve the specified UUID, not all Tags sharing its name |
 | Rename a Tag | Change only that Tag's name; retain its UUID and assignments |
-| Rename to a name already in use | May offer consolidation; rename alone neither consolidates nor fails solely because of the collision |
+| Rename to a name already in use | Inform the user of the existing name and show the relevant Tag; rename alone neither consolidates nor fails solely because of the collision |
 | Detach or delete a Tag | Affect only the selected UUID; preserve other Tags and Items |
 | Receive another Tag through sync/import | Retain its identity and references; no name-based reassignment |
 | Explicitly consolidate selected Tags | Perform a separate deliberate operation with a chosen destination; see the open persistence boundary below |
@@ -42,6 +42,13 @@ an existing suggestion and creating a new Tag distinct actions. Default focus,
 return-key behavior, and labels need UI verification so a suggestion does not
 silently become a decision. Do not add repetitive confirmation dialogs merely
 because a suggestion exists.
+
+The owner requires feedback when a proposed rename duplicates an existing
+name. Similar-name suggestions should be distinguished from exact-name
+collisions. The UI may offer reuse or explicit consolidation when applicable,
+but must not silently merge, rewrite, or block an intentional separate name.
+Placement, wording, and presentation will be designed later; the requirement
+to inform the user is selected now. This does not require a modal confirmation.
 
 The proposal to choose a representative by UUID order or usage count is retired.
 If A has 99 related Items and B has one, selecting B assigns B. Popularity may
@@ -148,8 +155,8 @@ Core Data sample evidence, not a direct SwiftData implementation recipe and not
 a mandate to adopt its history/deduplication machinery. The [SwiftData sync
 contract][cloudkit] likewise does not guarantee atomic relationship updates.
 
-The next focused design decision is the source-record lifecycle and concurrency
-contract for this explicit operation. It must consider late assignments,
+The remaining consolidation decision is the source-record lifecycle and
+concurrency contract for this explicit operation. It must consider late assignments,
 concurrent consolidation, destination deletion, failure, and old UUID links.
 Do not silently add permanent redirect records, automatic name grouping,
 custom sync, or a claim of safe immediate deletion. If a complete merge requires
@@ -160,6 +167,32 @@ for automatic data repair.
 Keeping the current three Tag fields is sufficient for the accepted ordinary
 operations. Whether explicit consolidation needs additional persisted state is
 open; do not freeze that part of the physical schema prematurely.
+
+## Sequencing Before the Physical Schema Is Frozen
+
+Recommend settling export/import identity and the native synchronization and
+deletion contract before choosing the consolidation mechanism. This changes the
+previous ordering that made a completed merge design a prerequisite for the
+next contract discussion. It does not cancel the requested feature or silently
+move it to a post-1.0 release.
+
+The information needed for future consolidation is already retained: each Tag's
+UUID, original name, and Item assignments. No consolidation has happened in the
+new design, so there is no past consolidation decision that must be captured
+now. Do not add speculative redirect or history fields merely to reserve space.
+
+Export/import must first preserve distinct UUIDs, handle same-UUID conflicts,
+and distinguish restoration from new copies. Native sync review must establish
+the scope of deletion and concurrently arriving changes. Then choose the merge
+semantics, including source UUID references in old exports and links. Keeping
+references UUID-based is settled; permanent resolution of removed source UUIDs
+is not promised.
+
+If consolidation ships in 1.0, finalize its persistence needs and verify its
+sync behavior before freezing the production schema or public reference/file
+contracts. Deferring that decision within the design process is not a claim
+that adding it after release will be migration-free or trivial. If its cost
+requires reducing scope, explain the concrete tradeoff to the owner first.
 
 ## Evidence and Superseded Experiments
 
