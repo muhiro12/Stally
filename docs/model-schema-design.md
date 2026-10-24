@@ -163,7 +163,9 @@ ownership engine.
   See the [photo policy](photo-storage-design.md).
 - `imageData` uses [external storage][external-storage]. SwiftData manages
   its storage location; no app-managed path, Photos library reference, or
-  separate reusable image-asset model is required by this design.
+  separate reusable image-asset model is required by this design. Qualifying
+  delivered image bytes are preserved; only over-limit inputs are transformed.
+  Neither path requires a stored normalization flag or a second original.
 
 ## Rules Outside the Stored Schema
 

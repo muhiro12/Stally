@@ -490,7 +490,7 @@ the first ordered photo is the cover, with no competing `isCover` flags.
 Do not call attachment registration time the photo's shooting date or infer a
 relationship start from it. A dated photo journal is a separate product scope.
 
-Use the normalized attachment image as the durable representation, with
+Use the accepted attachment image as the durable representation, with
 derived thumbnails for lists and grids. The selected
 [photo storage policy](photo-storage-design.md) bounds saved dimensions and
 bytes while preserving JPEG, HEIC, and PNG as supported output families.
@@ -510,32 +510,36 @@ caption, and order while moving only its binary storage.
 #### Photo Ingestion Decision
 
 The owner requested an ownership and capacity decision in this session.
-Select an app-owned optimized copy, independently managed after successful
-import. This replaces the earlier preference for preserving delivered bytes
-unchanged. Keep the owned ItemPhoto model and add optional thumbnailData.
+Select an app-owned bounded copy, independently managed after successful
+import. Preserve valid supported delivered bytes unchanged when both saved
+limits are met; transform only inputs that exceed those limits. Keep the owned
+ItemPhoto model and add optional thumbnailData.
 This does not promise camera-original archiving or continued access to an
 external library or file provider.
 
 For users, the saved attachment is a record-oriented copy; original-quality
 photo management stays with the source library or provider. Its independent
 lifetime does not turn Stally into an original-photo archive. Keep only the
-normalized imageData as authoritative content and thumbnailData as a
+accepted imageData as authoritative content and thumbnailData as a
 rebuildable preview; app-owned raw staging lasts only through processing.
 SwiftData-managed external storage is part of the same saved attribute,
 not a second original. The photo policy distinguishes these
 lifetimes and the optional display cache explicitly.
 
 The [photo storage design](photo-storage-design.md) selects a 3,072-pixel
-long-edge limit and an eight-MiB saved-image limit, quality 0.90 for saved
-JPEG/HEIC, PNG for PNG or alpha-bearing input, preserved transparency and
-color profiles, SDR output, supported source-metadata preservation, and
-persisted 512-pixel thumbnails. The owner accepted the record-preservation
-principle underlying this reevaluation; these numeric values remain engineering selections.
+long-edge limit and an eight-MiB saved-image limit. For required conversion,
+use quality 0.90 for JPEG/HEIC and PNG for PNG or alpha-bearing input. Preserve
+transparency and supported metadata; use native SDR display decoding and SDR
+transformed output. Keep persisted 512-pixel thumbnails. The owner accepted the record-preservation
+principle underlying this reevaluation; these numeric values remain
+engineering selections.
 The report records the native ImageIO comparison and its limits. These are
 Stally choices, not Apple limits.
 Retain delivered shooting dates, supplied offsets, GPS, camera details, and
-standard descriptions inside imageData through ImageIO. Normalize dimensions
-and orientation for the saved pixels. No extra core-model fields are required;
+standard descriptions inside imageData. Unchanged bytes retain all delivered
+metadata; transformations preserve supported facts through ImageIO and
+normalize dimensions and orientation. Display decoding handles source
+orientation in unchanged files. No extra core-model fields are required;
 shooting facts do not redefine createdAt, Mark dates, or Period boundaries.
 Metadata exclusion for outward export is a separate policy and must not erase
 saved information. The revised photo specification records native round-trip

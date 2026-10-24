@@ -10,7 +10,11 @@ The principle is owner-confirmed. The numeric limits and implementation choices
 below are delegated engineering decisions, not Apple requirements. The owner
 subsequently authorized proceeding with this design if two supplied photographs
 passed verification. The bounded check below found no reason to change the
-selected policy; accept it as the 1.0 design baseline.
+then-selected policy. A subsequent review of unnecessary recompression
+refines that baseline: preserve qualifying delivered bytes, and transform
+only images that exceed the saved byte or dimension limits. This is a
+delegated engineering refinement prompted by the owner's comparison with
+Cookle, not a claim that the owner mandated copying Cookle's implementation.
 
 This is a design specification with bounded standalone evidence. The production
 application has not adopted it. Earlier 2,560-pixel, quality-0.85, five-MiB,
@@ -44,12 +48,13 @@ original. Export uses the saved attachment; it cannot reconstruct the source.
 | Input byte limit | 64 MiB before decoding |
 | Input dimensions | Positive; at most 16,384 pixels per edge and 100 million pixels total |
 | Saved image dimensions | Longest edge at most 3,072 pixels, aspect ratio retained, no upscaling |
-| Saved image encoding | JPEG stays JPEG; HEIC/HEIF uses HEIC; PNG or alpha-bearing input uses PNG |
-| Lossy quality | ImageIO compression-quality input 0.90 for saved JPEG and HEIC |
+| Saved image processing | Preserve valid supported input bytes within both saved limits; otherwise transform once |
+| Encoding when transformation is required | JPEG stays JPEG; HEIC/HEIF uses HEIC; PNG or alpha-bearing input uses PNG |
+| Lossy quality | ImageIO input 0.90 only when encoding a transformed JPEG or HEIC |
 | Saved byte limit | 8 MiB per attachment image |
-| Orientation | Apply the source orientation to the saved pixels |
-| Color and alpha | SDR output; preserve resulting color profile and transparency |
-| Source metadata | Retain delivered standard descriptive metadata in imageData, including shooting dates, GPS, camera/lens details, and descriptions; normalize image geometry |
+| Orientation | Preserve source orientation in unchanged data; apply it during display and thumbnail decoding; normalize transformed output |
+| Color and alpha | Preserve qualifying source bytes; use native SDR display/thumbnail decoding and SDR transformed output; retain transparency and resulting color profile |
+| Source metadata | Retain delivered standard descriptive metadata in imageData, including shooting dates, GPS, camera/lens details, and descriptions; normalize geometry metadata only when transforming pixels |
 | Thumbnail dimensions | Longest edge at most 512 pixels, aspect ratio retained, no upscaling |
 | Thumbnail encoding | JPEG at quality 0.70 for opaque content; PNG for alpha-bearing content |
 | Thumbnail byte limit | 2 MiB safety ceiling; ordinary results should be much smaller |
@@ -62,13 +67,50 @@ pixels; resizing can still remove source detail. These resource limits are
 bounds, not byte targets to fill. A high-entropy image can exceed the byte cap
 at an otherwise valid resolution.
 
-The saved image remains SDR in 1.0. ImageIO supplies the SDR decode operation;
-do not implement tone mapping or gain-map processing in app code. HDR headroom,
-RAW editing data, depth, animation, and Live Photo motion are outside the saved
-representation. A Live Photo may supply a supported still representation.
-Reject unsupported or multi-frame deliveries instead of silently picking an
-animation frame. Do not imply that preserving HEIC as a format preserves every
-HEIC auxiliary resource.
+The 1.0 presentation path uses native SDR decoding. Transformed saved images
+are also SDR. An unchanged accepted file may still contain its delivered HDR
+or auxiliary data; do not re-encode it solely to erase those resources or
+classify HDR through a custom detector. ImageIO supplies the display decode
+operation. There is no custom tone mapper or gain-map engine.
+
+RAW input, animation, Live Photo motion, and auxiliary-resource editing or
+round-trip guarantees across transformations remain out of scope. A Live Photo
+may supply a supported still representation. Reject unsupported or multi-frame
+deliveries rather than silently selecting an animation frame. Successful
+native SDR decoding is required regardless of the preservation branch.
+
+### Preserve Before Transforming
+
+Apply these steps in order:
+
+1. Validate delivered bytes: supported still JPEG/HEIC/HEIF/PNG, complete source
+   and image status, a single image, positive dimensions within input guards,
+   and successful orientation-aware native SDR pixel decoding. Header/status
+   checks alone are insufficient; malformed or truncated data is not accepted
+   merely because its byte count is small.
+2. If the complete delivered file is at most eight MiB and its longest pixel
+   edge is at most 3,072, store those exact bytes in imageData. Do not encode a
+   candidate to see whether it could be smaller. This includes metadata,
+   orientation, color profile, and any embedded resources already in the file.
+3. Otherwise, downsample without upscaling and encode once using the selected
+   format, metadata, and quality policy. Validate the result against the saved
+   limits. Failure must not fall back to saving the oversized original.
+4. Generate the independent 512-pixel preview from the selected saved bytes.
+   Display decoding applies orientation and requests SDR. A preview failure
+   retains the valid saved image under the existing optional-preview policy.
+
+An unchanged file is an independently owned attachment, not a reference to its
+source. Store just one authoritative imageData payload; no second original,
+normalization flag, format column, or schema migration is required. Native
+readers inspect the saved format and orientation when needed. Export that
+requires metadata exclusion must process a separate output copy.
+
+This deliberately prioritizes preservation over additional storage reduction
+for qualifying images. For example, a seven-MiB JPEG below the edge cap remains
+seven MiB even if quality 0.90 could produce a three-MiB copy. The eight-MiB cap
+is the explicit storage budget; it is not a target file size or a guarantee
+that every saved image was compressed as far as possible. This also avoids
+recompressing all inputs just to compare two file sizes.
 
 ## Why These Choices
 
@@ -110,7 +152,7 @@ are initial application budgets, not undocumented Apple platform limits.
 | Value | Basis and practical meaning |
 | --- | --- |
 | 3,072-pixel saved edge | 3 x 1,024; at most 36 MiB for a square 8-bit RGBA bitmap, versus 64 MiB at 4,096; additional detail beyond 2,048 |
-| Quality 0.90 | Native JPEG/HEIC measurements show substantial byte reduction versus 1.0; not a 10-percent fidelity reduction |
+| Quality 0.90 when transforming | Native JPEG/HEIC measurements show substantial byte reduction versus 1.0; not a 10-percent fidelity reduction |
 | 8-MiB saved bytes | A binary storage budget with over twice the headroom of the largest approximately 3.3-MiB photographic result; not a guarantee for every PNG |
 | 512-pixel preview | Binary size covering a fitted 160-point image at scale three; one MiB for square 8-bit RGBA pixels |
 | Quality 0.70 | Small-preview tradeoff with measured roughly 30-percent JPEG savings versus 0.90; also used as an input by the Wishlist sample, not an Apple-wide rule |
@@ -138,8 +180,9 @@ new limits retroactively.
 
 ### Metadata Preservation
 
-Retain useful facts delivered with the selected image when standard ImageIO
-metadata APIs can carry them through normalization. This follows the owner's
+Preserved input bytes retain all delivered metadata unchanged. When
+transformation is required, retain useful facts through standard ImageIO
+metadata APIs. This follows the owner's
 record-preservation intent and replaces the earlier blanket-omission policy.
 Keeping those facts does not require extra SwiftData fields, a new entity,
 raw-source retention, or a source-library dependency. They remain embedded in
@@ -153,14 +196,15 @@ independently editable ItemPhoto.caption. Retain supported descriptive XMP
 through ImageIO's metadata representation, without promising byte-identical
 EXIF/XMP serialization or round trips for every proprietary namespace.
 
-Read metadata with CGImageSourceCopyMetadataAtIndex, make a native mutable copy,
-and write it with CGImageDestinationAddImageAndMetadata alongside the normalized
-pixels. Normalize orientation and image dimensions to the saved pixels; source
-geometry is not a historical shooting fact. Do not preserve an obsolete
-embedded preview or claim that proprietary MakerNotes, editing instructions,
-face/depth geometry, gain maps, or other auxiliary camera resources survive
-as usable resources. Supporting those beyond native descriptive metadata is
-outside the selected 1.0 image contract, not a reason to discard dates or GPS.
+On the transformation branch, read metadata with
+CGImageSourceCopyMetadataAtIndex, make a native mutable copy, and write it with
+CGImageDestinationAddImageAndMetadata alongside the normalized pixels. Normalize
+orientation and image dimensions to the saved pixels; source geometry is not a
+historical shooting fact. Do not copy an obsolete embedded preview into
+transformed output or claim that proprietary MakerNotes, editing instructions,
+face/depth geometry, gain maps, or other auxiliary camera resources survive as
+usable resources. Supporting those beyond native descriptive metadata is outside
+the selected 1.0 image contract, not a reason to discard dates or GPS.
 
 An absent timestamp, offset, or location remains absent. Do not infer it from
 file creation time, ItemPhoto.createdAt, the device's current time zone, an
@@ -176,11 +220,12 @@ does not promise to recover it.
 
 Generate thumbnails from decoded saved pixels without copying descriptive
 metadata. The saved image already retains those facts; the preview is a
-rebuildable derivative. Include embedded metadata when enforcing the saved
-byte ceiling. If metadata writing fails or the result exceeds the ceiling,
-fail the import while retaining the previous record/draft; do not retry by
-silently stripping metadata. Native inability to preserve arbitrary proprietary
-fields is outside the stated contract and does not justify a custom parser.
+rebuildable derivative. Include embedded metadata when enforcing the saved byte
+ceiling. If transformation metadata writing fails or the result exceeds the
+ceiling, fail the import while retaining the previous record/draft; do not retry
+by silently stripping metadata. Native inability to preserve arbitrary
+proprietary fields is outside the stated contract and does not justify a custom
+parser.
 
 Preservation and outward disclosure are separate decisions. A later export
 policy may offer a copy with metadata omitted or masked; it must not modify
@@ -193,14 +238,17 @@ neither exports images nor finalizes those controls.
 ### Resolution and Compression
 
 Compare long-edge limits of 2,048, 2,560, 3,072, and 4,096 pixels and quality
-inputs of 0.80, 0.90, and 0.95. Choose 3,072 and 0.90 to leave useful detail
-beyond a small phone preview while bounding decode size and storage. A square
-8-bit RGBA image at this limit has 36 MiB of pixel data, versus 64 MiB at
-4,096; this is bitmap arithmetic, not a measured process-memory ceiling.
+inputs of 0.80, 0.90, and 0.95. Choose 3,072 and transformation quality 0.90 to
+leave useful detail beyond a small phone preview while bounding decode size and
+storage. A square 8-bit RGBA image at this limit has 36 MiB of pixel data,
+versus 64 MiB at 4,096; this is bitmap arithmetic, not a measured process-memory
+ceiling.
 
 The larger Apple sample photographs in the comparison were 3,000 by 2,000
-pixels. The selected limit avoids resampling them; quality 0.90 reduced their
-roughly 7.3-7.7 MiB source files to 2.7-3.3 MiB. Smaller Wishlist photos were
+pixels. The selected limit avoids resampling them; the earlier always-encode
+comparison at quality 0.90 reduced their
+roughly 7.3-7.7 MiB source files to 2.7-3.3 MiB. Under the revised policy those
+qualifying source files are retained unchanged. Smaller Wishlist photos were
 also tested without upscaling. The larger samples cannot establish a visual
 difference between 3,072 and 4,096 because both preserve their dimensions.
 The upper-resolution choice is a product/resource tradeoff, not a claimed
@@ -213,10 +261,11 @@ HEIC-to-JPEG conversion, which increased size in the earlier functional probe.
 Retain the current input resource guards: they accommodate common high-pixel-
 count sources while rejecting excessive work before full decoding.
 
-SDR is an explicit first-release scope choice for these record-oriented copies,
-not an Apple limitation. Apple also provides native gain-map preservation for
-HEIF. Keeping every HDR representation is a valid alternative for a product
-that promises photographic fidelity; that is not Stally's selected promise.
+SDR display and transformed output are explicit first-release scope choices, not
+Apple limitations or reasons to recompress otherwise acceptable bytes. Apple
+also provides native gain-map preservation for HEIF. Keeping every HDR
+representation is a valid alternative for a product that promises photographic
+fidelity; that is not Stally's selected promise.
 
 ### Persistent Thumbnail Instead of Memory-Only Generation
 
@@ -247,7 +296,7 @@ generate a display fallback without automatically writing sync repair records.
 If both are unavailable, retain attachment metadata and show an unavailable
 state. Never delete the attachment to repair a missing derivative.
 
-Generate the thumbnail from the final saved-image bytes during creation and
+Generate the thumbnail from the selected saved-image bytes during creation and
 import. Caption edits and reordering change neither image nor thumbnail bytes.
 A deliberate image replacement creates a new ItemPhoto and replaces the old
 attachment through an explicit operation; the UI may carry over caption and
@@ -275,12 +324,13 @@ bytes exist, or until failure/cancellation. Remove abandoned app-owned staging
 files after process termination on a later startup without touching live
 imports or SwiftData-managed files. Do not retain another raw original.
 
-Use ImageIO to downsample with orientation correction and SDR decoding, then
-encode the selected format with the resulting color profile and supported
-descriptive metadata. Normalize geometry metadata as well as pixels. Inspect
-alpha before choosing the output. Process imports sequentially initially and support
-cancellation. The input-byte guard does not bound a provider's internal download
-or memory use.
+Use the preserve-before-transforming decision above. When transformation is
+required, use ImageIO to downsample with orientation correction and SDR
+decoding, then encode the selected format with the resulting color profile and
+supported descriptive metadata. Normalize geometry metadata with pixels. Inspect
+alpha before choosing the output. Process imports sequentially initially and
+support cancellation. The input-byte guard does not bound a provider's internal
+download or memory use.
 
 If the saved image exceeds eight MiB, reject that import with a clear message
 and preserve the existing photo and draft. Do not flatten alpha, repeatedly
@@ -380,12 +430,12 @@ were added to the application repository.
 A new native ImageIO probe passed 151 assertions on macOS 27.2 with Xcode 27.2.
 Synthetic JPEG, HEIC, and alpha PNG inputs carried a shooting timestamp, UTC
 offset, subsecond value, make/model, lens, exposure, GPS, copyright,
-description, and keywords. The probe checked that these supported fields were present in the
-input and equal after normalization. Images were reduced from 4,032 x 3,024 and
-rotated to 2,304 x 3,072; saved orientation and EXIF dimensions matched the
-result. It also checked color-profile presence, PNG alpha, absent metadata
-remaining absent, thumbnail omission of shooting/GPS facts, and saved-file byte
-identity on reread.
+description, and keywords. The probe checked that these supported fields were
+present in the input and equal after normalization. Images were reduced from
+4,032 x 3,024 and rotated to 2,304 x 3,072; saved orientation and EXIF
+dimensions matched the result. It also checked color-profile presence, PNG
+alpha, absent metadata remaining absent, thumbnail omission of shooting/GPS
+facts, and saved-file byte identity on reread.
 
 | Format | Saved bytes with metadata | Without metadata | Difference |
 | --- | ---: | ---: | ---: |
@@ -457,9 +507,59 @@ execution failed in native image finalization; the same unmodified probe
 completed under normal local execution permissions. This is macOS ImageIO
 runtime evidence, not an iOS device or production-app test.
 
-Proceed with the selected photo design. Production adoption and the remaining
-device/provider checks retain their existing scope; no production schema or
-image pipeline was changed by this validation.
+This check originally supported the always-encode design. The subsequent
+pass-through evaluation below revises that choice. Production adoption and the
+remaining device/provider checks retain their existing scope; no production
+schema or image pipeline was changed by this validation.
+
+## Conditional Preservation Review
+
+Read-only comparison with Cookle at revision
+8f0b85a3d68725b9205d4c73e430eb1004b0831b covered
+CookleLibrary/Sources/Photo/PhotoImageProcessor.swift, its behavior tests, and
+the app's CooklePhotoImageCompressor adapter. compressedData returns original
+bytes when both limits are met. Its defaults are 500 KiB and 2,048 pixels;
+its conversion path sweeps JPEG quality to approach the byte target. Its
+existing contract can return invalid input unchanged or a result above the
+requested target. Those policies serve its callers and are not adopted as
+Stally's import-validation contract. Cookle was not modified.
+
+Adopt the conditional preservation decision, with Stally's limits, format and
+metadata policies, and strict rejection of invalid/unsupported input or an
+oversized transformed result. This is consistent with the owner's preservation
+principle independently of Cookle. Apple's orientation-aware thumbnail and
+SDR decoding APIs let display normalization remain separate from stored bytes.
+
+A new isolated macOS ImageIO probe passed 112 assertions. The two supplied
+photographs were byte-identical after preparation and file reopening; original
+source files remained unchanged. Metadata equality follows from complete byte
+identity, without serializing any private metadata into repository records.
+
+| Input | Previous always-encode bytes | Selected unchanged bytes | New preview bytes |
+| --- | ---: | ---: | ---: |
+| A | 271,450 | 307,796 | 64,806 |
+| B | 269,817 | 250,649 | 56,531 |
+
+The saved images incur no additional compression loss. The new previews were
+also visually inspected and remained useful for collection display. Input A
+uses more space than its previous transformed copy; this is the deliberate
+preservation tradeoff, not a claim of universal space savings.
+
+Additional cases covered unchanged small HEIC and alpha PNG, all eight EXIF
+orientation values through native display decoding, exact 3,072-pixel retention
+versus 3,073-pixel conversion, byte-only excess requiring conversion, rejection
+of a PNG still too large after conversion, malformed/truncated JPEG rejection,
+and unsupported TIFF/animated GIF rejection. The orientation cases checked
+output dimensions and equivalence to the same native decoding of the source;
+they were not independent pixel-oracle tests of Apple's orientation algorithm.
+
+The final probe also compiled for iOS Simulator. It did not execute on iOS,
+measure device memory, or validate actual HDR photographs. Native SDR handling
+for retained HDR-bearing files remains an integration verification requirement;
+no original-HDR-fidelity promise or custom HDR classifier was introduced.
+Local probe sources, images, and results remain outside the repository under
+/private/tmp/stally-photo-pass-through. No owner image, source filename,
+metadata value, image hash, or personal library path was added to Git.
 
 ## Additional Compression Evidence
 
@@ -498,6 +598,9 @@ See the [compression-quality API][compression-quality].
 - [ImageIO metadata objects and native field mapping][mutable-metadata]
 - [Writing normalized pixels with metadata][add-metadata]
 - [GPS exclusion scope][exclude-gps]
+- [Orientation-aware display decoding][orientation-transform]
+- [Native SDR decode request][decode-sdr]
+- [Image source status][source-status]
 - [NSCache cost limits are advisory][cache-limit]
 
 [wishlist]: https://developer.apple.com/videos/play/wwdc2026/275/
@@ -513,3 +616,7 @@ See the [compression-quality API][compression-quality].
 [mutable-metadata]: https://developer.apple.com/documentation/imageio/cgmutableimagemetadata
 [add-metadata]: https://developer.apple.com/documentation/imageio/cgimagedestinationaddimageandmetadata(_:_:_:_:)
 [exclude-gps]: https://developer.apple.com/documentation/imageio/kcgimagemetadatashouldexcludegps
+
+[orientation-transform]: https://developer.apple.com/documentation/imageio/kcgimagesourcecreatethumbnailwithtransform
+[decode-sdr]: https://developer.apple.com/documentation/imageio/kcgimagesourcedecodetosdr
+[source-status]: https://developer.apple.com/documentation/imageio/cgimagesourcestatus
