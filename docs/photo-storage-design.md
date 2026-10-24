@@ -7,7 +7,10 @@ user's record of a subject and their relationship with it; photos are durable
 visual material supporting that record. This document selects the 1.0 photo
 specification after reevaluating the earlier proposals against that principle.
 The principle is owner-confirmed. The numeric limits and implementation choices
-below are delegated engineering decisions, not Apple requirements.
+below are delegated engineering decisions, not Apple requirements. The owner
+subsequently authorized proceeding with this design if two supplied photographs
+passed verification. The bounded check below found no reason to change the
+selected policy; accept it as the 1.0 design baseline.
 
 This is a design specification with bounded standalone evidence. The production
 application has not adopted it. Earlier 2,560-pixel, quality-0.85, five-MiB,
@@ -407,6 +410,56 @@ Sources and results are under the local evidence directory's metadata/ folder.
 These additions replace the earlier metadata-omission expectation; earlier
 compression, store-lifetime, and thumbnail evidence remains relevant within
 its stated limits. No production models or application paths were changed.
+
+## Owner-Supplied Photograph Validation
+
+Two owner-supplied JPEG deliveries were processed with the selected 1.0 path:
+orientation-aware ImageIO decoding without upscaling, quality-0.90 JPEG with
+standard metadata retained, and a 512-pixel quality-0.70 preview. The source
+files were read only. All generated images and probe files remained outside
+the repository. No source filenames, library paths, metadata values, image
+payloads, or image hashes are recorded here or included in the commit.
+
+| Input | Input pixels | Input bytes | Saved bytes | Preview pixels | Preview bytes |
+| --- | --- | ---: | ---: | --- | ---: |
+| A | 1,024 x 768 | 307,796 | 271,450 | 512 x 384 | 70,065 |
+| B | 1,086 x 724 | 250,649 | 269,817 | 512 x 341 | 56,794 |
+
+Both saved images retained their input dimensions. The native probe passed 38
+assertions, including input/output bounds, orientation, color-profile name,
+standard metadata equality, preview GPS omission, saved-file reread, and source
+byte equality after processing. It compared 53 and 61 existing standard
+metadata fields respectively, excluding geometry that must describe the saved
+pixels and opaque proprietary MakerNote blocks. Supplied shooting timestamps
+and offsets survived. The inputs did not exercise absent shooting-time fields;
+that case remains covered by the prior synthetic probe.
+
+Visual inspection of both saved images and previews against the supplied
+images found no conspicuous color shift, block artifacts, or detail loss that
+would undermine record-oriented use. Subject detail and larger lettering
+remained useful in the saved images. The smaller preview is for recognition;
+small text and fine texture must be viewed using the saved image. This is a
+bounded visual judgment, not proof of perceptual identity or a calibrated
+color assessment.
+
+Input B increased by 19,168 bytes (approximately 7.6 percent) after re-encoding.
+A fixed encoder-quality value does not guarantee a smaller file than an
+already compressed source. Both outputs remained comfortably within the byte
+budget; this result does not justify another compression pass or a special
+codec workaround. The specification promises bounded useful copies, not a
+size reduction for every import.
+
+The inputs were already reduced JPEG deliveries, both below the saved-image
+size limit. They do not validate reduction from full camera resolution, HDR,
+HEIC/PNG ingestion, cloud sync, or runtime scrolling/memory behavior. Source
+originals were not sought elsewhere in the library. An initial restricted
+execution failed in native image finalization; the same unmodified probe
+completed under normal local execution permissions. This is macOS ImageIO
+runtime evidence, not an iOS device or production-app test.
+
+Proceed with the selected photo design. Production adoption and the remaining
+device/provider checks retain their existing scope; no production schema or
+image pipeline was changed by this validation.
 
 ## Additional Compression Evidence
 
