@@ -40,6 +40,8 @@ mandatory retention of development formats are not constraints on this design.
 - Multiple Marks on the same day must be supported. Stored history and the
   calendar's visual intensity are separate. People can choose how to see it;
   recording once per day must not look like inadequate participation.
+- Support backdated Marks, correcting a Mark's assigned day, and correcting
+  a day's count upward or downward. These are ordinary editing operations.
 - Stopping new Marks preserves earlier history. Resuming continues that history.
 - Putting a record out of everyday view and no longer having or using its
   subject are different intentions. Neither the word Archive nor a fixed
@@ -114,6 +116,59 @@ streak, intensity, rank, target, or inferred duration. Reconstruct these from
 Marks. Correcting a day preserves that Mark's identity and registration time.
 Undo targets a particular Mark. Deleting all Marks on a day is a separate
 action.
+
+### Date Meaning, Corrections, and Future Time Precision
+
+The owner confirmed backdating, date correction, and count correction.
+Apply these meanings independently of their eventual editing controls:
+
+- Adding yesterday's Mark today assigns yesterday as its day and today as
+  its registration instant.
+- Moving a Mark from yesterday to the day before changes its assigned day,
+  preserving its UUID and registration instant.
+- Correcting three Marks to four adds one Mark; correcting three to two
+  removes one existing Mark. A simple count editor can express these actions
+  without exposing record identifiers. Do not replace history with a stored
+  daily counter or promise an absolute total across concurrent offline edits.
+
+Recommend day-only occurrence precision for 1.0. An actual occurrence time
+would support time-of-day patterns, within-day ordering, or hours-since-use
+readings, but the current calendar and counting requirements do not need it.
+Registration time must not be substituted for occurrence time when backdating.
+
+Keep the selected day and registration instant semantically separate now.
+If a later feature needs an occurrence instant, an optional attribute can
+extend each independently identified Mark. Existing records retain unknown
+occurrence time; neither midnight nor registration time supplies missing
+evidence. This avoids a speculative field now while preserving a coherent
+extension path. It cannot recover historical times that were never recorded.
+The later feature must define any original-zone or wall-clock requirements.
+
+An additive field still changes the schema and export contract. Follow native
+[SwiftData schema evolution][schema], verify saved-store migration, and check
+CloudKit compatibility and older-file import behavior. This is a bounded
+extension proposal, not a claim that an untested migration is automatic.
+
+Foundation's [Date][absolute-date] represents an absolute instant, whereas
+[DateComponents][date-components] expresses calendar components. For Stally,
+the selected Mark day is a civil date, not an instant at local midnight.
+Keep its Gregorian year, month, and day stable when the viewing time zone or
+preferred calendar changes. Derive the default for a new Mark from the
+device's current local day; a later time-zone change must not rebucket history.
+Use native Calendar and DateComponents for conversion and calendar arithmetic,
+with an explicit storage calendar. Do not calculate yesterday by subtracting
+86,400 seconds or implement time-zone offset arithmetic by hand.
+
+The persisted representation remains a comparison between validated integer,
+string, or component attributes; the existing integer day key is a candidate,
+not an Apple requirement. A small validated day value does not require a
+custom calendar or synchronization engine. Verify leap days, daylight-saving
+transitions, travel across dates, and non-Gregorian device calendars when the
+representation is implemented. This decision does not establish that a
+sibling app's use of Date is wrong without examining its intended semantics
+and conversion paths.
+
+### Calendar Presentation and Recording Availability
 
 Prefer two presentation modes, with the final settings surface designed later:
 
@@ -656,3 +711,5 @@ The paid-feature boundary references [App Review Guideline 4.10][review].
 [history-identity]: https://developer.apple.com/documentation/swiftdata/fetching-and-filtering-time-based-model-changes
 [wishlist]: https://developer.apple.com/videos/play/wwdc2026/275/
 [notes-tags]: https://support.apple.com/en-gb/guide/iphone/iphedddbfdf9/ios
+[absolute-date]: https://developer.apple.com/documentation/foundation/date
+[date-components]: https://developer.apple.com/documentation/foundation/datecomponents
