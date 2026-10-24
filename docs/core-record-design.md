@@ -106,8 +106,9 @@ labels remain a UI decision. Archiving never asserts that ownership ended.
 Use the confirmed `ItemMark` model for each deliberate recording action.
 Keep the established domain noun rather than introducing a generic
 activity/event framework.
-Each Mark stores identity, its chosen local day, its registration instant,
-and its owning Item. The chosen day survives travel. Registration time does
+Each Mark stores identity, its chosen local day with optional clock time,
+its registration instant, and its owning Item. The chosen day survives travel.
+Registration time does
 not claim to be the instant the subject was used, especially for backdating.
 
 Counts and active-day counts are different readings. Three Marks on one day
@@ -171,8 +172,9 @@ Keep registration time as automatically captured record metadata, useful for
 recent-entry ordering and understanding backdated imports or records. It is
 not a required user-facing fact or an Apple-mandated field, nor a reliable
 cross-device causal clock or a replacement for native synchronization.
-Preserve it through edits and identity-preserving export/import. The existing
-`recordedAt` proposal has this narrow creation meaning, not usage-time meaning.
+Preserve it through edits and identity-preserving export/import. Select
+`createdAt` for this creation meaning, replacing the earlier `recordedAt`
+proposal and aligning the name with Item and ItemPhoto.
 
 An additive field still changes the schema and export contract. Follow native
 [SwiftData schema evolution][schema], verify saved-store migration, and check
@@ -189,14 +191,24 @@ Use native Calendar and DateComponents for conversion and calendar arithmetic,
 with an explicit storage calendar. Do not calculate yesterday by subtracting
 86,400 seconds or implement time-zone offset arithmetic by hand.
 
-The persisted representation remains a comparison between validated integer,
-string, or component attributes; the existing integer day key is a candidate,
-not an Apple requirement. A small validated day value does not require a
-custom calendar or synchronization engine. Verify leap days, daylight-saving
-transitions, travel across dates, and non-Gregorian device calendars when the
-representation is implemented. This decision does not establish that a
-sibling app's use of Date is wrong without examining its intended semantics
-and conversion paths.
+Select one `localDateTime: String` occurrence attribute following the
+[October 24 runtime comparison](mark-temporal-schema-comparison.md).
+Use Gregorian `YYYY-MM-DD` or `YYYY-MM-DDTHH:mm`, with no stored time zone.
+DateComponents remains an in-memory representation; native Calendar and
+fixed-format parsing/formatting perform validation and conversion.
+The earlier integer day key and day-string/minute-of-day candidates are
+superseded. Do not add redundant Date, time-presence, or minute attributes.
+This is a civil reading and does not identify a historical absolute instant.
+A current-zone Date conversion is only contextual; it must not rewrite history
+or silently normalize nonexistent local times. Initial time precision is
+minutes. The comparison's seconds-form experiment is a possible extension,
+not an initial accepted form.
+
+A bounded probe verified disk reopen, queries, sorting, corrections, and native
+calendar edge cases on macOS and iOS 27.2. CloudKit propagation, migration,
+and app UI integration were not exercised. This decision does not establish
+that a sibling app's use of Date is wrong without examining its intended
+semantics and conversion paths.
 
 This follows general date modeling rather than an Apple-specific exception.
 For example, [PostgreSQL][sql-date-types] distinguishes date-only values,
@@ -392,7 +404,7 @@ conflicts or prevent duplicate imports without defined operation semantics.
 
 `createdAt`, `createdTimestamp` (used by Cookle), and `creationDate` are viable
 names. Apple does not prescribe `createdAt`. The recommendation uses it for a
-concise registration instant, consistently with `recordedAt` on a Mark. The
+concise registration instant, consistently across Items, Marks, and photos. The
 fact supports registration ordering and cannot be recovered reliably from
 relationship dates or Marks. Select `createdAt` for the Item registration
 instant. This is a Stally naming decision, not an Apple-mandated spelling.
@@ -521,13 +533,15 @@ Stally does not inherit finance-specific tag types or date tags.
 | Stored property | Type / initial value | Meaning |
 | --- | --- | --- |
 | `uuid` | `UUID`, generated once per action | Mark and retry identity |
-| `dayKey` | `Int`, valid storage default | Existing Gregorian YYYYMMDD encoding |
-| `recordedAt` | `Date`, registration instant | When this fact entered Stally |
+| `localDateTime` | `String`, empty storage default | Gregorian day with optional local clock time |
+| `createdAt` | `Date`, registration instant | When this fact entered Stally |
 | `item` | `Item?` | Owning subject |
 
-Use validated `LocalDay` at public operation boundaries; the storage default
-never supplies a missing day during import. `recordedAt` deliberately avoids
-claiming an exact occurrence time. Do not store an incrementing per-day counter
+Use validated Gregorian date components at operation boundaries. Encode the
+canonical day or minute-precision reading into `localDateTime`. The empty
+storage default is not a valid Mark; do not use it to fabricate missing import
+data. `createdAt` deliberately avoids claiming an occurrence instant. Do not
+store an incrementing per-day counter
 that two offline devices must reconcile. No unique constraint on UUID or day.
 
 ### ItemPeriod
@@ -605,7 +619,8 @@ where needed. No mandatory AI explanation, provider integration, or embedded
 prompt is part of this design.
 
 Design an explicit public representation independently of SwiftData/Codable
-defaults. Prefer readable JSON keys such as `tags`, `day`, `recordedAt`,
+defaults. Prefer readable JSON keys such as `tags`, `localDateTime`,
+`createdAt`,
 `start`, and `end`. Use RFC 3339 UTC timestamps for instants and the explicit
 partial-date grammar for date knowledge. Specify fractional precision and
 round-trip expectations before freezing the codec; do not claim arbitrary
@@ -694,9 +709,11 @@ does not supply new runtime evidence for Stally's unimplemented schema.
 | Export/import and old-format support | Sibling review/cancellation flows were references; old Stally formats were another source of inertia | Keep deliberate review and source preservation. No requirement to inherit a sibling codec or retain development formats forever. |
 
 The review also distinguishes our own unverified assumptions from sibling
-influence. The proposed integer day key and partial-date strings remain
-representation candidates, not conclusions established by existing Stally
-code. Photo `sortOrder` needs saved-store and concurrent-reorder evidence;
+influence. The integer day-key proposal was subsequently replaced by the
+[verified civil-text choice](mark-temporal-schema-comparison.md). Partial-date
+period strings remain a separate representation decision; existing Stally
+code alone does not establish their suitability. Photo `sortOrder` needs
+saved-store and concurrent-reorder evidence;
 the existence of Cookle's order field is not that evidence. Preserving ingested
 image data with derived thumbnails remains the selected direction, but the
 Apple example does not establish optimal image limits or metadata policy.
