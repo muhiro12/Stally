@@ -95,6 +95,7 @@ final class ItemPhoto {
     @Attribute(.externalStorage)
     var imageData: Data?
 
+    var thumbnailData: Data?
     var caption: String = ""
     var sortOrder: Int = 0
     var createdAt: Date = Date()
@@ -103,11 +104,13 @@ final class ItemPhoto {
     init(
         item: Item,
         imageData: Data,
+        thumbnailData: Data? = nil,
         caption: String = "",
         sortOrder: Int = 0
     ) {
         self.item = item
         self.imageData = imageData
+        self.thumbnailData = thumbnailData
         self.caption = caption
         self.sortOrder = sortOrder
     }
@@ -185,14 +188,21 @@ ownership engine.
   this design does not add automatic orphan deletion or a sync repair engine.
 
 The [photo storage policy](photo-storage-design.md) now selects ingestion
-limits and memory-only thumbnails without changing these model fields.
+limits and persistent previews. ItemPhoto now includes optional thumbnailData
+as a rebuildable derivative alongside the authoritative imageData.
 Versioned-schema integration, tag matching rules, presentation-setting scope,
 and export/import field mapping remain separate implementation decisions.
 This illustration does not add speculative stored fields for those concerns.
 
 ## Consolidated Graph Verification
 
-The exact five declarations above were extracted and compiled together with
+The [photo policy review](photo-storage-design.md) separately verified the
+added thumbnailData attribute with disk-store reads, metadata edits, missing
+image/thumbnail cases, and cascade deletion. The earlier complete-graph checks
+below apply to the version without that attribute.
+
+Before adding thumbnailData, the five declarations above were extracted and
+compiled together with
 Apple Swift 6.4.2 in Xcode 27.2. On macOS 27.2, a disposable disk store passed
 26 assertions across ten separate processes, with explicit saves and fresh
 reopens after each mutation. CloudKit was disabled for this probe.

@@ -469,6 +469,7 @@ attachment with its own UUID and caption.
 | --- | --- | --- |
 | `uuid` | `UUID`, generated once | Portable attachment identity |
 | `imageData` | `Data?`, nil, external storage | App-owned image representation |
+| `thumbnailData` | `Data?`, nil | Rebuildable persisted collection preview |
 | `caption` | `String`, empty | Optional plain-text description |
 | `sortOrder` | `Int`, zero | Explicit user-controlled display order |
 | `createdAt` | `Date`, registration instant | When the attachment was created |
@@ -493,8 +494,9 @@ Use the normalized attachment image as the durable representation, with
 derived thumbnails for lists and grids. The selected
 [photo storage policy](photo-storage-design.md) bounds saved dimensions and
 bytes while preserving JPEG, HEIC, and PNG as supported output families.
-Thumbnails are rebuildable, initially memory-only caches, not additional
-historical facts. Avoid decoding every full-sized image during list rendering.
+Thumbnails are rebuildable persisted derivatives, not additional historical
+facts. Keep decoded previews in a memory cache for repeated display. Avoid
+decoding every full-sized image during list rendering.
 Apple's [Wishlist code-along][wishlist] separates
 image models and thumbnails from full-sized image data. This supports the
 loading boundary, not a mandate for Stally's exact schema or image limits.
@@ -510,22 +512,27 @@ caption, and order while moving only its binary storage.
 The owner requested an ownership and capacity decision in this session.
 Select an app-owned optimized copy, independently managed after successful
 import. This replaces the earlier preference for preserving delivered bytes
-unchanged. It keeps the ItemPhoto schema and does not promise camera-original
-archiving or continued access to an external library or file provider.
+unchanged. Keep the owned ItemPhoto model and add optional thumbnailData.
+This does not promise camera-original archiving or continued access to an
+external library or file provider.
 
 For users, the saved attachment is a record-oriented copy; original-quality
 photo management stays with the source library or provider. Its independent
 lifetime does not turn Stally into an original-photo archive. Keep only the
-normalized imageData durably; app-owned raw staging lasts only through
-processing. SwiftData-managed external storage is part of that same saved
-attribute, not a second original. The photo policy distinguishes these
+normalized imageData as authoritative content and thumbnailData as a
+rebuildable preview; app-owned raw staging lasts only through processing.
+SwiftData-managed external storage is part of the same saved attribute,
+not a second original. The photo policy distinguishes these
 lifetimes and the optional display cache explicitly.
 
-The [photo storage design](photo-storage-design.md) selects a 2,560-pixel
-long-edge limit and a five-MiB saved-image limit, JPEG/HEIC/PNG output matching
-the input family, preserved transparency and color profiles, SDR output,
-source-metadata omission, and memory-only thumbnails. It records the native
-ImageIO comparison and its limits. These are Stally choices, not Apple limits.
+The [photo storage design](photo-storage-design.md) selects a 3,072-pixel
+long-edge limit and an eight-MiB saved-image limit, quality 0.90 for saved
+JPEG/HEIC, PNG for PNG or alpha-bearing input, preserved transparency and
+color profiles, SDR output, source-metadata omission, and persisted 512-pixel
+thumbnails. The owner accepted the record-preservation principle underlying
+this reevaluation; these numeric values remain engineering selections.
+The report records the native ImageIO comparison and its limits. These are
+Stally choices, not Apple limits.
 The old 1,600-pixel, two-MiB, forced-sRGB-JPEG normalization is superseded as
 redesign direction; the application implementation has not yet changed.
 

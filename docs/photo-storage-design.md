@@ -1,280 +1,271 @@
 # Photo Storage Design
 
-## Decision and Scope
+## Status and Product Principle
 
-On October 24, 2026, the owner requested a decision on photo ownership,
-capacity, thumbnails, and ingestion in this design session. Select an
-app-owned, size-bounded attachment representation for Stally 1.0. This
-supersedes the earlier preference for preserving received bytes unchanged.
-It is a delegated engineering decision, not an implemented ingestion pipeline.
+On October 24, 2026, the owner accepted this principle: Stally preserves the
+user's record of a subject and their relationship with it; photos are durable
+visual material supporting that record. This document selects the 1.0 photo
+specification after reevaluating the earlier proposals against that principle.
+The principle is owner-confirmed. The numeric limits and implementation choices
+below are delegated engineering decisions, not Apple requirements.
 
-The existing ItemPhoto schema remains unchanged. Its imageData is the
-authoritative image for that attachment after ingestion and a successful
-save. Stally is not promising preservation of the camera original. The
-original photo or provider file remains independently owned by its source.
+This is a design specification with bounded standalone evidence. The production
+application has not adopted it. Earlier 2,560-pixel, quality-0.85, five-MiB,
+and memory-only-thumbnail recommendations are superseded.
 
-### User-Facing Meaning
+## Preservation Responsibility
 
-The owner raised alternative ways to understand originals and copies and
-asked which principle Stally should adopt before deriving storage policy.
-This was an invitation to evaluate the product's responsibility, not a
-directive to adopt either answer. Do not attribute the engineering selection
-below, or its numeric limits, to an owner-confirmed preservation principle.
+Keep an independent, useful copy for recognizing the subject and revisiting
+visible details, including on a larger display. The source library or provider
+remains where the user manages the original. Stally does not promise original
+pixel fidelity, photographic editing latitude, or preservation of all camera
+resources. Its copy may nevertheless become the user's only surviving image;
+being a copy is not justification for reducing it to a list icon.
 
-The proposed product principle is that Stally preserves the user's record
-of a subject and their relationship with it. User-entered facts, notes, and
-captions are primary Stally records. Photos support that record as durable
-visual material. For imported photos, the current engineering recommendation
-is to retain a useful independent copy while leaving original-quality image
-management with the source library or provider.
+The saved attachment image is the authoritative representation of the Stally
+attachment. Source deletion or editing does not change it. Attachment deletion
+does not change the source. Do not add source-path identity, an original-opening
+promise, or source-library synchronization.
 
-This recommendation needs to stand on the product's purpose and promised
-quality. A copy still needs sufficient visual information for its role and
-may become the user's only surviving image. Neither a Data property nor the
-word copy determines acceptable compression. Derive preservation fidelity,
-lifetime, and deletion semantics from the chosen responsibility before
-finalizing representation and processing limits. Revisit the current limits
-if that responsibility changes.
+Distinguish the source original, the saved attachment copy, and its derived
+thumbnail. Persist the attachment and a small thumbnail, not another raw source
+original. Export uses the saved attachment; it cannot reconstruct the source.
 
-The copy is nevertheless independently durable. Its role as a copy does not
-make it a disposable cache or a live view of the source. Later source edits
-do not invalidate it, and source deletion must not remove it. If the user
-deletes the source, Stally can return only its saved copy, not reconstruct
-the original quality. There is no promise of an original-opening link or
-automatic retrieval of a higher-quality version.
+## Selected 1.0 Policy
 
-Use three distinct terms in design: source original, saved attachment copy,
-and rebuildable display thumbnail. The saved copy is the sole authoritative
-representation of the Stally attachment, not the universal master of that
-photograph. Compression follows the product's promise to retain a useful
-record-oriented copy, not the fact that SwiftData owns its storage. A concise
-UI explanation can say that photos are resized for storage and source images
-are unchanged; ordinary users do not need database or SSOT terminology.
-
-## Ownership and Source of Truth
-
-| Approach | Authoritative image | Consequence |
-| --- | --- | --- |
-| Reference external content | Photo library or provider file | Access, deletion, edits, and downloads remain external dependencies |
-| Import an attachment | Stally's saved representation | Independent lifetime and offline access after materialization and save |
-| Maintain both original and derivative | Stally's imported original plus rebuildable derivatives | More storage and an archival promise beyond the selected product scope |
-
-Choose import. The source and attachment cease to be replicas that must stay
-identical: the attachment represents what the person added at that time.
-Deleting or editing the source must not change an existing Stally attachment.
-Deleting the attachment must not delete the source. CloudKit replicas, if
-enabled, belong to the same logical Stally attachment; they are not another
-source library to reconcile.
-
-PhotosPicker supplies a selected representation, not a durable source path.
-Use the system picker and Transferable. Prefer FileRepresentation for large
-or multiple selections, copy the temporary delivery into app-controlled
-staging only for processing, and clean it up as described below.
-Request a generic image with the current encoding policy to avoid a picker
-transcode followed by an application transcode. It does not promise unedited
-camera bytes or retention of every auxiliary resource.
-
-iCloud Photos may first need to download the selection. Failure or cancellation
-must not create a completed attachment or discard an existing one. A file in
-iCloud Drive or a third-party File Provider uses the document picker/import
-boundary instead. A service such as Google Drive can participate when its
-provider is installed, enabled, and exposes the file; PhotosPicker does not
-browse arbitrary providers. Materialize authorized bytes under the required
-access scope, release that scope after the read or copy, then normalize and
-save app-owned content. Do not persist temporary URLs as attachment
-identity or build a provider-specific synchronization layer.
-
-### Storage Locations and Lifetime
-
-The only durable application image is ItemPhoto.imageData with
-`@Attribute(.externalStorage)`. SwiftData may put those bytes beside its
-database internally; that is still the same model attribute and store
-lifetime, not an additional original managed by the app. Never delete or
-purge SwiftData-managed external files as a cache-cleaning operation.
-
-| Data | Lifetime |
+| Concern | Specification |
 | --- | --- |
-| Provider-owned delivery file | Read or copy within the API's permitted access lifetime; never save its URL as permanent identity |
-| App-owned raw staging file, when needed | Only until normalization and validation produce independently owned prepared bytes; also remove on failure or cancellation |
-| Prepared image in an unconfirmed draft | Retain with the draft until save or cancellation; a save failure keeps the draft available for retry |
-| Saved imageData | Retain until an explicit attachment/Item deletion or image replacement changes it |
-| Display thumbnail | Discardable cache; rebuild from saved imageData |
+| Supported input | Decodable still JPEG, HEIC/HEIF, and PNG |
+| Input byte limit | 64 MiB before decoding |
+| Input dimensions | Positive; at most 16,384 pixels per edge and 100 million pixels total |
+| Saved image dimensions | Longest edge at most 3,072 pixels, aspect ratio retained, no upscaling |
+| Saved image encoding | JPEG stays JPEG; HEIC/HEIF uses HEIC; PNG or alpha-bearing input uses PNG |
+| Lossy quality | ImageIO compression-quality input 0.90 for saved JPEG and HEIC |
+| Saved byte limit | 8 MiB per attachment image |
+| Orientation | Apply the source orientation to the saved pixels |
+| Color and alpha | SDR output; preserve resulting color profile and transparency |
+| Source metadata | Omit GPS, shooting dates, camera details, and free-form source metadata |
+| Thumbnail dimensions | Longest edge at most 512 pixels, aspect ratio retained, no upscaling |
+| Thumbnail encoding | JPEG at quality 0.70 for opaque content; PNG for alpha-bearing content |
+| Thumbnail byte limit | 2 MiB safety ceiling; ordinary results should be much smaller |
+| Thumbnail storage | Optional thumbnailData on ItemPhoto, persisted through SwiftData |
+| Decoded thumbnail reuse | NSCache, initially a 32-MiB cost hint using decoded byte cost |
 
-Do not keep a second full-resolution original after normalization. If the
-process terminates before cleanup, remove abandoned files in the dedicated
-app-owned staging area on a later startup, without touching the model store
-or active imports. Unconfirmed in-memory drafts are not a durable save
-promise. Raw staging is not needed to retry saving already prepared bytes.
+The quality values are encoder inputs, not percentages of retained fidelity or
+comparable perceptual scores across codecs. PNG is lossless for the resulting
+pixels; resizing can still remove source detail. These resource limits are
+bounds, not byte targets to fill. A high-entropy image can exceed the byte cap
+at an otherwise valid resolution.
 
-## Selected Ingestion Policy
+The saved image remains SDR in 1.0. ImageIO supplies the SDR decode operation;
+do not implement tone mapping or gain-map processing in app code. HDR headroom,
+RAW editing data, depth, animation, and Live Photo motion are outside the saved
+representation. A Live Photo may supply a supported still representation.
+Reject unsupported or multi-frame deliveries instead of silently picking an
+animation frame. Do not imply that preserving HEIC as a format preserves every
+HEIC auxiliary resource.
 
-These numeric values are Stally engineering choices, not Apple requirements
-or universal optimums. They can evolve without new model fields. Future
-changes must not silently rewrite existing saved attachment bytes.
+## Why These Choices
 
-| Concern | Stally 1.0 selection |
-| --- | --- |
-| Input formats | Decodable still JPEG, HEIC/HEIF, and PNG |
-| Source byte limit | 64 MiB, checked before image decoding |
-| Source dimensions | Positive, no edge above 16,384 pixels, at most 100 million pixels |
-| Saved dimensions | Aspect ratio retained, longest edge at most 2,560 pixels, no upscaling |
-| Saved representation | JPEG stays JPEG, HEIC/HEIF uses HEIC; PNG or any alpha-bearing input uses PNG |
-| Lossy encoding | ImageIO quality 0.85 for JPEG and HEIC |
-| PNG encoding | Lossless encoding of the resulting pixels, preserving alpha |
-| Saved byte limit | 5 MiB per attachment; oversize output is rejected |
-| Orientation | Apply the source orientation to the pixels |
-| Color | SDR output, retain the resulting color profile rather than forcing sRGB |
-| Source metadata | Do not carry over GPS, shooting dates, camera details, or free-form source metadata |
-| Thumbnail | Derived on demand, normally at most 512 pixels on its longest edge |
+### Resolution and Compression
 
-Inspect alpha before choosing the output; a format decision must not silently
-flatten transparency. Use ImageIO thumbnail decoding with its orientation
-transform and an explicit SDR decode request, followed by the matching image
-destination. Do not decode the full source bitmap merely to draw a small
-destination. Color profiles and
-encoder-generated image properties are needed to interpret the saved pixels;
-they are not the source metadata that is omitted above. HDR headroom, depth,
-motion, and original pixel resolution are not retained by this policy. This
-is intentional normalization, not a claim of lossless original preservation.
+Compare long-edge limits of 2,048, 2,560, 3,072, and 4,096 pixels and quality
+inputs of 0.80, 0.90, and 0.95. Choose 3,072 and 0.90 to leave useful detail
+beyond a small phone preview while bounding decode size and storage. A square
+8-bit RGBA image at this limit has 36 MiB of pixel data, versus 64 MiB at
+4,096; this is bitmap arithmetic, not a measured process-memory ceiling.
 
-A Live Photo selection can supply a supported still representation; the
-attachment does not retain its motion component. Reject unsupported formats
-and multi-frame image deliveries rather than silently choosing an animation
-frame. Do not introduce RAW, video, or general document storage in ItemPhoto.
+The larger Apple sample photographs in the comparison were 3,000 by 2,000
+pixels. The selected limit avoids resampling them; quality 0.90 reduced their
+roughly 7.3-7.7 MiB source files to 2.7-3.3 MiB. Smaller Wishlist photos were
+also tested without upscaling. The larger samples cannot establish a visual
+difference between 3,072 and 4,096 because both preserve their dimensions.
+The upper-resolution choice is a product/resource tradeoff, not a claimed
+experimentally optimal number.
 
-The byte cap is checked after encoding as well as the source resource checks.
-A dimension cap alone cannot bound file size. If an output exceeds 5 MiB,
-explain that a smaller image is needed and retain the current draft or existing
-attachment. Do not repeatedly lower quality, flatten transparency, discard
-other photos, or insert a nil-image record to force the operation to succeed.
-The UI should describe storage as optimized image copies, without implying
-that full-resolution originals are preserved.
+Use eight MiB as output headroom for varied content, including PNG, rather
+than reducing quality repeatedly to meet a small target. It is independent
+of the resolution bound. The same native codec family avoids mandatory
+HEIC-to-JPEG conversion, which increased size in the earlier functional probe.
+Retain the current input resource guards: they accommodate common high-pixel-
+count sources while rejecting excessive work before full decoding.
 
-Process imports sequentially initially, with cancellation and bounded staging.
-The source byte check is not a promise to limit a provider's network transfer
-or internal memory use. A successful import means the required bytes have
-been persisted, not merely that a picker returned an item.
+SDR is an explicit first-release scope choice for these record-oriented copies,
+not an Apple limitation. Apple also provides native gain-map preservation for
+HEIF. Keeping every HDR representation is a valid alternative for a product
+that promises photographic fidelity; that is not Stally's selected promise.
 
-Normalize once at external ingestion. Caption edits, reordering, reads,
-export, and identity-preserving restoration must not recompress saved images.
-An export of the attachment contains its saved representation, with a matching
-file type; compatibility conversion, if explicitly selected later, is a
-separate export operation and must not replace the saved image.
+### Persistent Thumbnail Instead of Memory-Only Generation
 
-## Thumbnail and Capacity Policy
+Select persistent thumbnails plus decoded-memory reuse. Stally repeatedly shows
+photos in collections and details; a thumbnail should survive process exit so
+the list does not need to regenerate every preview from the saved images.
+This is a concrete recurring read requirement, not a hypothetical scale issue.
 
-Memory-only caching is the selected initial implementation, not an Apple
-mandate or a generally proven optimum. It avoids persistent cache lifecycle
-and synchronization work, but cache misses require reading the saved image
-and generating the thumbnail again. The earlier fixture checks do not prove
-collection scrolling or cold-launch performance.
+Apple's Wishlist source stores thumbnailData and external image bytes and
+uses the thumbnail for collection display. Adopt that separation of roles,
+with thumbnailData on ItemPhoto rather than an Item-level duplicate or a new
+model. Stally has multiple attachments and no need for a shared asset layer.
+Apple's sample uses a 1,290-pixel thumbnail for its large travel cards; Stally
+selects 512 for collection previews and reads the saved image for larger views.
+Do not copy the sample's display-specific numeric constants.
 
-Apple's [Wishlist demonstration][wishlist] persists thumbnail bytes inline
-and loads full-size images separately. Persisted thumbnails are therefore
-also a legitimate native design: they can avoid repeated generation and
-full-size data reads, at the cost of additional stored state and invalidation.
-Stally starts with NSCache because images are bounded and no measured problem
-yet requires another persisted representation. This reasoning is independent
-of a desire to eliminate every additional byte after the owner's question.
+This trades a small persisted derivative for avoiding repeated image processing
+on cache misses after restart. The measured detailed-photo previews were about
+96-105 KiB each, approximately 3-4 percent of the corresponding saved images.
+These are fixture measurements, not a universal overhead percentage. A PNG
+preview can be larger. The two-MiB ceiling is a guard, not an expected size.
 
-Initially keep decoded thumbnails in a process-local NSCache, with a 32-MiB
-totalCostLimit using decoded byte cost. This is an eviction hint, not a strict
-upper bound on process memory. Clear invalidated entries when image content
-changes. Never treat a cached thumbnail as the authoritative attachment.
+thumbnailData is rebuildable, optional data. It is not the source for export,
+editing, or saved-image recovery. It can arrive before or after imageData in
+sync. A thumbnail-only record can show its preview but must not claim the full
+image is available. If the thumbnail is absent and imageData is available,
+generate a display fallback without automatically writing sync repair records.
+If both are unavailable, retain attachment metadata and show an unavailable
+state. Never delete the attachment to repair a missing derivative.
 
-No thumbnail column, thumbnail entity, persistent thumbnail directory, or
-CloudKit thumbnail copy is selected for 1.0. Recompute a missing thumbnail
-from the saved image, off the UI's critical path. Use the needed pixel size
-for larger detail views, bounded by the saved resolution. Actual memory and
-scrolling behavior still require integration measurements; a disk cache can
-be added later without changing the attachment's stored meaning.
+Generate the thumbnail from the final saved-image bytes during creation and
+import. Caption edits and reordering change neither image nor thumbnail bytes.
+A deliberate image replacement creates a new ItemPhoto and replaces the old
+attachment through an explicit operation; the UI may carry over caption and
+position. Treat a saved attachment's image content as immutable in ordinary
+operations, so two separately arriving derivatives refer to one image identity.
+This is not a distributed transaction guarantee: related insertions/deletions
+can still arrive separately. Do not add a synchronization engine to hide that.
 
-Compressed file size and decoded image memory are separate. For illustration,
-a four-byte-per-pixel 4,032 by 3,024 bitmap needs about 46.5 MiB, while a
-512 by 384 thumbnail needs 0.75 MiB. These are bitmap arithmetic, not measured
-process peaks. HEIC/JPEG compression does not eliminate decode memory.
+Use no app-managed persistent thumbnail directory. Native SwiftData manages
+saved bytes and their deletion; NSCache reuses decoded previews in process.
+Its 32-MiB cost limit is advisory, not a hard process-memory bound. Detail views
+request the display size they need, bounded by the saved image dimensions.
 
-The per-photo cap is not a collection quota: 1,000 photos averaging 500 KiB
-need about 488 MiB of image bytes; 1,000 photos at the 5-MiB cap need about
-4.88 GiB, before store overhead, temporary files, or cloud copies. No arbitrary
-photo-count limit is selected. Storage exhaustion must remain a failed save
-that preserves already saved data, not permission to purge attachments.
+## Ingestion and Failure Behavior
 
-## Caption and Ordering
+Use PhotosPicker and Transferable for photo-library selection. Request the
+current generic image representation to avoid a redundant intermediate
+transcode. Prefer FileRepresentation for large or multiple transfers. Use the
+system document import boundary for files exposed by iCloud Drive or third-
+party providers. PhotosPicker does not browse arbitrary external providers.
 
-The owner accepted the attachment-local caption and ordering rationale.
+Read/copy within the granted access lifetime, then release external access.
+An app-owned raw staging file lasts only until independently owned prepared
+bytes exist, or until failure/cancellation. Remove abandoned app-owned staging
+files after process termination on a later startup without touching live
+imports or SwiftData-managed files. Do not retain another raw original.
 
-`caption` and `sortOrder` belong to the attachment: the caption describes this
-image in this Item, and the position belongs to this Item's photo collection.
-An integer position is an ordinary representation for a user-reorderable
-owned collection; it is not a universally required database design. It is
-selected because SwiftData relationship arrays do not promise persisted order.
-This rationale does not depend on Cookle's schema or shared-asset architecture.
+Use ImageIO to downsample with orientation correction and SDR decoding, then
+encode the selected format with the resulting color profile. Inspect alpha
+before choosing the output. Process imports sequentially initially and support
+cancellation. The input-byte guard does not bound a provider's internal download
+or memory use.
 
-Keep the existing `sortOrder` followed by UUID presentation order and the
-first-photo cover rule. Duplicate positions after synchronization remain
-visible. There is no distributed ranking algorithm, mandatory renumbering
-repair, or separate `isCover` truth. No source-path or source-library
-identifier field is needed.
+If the saved image exceeds eight MiB, reject that import with a clear message
+and preserve the existing photo and draft. Do not flatten alpha, repeatedly
+lower quality, or silently discard another photo. If generating a derivative
+fails or exceeds its cap, retain the valid saved image with nil thumbnailData;
+a display fallback can be retried later. The thumbnail is not primary data.
 
-## Evidence and Limits
+A prepared draft remains available after a save failure. Cancelled or failed
+source loading must not create a completed attachment with missing image data.
+Successful saving, not picker selection, establishes the durable attachment.
 
-The bounded ImageIO probe compared longest-edge limits of 1,600, 2,560, and
-4,096 pixels with five fixtures: generated oriented JPEG, transparent PNG,
-HEIC, high-entropy transparent PNG, and an existing Stally UI screenshot.
-These are functional fixtures, not a representative camera-photo corpus.
+Do not recompress saved image bytes when reading, editing captions, reordering,
+exporting, or restoring an identity-preserving Stally export. A portable export
+need not include thumbnails; import can regenerate them from the saved image.
+Existing limits may evolve without new fields, but changes do not authorize
+silently rewriting prior saved image bytes.
 
-At the selected 2,560-pixel limit, the local macOS run produced:
+## Schema and Capacity
 
-| Fixture | Input bytes | Saved bytes | Result |
-| --- | ---: | ---: | --- |
-| Oriented JPEG | 498,482 | 233,905 | Rotation applied, metadata omitted |
-| Transparent PNG | 791,822 | 533,655 | Alpha retained |
-| HEIC | 208,960 | 61,887 | Remained HEIC |
-| UI screenshot PNG | 183,595 | 227,499 | PNG size increased despite slight downsampling |
-| High-entropy transparent PNG | 34,081,456 | 25,142,387 | Exceeds the selected cap; reject |
+Add one optional property to the selected ItemPhoto model:
 
-The same generated HEIC converted to JPEG produced 228,852 bytes at 2,560
-pixels, larger than the input. This is evidence against mandatory JPEG
-conversion, not a universal codec quality or compression ranking. Numeric
-quality 0.85 is an encoder input, not an 85-percent fidelity guarantee or
-equal visual quality across codecs.
+```swift
+var thumbnailData: Data?
+```
 
-The final macOS 27.2 probe passed 134 assertions, including encoding,
-dimensions, orientation, retained color profiles, alpha flags, omitted GPS
-and shooting dates, thumbnail sizes, and malformed-image detection. The
-five-model persistence probe separately verified external binary recovery;
-this run did not repeat SwiftData tests. Visual inspection covered the resized
-UI screenshot, not all formats or a photographic quality study.
+Keep imageData as `@Attribute(.externalStorage)`. It is the only authoritative
+saved-image representation; SwiftData-managed external files are part of that
+attribute's lifetime. thumbnailData is an ordinary optional Data attribute,
+following the sample's small-preview pattern. Do not promise a physical SQLite
+layout; storage placement is framework-managed. There is no thumbnail entity,
+source-path field, codec field, or persisted decoded-image cache.
 
-The same source compiled for the iOS 27 Simulator SDK but was not run there.
-Physical-device peak memory, HDR camera fixtures, iCloud Photos, third-party
-providers, and CloudKit transfer were not exercised. These are implementation
-verification obligations, not unresolved ownership or capacity decisions.
+Keep uuid, caption, sortOrder, createdAt, and item unchanged. The owner accepted
+the attachment-local caption and ordering rationale. Item deletion cascades to
+its photos; child deletion preserves Item. Sort by sortOrder then UUID, using
+the first ordered photo as cover. Ties after sync remain visible.
 
-Source and comparison output remain in the local temporary directory
-`/private/tmp/stally-photo-policy.OTt3Yw`. The ordinary sandbox could not run
-the HEIC encoder; the final run used the selected Xcode toolchain outside
-that sandbox. An initial malformed-image assertion incorrectly expected a
-nil image source; ImageIO can return a source with no frames. The final probe
-checks that response rather than treating source allocation as successful
-image validation.
+No arbitrary photo-count or collection quota is selected. One thousand images
+averaging one MiB, with 100-KiB previews, occupy about 1.07 GiB of encoded
+bytes.
+At both hard ceilings, one thousand image/preview pairs could occupy about
+9.77 GiB, before store overhead, staging, and cloud copies. These are explicit
+capacity tradeoffs, not a promise that all libraries remain small. A failed
+save must preserve existing records rather than purging them for space.
+
+## Verification Evidence and Limits
+
+Apple sample source inspection covered Wishlist's Trip, TripImage, its image
+view, and its creation path. The locally cached source contains both the
+nonpersistent and SwiftData examples; the current WWDC26 demonstration confirms
+the persistent-preview pattern. Sample-specific UI dimensions, simplified
+errors, and temporary-file code were not treated as production requirements.
+
+The new ImageIO comparison encoded 84 JPEG variants: four Wishlist photographs
+at four size caps and three quality values, plus three 3,000-by-2,000 Landmarks
+photographs with the same matrix. The first group is smaller than 2,048 pixels,
+so it evaluates recompression without resolution reduction. Visual inspection
+covered a selected Landmarks photograph; this is not a comprehensive perceptual
+quality study or proof that every small label remains legible.
+
+| Larger fixture | Source bytes | Selected saved bytes | 512-pixel preview bytes |
+| --- | ---: | ---: | ---: |
+| Landmarks 1016 | 8,035,245 | 2,850,071 | 98,251 |
+| Landmarks 1009 | 7,953,242 | 3,461,574 | 102,435 |
+| Landmarks 1019 | 7,643,378 | 2,892,127 | 107,172 |
+
+A SwiftData disk probe passed 36 assertions across six separate macOS processes.
+It checked saved image and thumbnail byte equality after reopening, thumbnail
+bounds, thumbnail-only partial availability, display-only regeneration for a
+missing thumbnail, unchanged image bytes after caption/order edits, and owned
+cascade deletion. All stages exited successfully; Core Data emitted routine
+post-save vacuum debug messages. This was not a CloudKit arrival simulation or
+an I/O/scrolling benchmark. It does not establish that the framework never
+reads image bytes while fetching a model; app display paths must avoid using
+imageData unnecessarily.
+
+The store probe also compiled for iOS Simulator, and the complete five-model
+Swift illustration compiled after adding thumbnailData. A separate ImageIO
+run passed 59 assertions at the selected 3,072-pixel, quality-0.90, eight-MiB
+policy. It covered HEIC, alpha PNG, orientation, color profiles, source-
+metadata omission, malformed data, thumbnail size/byte bounds, and rejection
+of an oversized high-entropy PNG. This does not cover every input-boundary
+combination or measure real HDR-camera rendering. The selected limits and
+new schema still require production
+integration tests, device memory/scrolling checks, real HDR-camera validation,
+and cloud/provider round trips before release. Those are verification work,
+not unselected first-release preservation policy.
+
+Local comparison and store evidence are retained under
+`/private/tmp/stally-photo-final.GflLbm`; earlier functional evidence is under
+`/private/tmp/stally-photo-policy.OTt3Yw`. No sample source or image fixtures
+were added to the application repository.
 
 ## Official References
 
+- [Wishlist and its persistence demonstration][wishlist]
+- [Wishlist sample source][wishlist-source]
+- [Landmarks sample used for image fixtures][landmarks]
 - [PhotosPicker loading and temporary file ownership][picker-loading]
-- [Picker encoding policies and metadata choices][picker-encoding]
-- [Document picker copy mode][document-copy]
-- [File Provider access][file-providers]
+- [Picker encoding and metadata choices][picker-encoding]
 - [ImageIO for reducing decoded image memory][image-memory]
-- [Image destination and metadata handling][image-destination]
+- [Native HEIF gain-map preservation][gain-map]
 - [NSCache cost limits are advisory][cache-limit]
 
+[wishlist]: https://developer.apple.com/videos/play/wwdc2026/275/
+[wishlist-source]: https://developer.apple.com/documentation/SwiftUI/wishlist-planning-travel-in-a-swiftui-app
+[landmarks]: https://developer.apple.com/documentation/SwiftUI/Landmarks-Building-an-app-with-Liquid-Glass
 [picker-loading]: https://developer.apple.com/documentation/photokit/bringing-photos-picker-to-your-swiftui-app
 [picker-encoding]: https://developer.apple.com/videos/play/wwdc2023/10107/
-[document-copy]: https://developer.apple.com/documentation/uikit/uidocumentpickerviewcontroller/init(foropeningcontenttypes:ascopy:)
-[file-providers]: https://developer.apple.com/documentation/uikit/providing-access-to-directories
 [image-memory]: https://developer.apple.com/documentation/xcode/making-changes-to-reduce-memory-use
-[image-destination]: https://developer.apple.com/documentation/imageio/cgimagedestination
+[gain-map]: https://developer.apple.com/documentation/imageio/kcgimagedestinationpreservegainmap
 [cache-limit]: https://developer.apple.com/documentation/foundation/nscache/totalcostlimit
-[wishlist]: https://developer.apple.com/videos/play/wwdc2026/275/
