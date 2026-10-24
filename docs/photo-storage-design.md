@@ -15,11 +15,26 @@ original photo or provider file remains independently owned by its source.
 
 ### User-Facing Meaning
 
-The owner clarified that application storage authority and the user's idea
-of an original are different questions. Stally keeps a record-oriented copy
-of a source image. The photo library or selected provider remains where the
-user manages the original and its full fidelity; Stally does not take over
-that archival responsibility when a photo is added.
+The owner raised alternative ways to understand originals and copies and
+asked which principle Stally should adopt before deriving storage policy.
+This was an invitation to evaluate the product's responsibility, not a
+directive to adopt either answer. Do not attribute the engineering selection
+below, or its numeric limits, to an owner-confirmed preservation principle.
+
+The proposed product principle is that Stally preserves the user's record
+of a subject and their relationship with it. User-entered facts, notes, and
+captions are primary Stally records. Photos support that record as durable
+visual material. For imported photos, the current engineering recommendation
+is to retain a useful independent copy while leaving original-quality image
+management with the source library or provider.
+
+This recommendation needs to stand on the product's purpose and promised
+quality. A copy still needs sufficient visual information for its role and
+may become the user's only surviving image. Neither a Data property nor the
+word copy determines acceptable compression. Derive preservation fidelity,
+lifetime, and deletion semantics from the chosen responsibility before
+finalizing representation and processing limits. Revisit the current limits
+if that responsibility changes.
 
 The copy is nevertheless independently durable. Its role as a copy does not
 make it a disposable cache or a live view of the source. Later source edits
