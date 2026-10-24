@@ -7,14 +7,13 @@ user's record of a subject and their relationship with it; photos are durable
 visual material supporting that record. This document selects the 1.0 photo
 specification after reevaluating the earlier proposals against that principle.
 The principle is owner-confirmed. The numeric limits and implementation choices
-below are delegated engineering decisions, not Apple requirements. The owner
-subsequently authorized proceeding with this design if two supplied photographs
-passed verification. The bounded check below found no reason to change the
-then-selected policy. A subsequent review of unnecessary recompression
-refines that baseline: preserve qualifying delivered bytes, and transform
-only images that exceed the saved byte or dimension limits. This is a
-delegated engineering refinement prompted by the owner's comparison with
-Cookle, not a claim that the owner mandated copying Cookle's implementation.
+below were selected through engineering judgment, not Apple requirements.
+After the conditional-preservation review and supplied-photo validation, the
+owner explicitly accepted proceeding with this design: preserve qualifying
+delivered bytes, transform only when required by the saved limits, and keep
+supported metadata and independent previews. Cookle informed the comparison;
+Apple capabilities, Stally's preservation purpose, and verification results
+remain the basis for the selected behavior.
 
 This is a design specification with bounded standalone evidence. The production
 application has not adopted it. Earlier 2,560-pixel, quality-0.85, five-MiB,

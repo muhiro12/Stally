@@ -42,8 +42,11 @@ mandatory retention of development formats are not constraints on this design.
   not. An Item can have multiple classifications; classification is optional.
 - Keep application-owned UUIDs and Item registration times. Attribute naming
   and state representation are delegated engineering decisions.
-- Support multiple photos per Item and a caption for each photo. Cookle is
-  useful evidence, not an architecture that must be copied or presumed best.
+- Support multiple photos per Item and a caption for each photo. The owner
+  accepted the [photo policy](photo-storage-design.md): preserve qualifying
+  delivered bytes, transform only over-limit inputs, retain supported source
+  metadata, and persist independent previews. Cookle informs comparison;
+  platform guidance, Stally's purpose, and validation ground the decisions.
 - Multiple Marks on the same day must be supported. Stored history and the
   calendar's visual intensity are separate. People can choose how to see it;
   recording once per day must not look like inadequate participation.
@@ -307,8 +310,10 @@ and the independent Bool representation are selected below. `ItemPhoto` and
 `Tag` extend the design for the clarified photo and classification needs; the
 base-model decision was not a cap of three entities. Their field tables and
 relationships are the selected engineering direction, subject to generated
-schema, disk-store, and synchronization validation. Other existing field
-proposals remain under review. No existing physical schema changes here.
+schema, disk-store, and synchronization validation. The remaining decision
+sequence below identifies specific open behavior contracts; the model set
+and photo policy are no longer unspecified proposals. No existing physical
+schema changes here.
 
 ### Item
 
@@ -434,9 +439,10 @@ onto white and does not preserve the original. These are existing policies,
 not approved 1.0 requirements. The new direction preserves the supported
 representation supplied at ingestion and generates smaller display images
 separately. This does not promise the Photos library's RAW original, edit
-history, or Live Photo video. Supported formats, limits, metadata treatment,
-and export packaging still need a media-contract decision and measurements;
-do not silently inherit the JPEG-only, white-background conversion.
+history, or Live Photo video. Supported formats, limits, and metadata handling
+are selected in the photo policy. Export packaging and outward metadata
+controls remain open. Do not inherit the JPEG-only, white-background
+conversion from the implemented baseline.
 
 `isHidden` emphasizes presentation; `isArchived` emphasizes putting a record
 aside while retaining it. `isVisible` expresses the inverse, and a `visibility`
@@ -844,11 +850,72 @@ one photo, deleting one Tag, deleting an Item, and concurrent same-name Tag
 creation. Verify that unrelated Items and shared Tags survive the relevant
 deletions. No new-model runtime or device-sync evidence is claimed here.
 
-Outstanding choices include remaining base-model field proposals, media limits
-and metadata policy, export media/precision, heatmap scale, settings placement,
-localized action wording, the paid-feature boundary, and results of the native
-schema/sync prototype. Future decisions should update this document rather
-than treating chat proposals as completed implementation.
+## Remaining Decisions After Photo Acceptance
+
+The five-model shape, base identities and field meanings, local-date precision,
+period lifecycle, independent Item states, relationship ownership, deletion
+rules, photo order/cover, and photo acceptance/storage policy are selected.
+Do not reopen them merely to imitate sibling implementations. New evidence or
+a concrete requirement can still justify an explained revision before release.
+
+### Recommended Discussion Order
+
+| Order | Topic | Remaining decision | Effect on the model contract |
+| --- | --- | --- | --- |
+| 1 | Tag identity and editing | Name comparison for suggestions, whitespace/case/Unicode handling, local duplicate names, rename collisions, and whether explicit consolidation belongs in 1.0 | Usually Operations rules over uuid/name/items; add no uniqueness key or extra field without a demonstrated need |
+| 2 | Export and import | Public format/version, image packaging and metadata controls, matching UUIDs, existing-value conflicts, duplicate versus restore, missing/omitted media, and failure behavior | Defines portable identity and field meaning; may reveal a concrete need for additional stored facts before freezing |
+| 3 | Native synchronization lifecycle | Enabling/disabling sync, handling incomplete arrival and conflicting records in the UI, and retaining access to existing data across account/plan changes | Tests the selected optional relationships and store lifecycle; does not authorize a custom merge engine or a paid sync gate |
+| 4 | Derived readings and presentation | Elapsed-since-start versus active-period totals, partial-date uncertainty, day-boundary counting, calendar intensity scale, and settings scope | Primarily calculations and preferences; retain source facts without adding persisted totals |
+| 5 | Schema integration and transition | Versioned-schema placement, current development-data transfer/retirement, generated CloudKit fields, and final consumer verification | Physical contract freeze and implementation readiness; no silent store reset or production schema promotion |
+
+Tag is the next focused topic because it is the remaining entity whose
+creation and editing semantics have not received the same detailed review as
+Marks, Periods, and photos. Its storage is already selected: shared UUID-based
+identity, multiple optional assignments, shared rename, no assignment ordering,
+and removal that preserves Items. Existing labels should be offered for reuse;
+concurrently created equal names must not be silently merged. Decide the
+comparison and collision rules within those boundaries. Explicit consolidation
+is a candidate interaction, not an already approved 1.0 feature.
+
+Export/import follows Tag because imported records must preserve or resolve
+those identities. In particular, equal UUIDs with differing contents need an
+explicit policy; no updatedAt field is currently selected, so do not claim to
+infer which version is newer from createdAt. Re-importing a file must not
+accidentally multiply Marks, and an export that omitted images must not erase
+saved attachments. These are ordinary operation semantics, not grounds for a
+distributed exactly-once guarantee.
+
+Native sync lifecycle is distinct from monetization policy. App-owned paid
+value and the platform-policy boundary remain a separate product decision;
+existing information must not be deleted because a subscription or account
+state changes. Verify whether the selected native interaction is sufficient
+before designing extra persistence machinery.
+
+Calendar mode already has a device-level preference as the initial engineering
+choice. Item-specific overrides may be added later without reconstructing
+historical facts. Review the final scope when designing presentation; do not
+reclassify stored Mark semantics or add an Item field merely to hold a palette.
+Likewise, deletion cascades are selected; permanent-delete confirmation and
+immediate Undo are interaction details unless a durable trash/restore feature
+is explicitly selected. No such feature or deletion timestamp is implied.
+
+### Verification Work, Not Open Product Choices
+
+- Exercise the complete current graph, including thumbnailData, in an iOS
+  disk store. Earlier partial and macOS probes are not complete-device proof.
+- Validate actual provider delivery, large and HDR-bearing images, and
+  scrolling/memory behavior. Preserve the selected policy unless evidence
+  warrants a change; the owner's two images must remain outside Git.
+- Run bounded multi-device tests for offline additions, relationship arrival,
+  deletion versus concurrent edits, repeated import, and simultaneous resumes.
+  Preserve incomplete/conflicting facts rather than adding speculative repair.
+- Before implementation changes existing stores, select an explicit transition
+  and verify failed imports/saves preserve prior data. Check the live CloudKit
+  schema state before treating field names as freely changeable.
+
+Future decisions update these records. Acceptance of the design is not a claim
+that production code, migrations, device behavior, or cloud synchronization
+already implement it.
 
 [schema]: https://developer.apple.com/videos/play/wwdc2023/10195/
 [sync]: https://developer.apple.com/documentation/swiftdata/syncing-model-data-across-a-persons-devices

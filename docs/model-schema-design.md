@@ -193,11 +193,14 @@ ownership engine.
 - Preserve incomplete or contradictory incoming data for explicit handling;
   this design does not add automatic orphan deletion or a sync repair engine.
 
-The [photo storage policy](photo-storage-design.md) now selects ingestion
-limits and persistent previews. ItemPhoto now includes optional thumbnailData
+The owner accepted the [photo storage policy](photo-storage-design.md),
+including conditional byte preservation, ingestion limits, metadata handling,
+and persistent previews. ItemPhoto now includes optional thumbnailData
 as a rebuildable derivative alongside the authoritative imageData.
-Versioned-schema integration, tag matching rules, presentation-setting scope,
-and export/import field mapping remain separate implementation decisions.
+Tag matching and collision rules, export/import conflict semantics, native
+sync lifecycle, and final reading/presentation behavior remain to be settled.
+Follow the [remaining decision sequence](core-record-design.md#remaining-decisions-after-photo-acceptance),
+starting with Tag, before physical schema integration and final verification.
 This illustration does not add speculative stored fields for those concerns.
 
 ## Consolidated Graph Verification
