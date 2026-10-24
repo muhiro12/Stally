@@ -570,7 +570,7 @@ an assignment has no caption, date, or other independent facts.
 
 | Stored property | Type / initial value | Meaning |
 | --- | --- | --- |
-| `uuid` | `UUID`, generated once | Portable classification identity |
+| `uuid` | `UUID`, generated once | Portable Tag record identity |
 | `name` | `String`, empty storage default | Required user-defined label |
 | `items` | `[Item]?` | Items using this classification |
 
@@ -587,9 +587,12 @@ classification for equivalent names, even if native sync produces several
 backing Tag records. Preserve their UUIDs and references; derive filtering and
 counts from the union of their Items.
 
-The comparison retains Foundation case/width folding under a fixed locale and
-preserves cleaned user spelling. Rename to an existing label now supports a
-user-committed combination: rename source members to the destination spelling,
+The follow-up recommendation uses direct Foundation case/width comparison
+under a fixed locale, allowing its native kana equivalence while preserving
+cleaned user spelling. Search uses standard localized matching plus the same
+whole-name equivalence. These are application rules, not automatic SwiftData
+grouping; the Tag report details costs across readers, editing, and export.
+Rename to an existing label now supports a user-committed combination: rename source members to the destination spelling,
 without deleting backing records or moving relationships. This supersedes
 collision rejection and separate same-name picker choices. A wholly new old-
 name record arriving later is retained without a permanent name redirect.

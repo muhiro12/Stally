@@ -201,6 +201,9 @@ The revised [Tag report](tag-design.md) recommends one visible classification
 for equivalent names and user-committed combination when renaming into an
 existing label. Several backing records may participate without deleting
 identities or relationships; no stored group or additional field is needed.
+The follow-up review makes the application grouping cost explicit and uses
+direct Foundation comparison, including native kana equivalence, rather than
+a folded hash key. Portable identity belongs to each stored Tag record.
 Those detailed rules await owner acceptance.
 Export/import conflict semantics, native sync lifecycle, and final
 reading/presentation behavior remain to be settled.
