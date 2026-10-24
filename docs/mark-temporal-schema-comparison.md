@@ -4,6 +4,7 @@
 
 On October 24, 2026, select one canonical, timezone-free local date/time string
 for the redesigned ItemMark occurrence value, named `localDateTime`.
+The owner subsequently accepted this recommendation for the 1.0 design.
 Use Gregorian `YYYY-MM-DD` for day-only records and
 `YYYY-MM-DDTHH:mm` for records with an entered clock time. Initial time capture
 has minute precision. No time zone, occurrence timestamp, separate time flag,

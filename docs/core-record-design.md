@@ -6,6 +6,10 @@ Recorded on October 22, 2026; updated on October 24, 2026. The owner confirmed
 three base model names for version 1.0: `Item`, `ItemMark`, and `ItemPeriod`.
 The October 24 discussion also accepts application UUIDs, registration times,
 multiple user-defined classifications, and multiple photos with captions.
+After the temporal comparison, the owner accepted ItemMark's canonical local
+date/time text, optional minute precision, UUID, creation instant, and Item
+ownership. The next design discussion addresses ItemPeriod boundaries and
+lifecycle; its existing field proposal is not yet an implemented schema.
 The owner delegated naming and state representation to the stated evidence
 priorities. Selected engineering decisions below exercise that delegation;
 they are not an implemented or CloudKit-promoted schema. Other proposals and
@@ -42,6 +46,9 @@ mandatory retention of development formats are not constraints on this design.
   recording once per day must not look like inadequate participation.
 - Support backdated Marks, correcting a Mark's assigned day, and correcting
   a day's count upward or downward. These are ordinary editing operations.
+- Store Mark occurrence knowledge as Gregorian `YYYY-MM-DD` or
+  `YYYY-MM-DDTHH:mm` in `localDateTime`. Preserve optional time without a
+  stored zone, and keep `createdAt` as separate record-creation metadata.
 - Stopping new Marks preserves earlier history. Resuming continues that history.
 - Putting a record out of everyday view and no longer having or using its
   subject are different intentions. Neither the word Archive nor a fixed
@@ -558,6 +565,22 @@ Use `YYYY`, `YYYY-MM`, or `YYYY-MM-DD`, with a shared validated partial-date
 value type at operation boundaries. Ongoing implies no entered end. Ended
 with nil end means the end date is unknown. The flag is needed for that case,
 not as a second independently editable copy of a known end date.
+
+The next review uses this field proposal to settle lifecycle semantics. Keep
+period boundaries at day precision or less; there is no current requirement
+for hours and minutes here. An unknown component is not a default January,
+first day, or midnight. Foundation DateComponents can represent the known
+components in memory, while the stored text preserves which were supplied.
+No separate precision enum or stored duration is needed for these forms.
+
+For ordinary local edits, an ongoing period has no end value. An ended period
+may have a known or unknown end. No periods means no described relationship,
+not an ended relationship. Incomplete dates require semantic validation:
+`2024` followed by `2023` is definitely reversed; a start of `2024-05` and an
+end of `2024` are not definitely reversed and must not be rejected simply
+because their raw strings sort that way. Possible overlaps caused solely by
+unknown components do not justify inventing exact boundaries. These period
+rules are design recommendations; the Mark probe did not validate them.
 
 For both child models, declare an explicit inverse from the Item relationship.
 Item deletion cascades to its Marks and periods; deleting a child must never
