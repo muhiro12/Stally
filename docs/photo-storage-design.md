@@ -67,6 +67,53 @@ HEIC auxiliary resource.
 
 ## Why These Choices
 
+### Exact Constants and Strength of Evidence
+
+The selected constants do not all have the same evidential strength. The
+direction of the quality/size tradeoff has measured support; exact resolution
+and rejection thresholds are engineering budgets, not discovered optima.
+
+- 3,072 means a roughly three-thousand-pixel detail image, expressed as three
+  times 1,024. There is no demonstrated special advantage over 3,000 or 3,200,
+  nor an assumed power-of-two optimization. The rationale is more detail than
+  a roughly two-thousand-pixel copy with lower maximum decode cost than a
+  four-thousand-pixel copy. The largest photographic fixtures were 3,000
+  pixels, so the experiment does not establish the exact best upper limit.
+- Eight MiB provides output headroom above the measured roughly three-MiB
+  detailed JPEGs and accommodates some larger PNGs, while rejecting unusually
+  large saved payloads. It is neither a SwiftData/CloudKit requirement nor a
+  percentile derived from a representative personal photo library. Six or
+  ten MiB could also be defensible budgets; eight is the selected initial one.
+- A 512-pixel preview initially targets small collection cells: a 160-point
+  fitted image at scale three needs 480 pixels on that edge. This is a design
+  assumption, not proof that every actual layout fits. Larger presentations
+  or aspect-fill crops needing more source pixels must use the saved image.
+- Preview quality 0.70 prioritizes recognition at small sizes and reduced
+  repeated storage/decoding over magnified detail. Wishlist uses 0.70 as its
+  thumbnail encoder input too, but its different size and UIKit encoding path
+  do not make the value an Apple-wide recommendation or an identical codec
+  calibration. The additional ImageIO comparison below supports its size
+  effect, not a universal no-visible-loss claim.
+
+### Metadata Rationale
+
+The selected blanket metadata omission came from a conservative product
+assumption: retaining only the visual attachment reduces unintended embedded
+location/identity disclosure through later export, and the freshly encoded
+image needs no source-metadata copy path. It was not selected because metadata
+is intrinsically invalid, requires extra SwiftData columns, or is essential
+to meeting the image-byte budget.
+
+Shooting dates, location, and camera details can be valuable historical facts.
+Not exposing them in the first-release UI does not itself justify discarding
+them irreversibly. Grouping all those fields together is a coarse product
+choice; their benefits and privacy implications differ. The record-preservation
+principle also permits retaining them and handling external disclosure in an
+export policy. Apple PhotosPicker normally includes metadata and lets users
+exclude information such as location. Apple does not require Stally's blanket
+removal. Keep this tradeoff explicit rather than presenting it as a platform
+best practice. This rationale review does not itself change the selected table.
+
 ### Resolution and Compression
 
 Compare long-edge limits of 2,048, 2,560, 3,072, and 4,096 pixels and quality
@@ -250,6 +297,31 @@ Local comparison and store evidence are retained under
 `/private/tmp/stally-photo-policy.OTt3Yw`. No sample source or image fixtures
 were added to the application repository.
 
+## Additional Compression Evidence
+
+An additional same-pixel comparison encoded 36 variants from three Landmarks
+JPEG photographs, using JPEG and HEIC at quality 0.70, 0.90, and 1.0, for both
+saved-image and 512-pixel preview sizes. The preview inputs were the selected
+saved JPEGs, matching the derivative path. Results on the local ImageIO encoder:
+
+| Representation | Quality 0.70 | Quality 0.90 | Quality 1.0 |
+| --- | ---: | ---: | ---: |
+| Saved JPEG | 1.85-2.38 MiB | 2.72-3.30 MiB | 8.48-8.97 MiB |
+| Saved HEIC | 1.09-1.36 MiB | 2.25-2.64 MiB | 8.47-8.98 MiB |
+| 512-pixel JPEG preview | 95.95-104.66 KiB | 133.24-145.48 KiB | 365.34-431.48 KiB |
+
+For the same individual images, quality 0.90 reduced JPEG bytes by 63-69 percent
+and HEIC bytes by 69-75 percent relative to 1.0. This establishes a substantial
+size effect in these fixtures, not equal fidelity or a universal reduction.
+The HEIC inputs here were decoded JPEG photographs, not a camera-HEIC corpus.
+No perceptual-equivalence test or noncompressed-image comparison was performed.
+The output and source are under the local evidence directory's `rationale/`.
+
+ImageIO's compression-quality input is not a linear file-size or fidelity
+percentage. A value of 1.0 is not an uncompressed-file mode; Apple specifies
+lossless compression at that value when the destination format supports it.
+See the [compression-quality API][compression-quality].
+
 ## Official References
 
 - [Wishlist and its persistence demonstration][wishlist]
@@ -269,3 +341,4 @@ were added to the application repository.
 [image-memory]: https://developer.apple.com/documentation/xcode/making-changes-to-reduce-memory-use
 [gain-map]: https://developer.apple.com/documentation/imageio/kcgimagedestinationpreservegainmap
 [cache-limit]: https://developer.apple.com/documentation/foundation/nscache/totalcostlimit
+[compression-quality]: https://developer.apple.com/documentation/imageio/kcgimagedestinationlossycompressionquality
