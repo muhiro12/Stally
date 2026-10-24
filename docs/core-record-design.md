@@ -528,11 +528,18 @@ lifetimes and the optional display cache explicitly.
 The [photo storage design](photo-storage-design.md) selects a 3,072-pixel
 long-edge limit and an eight-MiB saved-image limit, quality 0.90 for saved
 JPEG/HEIC, PNG for PNG or alpha-bearing input, preserved transparency and
-color profiles, SDR output, source-metadata omission, and persisted 512-pixel
-thumbnails. The owner accepted the record-preservation principle underlying
-this reevaluation; these numeric values remain engineering selections.
+color profiles, SDR output, supported source-metadata preservation, and
+persisted 512-pixel thumbnails. The owner accepted the record-preservation
+principle underlying this reevaluation; these numeric values remain engineering selections.
 The report records the native ImageIO comparison and its limits. These are
 Stally choices, not Apple limits.
+Retain delivered shooting dates, supplied offsets, GPS, camera details, and
+standard descriptions inside imageData through ImageIO. Normalize dimensions
+and orientation for the saved pixels. No extra core-model fields are required;
+shooting facts do not redefine createdAt, Mark dates, or Period boundaries.
+Metadata exclusion for outward export is a separate policy and must not erase
+saved information. The revised photo specification records native round-trip
+checks and distinguishes supported metadata from proprietary camera resources.
 The old 1,600-pixel, two-MiB, forced-sRGB-JPEG normalization is superseded as
 redesign direction; the application implementation has not yet changed.
 

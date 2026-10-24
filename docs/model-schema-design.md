@@ -157,6 +157,10 @@ ownership engine.
 - Keep `createdAt` for Item, Mark, Period, and photo registration metadata.
   Do not add it to Tag merely for symmetry: the selected tag interactions
   require identity, a label, and assignments, not registration chronology.
+- Shooting dates and other supported source-image facts remain embedded in
+  ItemPhoto.imageData; they do not require duplicate model properties or change
+  the meanings of Mark/Period dates.
+  See the [photo policy](photo-storage-design.md).
 - `imageData` uses [external storage][external-storage]. SwiftData manages
   its storage location; no app-managed path, Photos library reference, or
   separate reusable image-asset model is required by this design.

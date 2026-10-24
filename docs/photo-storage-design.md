@@ -11,7 +11,9 @@ below are delegated engineering decisions, not Apple requirements.
 
 This is a design specification with bounded standalone evidence. The production
 application has not adopted it. Earlier 2,560-pixel, quality-0.85, five-MiB,
-and memory-only-thumbnail recommendations are superseded.
+and memory-only-thumbnail recommendations are superseded. The subsequent
+owner direction to retain useful delivered metadata supersedes blanket source-
+metadata omission; it does not change the Item, Mark, or Period contracts.
 
 ## Preservation Responsibility
 
@@ -44,7 +46,7 @@ original. Export uses the saved attachment; it cannot reconstruct the source.
 | Saved byte limit | 8 MiB per attachment image |
 | Orientation | Apply the source orientation to the saved pixels |
 | Color and alpha | SDR output; preserve resulting color profile and transparency |
-| Source metadata | Omit GPS, shooting dates, camera details, and free-form source metadata |
+| Source metadata | Retain delivered standard descriptive metadata in imageData, including shooting dates, GPS, camera/lens details, and descriptions; normalize image geometry |
 | Thumbnail dimensions | Longest edge at most 512 pixels, aspect ratio retained, no upscaling |
 | Thumbnail encoding | JPEG at quality 0.70 for opaque content; PNG for alpha-bearing content |
 | Thumbnail byte limit | 2 MiB safety ceiling; ordinary results should be much smaller |
@@ -95,24 +97,95 @@ and rejection thresholds are engineering budgets, not discovered optima.
   calibration. The additional ImageIO comparison below supports its size
   effect, not a universal no-visible-loss claim.
 
-### Metadata Rationale
+### Numeric Budgets and Boundary Rules
 
-The selected blanket metadata omission came from a conservative product
-assumption: retaining only the visual attachment reduces unintended embedded
-location/identity disclosure through later export, and the freshly encoded
-image needs no source-metadata copy path. It was not selected because metadata
-is intrinsically invalid, requires extra SwiftData columns, or is essential
-to meeting the image-byte budget.
+Binary byte units and bitmap arithmetic make the budgets explainable; powers
+of two do not by themselves make image dimensions faster or higher quality.
+Keep the current values after the codec comparisons and boundary checks. These
+are initial application budgets, not undocumented Apple platform limits.
 
-Shooting dates, location, and camera details can be valuable historical facts.
-Not exposing them in the first-release UI does not itself justify discarding
-them irreversibly. Grouping all those fields together is a coarse product
-choice; their benefits and privacy implications differ. The record-preservation
-principle also permits retaining them and handling external disclosure in an
-export policy. Apple PhotosPicker normally includes metadata and lets users
-exclude information such as location. Apple does not require Stally's blanket
-removal. Keep this tradeoff explicit rather than presenting it as a platform
-best practice. This rationale review does not itself change the selected table.
+| Value | Basis and practical meaning |
+| --- | --- |
+| 3,072-pixel saved edge | 3 x 1,024; at most 36 MiB for a square 8-bit RGBA bitmap, versus 64 MiB at 4,096; additional detail beyond 2,048 |
+| Quality 0.90 | Native JPEG/HEIC measurements show substantial byte reduction versus 1.0; not a 10-percent fidelity reduction |
+| 8-MiB saved bytes | A binary storage budget with over twice the headroom of the largest approximately 3.3-MiB photographic result; not a guarantee for every PNG |
+| 512-pixel preview | Binary size covering a fitted 160-point image at scale three; one MiB for square 8-bit RGBA pixels |
+| Quality 0.70 | Small-preview tradeoff with measured roughly 30-percent JPEG savings versus 0.90; also used as an input by the Wishlist sample, not an Apple-wide rule |
+| 2-MiB preview bytes | Twice the one-MiB 8-bit RGBA bitmap budget; a safety ceiling for encoded derivatives, not a compression or file-size theorem |
+| 32-MiB decoded cache cost | About 32 square 512-pixel 8-bit RGBA previews, excluding object/allocator overhead; NSCache may evict earlier or exceed the hint |
+| 64-MiB input bytes | An explicit staging/transfer acceptance budget, eight times the saved-image cap, allowing larger source files before normalization |
+| 16,384-pixel input edge | 16 x 1,024; bounds very elongated images while allowing wider panoramas than the output cap |
+| 100-million input pixels | A decimal 100-megapixel acceptance budget, including 8,064 x 6,048 sources; prevents the edge bound from admitting a 268-million-pixel square |
+
+The input ceilings are checked together, before asking for decoded pixels.
+Positive dimensions, byte counts at or below the ceiling, and pixel counts at
+or below the ceiling are accepted; any excess is rejected. Avoid multiplication
+overflow when validating dimensions. A source at the pixel ceiling could need
+about 381 MiB just for a full 8-bit RGBA bitmap. Therefore the policy uses
+ImageIO downsampling, sequential imports, and cancellation; it does not allocate
+that bitmap deliberately or claim the guards guarantee a process-memory bound.
+The 64-MiB input budget is not a cap on provider-internal downloads or buffers.
+
+These byte and input ceilings remain engineering choices, rather than measured
+population percentiles or platform constants. Exact neighboring values are not
+materially better established. Revisit them if actual device/provider evidence
+shows rejection or memory problems; no schema migration is needed to change an
+import budget. Existing attachments must not be rewritten or deleted to enforce
+new limits retroactively.
+
+### Metadata Preservation
+
+Retain useful facts delivered with the selected image when standard ImageIO
+metadata APIs can carry them through normalization. This follows the owner's
+record-preservation intent and replaces the earlier blanket-omission policy.
+Keeping those facts does not require extra SwiftData fields, a new entity,
+raw-source retention, or a source-library dependency. They remain embedded in
+the saved imageData bytes and share the attachment's lifetime.
+
+Preservation covers standard shooting date/time, any supplied UTC offset and
+subsecond precision, GPS, camera make/model, lens and exposure information,
+and descriptive/rights metadata such as IPTC descriptions and keywords. Keep
+available descriptions in the image; do not automatically overwrite the
+independently editable ItemPhoto.caption. Retain supported descriptive XMP
+through ImageIO's metadata representation, without promising byte-identical
+EXIF/XMP serialization or round trips for every proprietary namespace.
+
+Read metadata with CGImageSourceCopyMetadataAtIndex, make a native mutable copy,
+and write it with CGImageDestinationAddImageAndMetadata alongside the normalized
+pixels. Normalize orientation and image dimensions to the saved pixels; source
+geometry is not a historical shooting fact. Do not preserve an obsolete
+embedded preview or claim that proprietary MakerNotes, editing instructions,
+face/depth geometry, gain maps, or other auxiliary camera resources survive
+as usable resources. Supporting those beyond native descriptive metadata is
+outside the selected 1.0 image contract, not a reason to discard dates or GPS.
+
+An absent timestamp, offset, or location remains absent. Do not infer it from
+file creation time, ItemPhoto.createdAt, the device's current time zone, an
+ItemPeriod, or a Mark. Shooting time without an offset stays an offset-free
+source fact; it does not become a trustworthy global instant. This preserves
+the existing core-model meanings without expanding their schemas.
+
+Respect the picker/provider's delivered representation. Do not request broader
+photo-library access to recover excluded metadata, or add location permission
+merely to retain coordinates already supplied in an image. The source library
+may contain information that the selected delivery does not include; Stally
+does not promise to recover it.
+
+Generate thumbnails from decoded saved pixels without copying descriptive
+metadata. The saved image already retains those facts; the preview is a
+rebuildable derivative. Include embedded metadata when enforcing the saved
+byte ceiling. If metadata writing fails or the result exceeds the ceiling,
+fail the import while retaining the previous record/draft; do not retry by
+silently stripping metadata. Native inability to preserve arbitrary proprietary
+fields is outside the stated contract and does not justify a custom parser.
+
+Preservation and outward disclosure are separate decisions. A later export
+policy may offer a copy with metadata omitted or masked; it must not modify
+the saved attachment. Do not assume that removing the standard GPS dictionary
+anonymizes every image: Apple notes that proprietary metadata can also contain
+location, and image pixels or descriptions can disclose it. Exact export
+controls and defaults belong to the export-contract discussion. This decision
+neither exports images nor finalizes those controls.
 
 ### Resolution and Compression
 
@@ -200,8 +273,9 @@ files after process termination on a later startup without touching live
 imports or SwiftData-managed files. Do not retain another raw original.
 
 Use ImageIO to downsample with orientation correction and SDR decoding, then
-encode the selected format with the resulting color profile. Inspect alpha
-before choosing the output. Process imports sequentially initially and support
+encode the selected format with the resulting color profile and supported
+descriptive metadata. Normalize geometry metadata as well as pixels. Inspect
+alpha before choosing the output. Process imports sequentially initially and support
 cancellation. The input-byte guard does not bound a provider's internal download
 or memory use.
 
@@ -283,8 +357,9 @@ imageData unnecessarily.
 The store probe also compiled for iOS Simulator, and the complete five-model
 Swift illustration compiled after adding thumbnailData. A separate ImageIO
 run passed 59 assertions at the selected 3,072-pixel, quality-0.90, eight-MiB
-policy. It covered HEIC, alpha PNG, orientation, color profiles, source-
-metadata omission, malformed data, thumbnail size/byte bounds, and rejection
+policy before the metadata-preservation revision. It covered HEIC, alpha PNG,
+orientation, color profiles, the then-selected source-metadata omission,
+malformed data, thumbnail size/byte bounds, and rejection
 of an oversized high-entropy PNG. This does not cover every input-boundary
 combination or measure real HDR-camera rendering. The selected limits and
 new schema still require production
@@ -296,6 +371,42 @@ Local comparison and store evidence are retained under
 `/private/tmp/stally-photo-final.GflLbm`; earlier functional evidence is under
 `/private/tmp/stally-photo-policy.OTt3Yw`. No sample source or image fixtures
 were added to the application repository.
+
+## Metadata and Resource-Boundary Evidence
+
+A new native ImageIO probe passed 151 assertions on macOS 27.2 with Xcode 27.2.
+Synthetic JPEG, HEIC, and alpha PNG inputs carried a shooting timestamp, UTC
+offset, subsecond value, make/model, lens, exposure, GPS, copyright,
+description, and keywords. The probe checked that these supported fields were present in the
+input and equal after normalization. Images were reduced from 4,032 x 3,024 and
+rotated to 2,304 x 3,072; saved orientation and EXIF dimensions matched the
+result. It also checked color-profile presence, PNG alpha, absent metadata
+remaining absent, thumbnail omission of shooting/GPS facts, and saved-file byte
+identity on reread.
+
+| Format | Saved bytes with metadata | Without metadata | Difference |
+| --- | ---: | ---: | ---: |
+| JPEG | 320,025 | 316,753 | 3,272 |
+| HEIC | 115,810 | 114,329 | 1,481 |
+| PNG | 683,157 | 680,972 | 2,185 |
+
+These are synthetic metadata/codec fixtures, not a personal-library size
+survey. Differences include encoder/container behavior, not a universal EXIF
+allocation. They show no material capacity obstacle for the selected standard
+fields. They do not prove preservation of arbitrary proprietary metadata,
+real camera HDR rendering, all eight orientations, or provider delivery.
+The same source compiled for iOS Simulator; it was not run there or on a device.
+
+A separate probe passed 35 assertions covering input byte/edge/pixel boundaries,
+nonpositive and extreme integer values, saved-image and thumbnail byte limits,
+native no-upscale behavior, and bitmap-budget arithmetic. Boundary predicate
+checks do not prove successful decoding of a 100-megapixel image or measure
+peak memory.
+
+Sources and results are under the local evidence directory's metadata/ folder.
+These additions replace the earlier metadata-omission expectation; earlier
+compression, store-lifetime, and thumbnail evidence remains relevant within
+its stated limits. No production models or application paths were changed.
 
 ## Additional Compression Evidence
 
@@ -331,6 +442,9 @@ See the [compression-quality API][compression-quality].
 - [Picker encoding and metadata choices][picker-encoding]
 - [ImageIO for reducing decoded image memory][image-memory]
 - [Native HEIF gain-map preservation][gain-map]
+- [ImageIO metadata objects and native field mapping][mutable-metadata]
+- [Writing normalized pixels with metadata][add-metadata]
+- [GPS exclusion scope][exclude-gps]
 - [NSCache cost limits are advisory][cache-limit]
 
 [wishlist]: https://developer.apple.com/videos/play/wwdc2026/275/
@@ -342,3 +456,7 @@ See the [compression-quality API][compression-quality].
 [gain-map]: https://developer.apple.com/documentation/imageio/kcgimagedestinationpreservegainmap
 [cache-limit]: https://developer.apple.com/documentation/foundation/nscache/totalcostlimit
 [compression-quality]: https://developer.apple.com/documentation/imageio/kcgimagedestinationlossycompressionquality
+
+[mutable-metadata]: https://developer.apple.com/documentation/imageio/cgmutableimagemetadata
+[add-metadata]: https://developer.apple.com/documentation/imageio/cgimagedestinationaddimageandmetadata(_:_:_:_:)
+[exclude-gps]: https://developer.apple.com/documentation/imageio/kcgimagemetadatashouldexcludegps
