@@ -2,8 +2,8 @@
 
 The new [identity and conflict proposal](import-identity-design.md) describes
 the revised models. Its conservative omission handling and minimal
-1.0 scope are accepted; independent portable revisions and historical readers
-are newly proposed. It does not change the implemented v2/v3 behavior below.
+1.0 scope are accepted; aligned data-schema numbering, a separate file-format
+revision, and direct historical value readers are newly proposed. It does not change the implemented v2/v3 behavior below.
 
 The [October 22 core record design](core-record-design.md#export-and-import-direction)
 sets the newer direction: export for external use, with import as a complement.

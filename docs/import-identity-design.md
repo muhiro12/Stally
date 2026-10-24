@@ -160,30 +160,60 @@ This is not a migration-free promise or an implemented feature.
 
 ## Public File Evolution and Older Exports
 
-Recommend separating three meanings, without adding three file-version fields:
+The follow-up recommendation aligns the file's data schemaVersion with the
+SwiftData version that wrote it, while keeping file decoding independent of
+SchemaMigrationPlan execution. The previous recommendation for a wholly
+independent single portable revision conflated two choices: version alignment
+and implementation reuse. External usability does not itself require separate
+data-schema numbering. This revised recommendation awaits owner acceptance.
 
 | Version | Responsibility |
 | --- | --- |
 | App release version | Product release identity; not a decoder selector |
-| SwiftData schema version | On-device model/store evolution through VersionedSchema and SchemaMigrationPlan |
-| Portable format version | File envelope, payload meaning, relationships, media coverage, and supported decoding rules |
+| Shared schemaVersion | SwiftData model version and the data-schema version declared by exports from that model |
+| File formatVersion | File container, envelope, and encoding conventions, including representation-only changes |
 
-Use a stable format identifier and one explicit portable revision such as
-formatVersion, independent of the other two. One revision can cover both the
-container and records until a real need justifies splitting it. A storage-only
-change need not change a file whose representation and meaning are unchanged.
-Every model change must still review export coverage so new facts are not lost.
-The concrete first revision, extension, and package layout remain to be chosen;
-examples called F1/F2 below do not renumber the existing development v2/v3 files.
+Use the actual current VersionedSchema.versionIdentifier as the source of the
+exported schemaVersion, not a second manually maintained copy of the number.
+Do not make import create a temporary database solely to reuse migration stages.
+For each published schema transition, specify the preservation rules once:
+identities, meaning of missing data, precision, units, ownership, and any new
+record mapping. Both the store migration and the file adapter implement those
+rules with appropriate mechanisms.
 
-An app 2.0 with storage schema S2 can therefore read a file F1 written by app
-1.0 with S1. The pipeline is:
+Share pure value-conversion functions when they contain real common logic.
+For straightforward renames or optional additions, SwiftData may already handle
+the store change, while the historical Decodable type and mapping handle the
+file. Do not force common model types, duplicate native migration machinery,
+or build a generic migration framework just to avoid a small explicit adapter.
+Test the common semantic results as well as each path's distinct behavior.
 
-1. Validate the format identifier and explicit supported file revision.
-2. Decode that revision with its frozen Foundation Decodable value types.
-3. Adapt its values and field availability into the current import candidate.
+The two file fields distinguish different changes:
+
+- A real storage/model version change also changes exported schemaVersion,
+  even if the exported values happen to be identical. Register support for that
+  new exported version; reuse an existing decoder where the representation
+  really is unchanged. Older apps may reject it. Accept this coupling cost.
+- A representation-only change, such as JSON key encoding or package layout,
+  changes formatVersion without manufacturing a SwiftData model revision.
+- A change to stored data meaning and file representation may change both.
+  Never alter a published version pair's interpretation in place.
+
+Read support is defined for actually published (formatVersion, schemaVersion)
+pairs, not every possible Cartesian combination. Every exported model version
+must have an explicit file reader and coverage of the schema transitions to the
+current import candidate. This detects a missing file adapter when store schemas
+evolve; it does not promise support for schemas that never exported a file.
+The concrete first revisions, extension, and package layout remain to be chosen;
+examples called F1/F2 do not renumber the existing development v2/v3 files.
+
+An app 2.0 using storage schema S2 can read an export declaring schema S1:
+
+1. Validate the format identifier and supported format/schema version pair.
+2. Decode the historical representation into ordinary Foundation value types.
+3. Apply the S1-to-current semantic mapping, preserving field availability.
 4. Validate identities and relationships, then use the same UUID conflict review.
-5. Save only the approved differences into the already-current SwiftData store.
+5. Save only approved differences into the already-current SwiftData store.
 
 Do not rewrite the original file, swap the live store for an old store, or
 assume SwiftData migrations automatically decode JSON. Apple's
@@ -206,7 +236,7 @@ arbitrary future-format forward compatibility is promised.
 
 Version changes are driven by meaning, not just whether JSON still decodes.
 Changes to ownership, date interpretation, record identity, field units, image
-coverage, or authoritative user fields require a new portable revision unless
+coverage, or authoritative user fields require a new appropriate schema or format revision unless
 the existing contract already defines their interpretation. Only explicitly
 ignorable non-authoritative metadata can evolve without forcing a new reader.
 Keep this simple rather than introducing a capability-negotiation framework.
@@ -248,8 +278,8 @@ Read-only source and design review found two different approaches:
 - Incomes' Designs/Architecture/data-import-export.md and IncomesFileCodec keep
   portable versions independent of storage. Frozen V2/V3 payload readers route
   older values into the current representation. IncomesFileVersionTests reads
-  a committed V2 fixture and verifies the V3 conversion. This is the closer
-  fit for Stally's externally usable, explicitly UUID-based file contract.
+  a committed V2 fixture and verifies the V3 conversion. Its direct value-type decoding is useful independently of its choice to
+  number files separately from storage.
 - Cookle's ADR 0012 binds schemaVersion to the SwiftData schema and separately
   versions the package envelope. Its documented future V2 path constructs a
   temporary V1 store, migrates it, and extracts a current archive so migration
@@ -257,12 +287,13 @@ Read-only source and design review found two different approaches:
   its tests check that declared readers cover migration-plan schemas. The future
   V1-to-V2 temporary-store path is documented, not demonstrated by this review.
 
-Cookle's choice trades fewer independent semantic migration paths for coupling
-files to storage and paying for temporary-store creation/migration. It is not
-inherently wrong. Stally's primary external-use purpose, portable UUIDs, and
-explicit omission semantics favor small value-type adapters: no temporary store
-is needed to show an import preview, and internal storage changes need not alter
-the file contract. Neither approach is mandated by Apple.
+Cookle's version alignment and its proposed temporary-store execution are
+separable decisions. Stally can adopt aligned data-schema numbering while using
+Foundation value adapters, preserving one shared semantic evolution policy
+without the temporary-store cost. Incomes demonstrates the latter decoding
+style. The recommendation combines these independently justified choices;
+neither sibling's complete implementation is authoritative and Apple does not
+mandate this numbering policy.
 
 The inspected checkout revisions were Incomes
 b05ff045a2e590e2ff98a76738bebde576db2d5e and Cookle
@@ -274,8 +305,8 @@ are app-specific history, not precedent to break Stally's future public files.
 
 Retain synthetic fixtures produced by each actual public writer and do not
 regenerate old fixtures with the newest encoder. Before a new release, verify
-all supported old-file readers against the new app, not only the newest file
-version. Include UUID continuity, explicit/absent values, old files applied to
+all published format/schema pairs against the new app, not only the newest
+file version. Include UUID continuity, explicit/absent values, old files applied to
 already-edited current records, repeated import, relationships, media omission,
 and unsupported-version rejection without mutation. Keep actual historical
 store migration tests separate; passing one path does not prove the other.
@@ -286,8 +317,10 @@ macOS: preserved UUID and leading-space spelling, deterministic conversion,
 old-field absence retaining an existing value, explicit null remaining distinct,
 and rejection of unsupported/malformed headers and missing required F2 data.
 It resides at /private/tmp/stally-file-version-review. This validates the narrow
-Decodable/availability technique; it is not a frozen Stally format, a SwiftData
-migration, an iOS runtime check, or an implementation of future model changes.
+Decodable/availability technique; its illustrative single revision is not a
+test of the newly proposed two-field header. It is not a frozen Stally format,
+a SwiftData migration, an iOS runtime check, or an implementation of future
+model changes.
 
 ## Apple-Native Implementation Boundary
 
