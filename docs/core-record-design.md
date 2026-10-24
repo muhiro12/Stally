@@ -131,18 +131,48 @@ Apply these meanings independently of their eventual editing controls:
   without exposing record identifiers. Do not replace history with a stored
   daily counter or promise an absolute total across concurrent offline edits.
 
-Recommend day-only occurrence precision for 1.0. An actual occurrence time
-would support time-of-day patterns, within-day ordering, or hours-since-use
-readings, but the current calendar and counting requirements do not need it.
-Registration time must not be substituted for occurrence time when backdating.
+The owner clarified that occurrence time is not unwanted or automatically
+deferred. Replace the earlier day-only 1.0 recommendation with a design that
+admits a required day and optional occurrence time. Supporting optional time
+in 1.0 is a reasonable candidate, not inherently overengineering; exact stored
+fields and the shipping interaction remain to be selected. Time-of-day
+patterns, within-day ordering, and hours-since-use are possible benefits,
+not confirmed requirements that justify an elaborate temporal subsystem.
+
+Day-only records remain valid even after time capture is introduced. Precision
+belongs to each Mark, so the same person or Item can mix records with and
+without time. Capture preferences can supply defaults without rewriting old
+Marks. Not retaining a time and hiding a retained time are different choices;
+changing display must not erase data or claim that an unrecorded time exists.
+An explicit "used now" action could capture the current time without manual
+entry. An ordinary day-only or backdated action must not silently claim that
+its registration instant was the occurrence instant.
 
 Keep the selected day and registration instant semantically separate now.
 If a later feature needs an occurrence instant, an optional attribute can
 extend each independently identified Mark. Existing records retain unknown
 occurrence time; neither midnight nor registration time supplies missing
-evidence. This avoids a speculative field now while preserving a coherent
-extension path. It cannot recover historical times that were never recorded.
-The later feature must define any original-zone or wall-clock requirements.
+evidence. This remains a viable extension path if time capture is deferred;
+it is not a reason to exclude time from 1.0. It cannot recover historical times
+that were never recorded. Before choosing fields, distinguish a local clock
+reading from an absolute occurrence instant. An instant alone does not retain
+the original time zone or local clock reading; choose the required meaning
+before adding zone metadata or promising cross-zone elapsed-time analysis.
+
+If time is supported, date correction must edit the occurrence consistently,
+not leave a timestamp on the old day. A local date/time correction may retain
+the entered clock time, subject to explicit zone interpretation and native
+calendar validation. Count increases without supplied times add day-only
+Marks. Count reductions must make the affected record clear when retained
+times distinguish the records; do not silently discard an arbitrary timed
+Mark. Registration identity and time survive these corrections.
+
+Keep registration time as automatically captured record metadata, useful for
+recent-entry ordering and understanding backdated imports or records. It is
+not a required user-facing fact or an Apple-mandated field, nor a reliable
+cross-device causal clock or a replacement for native synchronization.
+Preserve it through edits and identity-preserving export/import. The existing
+`recordedAt` proposal has this narrow creation meaning, not usage-time meaning.
 
 An additive field still changes the schema and export contract. Follow native
 [SwiftData schema evolution][schema], verify saved-store migration, and check
@@ -167,6 +197,20 @@ transitions, travel across dates, and non-Gregorian device calendars when the
 representation is implemented. This decision does not establish that a
 sibling app's use of Date is wrong without examining its intended semantics
 and conversion paths.
+
+This follows general date modeling rather than an Apple-specific exception.
+For example, [PostgreSQL][sql-date-types] distinguishes date-only values,
+local date/time values, and instants. Use a database's date-only type when
+available and appropriate. Where the storage layer lacks that semantic type,
+validated Gregorian `YYYY-MM-DD` text is an ordinary encoding option;
+[SQLite documents date text][sqlite-dates]. Avoid ambiguous display strings
+such as `10/24`. Text is not inherently immune to later incorrect conversion:
+all readers must preserve the date-only meaning. Foundation Date does not
+retain the original time zone, date-only precision, or selected calendar.
+Native Calendar and DateComponents support the necessary conversions; they
+do not make an instant interchangeable with a civil date or establish the
+best SwiftData attribute layout. Do not access SwiftData's backing SQL store
+directly to obtain date semantics.
 
 ### Calendar Presentation and Recording Availability
 
@@ -713,3 +757,5 @@ The paid-feature boundary references [App Review Guideline 4.10][review].
 [notes-tags]: https://support.apple.com/en-gb/guide/iphone/iphedddbfdf9/ios
 [absolute-date]: https://developer.apple.com/documentation/foundation/date
 [date-components]: https://developer.apple.com/documentation/foundation/datecomponents
+[sql-date-types]: https://www.postgresql.org/docs/current/datatype-datetime.html
+[sqlite-dates]: https://www.sqlite.org/lang_datefunc.html
