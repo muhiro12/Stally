@@ -732,8 +732,12 @@ reviewed UUID-preserving import: add selected absent identities, perform no
 writes for equal content, keep current values by default, and apply file values
 only through explicit record choices. File absence is not deletion; omitted
 images never erase saved images. The proposal has bounded local probe evidence
-and awaits owner acceptance. It adds no edit-history or revision columns and
-does not establish the final wire format or cross-device uniqueness.
+for its mechanics. The owner accepted conservative omission handling and the
+1.0 scope without whole-library replacement or Import as Copy. Public file
+versioning is now proposed separately from app and SwiftData versions, with
+frozen historical readers and absent-field preservation. It adds no edit-history
+or revision columns and does not establish the final wire format or cross-device
+uniqueness.
 
 Use simple Export and Import wording; explain scope or replacement consequences
 where needed. No mandatory AI explanation, provider integration, or embedded
