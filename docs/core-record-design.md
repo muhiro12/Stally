@@ -503,6 +503,34 @@ shared lifetime, reference tracking, and edit propagation choices. Keep one
 owned model now; an eventual asset layer can retain each ItemPhoto's UUID,
 caption, and order while moving only its binary storage.
 
+#### Photo Ingestion Direction
+
+After accepting the conceptual consistency of Item, ItemMark, and ItemPeriod,
+the next design topic is the photo ingestion contract. Keep the selected
+ItemPhoto fields while reviewing what its durable image bytes represent.
+
+Prefer the system PhotosPicker and Transferable boundary. Request the current
+representation with a generic image content type when preserving supported
+image information; a specific JPEG request can cause transcoding even with
+the current encoding policy. The delivered representation is not a promise
+of an unedited camera original. Respect the user's picker metadata choices.
+Apple describes these behaviors in its [Photos picker session][photo-picker].
+
+The present application normalizes accepted images into an sRGB JPEG with a
+maximum dimension of 1,600 pixels and a two-MiB encoded limit, flattening alpha
+onto white and removing source metadata. These are existing implementation
+choices, not Apple requirements or accepted first-release contracts. Review
+them against preserving supported source representations plus independently
+generated thumbnails. The latter remains the preferred design direction.
+
+The image-format acceptance list, resource limits, metadata/export handling,
+and thumbnail placement still need bounded image-fixture evidence before
+implementation. Preserve orientation, transparency, and supported color
+information deliberately rather than silently adopting the old conversion.
+Do not promise RAW, Live Photo, animated-image, or lossless camera-original
+archiving merely because the attachment stores Data. This review has not yet
+changed the application's ingestion behavior or selected new numeric limits.
+
 ### Tag
 
 Use `Tag` for a user-defined classification shared by multiple Items. Unlike
@@ -810,6 +838,7 @@ The paid-feature boundary references [App Review Guideline 4.10][review].
 [review]: https://developer.apple.com/app-store/review/guidelines/#monetizing-built-in-capabilities
 [persistent-id]: https://developer.apple.com/documentation/swiftdata/persistentidentifier
 [external-storage]: https://developer.apple.com/documentation/swiftdata/schema/attribute/option/externalstorage
+[photo-picker]: https://developer.apple.com/videos/play/wwdc2023/10107/
 [history-identity]: https://developer.apple.com/documentation/swiftdata/fetching-and-filtering-time-based-model-changes
 [wishlist]: https://developer.apple.com/videos/play/wwdc2026/275/
 [notes-tags]: https://support.apple.com/en-gb/guide/iphone/iphedddbfdf9/ios
