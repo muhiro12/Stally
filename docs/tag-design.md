@@ -67,6 +67,10 @@ Foundation comparison. The owner prefers the equivalences supplied by standard
 APIs rather than extra rules to keep hiragana and katakana separate. This is
 not a request for translation, synonym inference, or a custom normalizer.
 
+The owner accepted this direct-comparison policy in the subsequent review.
+Their description of multiple stored Tags appearing as one classification was
+a request to confirm understanding, not approval of the entire grouping design.
+
 Trim boundary whitespace, then compare complete names with caseInsensitive and
 widthInsensitive under a fixed en_US_POSIX locale. Preserve the cleaned user
 spelling. This is a Stally choice of standard comparison options, not an Apple
@@ -102,6 +106,15 @@ user-visible sorting is a separate step. No comparison key is persisted.
 | 革 靴 / 革靴; one internal space / two internal spaces | No |
 | 靴01 / 靴1; circled digit one / plain digit one | No |
 | Straße / STRASSE | Yes |
+
+A follow-up isolated four option sets across five pairs. Under en_US_POSIX,
+Shoes/shoes required caseInsensitive; shoes/full-width uppercase SHOES required
+both caseInsensitive and widthInsensitive. The tested hiragana/katakana and
+full-width/half-width kana pairs compared equal even with no options. Their
+equivalence comes from the native localized collation in this configuration,
+not a Stally kana conversion or an assertion that kana has uppercase/lowercase.
+These are runtime observations on macOS 27.2, not a promise for every locale or
+comparison/search API.
 
 Adding diacriticInsensitive also equated はな and ばな in the experiment.
 Do not enable every permissive option merely to maximize grouping. It is
