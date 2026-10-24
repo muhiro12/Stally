@@ -54,6 +54,9 @@ mandatory retention of development formats are not constraints on this design.
   analysis. Import complements it; an export may also serve as a backup.
   Ordinary users do not need an AI tutorial to use these actions.
 - Prefer native Apple persistence and proportionate synchronization effort.
+  Build within the public platform capabilities and the no-custom-backend
+  constraint. If an interaction needs extensive persistence workarounds,
+  reconsider the interaction before designing a replacement sync mechanism.
   The owner currently intends cloud integration to be paid; the existing app
   implements free sync. The monetization boundary needs separate resolution
   against App Review guidance before an entitlement gate is implemented.
@@ -452,6 +455,23 @@ delete. No `.unique`, `.deny`, polymorphic subject hierarchy, or opaque period
 blob is proposed.
 
 ## Native Synchronization and Cost Boundary
+
+The owner clarified that library/Operations responsibilities and the shared
+package strategy are deliberate architecture choices, not accidental sibling
+precedent. Respect them unless a concrete correctness or platform-fit problem
+is demonstrated. Independent technical validation does not require replacing
+those boundaries or preferring different packages merely to be independent.
+
+Treat the absence of an app-owned backend as a product constraint. Combine
+supported OS capabilities to deliver the experience. If a requested guarantee
+cannot be expressed naturally with SwiftData and CloudKit, first compare
+simplifying the interaction, relaxing the guarantee with clear behavior, or
+deferring the feature. Do not preserve every proposed feature by adding a
+custom merge engine, repair daemon, distributed locking, or undocumented
+store manipulation. Bounded validation and recoverable error handling remain
+appropriate; an elaborate workaround requires a separate explicit decision.
+Apple's apps are interaction references, not proof that their private internal
+implementations are available through public third-party APIs.
 
 Use one local SwiftData schema and Apple's automatic private CloudKit mirroring
 when enabled. The domain remains useful offline. Avoid a custom synchronization

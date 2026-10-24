@@ -125,6 +125,11 @@ builds until Stally-owned production AdMob identifiers exist.
 
 ## Package Direction
 
+The shared-package strategy and library/Operations responsibility boundaries
+are deliberate owner choices. Preserve them unless there is a demonstrated
+correctness, compatibility, or platform-fit problem. The reference-policy
+review changes what constitutes technical evidence, not that architecture.
+
 Prefer the shared package family where it serves Stally's platform needs.
 The owner's October 24 clarification supersedes automatic alignment with
 Incomes: evaluate each dependency and product against Stally's requirements,
