@@ -727,6 +727,14 @@ not delete local records or silently select a different empty store.
 
 ## Export and Import Direction
 
+The [identity and conflict proposal](import-identity-design.md) recommends a
+reviewed UUID-preserving import: add selected absent identities, perform no
+writes for equal content, keep current values by default, and apply file values
+only through explicit record choices. File absence is not deletion; omitted
+images never erase saved images. The proposal has bounded local probe evidence
+and awaits owner acceptance. It adds no edit-history or revision columns and
+does not establish the final wire format or cross-device uniqueness.
+
 Use simple Export and Import wording; explain scope or replacement consequences
 where needed. No mandatory AI explanation, provider integration, or embedded
 prompt is part of this design.

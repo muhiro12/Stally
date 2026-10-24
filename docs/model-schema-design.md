@@ -205,8 +205,10 @@ spelling, including spaces. The previous derived classification recommendation
 is superseded. Explicit consolidation is desired, but its source-record
 lifecycle under sync and possible storage needs remain open. The three-field
 Tag illustration supports ordinary operations, not a completed merge protocol.
-Export/import conflict semantics, native sync lifecycle, and final
-reading/presentation behavior remain to be settled.
+The [export/import identity proposal](import-identity-design.md) recommends
+UUID matching with explicit record-level conflict choices and no deletion by
+omission. It awaits acceptance and adds no stored fields for ordinary import.
+Native sync lifecycle and final reading/presentation behavior remain to be settled.
 Follow the [remaining decision sequence](core-record-design.md#remaining-decisions-after-photo-acceptance),
 starting with export/import identity, then native sync and explicit Tag
 consolidation, before physical schema integration and final verification.

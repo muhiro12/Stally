@@ -1,5 +1,9 @@
 # Portable Data Contract
 
+The new [identity and conflict proposal](import-identity-design.md) is a design
+recommendation for the revised models, awaiting acceptance. It does not change
+the implemented v2/v3 behavior specified below.
+
 The [October 22 core record design](core-record-design.md#export-and-import-direction)
 sets the newer direction: export for external use, with import as a complement.
 The v3/v2 specification below remains the implemented baseline. Readable
