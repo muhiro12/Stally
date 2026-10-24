@@ -585,8 +585,13 @@ Store neither a parallel string array nor a comma-separated label list.
 Local creation should offer existing matching labels using a documented name
 comparison rule. Do not impose a CloudKit-incompatible uniqueness constraint
 or silently merge different UUIDs because their names match after sync.
-Normalization, explicit duplicate consolidation, and matching rules remain
-part of the Tag Operations design, without a custom synchronization engine.
+The [Tag review](tag-design.md) now recommends trimming boundary whitespace,
+preserving user spelling, and Foundation case/width folding under a fixed
+locale for local reuse/collision checks. Ordinary rename preserves identity;
+new collisions are blocked, while separately identified incoming duplicates
+remain visible. Dedicated consolidation is deferred from the initial scope.
+These are reviewed recommendations awaiting owner acceptance, with local
+persistence evidence; they do not introduce a synchronization engine.
 
 Apple Notes demonstrates [multiple user-created tags][notes-tags] as a familiar
 classification interaction. This is UX evidence, not evidence of its private
@@ -862,20 +867,18 @@ a concrete requirement can still justify an explained revision before release.
 
 | Order | Topic | Remaining decision | Effect on the model contract |
 | --- | --- | --- | --- |
-| 1 | Tag identity and editing | Name comparison for suggestions, whitespace/case/Unicode handling, local duplicate names, rename collisions, and whether explicit consolidation belongs in 1.0 | Usually Operations rules over uuid/name/items; add no uniqueness key or extra field without a demonstrated need |
+| 1 | Tag identity and editing | Review and accept the tested recommendation in the Tag design report | Usually Operations rules over uuid/name/items; add no uniqueness key or extra field without a demonstrated need |
 | 2 | Export and import | Public format/version, image packaging and metadata controls, matching UUIDs, existing-value conflicts, duplicate versus restore, missing/omitted media, and failure behavior | Defines portable identity and field meaning; may reveal a concrete need for additional stored facts before freezing |
 | 3 | Native synchronization lifecycle | Enabling/disabling sync, handling incomplete arrival and conflicting records in the UI, and retaining access to existing data across account/plan changes | Tests the selected optional relationships and store lifecycle; does not authorize a custom merge engine or a paid sync gate |
 | 4 | Derived readings and presentation | Elapsed-since-start versus active-period totals, partial-date uncertainty, day-boundary counting, calendar intensity scale, and settings scope | Primarily calculations and preferences; retain source facts without adding persisted totals |
 | 5 | Schema integration and transition | Versioned-schema placement, current development-data transfer/retirement, generated CloudKit fields, and final consumer verification | Physical contract freeze and implementation readiness; no silent store reset or production schema promotion |
 
-Tag is the next focused topic because it is the remaining entity whose
-creation and editing semantics have not received the same detailed review as
-Marks, Periods, and photos. Its storage is already selected: shared UUID-based
-identity, multiple optional assignments, shared rename, no assignment ordering,
-and removal that preserves Items. Existing labels should be offered for reuse;
-concurrently created equal names must not be silently merged. Decide the
-comparison and collision rules within those boundaries. Explicit consolidation
-is a candidate interaction, not an already approved 1.0 feature.
+The [Tag design report](tag-design.md) supplies the next recommendation for
+acceptance. It keeps shared UUID identity, multiple assignments, shared rename,
+no assignment ordering, and deletion that preserves Items. It compares native
+name rules and explicit consolidation, with bounded disk-store evidence. No
+production implementation or owner acceptance of the detailed rules is implied.
+After accepting or adjusting that recommendation, proceed to export/import.
 
 Export/import follows Tag because imported records must preserve or resolve
 those identities. In particular, equal UUIDs with differing contents need an

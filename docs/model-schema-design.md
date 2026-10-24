@@ -197,8 +197,10 @@ The owner accepted the [photo storage policy](photo-storage-design.md),
 including conditional byte preservation, ingestion limits, metadata handling,
 and persistent previews. ItemPhoto now includes optional thumbnailData
 as a rebuildable derivative alongside the authoritative imageData.
-Tag matching and collision rules, export/import conflict semantics, native
-sync lifecycle, and final reading/presentation behavior remain to be settled.
+The [Tag report](tag-design.md) now recommends matching and collision rules
+without new stored fields; those detailed rules await owner acceptance.
+Export/import conflict semantics, native sync lifecycle, and final
+reading/presentation behavior remain to be settled.
 Follow the [remaining decision sequence](core-record-design.md#remaining-decisions-after-photo-acceptance),
 starting with Tag, before physical schema integration and final verification.
 This illustration does not add speculative stored fields for those concerns.
