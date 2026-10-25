@@ -891,9 +891,9 @@ a concrete requirement can still justify an explained revision before release.
 
 | Order | Topic | Remaining decision | Effect on the model contract |
 | --- | --- | --- | --- |
-| 1 | Export and import | Public format/version, image packaging and metadata controls, matching UUIDs, existing-value conflicts, duplicate versus restore, missing/omitted media, and failure behavior | Establishes portable identity and data-preservation semantics; do not promise permanent redirects for removed IDs |
-| 2 | Native synchronization lifecycle | Enabling/disabling sync, incomplete arrival, concurrent changes and deletion, and data access across account/plan changes | Defines native operation boundaries needed by consolidation; no custom merge engine or paid sync gate is authorized |
-| 3 | Explicit Tag consolidation | Destination choice, source-record lifecycle, late assignments, failure, and old UUID references | Determine concrete persistence needs before the final 1.0 schema/file/reference freeze if the feature ships in 1.0 |
+| 1 | Native synchronization lifecycle | Enabling/disabling sync, incomplete arrival, concurrent changes and deletion, and data access across account/plan changes | Defines native operation boundaries needed by consolidation; no custom merge engine or paid sync gate is authorized |
+| 2 | Explicit Tag consolidation | Destination choice, source-record lifecycle, late assignments, failure, and old UUID references | Determine concrete persistence needs before the final 1.0 schema/file/reference freeze if the feature ships in 1.0 |
+| 3 | Concrete export/import format | Container and extension, initial version pair, media packaging and metadata controls, omission representation, timestamp precision, input limits, and development-file compatibility | Encode the selected identity and preservation policy without changing published meanings; finalize record-resolution details against concrete examples |
 | 4 | Derived readings and presentation | Elapsed-since-start versus active-period totals, partial-date uncertainty, day-boundary counting, calendar intensity scale, and settings scope | Primarily calculations and preferences; retain source facts without adding persisted totals |
 | 5 | Schema integration and transition | Versioned-schema placement, current development-data transfer/retirement, generated CloudKit fields, and final consumer verification | Physical contract freeze and implementation readiness; no silent store reset or production schema promotion |
 
@@ -902,7 +902,10 @@ separate same-name records, faithful spelling, and user-controlled reuse or
 creation. Suggestions do not merge classifications. A rename collision must be
 communicated; specific UI presentation can follow later.
 
-Proceed to export/import identity before completing the consolidation design.
+As of October 25, the export/import direction and shared schema-version policy
+are established; the [import design](import-identity-design.md) distinguishes
+accepted policy from remaining record-resolution recommendations and wire
+format work. Proceed to native synchronization lifecycle, then consolidation.
 Tag UUIDs, names, and assignments already preserve its necessary current facts;
 there is no historical merge decision to reconstruct. The new ordering is a
 recommendation within the design process, not cancellation of the requested

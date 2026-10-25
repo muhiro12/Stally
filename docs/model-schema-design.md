@@ -207,11 +207,14 @@ lifecycle under sync and possible storage needs remain open. The three-field
 Tag illustration supports ordinary operations, not a completed merge protocol.
 The [export/import identity proposal](import-identity-design.md) recommends
 UUID matching with explicit record-level conflict choices and no deletion by
-omission. It awaits acceptance and adds no stored fields for ordinary import.
+omission. Its conservative omission handling, minimal 1.0 scope, and aligned
+schema-version policy are accepted; detailed record-resolution recommendations
+and the concrete wire format remain to be finalized. It adds no stored fields
+for ordinary import.
 Native sync lifecycle and final reading/presentation behavior remain to be settled.
 Follow the [remaining decision sequence](core-record-design.md#remaining-decisions-after-photo-acceptance),
-starting with export/import identity, then native sync and explicit Tag
-consolidation, before physical schema integration and final verification.
+continuing with native sync and explicit Tag consolidation, then the concrete
+file format, before physical schema integration and final verification.
 This illustration does not add speculative stored fields for those concerns.
 
 ## Consolidated Graph Verification
