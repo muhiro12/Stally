@@ -9,7 +9,8 @@ are the planned mechanism. This does not change the implemented v2/v3 behavior
 below.
 
 The [concrete file-format proposal](export-file-format-design.md) describes
-the proposed JSON and photo-package deliveries for the redesigned models.
+the proposed `.stally` package, optional photos, image integrity metadata,
+and auxiliary JSON sharing for the redesigned models.
 It is not yet owner-approved or implemented and does not redefine the legacy
 version numbers documented here.
 

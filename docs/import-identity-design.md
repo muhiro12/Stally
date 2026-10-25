@@ -210,8 +210,9 @@ The concrete first revisions, extension, and package layout remain to be chosen;
 examples called F1/F2 do not renumber the existing development v2/v3 files.
 
 The October 25 [concrete file-format proposal](export-file-format-design.md)
-now recommends the first version pair, JSON and package deliveries, explicit
-media states, millisecond registration precision, and development-file retirement.
+now recommends the first version pair, a consistent `.stally` package with
+auxiliary JSON sharing, explicit media states and integrity metadata,
+millisecond registration precision, and development-file retirement.
 These are engineering recommendations awaiting owner review, not changes to
 the accepted identity policy or the implemented codecs.
 
