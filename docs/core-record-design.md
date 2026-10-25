@@ -705,10 +705,14 @@ engine, distributed counter, general operation log, or background reconciliation
 service without a reproduced need that the standard stack cannot address.
 
 The October 25 [synchronization lifecycle review](sync-lifecycle-design.md)
-proposes separate local-only and cloud-backed libraries using this same schema,
-with explicit reviewed copying rather than repeatedly changing one store's
-account-lifetime contract. This storage-location proposal awaits acceptance;
-it is not a new domain model or a continuously synchronized shadow copy.
+initially proposed separate local/cloud libraries. That recommendation is
+withdrawn following the owner's clarification: follow native platform behavior
+consistently rather than add storage/copying machinery to compensate for account
+lifecycle. A single logical collection with native mirroring is the recommended
+iCloud baseline. Optional local-only use, initial settings, and entitlement
+policy are not settled by this correction. Stally owns correct configuration,
+mutations, error handling, and presentation; it must not attribute consequences
+of its own custom behavior to Apple.
 The review also distinguishes native account cleanup from app-initiated
 deletion: a mirrored local replica is not guaranteed to survive system iCloud
 disablement or sign-out, including changes not yet uploaded.

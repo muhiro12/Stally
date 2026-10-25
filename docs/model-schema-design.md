@@ -211,11 +211,12 @@ omission. Its conservative omission handling, minimal 1.0 scope, and aligned
 schema-version policy are accepted; detailed record-resolution recommendations
 and the concrete wire format remain to be finalized. It adds no stored fields
 for ordinary import.
-The [native sync lifecycle review](sync-lifecycle-design.md) proposes separate
-local/cloud store lifetimes and explicit handling of concurrent Period states,
-without adding domain attributes. Its storage-selection proposal awaits
-acceptance and real CloudKit qualification. Final reading/presentation behavior
-also remains to be settled.
+The [native sync lifecycle review](sync-lifecycle-design.md) follows native
+account lifecycle and proposes explicit handling of concurrent Period states,
+without adding domain attributes. The earlier separate local/cloud library
+recommendation is withdrawn; account-independent retention was not a product
+requirement. Real CloudKit qualification and final reading/presentation behavior
+remain to be settled.
 Follow the [remaining decision sequence](core-record-design.md#remaining-decisions-after-photo-acceptance),
 continuing with native sync and explicit Tag consolidation, then the concrete
 file format, before physical schema integration and final verification.

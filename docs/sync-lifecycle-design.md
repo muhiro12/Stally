@@ -3,7 +3,9 @@
 ## Status
 
 October 25, 2026 engineering recommendation for the five-model redesign.
-This is not an accepted storage-location change or a production implementation.
+The owner clarified that native platform behavior must be adopted consistently,
+without app-owned compensation for account lifecycle. The earlier two-library
+recommendation is withdrawn. This remains design work, not an implementation.
 Apple documentation, an attributed Apple engineer response, sample inspection,
 and isolated local persistence probes support different parts of this review.
 No real iCloud account transition or two-device CloudKit experiment was run.
@@ -44,72 +46,61 @@ expanded into a guarantee that Apple's account-scoped replica survives sign-out.
 
 | Approach | Benefit | Cost and recommendation |
 | --- | --- | --- |
-| One permanently cloud-backed library | Smallest native configuration; account lifecycle belongs to the framework | Good if the product needs only an iCloud library. It cannot also promise an account-independent local library. |
-| Reopen the same store with `.none` or `.private` | Short configuration code; resembles the current app | Requires qualification of re-enablement, account changes while disabled, and unsent history. A startup toggle is not an unconditional keep-on-device contract. Do not select as the default lifetime design without that evidence. |
-| Separate local and iCloud libraries using the same schema | Clear ownership boundary through ordinary store configuration | Recommended if Stally retains both local-only use and optional iCloud use. Requires explicit selection and reviewed copying, with two potentially diverging collections. |
-| Local master plus custom sync or a continuously maintained second copy | Could support a stronger app-owned retention policy | Adds conflict, account-isolation, deletion, and recovery machinery. Not recommended for 1.0. |
-
-The recommended third option is a substantive proposal, not a claim that Apple
-requires two libraries. It trades a small explicit storage/transfer boundary
-for avoiding a hidden promise that account-scoped data is permanently local.
-If maintaining two independent collections is unacceptable product complexity,
-prefer the first option and disclose its account lifetime rather than building
-a custom synchronization engine to conceal that difference.
+| One cloud-backed library following native account lifecycle | Standard mirroring and account isolation remain one coherent contract | Recommended baseline for iCloud use; no promise of account-independent retention. |
+| Reopen the same store with `.none` or `.private` | Short configuration code; resembles the current app | Requires a concrete product need and qualification of re-enablement/account transitions. Do not inherit this merely because a toggle already exists. |
+| Separate local and iCloud libraries using the same schema | Could support independently requested local collections | Previous recommendation withdrawn: independent retention was not a requirement. Selection, copying, divergent collections, and route scope add unjustified responsibility here. |
+| Local master plus custom sync or a continuously maintained second copy | Could support stronger app-owned retention | Not selected; it compensates for platform behavior beyond Stally's stated requirements. |
 
 ## Recommended Library Contract
 
-Use one schema in two independently located stores, with no cross-store
-relationships. The local library always uses `.none`; the iCloud library always
-uses the specified private container. Present one active library, not a union of
-both. Do not instantiate two active mirroring containers for the same URL.
+Use a single logical collection with native SwiftData/CloudKit mirroring for
+its iCloud use. Accept its account isolation, delayed delivery, and conflict
+behavior consistently. Do not introduce another library, automatic export,
+shadow copy, or cross-account replay to counteract those behaviors. Explicit
+export/import remains a user-directed feature, not required sync plumbing.
 
-Selecting a library is separate from copying records. A setting change does not
-move records, erase a source, or continually synchronize the two libraries.
-When entering iCloud use, offer reviewed copying of local records through the
-identity-preserving import rules. Reuse value conversion/application logic,
-not live model instances or SQLite-file copying. Keep the source until the user
-explicitly deletes it. Saving the destination is a local persistence result,
-not confirmation that the cloud has received the copy.
+Do not silently reinterpret an unavailable account as a request to convert the
+mirrored store into an account-independent local collection. Similarly, do not
+build app-controlled retention while attributing the resulting account mixing,
+duplicate records, or loss to Apple. Stally owns the consequences of its own
+configuration and mutations.
 
-When leaving iCloud use, offer a reviewed copy of the records currently
-available into the local library, or export, before switching. State that this
-cannot capture records or image bytes not yet received from other devices.
-Never call a partial export or local save a verified full cloud backup. A
-missing required image/reference must be reported or represented by the agreed
-omission contract, not silently omitted while claiming complete preservation.
+System iCloud controls are the proposed default surface for system-level
+sync disablement and account changes. The existing app toggle is not a settled
+contract: retain an app-level control only for a concrete requirement, with
+verified native configuration behavior and accurate consequences. This review
+neither removes optional iCloud use as a product choice nor settles its initial
+setting or paid entitlement. If those choices need a different lifecycle,
+review that specific requirement before adding storage infrastructure.
 
-Copying back into a library that already has those UUIDs uses ordinary conflict
-review. The same UUID may exist in both independent libraries after copying;
-do not flatten their values or guess a winner. Later edits can diverge.
-Deep links, App Entities, cached selections, and saved UI state must resolve a
-library as well as a UUID when both libraries are supported. Concrete route
-encoding belongs to the subsequent public-reference contract.
+Stally remains responsible for correct schema/configuration, explicit local
+saves and errors, safe editor lifetimes, handling missing/deleted references,
+and honest descriptions of what was saved or exported. All entrypoints must
+use a consistent configuration. Do not instantiate competing mirroring
+containers for one store or revive deleted records from stale drafts.
 
-For 1.0, prefer library selection taking effect on the next launch over hot
-replacement of the app's full container graph. Clearly show the active and
-requested library; do not claim that flipping a setting immediately stops
-network activity. Switching must not implicitly save or discard an editor.
-All entrypoints must resolve the same selected library; stale drafts or actions
-from a previous library/session must not write to the newly selected one.
-Implementation must account for all scenes and background entrypoints before
-offering a live switch later.
+Reading an inconsistent Period and asking the user to correct it is ordinary
+domain validation. It does not replace CloudKit's conflict resolution or
+recover overwritten edits. Account-aware invalidation of a stale review also
+protects Stally's own operation, rather than intercepting native account cleanup.
 
-This proposal adds storage selection outside the domain models, not a
-`syncStatus`, `accountID`, or shadow ownership field to every record. Exact
-preference keys and store paths require deliberate selection before integration.
+No second-library selector, library identifier in routes, or model-level
+`syncStatus`/`accountID` is introduced by this recommendation. Keep the existing
+UUID identity design. Concrete store integration and supported configuration
+transitions still require qualification.
 
 ## Lifecycle Behavior
 
 | Event | Recommended behavior |
 | --- | --- |
-| First local use | Open the independent local store. No automatic upload or cloud-store opening is implied. |
-| Begin iCloud use | Check account availability, explain the destination, review any copy, and activate the cloud library explicitly. Do not treat an initially empty replica as proof of an empty cloud database. |
+| App launch | Open the deliberately configured store. Account unavailability must not select a second collection or silently change its lifetime. |
+| Begin iCloud use | Use native mirroring under the selected product configuration. Qualify any transition from existing local data before offering it; do not infer an empty cloud database from an initially empty replica. |
 | Network unavailable or cloud throttled | Keep the current library/configuration. Permit ordinary offline changes to the available graph; native mirroring retries. Do not switch stores or perform app-owned clearing. |
-| Cloud account temporarily unavailable or undetermined | Preserve the store. Recheck account status and avoid starting transfers that require a verified destination; do not infer sign-out. |
+| Cloud account temporarily unavailable or undetermined | Preserve the store. Recheck account status and avoid account-dependent operations that require a verified destination; do not infer sign-out. |
 | System iCloud disablement, sign-out, or account switch | Respect native account isolation. Invalidate open import reviews and drafts tied to the prior account session; do not replay them into another account. Native mirrored local data may be removed. |
 | Return to the same account | Let native mirroring repopulate what exists in that account. Do not promise recovery of records never uploaded or already deleted. |
-| Enter a different account | Do not automatically import the previous account's values, a saved draft, or the independent local library. Any cross-account transfer is an explicit user-reviewed import. |
-| Stop using the cloud library in Stally | Offer export/reviewed copy first, then explicit local-library selection. This is not cloud deletion and is not the same operation as disabling iCloud in system Settings. |
+| Enter a different account | Do not automatically import the previous account's values or a saved draft. Any cross-account transfer is an explicit user-reviewed import. |
+| Disable iCloud through system Settings | Follow native behavior, including its account-lifetime consequences. Do not implement an automatic local-copy escape path. Explicit export remains available beforehand while data is accessible. |
 | Subscription expiry or entitlement uncertainty | Do not erase records, switch libraries, or rebuild the store as a side effect. Keep reading/export available. Any restriction on new use requires a separate product decision. |
 | Container initialization failure | Show a recoverable persistence failure and preserve the source. Do not silently substitute an empty in-memory store or downgrade a mirrored store to local mode. |
 
@@ -181,11 +172,17 @@ already implemented. The subscription-state modifier currently updates the
 subscription preference, not the CloudKit configuration.
 
 No five-model attribute change is currently justified by this review. The new
-proposal affects container ownership, store selection, stale-session handling,
-and public route scope. Tag consolidation may still require a separately
+proposal affects consistent container ownership, stale-session handling, and
+accurate lifecycle presentation. The withdrawn two-library design no longer
+justifies adding library scope to public routes. Tag consolidation may still require a separately
 justified schema change.
 
 ## Verification and Release Boundaries
+
+The probe below was run while comparing the earlier alternatives. Its two-store
+checks remain evidence for that alternative only, not a requirement or proof of
+the revised native-lifecycle recommendation. No new runtime test was run merely
+for this policy correction.
 
 The standalone probe uses the complete five-model illustration, including
 external image data and thumbnailData, in disposable stores outside Git.
@@ -223,8 +220,9 @@ verification is claimed. The temporary probe source and logs remain outside Git.
 Before implementation can claim qualified cloud behavior, use disposable test
 accounts and two signed devices on supported OS versions to check:
 
-1. Local-to-cloud and cloud-to-local reviewed copies, including media and
-   interrupted saves; preserve the source and verify destination reopen.
+1. Initial native mirroring and any explicitly selected local-to-cloud
+   configuration transition, including existing records and media. Verify
+   actual uploads and independent downloads; an opened container is insufficient.
 2. Independent offline Marks, simultaneous resumes, end/reopen races, same-field
    edits, and distinct imports carrying equal UUIDs; inspect both devices.
 3. Delete versus concurrent edit/child creation, partial relationship arrival,
