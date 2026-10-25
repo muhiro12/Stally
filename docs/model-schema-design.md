@@ -202,9 +202,11 @@ preserve distinct UUID identities, including identical names; suggest existing
 Tags without automatically grouping, rewriting, or reassigning them. Selection,
 filtering, links, and rename operate on the chosen UUID. Preserve confirmed
 spelling, including spaces. The previous derived classification recommendation
-is superseded. Explicit consolidation is desired, but its source-record
-lifecycle under sync and possible storage needs remain open. The three-field
-Tag illustration supports ordinary operations, not a completed merge protocol.
+is superseded. The October 25 consolidation recommendation reassigns reviewed
+Item relationships to a selected Tag and deletes the source Tags in one local
+save. It adds no fields or permanent aliases and does not guarantee transfer
+of unseen cloud relationships. This bounded proposal awaits acceptance; local
+merge/rollback verification does not qualify immediate Undo or cloud behavior.
 The [export/import identity proposal](import-identity-design.md) recommends
 UUID matching with explicit record-level conflict choices and no deletion by
 omission. Its conservative omission handling, minimal 1.0 scope, and aligned

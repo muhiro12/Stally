@@ -598,10 +598,15 @@ The earlier automatic name-based grouping and representative-UUID selection
 recommendations are superseded. See the [Tag design](tag-design.md).
 
 The owner wants an explicit consolidation feature. Its destination and affected
-Tags must be visible choices. Source-record removal, late CloudKit assignments,
-and old UUID references remain to be designed; manual initiation does not
-establish safe deletion during synchronization. Ordinary operations need no
-new fields, but consolidation's potential storage needs remain open.
+Tags must be visible choices. The October 25 [Tag proposal](tag-design.md)
+recommends a reviewed, one-time relationship reassignment and source deletion.
+It adds no model fields or permanent redirects; old source links become
+unavailable and old exports follow ordinary import review. This recommendation
+awaits acceptance. Unseen remote assignments can be lost on source deletion;
+the proposal makes this bounded tradeoff explicit instead of claiming globally
+lossless consolidation. Local merge/rollback checks passed, while native Undo
+attempts did not restore the full saved graph. No immediate Undo or cloud
+qualification is claimed.
 
 Apple Notes demonstrates [multiple user-created tags][notes-tags] as a familiar
 classification interaction. This is UX evidence, not evidence of its private
@@ -927,10 +932,11 @@ separate same-name records, faithful spelling, and user-controlled reuse or
 creation. Suggestions do not merge classifications. A rename collision must be
 communicated; specific UI presentation can follow later.
 
-As of October 25, the export/import direction and shared schema-version policy
-are established; the [import design](import-identity-design.md) distinguishes
-accepted policy from remaining record-resolution recommendations and wire
-format work. Proceed to native synchronization lifecycle, then consolidation.
+As of October 25, the export/import direction, shared schema-version policy,
+and native-sync cost/recovery policy are established. The [import design](import-identity-design.md)
+distinguishes accepted policy from remaining record-resolution recommendations
+and wire format work. The bounded [Tag consolidation proposal](tag-design.md)
+now awaits review; concrete wire format work follows that decision.
 Tag UUIDs, names, and assignments already preserve its necessary current facts;
 there is no historical merge decision to reconstruct. The new ordering is a
 recommendation within the design process, not cancellation of the requested
