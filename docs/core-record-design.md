@@ -699,6 +699,7 @@ appropriate; an elaborate workaround requires a separate explicit decision.
 Apple's apps are interaction references, not proof that their private internal
 implementations are available through public third-party APIs.
 
+On October 25, the owner accepted the following cost and recovery policy.
 Ordinary remote-service limits do not independently justify extra architecture
 or repeated product decisions. Weigh additional safeguards against Stally's
 user value and maintenance cost. Prefer practical correction and recovery paths

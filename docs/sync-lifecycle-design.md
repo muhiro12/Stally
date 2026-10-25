@@ -2,10 +2,14 @@
 
 ## Status
 
-October 25, 2026 engineering recommendation for the five-model redesign.
+On October 25, 2026, the owner accepted the native-platform, proportionate-cost,
+and practical-recovery policy for the five-model redesign.
 The owner clarified that native platform behavior must be adopted consistently,
 without app-owned compensation for account lifecycle. The earlier two-library
 recommendation is withdrawn. This remains design work, not an implementation.
+Acceptance covers that policy, not every lifecycle interaction or recovery
+mechanism discussed below. Initial sync settings, entitlement behavior, and
+explicit Tag consolidation still need their own concrete decisions.
 Apple documentation, an attributed Apple engineer response, sample inspection,
 and isolated local persistence probes support different parts of this review.
 No real iCloud account transition or two-device CloudKit experiment was run.
@@ -17,7 +21,7 @@ expanded into a guarantee that Apple's account-scoped replica survives sign-out.
 
 ## Proportionate Design and Recovery
 
-The owner clarified the decision threshold: ordinary remote-service limitations
+The accepted decision threshold is that ordinary remote-service limitations
 are accepted operating conditions, not separate product problems that each
 require a mitigation, warning flow, or architecture decision. Evaluate additional
 work by user impact, recovery value, implementation cost, and maintenance cost.
