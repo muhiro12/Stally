@@ -938,6 +938,9 @@ distinguishes accepted policy from remaining record-resolution recommendations
 and wire format work. The bounded [Tag consolidation proposal](tag-design.md)
 is accepted with appropriately timed disclosure; concrete wire format work
 follows that decision.
+The [concrete file-format proposal](export-file-format-design.md) now provides
+reviewable recommendations and a synthetic JSON example; its delivery choices,
+wire precision, and development-format transition are not yet owner-approved.
 Tag UUIDs, names, and assignments already preserve its necessary current facts;
 there is no historical merge decision to reconstruct. The new ordering is a
 recommendation within the design process, not cancellation of the requested

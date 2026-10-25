@@ -209,6 +209,12 @@ evolve; it does not promise support for schemas that never exported a file.
 The concrete first revisions, extension, and package layout remain to be chosen;
 examples called F1/F2 do not renumber the existing development v2/v3 files.
 
+The October 25 [concrete file-format proposal](export-file-format-design.md)
+now recommends the first version pair, JSON and package deliveries, explicit
+media states, millisecond registration precision, and development-file retirement.
+These are engineering recommendations awaiting owner review, not changes to
+the accepted identity policy or the implemented codecs.
+
 An app 2.0 using storage schema S2 can read an export declaring schema S1:
 
 1. Validate the format identifier and supported format/schema version pair.

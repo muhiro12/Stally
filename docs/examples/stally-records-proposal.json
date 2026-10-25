@@ -1,0 +1,67 @@
+{
+  "exportedAt": "2026-10-25T00:00:00.123Z",
+  "format": "stally",
+  "formatVersion": 1,
+  "itemMarks": [
+    {
+      "createdAt": "2026-10-25T00:00:00.123Z",
+      "itemUUID": "10000000-0000-4000-8000-000000000001",
+      "localDateTime": "2026-10-24",
+      "uuid": "40000000-0000-4000-8000-000000000001"
+    },
+    {
+      "createdAt": "2026-10-25T00:00:00.123Z",
+      "itemUUID": "10000000-0000-4000-8000-000000000001",
+      "localDateTime": "2026-10-24T09:30",
+      "uuid": "40000000-0000-4000-8000-000000000002"
+    }
+  ],
+  "itemPeriods": [
+    {
+      "createdAt": "2026-10-25T00:00:00.123Z",
+      "endLocalDate": null,
+      "isOngoing": true,
+      "itemUUID": "10000000-0000-4000-8000-000000000001",
+      "startLocalDate": "2024-03",
+      "uuid": "50000000-0000-4000-8000-000000000001"
+    }
+  ],
+  "itemPhotos": [
+    {
+      "caption": "After polishing",
+      "createdAt": "2026-10-25T00:00:00.123Z",
+      "image": {
+        "state": "omitted"
+      },
+      "itemUUID": "10000000-0000-4000-8000-000000000001",
+      "sortOrder": 0,
+      "uuid": "20000000-0000-4000-8000-000000000001"
+    }
+  ],
+  "items": [
+    {
+      "createdAt": "2026-10-25T00:00:00.123Z",
+      "isArchived": false,
+      "isFavorite": true,
+      "isMarkRecordingEnabled": true,
+      "name": "Leather shoes",
+      "note": "Resoled in spring.",
+      "tagUUIDs": [
+        "30000000-0000-4000-8000-000000000001",
+        "30000000-0000-4000-8000-000000000002"
+      ],
+      "uuid": "10000000-0000-4000-8000-000000000001"
+    }
+  ],
+  "schemaVersion": "1.0.0",
+  "tags": [
+    {
+      "name": "Shoes",
+      "uuid": "30000000-0000-4000-8000-000000000001"
+    },
+    {
+      "name": "Shoes",
+      "uuid": "30000000-0000-4000-8000-000000000002"
+    }
+  ]
+}

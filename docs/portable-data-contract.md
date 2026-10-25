@@ -8,6 +8,11 @@ SwiftData migration execution during import. Direct historical value readers
 are the planned mechanism. This does not change the implemented v2/v3 behavior
 below.
 
+The [concrete file-format proposal](export-file-format-design.md) describes
+the proposed JSON and photo-package deliveries for the redesigned models.
+It is not yet owner-approved or implemented and does not redefine the legacy
+version numbers documented here.
+
 The [October 22 core record design](core-record-design.md#export-and-import-direction)
 sets the newer direction: export for external use, with import as a complement.
 The v3/v2 specification below remains the implemented baseline. Readable
