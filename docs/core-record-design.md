@@ -704,6 +704,15 @@ when enabled. The domain remains useful offline. Avoid a custom synchronization
 engine, distributed counter, general operation log, or background reconciliation
 service without a reproduced need that the standard stack cannot address.
 
+The October 25 [synchronization lifecycle review](sync-lifecycle-design.md)
+proposes separate local-only and cloud-backed libraries using this same schema,
+with explicit reviewed copying rather than repeatedly changing one store's
+account-lifetime contract. This storage-location proposal awaits acceptance;
+it is not a new domain model or a continuously synchronized shadow copy.
+The review also distinguishes native account cleanup from app-initiated
+deletion: a mirrored local replica is not guaranteed to survive system iCloud
+disablement or sign-out, including changes not yet uploaded.
+
 Independent Marks are separate inserts. Locally retrying a still-known action
 reuses its UUID and checks its saved result; a second user action creates a new
 UUID. Repeated import matches UUIDs, never day alone. A UUID and a fetch check
@@ -716,7 +725,8 @@ Metadata edits and concurrent period changes remain subject to native conflict
 handling and need bounded device tests. Prefer tolerating incomplete readings
 over an elaborate automatic repair protocol. Initial evidence must cover two
 offline additions, replay/import, cancellation, delete-versus-add, and two
-simultaneous resumes. These tests have not been run for this proposal.
+simultaneous resumes. Real CloudKit tests of these cases have not been run;
+the lifecycle review separately records local synthetic-state verification.
 
 The owner's paid-cloud intent changes the earlier product direction, but not
 the existing implementation. Apple's App Review Guideline 4.10 prohibits
@@ -922,10 +932,12 @@ grounds for a distributed exactly-once guarantee. Keep unresolved source-UUID
 redirection out of the public promises until consolidation is finalized.
 
 Native sync lifecycle is distinct from monetization policy. App-owned paid
-value and the platform-policy boundary remain a separate product decision;
-existing information must not be deleted because a subscription or account
-state changes. Verify whether the selected native interaction is sufficient
-before designing extra persistence machinery.
+value and the platform-policy boundary remain a separate product decision.
+Stally must not delete data or silently switch stores because subscription
+state changes. Account changes additionally follow Apple's account-isolation
+lifecycle; do not promise that cloud-backed local data survives sign-out.
+See the [lifecycle comparison](sync-lifecycle-design.md) for the proposed
+storage boundary, local verification, and still-unverified cloud behavior.
 
 Calendar mode already has a device-level preference as the initial engineering
 choice. Item-specific overrides may be added later without reconstructing
