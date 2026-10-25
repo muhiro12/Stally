@@ -306,6 +306,12 @@ overlap may prevent an exact duration; retain precision and show an approximate
 or unavailable reading. Do not turn missing dates into zero duration. The
 calculation and display specification belongs in the period implementation.
 
+The [period readings proposal](period-readings-design.md) now recommends native
+calendar-day subtraction for both readings, precise totals only for fully known
+consistent spans, and faithful year/month statements otherwise. It records
+43 standalone assertions and the deliberate same-day zero-elapsed convention.
+These are recommendations for owner review, not new persisted attributes.
+
 ## Recommended Persisted Names and Types
 
 The three base model names are confirmed. `uuid`, `createdAt`, `isArchived`,

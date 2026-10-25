@@ -227,6 +227,11 @@ integration and final verification. Native sync, explicit Tag consolidation,
 and the export/import direction have already been discussed and selected.
 This illustration does not add speculative stored fields for those concerns.
 
+The [period readings proposal](period-readings-design.md) exercises elapsed and
+total calculations and unknown/partial-date handling with the existing fields.
+Its counting and presentation policy awaits owner review; no stored durations
+or changes to export/import are proposed.
+
 ## Consolidated Graph Verification
 
 The [photo policy review](photo-storage-design.md) separately verified the

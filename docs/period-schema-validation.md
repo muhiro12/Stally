@@ -8,6 +8,11 @@ graph is shown in the [consolidated Swift schema](model-schema-design.md).
 This is a design decision with standalone runtime evidence, not an
 application-schema deployment or an old-store migration.
 
+The subsequent [period readings proposal](period-readings-design.md) defines
+elapsed-versus-total semantics, calendar-day subtraction, and partial-date
+presentation without new stored fields. Those calculation/presentation choices
+await owner review; they are not implied by acceptance of the schema alone.
+
 ```swift
 @Model
 final class ItemPeriod {
