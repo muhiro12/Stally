@@ -210,9 +210,11 @@ merge/rollback verification does not qualify immediate Undo or cloud behavior.
 The [export/import identity proposal](import-identity-design.md) recommends
 UUID matching with explicit record-level conflict choices and no deletion by
 omission. Its conservative omission handling, minimal 1.0 scope, and aligned
-schema-version policy are accepted; detailed record-resolution recommendations
-and the concrete wire format remain to be finalized. It adds no stored fields
-for ordinary import.
+schema-version policy are accepted. The owner also accepted proceeding with the
+[concrete file design](export-file-format-design.md): a consistent `.stally`
+package and image integrity checks, with auxiliary JSON sharing. Resource
+qualification and physical integration remain pending. It adds no stored fields
+for ordinary import; image digests are derived file metadata.
 The [native sync lifecycle review](sync-lifecycle-design.md) follows native
 account lifecycle and proposes explicit handling of concurrent Period states,
 without adding domain attributes. The earlier separate local/cloud library
@@ -220,8 +222,9 @@ recommendation is withdrawn; account-independent retention was not a product
 requirement. Real CloudKit qualification and final reading/presentation behavior
 remain to be settled.
 Follow the [remaining decision sequence](core-record-design.md#remaining-decisions-after-photo-acceptance),
-continuing with native sync and explicit Tag consolidation, then the concrete
-file format, before physical schema integration and final verification.
+continuing with derived readings and presentation, then physical schema
+integration and final verification. Native sync, explicit Tag consolidation,
+and the export/import direction have already been discussed and selected.
 This illustration does not add speculative stored fields for those concerns.
 
 ## Consolidated Graph Verification

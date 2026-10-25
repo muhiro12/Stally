@@ -9,16 +9,17 @@ are the planned mechanism. This does not change the implemented v2/v3 behavior
 below.
 
 The [concrete file-format proposal](export-file-format-design.md) describes
-the proposed `.stally` package, optional photos, image integrity metadata,
+the selected `.stally` package, optional photos, image integrity metadata,
 and auxiliary JSON sharing for the redesigned models.
-It is not yet owner-approved or implemented and does not redefine the legacy
-version numbers documented here.
+The owner accepted proceeding with this revised design. It is not implemented
+and does not redefine the legacy version numbers documented here; resource
+qualification and physical-schema integration remain pending.
 
 The [October 22 core record design](core-record-design.md#export-and-import-direction)
 sets the newer direction: export for external use, with import as a complement.
 The v3/v2 specification below remains the implemented baseline. Readable
-timestamps, multiple Marks per day, periods, and media packaging require an
-explicit new format decision; this design work has not changed the codecs.
+timestamps, multiple Marks per day, periods, and media packaging belong to the
+new format design; this design work has not changed the codecs.
 
 ## First Public Format
 

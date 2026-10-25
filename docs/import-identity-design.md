@@ -213,8 +213,10 @@ The October 25 [concrete file-format proposal](export-file-format-design.md)
 now recommends the first version pair, a consistent `.stally` package with
 auxiliary JSON sharing, explicit media states and integrity metadata,
 millisecond registration precision, and development-file retirement.
-These are engineering recommendations awaiting owner review, not changes to
-the accepted identity policy or the implemented codecs.
+The owner accepted proceeding with the revised package and preservation policy.
+The file-design status separates that acceptance from provisional resource
+budgets, physical-schema integration, and release qualification. No codec has
+been changed by this design acceptance.
 
 An app 2.0 using storage schema S2 can read an export declaring schema S1:
 

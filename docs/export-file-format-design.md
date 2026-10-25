@@ -2,17 +2,46 @@
 
 ## Status
 
-This October 25, 2026 recommendation makes the accepted
-[import identity policy](import-identity-design.md) concrete. It is a proposal
-for review, not an implemented codec or an owner-approved public format.
+This October 25, 2026 design makes the accepted
+[import identity policy](import-identity-design.md) concrete. The owner accepted
+proceeding with the revised package and preservation policy after reviewing
+the sibling-app comparison. This is an accepted design direction, not an
+implemented codec or a published, immutable format.
 The [development v2/v3 contract](portable-data-contract.md) still describes the
 shipping code in this checkout. No store, entitlement, or document declaration
 is changed by this design.
 
 The owner subsequently expressed a preference for `.stally` and requested
 adoption of independently justified safeguards from the sibling apps. The
-revised recommendation below uses one native package container with or without
-photos and adds per-image integrity metadata. These changes remain design work.
+selected design below uses one native package container with or without photos,
+per-image integrity metadata, and auxiliary JSON sharing for external use.
+These changes remain design work.
+
+### Readiness to Continue Design
+
+No additional product-contract choice blocks moving to derived readings and
+presentation. Identity, conflict review, omission, version evolution, the
+consistent package container, and attachment preservation have a selected
+direction. Do not repeatedly reopen them as speculative sync guarantees.
+
+The following work remains mandatory before release, in its appropriate phase:
+
+- Measure aggregate byte/count limits, memory and disk use, including the
+  single-save import path; qualify the provisional 32-MiB JSON budget.
+- Implement and verify strict historical/current codecs, invalid-file rejection,
+  coherent export staging, stale review, failed-save preservation, and media
+  integrity with the actual five-model importer.
+- Qualify the installed document type, Files/providers, export/cancel flows,
+  and the timing of omission, metadata, and conflict explanations.
+- During schema integration, bind the initial file version to the actual
+  VersionedSchema baseline and execute an explicit development-data transition.
+  The proposed retirement of development readers does not authorize store loss.
+
+These are bounded implementation/qualification or integration decisions, not
+new reasons to change the five models now. If measurements require partial
+commits, lossy conversion, identity changes, or different user-visible guarantees,
+reopen the affected contract explicitly instead of treating that as an internal
+optimization. Passing temporary probes does not complete these release checks.
 
 ## One Native Package, Optional Photos
 

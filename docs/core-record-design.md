@@ -921,11 +921,9 @@ a concrete requirement can still justify an explained revision before release.
 
 | Order | Topic | Remaining decision | Effect on the model contract |
 | --- | --- | --- | --- |
-| 1 | Native synchronization lifecycle | Enabling/disabling sync, incomplete arrival, concurrent changes and deletion, and data access across account/plan changes | Defines native operation boundaries needed by consolidation; no custom merge engine or paid sync gate is authorized |
-| 2 | Explicit Tag consolidation | Destination choice, source-record lifecycle, late assignments, failure, and old UUID references | Determine concrete persistence needs before the final 1.0 schema/file/reference freeze if the feature ships in 1.0 |
-| 3 | Concrete export/import format | Container and extension, initial version pair, media packaging and metadata controls, omission representation, timestamp precision, input limits, and development-file compatibility | Encode the selected identity and preservation policy without changing published meanings; finalize record-resolution details against concrete examples |
-| 4 | Derived readings and presentation | Elapsed-since-start versus active-period totals, partial-date uncertainty, day-boundary counting, calendar intensity scale, and settings scope | Primarily calculations and preferences; retain source facts without adding persisted totals |
-| 5 | Schema integration and transition | Versioned-schema placement, current development-data transfer/retirement, generated CloudKit fields, and final consumer verification | Physical contract freeze and implementation readiness; no silent store reset or production schema promotion |
+| 1 | Derived readings and presentation | Elapsed-since-start versus active-period totals, partial-date uncertainty, day-boundary counting, calendar intensity scale, and settings scope | Primarily calculations and preferences; retain source facts without adding persisted totals |
+| 2 | Schema integration and transition | Versioned-schema placement, current development-data transfer/retirement, generated CloudKit fields, actual initial file/schema version pair, and final consumer verification | Physical contract freeze and implementation readiness; no silent store reset or production schema promotion |
+| During implementation | Export/import qualification | Measured aggregate limits, codec and failure tests, installed document behavior, and appropriately timed explanations | Verify the accepted contract; do not silently change identity, omission, or save guarantees to fit implementation limits |
 
 The [Tag design report](tag-design.md) records the selected UUID-based identity,
 separate same-name records, faithful spelling, and user-controlled reuse or
@@ -934,27 +932,28 @@ communicated; specific UI presentation can follow later.
 
 As of October 25, the export/import direction, shared schema-version policy,
 and native-sync cost/recovery policy are established. The [import design](import-identity-design.md)
-distinguishes accepted policy from remaining record-resolution recommendations
-and wire format work. The bounded [Tag consolidation proposal](tag-design.md)
-is accepted with appropriately timed disclosure; concrete wire format work
-follows that decision.
-The [concrete file-format proposal](export-file-format-design.md) now provides
-reviewable recommendations and a synthetic JSON example; its delivery choices,
-wire precision, and development-format transition are not yet owner-approved.
+records conservative identity and conflict handling. The bounded
+[Tag consolidation design](tag-design.md) is accepted with appropriately timed
+disclosure. The owner also accepted proceeding with the revised
+[concrete file design](export-file-format-design.md): a consistent `.stally`
+package, optional images with integrity metadata, and auxiliary JSON sharing.
+Its status separates acceptance from resource qualification, physical-schema
+integration, and development-data transition work. No further export/import
+product choice blocks the next discussion of derived readings.
 Tag UUIDs, names, and assignments already preserve its necessary current facts;
-there is no historical merge decision to reconstruct. The new ordering is a
-recommendation within the design process, not cancellation of the requested
-feature, a post-release deferral, or a migration-free extension guarantee.
-Explicit consolidation must return before the final 1.0 contract freeze if it
-is included, after export/reference and native-sync boundaries are understood.
+there is no historical merge decision to reconstruct. The selected consolidation
+reassigns reviewed relationships and deletes source Tags without permanent aliases.
+Its implementation and release checks remain required; acceptance is not proof
+of cloud-wide lossless consolidation or immediate Undo support.
 
 For export/import, equal UUIDs with differing contents need an explicit policy;
 no updatedAt field is currently selected, so do not claim to infer which version
 is newer from createdAt. Distinct Tag UUIDs must not collapse by name. Re-importing
 a file must not accidentally multiply Marks, and an export that omitted images
 must not erase saved attachments. These are ordinary operation semantics, not
-grounds for a distributed exactly-once guarantee. Keep unresolved source-UUID
-redirection out of the public promises until consolidation is finalized.
+grounds for a distributed exactly-once guarantee. Old consolidated source UUIDs
+do not redirect: links may no longer resolve, and an old import may offer to
+restore source records under the accepted identity-review policy.
 
 Native sync lifecycle is distinct from monetization policy. App-owned paid
 value and the platform-policy boundary remain a separate product decision.
