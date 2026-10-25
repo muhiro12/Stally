@@ -601,8 +601,8 @@ The owner wants an explicit consolidation feature. Its destination and affected
 Tags must be visible choices. The October 25 [Tag proposal](tag-design.md)
 recommends a reviewed, one-time relationship reassignment and source deletion.
 It adds no model fields or permanent redirects; old source links become
-unavailable and old exports follow ordinary import review. This recommendation
-awaits acceptance. Unseen remote assignments can be lost on source deletion;
+unavailable and old exports follow ordinary import review. The owner accepted
+this contract with adequate, appropriately timed user explanation. Unseen remote assignments can be lost on source deletion;
 the proposal makes this bounded tradeoff explicit instead of claiming globally
 lossless consolidation. Local merge/rollback checks passed, while native Undo
 attempts did not restore the full saved graph. No immediate Undo or cloud
@@ -936,7 +936,8 @@ As of October 25, the export/import direction, shared schema-version policy,
 and native-sync cost/recovery policy are established. The [import design](import-identity-design.md)
 distinguishes accepted policy from remaining record-resolution recommendations
 and wire format work. The bounded [Tag consolidation proposal](tag-design.md)
-now awaits review; concrete wire format work follows that decision.
+is accepted with appropriately timed disclosure; concrete wire format work
+follows that decision.
 Tag UUIDs, names, and assignments already preserve its necessary current facts;
 there is no historical merge decision to reconstruct. The new ordering is a
 recommendation within the design process, not cancellation of the requested

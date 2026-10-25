@@ -205,7 +205,7 @@ spelling, including spaces. The previous derived classification recommendation
 is superseded. The October 25 consolidation recommendation reassigns reviewed
 Item relationships to a selected Tag and deletes the source Tags in one local
 save. It adds no fields or permanent aliases and does not guarantee transfer
-of unseen cloud relationships. This bounded proposal awaits acceptance; local
+of unseen cloud relationships. The owner accepted this bounded contract with appropriately timed explanation; local
 merge/rollback verification does not qualify immediate Undo or cloud behavior.
 The [export/import identity proposal](import-identity-design.md) recommends
 UUID matching with explicit record-level conflict choices and no deletion by

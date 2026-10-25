@@ -17,10 +17,10 @@ prohibit deliberate correction and removal.
 
 This document records the owner's product direction and bounded engineering
 recommendations. No production model, Operations code, actual store, or cloud
-schema changed. The owner wants an explicit consolidation feature. The October
-25 recommendation below is a bounded, user-reviewed reassignment and source
-deletion, not a permanent identity alias or globally lossless merge. This
-recommendation awaits acceptance; cloud behavior is not qualified.
+schema changed. On October 25, 2026, the owner accepted bounded, user-reviewed
+reassignment and source deletion, with sufficient explanation at the appropriate
+point in the interaction. This is not a permanent identity alias or globally
+lossless merge; cloud behavior remains unqualified.
 
 ## Identity and User Operations
 
@@ -172,6 +172,15 @@ place consequences and the export option in this destructive-operation review,
 not repetitive warnings during ordinary tagging. Preserve the established
 ability to create or rename distinct same-name Tags without automatic merging.
 
+Before execution, explain the destination and affected Items, source deletion,
+and the available cancellation/restoration options. Make the limitation on
+unseen remote assignments accessible in this operation's confirmation, rather
+than only in general help. Explain unavailable old links when they are opened,
+and possible source restoration when an old export is reviewed. Exact wording
+and layout remain UI work; do not imply an immediate Undo that is not verified.
+Disclosure supports an informed choice and does not replace correct mutation,
+validation, or error handling by Stally.
+
 ### Applying the Operation
 
 1. Resolve the selected UUIDs in the current store. Reject ambiguous UUIDs,
@@ -243,8 +252,8 @@ relaunch, cross-device rollback, or recovery without a surviving copy.
 Keep Tag as uuid, name, and optional items. No mergedInto, retiredAt, deletedAt,
 alias array, or persistent merge model is recommended. The cost is deliberately
 finite source lifetime and no memory of the old merge for future imports.
-This is an engineering recommendation awaiting owner acceptance, not a change
-to the currently implemented app or proof of synced safety.
+This design is accepted. Acceptance does not change the currently implemented
+app or establish synced safety.
 
 ## October 25 Local Consolidation Probe
 
@@ -294,8 +303,8 @@ no personal images were added to the repository.
 Those earlier revisions updated design records without new runtime evidence.
 The October 25 probe above adds bounded local consolidation evidence, not
 production implementation, real multi-device CloudKit verification, or a full
-import/export round trip. The bounded operation and recovery proposal await
-acceptance; immediate Undo remains unqualified.
+import/export round trip. The bounded operation and recovery contract are accepted; immediate Undo
+remains unqualified.
 
 [sharing-sample]: https://developer.apple.com/documentation/coredata/sharing-core-data-objects-between-icloud-users
 [cloudkit]: https://developer.apple.com/documentation/swiftdata/syncing-model-data-across-a-persons-devices
