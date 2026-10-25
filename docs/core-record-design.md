@@ -699,6 +699,14 @@ appropriate; an elaborate workaround requires a separate explicit decision.
 Apple's apps are interaction references, not proof that their private internal
 implementations are available through public third-party APIs.
 
+Ordinary remote-service limits do not independently justify extra architecture
+or repeated product decisions. Weigh additional safeguards against Stally's
+user value and maintenance cost. Prefer practical correction and recovery paths
+over attempting to prevent every worst case. Existing editing, archive, and
+export/import provide the first options; this does not authorize a new backup,
+trash, or history subsystem. Focus additional scrutiny on loss introduced by
+Stally's own operations, including Tag consolidation and destructive import.
+
 Use one local SwiftData schema and Apple's automatic private CloudKit mirroring
 when enabled. The domain remains useful offline. Avoid a custom synchronization
 engine, distributed counter, general operation log, or background reconciliation
@@ -727,9 +735,11 @@ separately. Preserve facts and avoid premature cleanup during partial arrival.
 
 Metadata edits and concurrent period changes remain subject to native conflict
 handling and need bounded device tests. Prefer tolerating incomplete readings
-over an elaborate automatic repair protocol. Initial evidence must cover two
-offline additions, replay/import, cancellation, delete-versus-add, and two
-simultaneous resumes. Real CloudKit tests of these cases have not been run;
+over an elaborate automatic repair protocol. Choose representative cases from
+offline additions, replay/import, cancellation, delete-versus-add, and
+simultaneous resumes according to the implemented operations and their recovery
+paths. Do not require exhaustive distributed-failure prevention or testing.
+Real CloudKit tests of these cases have not been run;
 the lifecycle review separately records local synthetic-state verification.
 
 The owner's paid-cloud intent changes the earlier product direction, but not

@@ -15,6 +15,42 @@ replica of an iCloud library do not have the same lifetime. The earlier intent
 that Stally must not arbitrarily delete records remains valid; it cannot be
 expanded into a guarantee that Apple's account-scoped replica survives sign-out.
 
+## Proportionate Design and Recovery
+
+The owner clarified the decision threshold: ordinary remote-service limitations
+are accepted operating conditions, not separate product problems that each
+require a mitigation, warning flow, or architecture decision. Evaluate additional
+work by user impact, recovery value, implementation cost, and maintenance cost.
+The existence of a worst case alone does not justify preventing it at any cost.
+
+- Normal delivery delay, offline operation, and finite synchronization windows
+  use the native baseline. Do not keep reopening them as unresolved Stally
+  contracts or add infrastructure solely to eliminate them.
+- Account cleanup is technically distinct from an unfinished network request,
+  but neither requires Stally to guarantee survival of every user/system action.
+  Respect expected platform behavior and communicate consequences where the
+  actual operation warrants it; do not surround ordinary use with warnings.
+- Concurrent changes justify strict serialization or version-history machinery
+  only if Stally's concrete needs warrant that cost. Use native resolution and
+  make surviving ambiguous domain records understandable and correctable.
+- App-created destructive operations deserve focused scrutiny. Define their
+  scope, preview material effects, preserve unrelated data, and handle failed
+  saves. Do not knowingly discard a relationship during Tag consolidation and
+  attribute the loss to generic synchronization uncertainty.
+
+Recovery should start with capabilities already selected: editing dates and
+counts, reviewing/correcting periods, archiving instead of permanently deleting
+an Item when appropriate, and restoring available facts through explicit
+export/import. Recovery from an export covers only what that file contains;
+an overwritten value with no surviving copy cannot be reconstructed. Do not
+turn this principle into a promise of universal recovery.
+
+For each high-impact app operation, compare a narrow recovery mechanism with
+reducing the operation's scope. Immediate native Undo, a retained source, or an
+export opportunity can be candidates where useful; none is a blanket new 1.0
+requirement. Local Undo is not cross-device rollback. Automatic backups,
+permanent tombstones, and a general edit log are not selected by this principle.
+
 ## Platform Evidence
 
 - [SwiftData synchronization][swiftdata-sync] uses NSPersistentCloudKitContainer.
@@ -217,8 +253,12 @@ before the iOS runs. A newly created iPhone 18 Pro Simulator without an iCloud
 account was used, without disturbing other apps' running simulators. No app build or UI
 verification is claimed. The temporary probe source and logs remain outside Git.
 
-Before implementation can claim qualified cloud behavior, use disposable test
-accounts and two signed devices on supported OS versions to check:
+Use disposable test accounts and signed devices for representative integration
+checks before claiming observed cloud behavior. The cases below are an evidence
+inventory, not a requirement to exhaust every interleaving or reproduce every
+platform failure. Prioritize actual Stally mutations, selected configuration
+transitions, and recovery behavior. Broaden testing for concrete failures or
+requirements, not simply because another theoretical worst case exists:
 
 1. Initial native mirroring and any explicitly selected local-to-cloud
    configuration transition, including existing records and media. Verify
