@@ -19,6 +19,15 @@ replica of an iCloud library do not have the same lifetime. The earlier intent
 that Stally must not arbitrarily delete records remains valid; it cannot be
 expanded into a guarantee that Apple's account-scoped replica survives sign-out.
 
+## First-Release Scope Clarification
+
+On October 27, the owner explicitly confirmed iCloud support from the first
+release and App Group-first storage in preparation for Widget/Watch support.
+These are selected scope, not hypothetical future capabilities. Initial toggle
+state and subscription coupling remain separate from the decision to include
+iCloud; this clarification does not authorize store loss or implement a toggle.
+App Group sharing is device-local and does not itself provide iPhone/Watch sync.
+
 ## Proportionate Design and Recovery
 
 The accepted decision threshold is that ordinary remote-service limitations

@@ -1,5 +1,9 @@
 # Core Record Design
 
+The October 27 [contract summary](first-release-contract-summary.md) consolidates
+the accepted decisions and closes this contract-design phase. Use it for the
+current handoff; discussion-order sections below preserve earlier planning.
+
 ## Status and Scope
 
 Recorded on October 22, 2026; updated on October 24, 2026. The owner confirmed
@@ -923,7 +927,11 @@ rules, photo order/cover, and photo acceptance/storage policy are selected.
 Do not reopen them merely to imitate sibling implementations. New evidence or
 a concrete requirement can still justify an explained revision before release.
 
-### Recommended Discussion Order
+### Earlier Discussion Order
+
+The later [contract summary](first-release-contract-summary.md) supersedes this
+session sequence. Derived readings and presentation are deferred to feature
+design; they do not block closing the foundational contract discussion.
 
 | Order | Topic | Remaining decision | Effect on the model contract |
 | --- | --- | --- | --- |

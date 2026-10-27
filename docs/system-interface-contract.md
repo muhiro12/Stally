@@ -1,5 +1,14 @@
 # System Interface Contract
 
+## Pre-Release Redesign Status
+
+This document records the older implementation and its verification history.
+The accepted five-model redesign changes its single-start and single-Mark-per-day
+assumptions. See the [App Intents direction and contract boundary](app-intents-contract-design.md)
+for the accepted coverage policy and deferred interface design. The redesign is
+not yet implemented; historical compatibility choices below are not shipped
+obligations.
+
 ## Selected Journeys
 
 The canonical system entity is an Item: a meaningful thing or place, with its

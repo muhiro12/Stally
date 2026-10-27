@@ -1,5 +1,9 @@
 # Publication Contracts
 
+For the October 27 source inventory and proposed division between decisions now
+and implementation-time freezes, see [saved keys and external identifiers](saved-key-and-identifier-design.md).
+That review does not change registrations, preferences, stores, or source code.
+
 The [October 22 core record design](core-record-design.md) reopens selected
 pre-release contracts. This inventory describes the current implementation;
 development names and formats are not already-shipped obligations. Proposed

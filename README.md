@@ -33,27 +33,29 @@ Start with the documentation relevant to the changed boundary:
 
 | Decision | Current entry point |
 | --- | --- |
-| Current pre-release redesign decisions and proposed model names | [Core record design](docs/core-record-design.md) |
+| Accepted first-release contract direction and implementation handoff | [Contract summary](docs/first-release-contract-summary.md), [consolidated Swift schema](docs/model-schema-design.md), [design history](docs/core-record-design.md) |
 | Product purpose, domain, workflows, and language | [Product brief](docs/product-brief.md), [purpose](docs/product-purpose.md), [preserved concepts](docs/preserved-concepts.md), [domain](docs/domain-concepts.md), [workflows](docs/user-workflows.md), [experience principles](docs/user-experience-principles.md), [language](docs/product-language.md) |
 | Owner-directed baseline and scope | [Rebuild implementation direction](docs/rebuild-implementation-direction.md), [implementation principles](docs/rebuild-implementation-principles.md) |
 | Live SwiftData read ownership and value lifetimes | [App data flow](docs/swiftdata-app-data-flow.md) |
 | Durable writes and cross-surface use cases | [Domain Operations](docs/domain-operations.md) |
 | Shared update policy, offline behavior, and protected writes | [Remote update control](docs/remote-update.md) |
-| Selected first-release model and retained compatibility | [First release data model](docs/first-release-data-model.md) |
-| Publication identities, stored preferences, and support lifetimes | [Publication contracts](docs/publication-contracts.md) |
-| Export/import identity, versions, validation, and review | [Portable data contract](docs/portable-data-contract.md) |
-| App Intents, entity identity, replay, and Widget/Watch scope | [System interface contract](docs/system-interface-contract.md) |
+| Current persistence baseline before the redesign | [First release data model](docs/first-release-data-model.md) |
+| Publication identities, stored preferences, and support lifetimes | [Publication contracts](docs/publication-contracts.md), [saved-key and identifier review](docs/saved-key-and-identifier-design.md) |
+| Accepted export/import direction and current implementation | [File design](docs/export-file-format-design.md), [import identity](docs/import-identity-design.md), [older portable baseline](docs/portable-data-contract.md) |
+| App Intents, entity identity, replay, and Widget/Watch scope | [Current system interface](docs/system-interface-contract.md), [redesign direction and contract boundary](docs/app-intents-contract-design.md) |
 | Derived Item search, index recovery, and synthetic isolation | [Spotlight indexing](docs/spotlight-indexing.md) |
 | Samples, DEBUG profiles, frozen migration evidence, and scale | [Fixture architecture](docs/fixture-architecture.md), [original V1 fixtures](StallyLibrary/Tests/Default/Fixtures/V1/README.md), [current interchange fixtures](StallyLibrary/Tests/Default/Fixtures/Interchange/README.md) |
-| Accepted combined Item behavior | [Item start and elapsed time](docs/item-start-and-elapsed-time-proposal.md) |
+| Earlier implemented single-start behavior | [Item start and elapsed time](docs/item-start-and-elapsed-time-proposal.md) |
 | Current UI and integration evidence | [Tracking verification](docs/item-tracking-verification.md), [combined interface](docs/combined-interface-design.md), [near-term brief](docs/near-term-development-brief.md) |
 | Legacy extraction evidence | [Rebuild handoff](docs/rebuild-handoff.md) |
 
 These documents describe what Stally is, why it exists, which concepts must
 survive, and which legacy implementation details were intentionally discarded.
-The October 22 [core record design](docs/core-record-design.md) records the
-latest product decisions and a proposed schema. It supersedes earlier design
-constraints where stated, but has not changed the implemented model or formats.
+The October 27 [contract summary](docs/first-release-contract-summary.md) is the
+entry point for accepted redesign decisions, deferred feature choices, and
+required implementation evidence. The [core record design](docs/core-record-design.md)
+preserves their history. These decisions supersede earlier constraints where
+stated, but have not changed the implemented model or formats.
 `docs/rebuild-implementation-direction.md` separately records explicit rebuild
 direction that did not come from the removed legacy source.
 

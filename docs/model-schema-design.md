@@ -221,10 +221,11 @@ without adding domain attributes. The earlier separate local/cloud library
 recommendation is withdrawn; account-independent retention was not a product
 requirement. Real CloudKit qualification and final reading/presentation behavior
 remain to be settled.
-Follow the [remaining decision sequence](core-record-design.md#remaining-decisions-after-photo-acceptance),
-continuing with derived readings and presentation, then physical schema
-integration and final verification. Native sync, explicit Tag consolidation,
-and the export/import direction have already been discussed and selected.
+Follow the [contract summary and handoff](first-release-contract-summary.md)
+for the next development phase. Physical schema/shared-container integration
+and release qualification remain pending; derived readings and presentation
+belong to feature design. Native sync, explicit Tag consolidation, and the
+export/import direction have already been discussed and selected.
 This illustration does not add speculative stored fields for those concerns.
 
 The [period readings proposal](period-readings-design.md) exercises elapsed and
