@@ -1,105 +1,68 @@
-//
-//  LibraryView.swift
-//  Stally
-//
-//  Created by Codex on 2026/06/26.
-//
-
+import StallyLibrary
 import SwiftData
 import SwiftUI
 
 struct LibraryView: View {
     @Query(sort: \Item.createdAt, order: .reverse)
-    private var collection: [Item]
-    @Environment(RemoteUpdateOperations.self)
-    private var remoteUpdates
-    @Environment(\.modelContext)
-    private var modelContext
-    @Environment(\.locale)
-    private var locale
-
-    @State private var sampleErrorMessage: String?
-
-    let addAction: () -> Void
-    let restoreAction: () -> Void
-
-    private var items: [Item] {
-        ItemOperations.activeItems(from: collection)
-    }
-
-    private var isShowingSampleError: Binding<Bool> {
-        .init(
-            get: { sampleErrorMessage != nil },
-            set: { isPresented in
-                if !isPresented {
-                    sampleErrorMessage = nil
-                }
-            }
-        )
-    }
-
-    private var sampleAction: (() -> Void)? {
-        guard collection.isEmpty else {
-            return nil
-        }
-
-        return addSampleItems
-    }
+    private var items: [Item]
+    @State private var showingArchive = false
+    @State private var addingItem = false
+    @State private var path: [Item] = []
+    @State private var routeError: String?
 
     var body: some View {
-        Group {
-            if items.isEmpty {
-                EmptyLibraryView(
-                    addAction: addAction,
-                    sampleAction: sampleAction,
-                    restoreAction: restoreAction
-                )
-            } else {
-                ItemLibraryList(items: items, kind: .library)
-            }
-        }
-        .navigationTitle("Library")
-        .toolbar {
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                StallyLinkShareButton(
-                    link: .destination(.library),
-                    title: "Share Library Link"
-                )
-
-                Button(action: addAction) {
-                    Label("Add Item", systemImage: "plus")
+        NavigationStack(path: $path) {
+            itemList
+                .navigationTitle(showingArchive ? String(localized: "Archive") : String(localized: "Library"))
+                .navigationDestination(for: Item.self) { item in
+                    ItemDetailView(item: item)
                 }
-                .stallyToolbarActionStyle()
-            }
+                .toolbar {
+                    Button("Add Item", systemImage: "plus") { addingItem = true }
+                }
+                .sheet(isPresented: $addingItem) { ItemEditor(item: nil) }
+                .onOpenURL(perform: openLink)
+                .alert(
+                    "Could not open link",
+                    isPresented: Binding(
+                        get: { routeError != nil },
+                        set: { if !$0 { routeError = nil } }
+                    )
+                ) {
+                    Button("OK") { routeError = nil }
+                } message: {
+                    Text(routeError ?? "")
+                }
         }
-        .alert("Could Not Add Sample Items", isPresented: isShowingSampleError) {
-            Button("OK", role: .cancel) {
-                sampleErrorMessage = nil
-            }
-        } message: {
-            if let sampleErrorMessage {
-                Text(sampleErrorMessage)
+    }
+    private var itemList: some View {
+        List {
+            Toggle("Show Archive", isOn: $showingArchive)
+            ForEach(items.filter { $0.isArchived == showingArchive }) { item in
+                NavigationLink(value: item) {
+                    HStack {
+                        Text(item.name)
+                        Spacer()
+                        if item.isFavorite {
+                            Image(systemName: "star.fill")
+                                .accessibilityLabel("Favorite")
+                        }
+                    }
+                }
             }
         }
     }
 
-    private func addSampleItems() {
-        Task {
-            do {
-                try await remoteUpdates.checkMutationAllowed()
-                let createdItems = try SampleDataOperations.createItemsIfLibraryIsEmpty(
-                    in: modelContext,
-                    locale: locale
-                )
-
-                if createdItems.isEmpty {
-                    sampleErrorMessage = String(
-                        localized: "Sample items can only be added when the collection is empty."
-                    )
-                }
-            } catch {
-                sampleErrorMessage = error.localizedDescription
-            }
+    private func openLink(_ url: URL) {
+        guard case .supported(.item(let uuid)) = StallyLinkOperations.parse(url) else {
+            routeError = String(localized: "This destination is not available yet.")
+            return
         }
+        let matches = items.filter { $0.uuid == uuid }
+        guard matches.count == 1, let item = matches.first else {
+            routeError = String(localized: "The linked Item is missing or has a conflicting identity.")
+            return
+        }
+        path = [item]
     }
 }

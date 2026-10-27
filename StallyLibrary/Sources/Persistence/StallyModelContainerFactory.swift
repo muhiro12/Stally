@@ -1,60 +1,81 @@
-//
-//  StallyModelContainerFactory.swift
-//  StallyLibrary
-//
-//  Created by Hiromu Nakano on 2026/06/25.
-//
-
+import Foundation
 import SwiftData
 
-/// Factory helpers for Stally's SwiftData model container.
+/// One explicit shared store for app and future extension processes.
 public enum StallyModelContainerFactory {
-    /// CloudKit container identifier used by the app target entitlement.
+    /// Shared device-local container selected for the first-release app family.
+    public static let appGroupIdentifier = "group.com.muhiro12.Stally"
+    /// Existing iCloud identity; this declaration makes no production-schema assumption.
     public static let cloudKitContainerIdentifier = "iCloud.com.muhiro12.Stally"
 
-    /// SwiftData schema shared by persistent, preview, and test containers.
-    public static var schema: Schema {
-        StallyMigrationPlan.currentSchema
-    }
+    /// The complete five-model schema used by every new container.
+    public static var schema: Schema { .init(versionedSchema: StallySchemaV3.self) }
 
-    /// Creates the app's CloudKit-backed persistent model container.
+    /// Opens the shared store with native iCloud mirroring; errors never select another store.
     public static func persistent() throws -> ModelContainer {
-        try persistent(syncsWithCloudKit: true)
-    }
-
-    /// Creates a persistent model container for runtime use.
-    public static func persistent(syncsWithCloudKit: Bool) throws -> ModelContainer {
-        try make(
-            isStoredInMemoryOnly: false,
-            cloudKitDatabase: syncsWithCloudKit
-                ? .private(Self.cloudKitContainerIdentifier)
-                : .none
+        guard
+            let groupURL = FileManager.default.containerURL(
+                forSecurityApplicationGroupIdentifier: appGroupIdentifier
+            )
+        else {
+            throw StallyPersistenceError.appGroupUnavailable
+        }
+        let supportURL = URL.applicationSupportDirectory
+        let storeURL = groupURL.appending(path: "Library/Application Support/Stally.store")
+        try requireReviewedDevelopmentStores(at: [
+            supportURL.appending(path: "default.store"),
+            groupURL.appending(path: "Library/Application Support/default.store")
+        ])
+        try FileManager.default.createDirectory(
+            at: storeURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
         )
+        return try disk(at: storeURL, cloudKitDatabase: .private(cloudKitContainerIdentifier))
     }
 
-    /// Creates an in-memory model container for tests and previews.
-    public static func inMemory() throws -> ModelContainer {
-        try make(
-            isStoredInMemoryOnly: true,
-            cloudKitDatabase: .none
-        )
+    /// Rejects even sidecar-only remnants; source stores are never opened or altered here.
+    public static func requireReviewedDevelopmentStores(at urls: [URL]) throws {
+        for url in urls {
+            let paths = [
+                url.path, url.path + "-wal", url.path + "-shm",
+                url.deletingLastPathComponent().appending(path: ".default_SUPPORT").path
+            ]
+            if paths.contains(where: { path in
+                FileManager.default.fileExists(atPath: path)
+            }) {
+                throw StallyPersistenceError.developmentStoreRequiresReview(url)
+            }
+        }
     }
 
-    private static func make(
-        isStoredInMemoryOnly: Bool,
-        cloudKitDatabase: ModelConfiguration.CloudKitDatabase
+    /// Explicit disk entry point for isolated verification. CloudKit is off unless requested.
+    public static func disk(
+        at url: URL,
+        cloudKitDatabase: ModelConfiguration.CloudKitDatabase = .none
     ) throws -> ModelContainer {
-        let modelSchema = Self.schema
-        let configuration = ModelConfiguration(
-            schema: modelSchema,
-            isStoredInMemoryOnly: isStoredInMemoryOnly,
-            cloudKitDatabase: cloudKitDatabase
-        )
-
-        return try ModelContainer(
-            for: modelSchema,
+        try ModelContainer(
+            for: schema,
             migrationPlan: StallyMigrationPlan.self,
-            configurations: [configuration]
+            configurations: [
+                ModelConfiguration("Stally", schema: schema, url: url, cloudKitDatabase: cloudKitDatabase)
+            ]
+        )
+    }
+
+    /// Ephemeral storage is available only through an explicit test or preview call.
+    public static func inMemory() throws -> ModelContainer {
+        try ModelContainer(
+            for: schema,
+            migrationPlan: StallyMigrationPlan.self,
+            configurations: [
+                ModelConfiguration(
+                    "StallyPreview",
+                    schema: schema,
+                    isStoredInMemoryOnly: true,
+                    groupContainer: .none,
+                    cloudKitDatabase: .none
+                )
+            ]
         )
     }
 }

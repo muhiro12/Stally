@@ -1,24 +1,9 @@
-/// The explicit correspondence between persisted and portable durable data.
+/// Persisted domain and portable-envelope versions evolve independently.
 public enum StallyDataContract {
-    /// Exported document type for the complete portable collection.
-    public static let fileTypeIdentifier = "com.muhiro12.Stally.data"
-
-    private static let legacyInterchangeVersion = 2
-    private static let legacyPersistenceVersion = 1
-    /// Current SwiftData schema: Items with independent Mark policy and partial starts.
-    public static let persistenceVersion = 2
-    /// The equivalent portable representation, retaining the development file sequence.
-    public static let interchangeVersion = 3
-
-    /// Returns the persisted contract represented by a supported portable version.
-    public static func persistenceVersion(forInterchangeVersion version: Int) -> Int? {
-        switch version {
-        case legacyInterchangeVersion:
-            legacyPersistenceVersion
-        case interchangeVersion:
-            persistenceVersion
-        default:
-            nil
-        }
-    }
+    /// Matches StallySchemaV3, independently of the app release number.
+    public static let schemaVersion = "3.0.0"
+    /// Reserved version for the selected package envelope; the codec is not implemented yet.
+    public static let formatVersion = 1
+    /// Selected package identity, distinct from the old flat development file.
+    public static let fileTypeIdentifier = "com.muhiro12.stally.export"
 }

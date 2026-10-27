@@ -3,11 +3,13 @@
 
 import PackageDescription
 
-let package = Package( // swiftlint:disable:this prefixed_toplevel_constant
+let package = Package(  // swiftlint:disable:this prefixed_toplevel_constant
     name: "StallyLibrary",
     defaultLocalization: "en",
     platforms: [
-        .iOS("27.0")
+        .iOS("27.2"),
+        .macOS("27.2"),
+        .visionOS("27.2")
     ],
     products: [
         .library(

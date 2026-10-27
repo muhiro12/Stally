@@ -1,344 +1,126 @@
-//
-//  ItemDetailView.swift
-//  Stally
-//
-//  Created by Hiromu Nakano on 2026/06/25.
-//
-
-import AppIntents
-import MHUI
+import StallyLibrary
 import SwiftData
 import SwiftUI
 
 struct ItemDetailView: View {
-    private struct HistoryAdjustmentContext {
-        let timeZone: TimeZone
-        let today: LocalDay
-        let todayDate: Date
-    }
-
-    private enum PresentedSheet: Identifiable {
-        case adjustHistory(HistoryAdjustmentContext)
-        case editItem
-
-        var id: String {
-            switch self {
-            case .adjustHistory:
-                "adjust-history"
-            case .editItem:
-                "edit-item"
-            }
-        }
-    }
-
-    @Environment(RemoteUpdateOperations.self)
-    private var remoteUpdates
+    @Environment(\.modelContext)
+    private var context
     @Environment(\.dismiss)
     private var dismiss
-    @Environment(\.modelContext)
-    private var modelContext
-    @Environment(\.timeZone)
-    private var timeZone
-    @Environment(\.mhTheme)
-    private var theme
-    @Environment(\.locale)
-    private var locale
-    @Environment(\.stallyReadingDate)
-    private var readingDate
-
-    @Environment(Item.self)
-    private var item
-
-    @State private var presentedSheet: PresentedSheet?
-    @State private var isConfirmingDeleteItem = false
-    @State private var errorTitle = ""
-    @State private var errorMessage = ""
-    @State private var isPresentingError = false
-
-    var isCurrentDetail = true
+    @Environment(RemoteUpdateOperations.self)
+    private var updates
+    let item: Item
+    @State private var editingItem = false
+    @State private var editingRecord: RecordEditor.Selection?
+    @State private var confirmingDelete = false
+    @State private var errorMessage: String?
+    @State private var saving = false
 
     var body: some View {
-        let now = readingDate
-        let today = LocalDay(containing: now, in: timeZone)
-        let history = today.map { today in
-            ItemOperations.historySnapshot(for: item, today: today)
-        }
-        let isMarkedToday = today.map { today in
-            ItemOperations.isMarked(item, on: today)
-        } ?? false
-        let canChangeHistory = ItemOperations.historyChangeError(for: item) == nil
-
         List {
+            stateSection
+            markSection
+            periodSection
+            if let errorMessage {
+                Text(errorMessage).foregroundStyle(.red)
+            }
             Section {
-                ItemDetailSummary(
-                    isMarkedToday: isMarkedToday
-                )
-            }
-
-            if let photoData = item.photoData {
-                ItemDetailPhotoSection(photoData: photoData)
-            }
-
-            if let today {
-                timeSection(today: today)
-            }
-
-            if ItemOperations.hasNonMarkHistoryConflict(item) {
-                Section {
-                    Text("Keep Marks enabled to preserve this item's existing history.")
-                }
-            }
-
-            if let history, item.recordsMarks || ItemOperations.hasNonMarkHistoryConflict(item) {
-                historySections(
-                    history: history,
-                    canChangeHistory: canChangeHistory
-                )
-            }
-
-            ArchiveActionSection(
-                isArchived: item.isArchived,
-                archiveAction: archiveItem,
-                moveBackAction: moveBackToLibrary
-            )
-
-            ItemDeletionSection(deleteAction: confirmDeleteItem)
-        }
-        .appEntityIdentifier(EntityIdentifier(for: StallyItemEntity.self, identifier: item.uuid.uuidString))
-        .userActivity(
-            "com.muhiro12.Stally.viewItem",
-            isActive: isCurrentDetail && presentedSheet == nil
-                && !isConfirmingDeleteItem && !isPresentingError
-        ) { activity in
-            activity.title = item.name
-            activity.appEntityIdentifier = .init(
-                for: StallyItemEntity.self,
-                identifier: item.uuid.uuidString
-            )
-            activity.isEligibleForHandoff = false
-            activity.isEligibleForSearch = false
-            activity.isEligibleForPrediction = false
-        }
-        .modifier(ItemActionsModifier(presentation: .toolbarMenu))
-        .scrollEdgeEffectStyle(.soft, for: .bottom)
-        .safeAreaBar(edge: .bottom) {
-            if canChangeHistory {
-                TodayMarkSection(
-                    isMarkedToday: isMarkedToday,
-                    markAction: markToday,
-                    undoAction: undoToday
-                )
-                .frame(maxWidth: theme.layout.readableContentWidth)
-                .padding(.horizontal, theme.spacing.content)
-                .padding(.vertical, theme.spacing.inline)
+                Button("Delete Item", role: .destructive) { confirmingDelete = true }
             }
         }
-        .mhListChrome(.native)
+        .disabled(saving)
         .navigationTitle(item.name)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                Button(action: presentEditItem) {
-                    Label("Edit Item", systemImage: "pencil")
+        .toolbar { Button("Edit") { editingItem = true } }
+        .sheet(isPresented: $editingItem) { ItemEditor(item: item) }
+        .sheet(item: $editingRecord) { selection in RecordEditor(item: item, selection: selection) }
+        .confirmationDialog(
+            "Delete this Item and its Marks, periods, and photos?",
+            isPresented: $confirmingDelete,
+            titleVisibility: .visible
+        ) {
+            Button("Delete Item", role: .destructive) {
+                mutate {
+                    try ItemOperations.delete(item, context: context)
+                    dismiss()
                 }
-                .stallyToolbarActionStyle()
-
-                StallyLinkShareButton(
-                    link: .item(item.uuid),
-                    title: "Share Item Link"
-                )
             }
-        }
-        .sheet(item: $presentedSheet) { sheet in
-            switch sheet {
-            case .adjustHistory(let context):
-                AdjustHistoryView(
-                    timeZone: context.timeZone,
-                    today: context.today,
-                    todayDate: context.todayDate
-                )
-                .environment(item)
-            case .editItem:
-                EditItemView()
-                    .environment(item)
-            }
-        }
-        .alert("Delete Item?", isPresented: $isConfirmingDeleteItem) {
-            Button("Delete Item", role: .destructive, action: deleteItem)
-            Button("Cancel", role: .cancel, action: cancelDeleteItem)
-        } message: {
-            Text("This item and all of its marks will be permanently deleted. This cannot be undone.")
-        }
-        .alert(errorTitle, isPresented: $isPresentingError) {
-            Button("OK", role: .cancel, action: clearError)
-        } message: {
-            Text(errorMessage)
         }
     }
-}
 
-private extension ItemDetailView {
-    @ViewBuilder
-    private func historySections(
-        history: ItemHistorySnapshot,
-        canChangeHistory: Bool
-    ) -> some View {
-        HistoryOverviewSection(history: history)
+    private var stateSection: some View {
+        Section {
+            if !item.note.isEmpty { Text(item.note) }
+            Toggle("Favorite", isOn: favoriteBinding)
+            Toggle("Archived", isOn: archivedBinding)
+            Toggle("Mark Recording", isOn: recordingBinding)
+        }
+    }
 
-        QuietHistorySection(
-            history: history,
-            canChangeHistory: canChangeHistory,
-            adjustAction: presentHistoryAdjustment
+    private var markSection: some View {
+        Section("Marks") {
+            ForEach((item.marks ?? []).sorted { $0.localDateTime > $1.localDateTime }) { mark in
+                Button(mark.localDateTime) { editingRecord = .mark(mark) }
+            }
+            Button("Add Mark", systemImage: "plus") { editingRecord = .newMark }
+                .disabled(!item.isMarkRecordingEnabled)
+        }
+    }
+
+    private var periodSection: some View {
+        Section("Periods") {
+            ForEach((item.periods ?? []).sorted { $0.createdAt < $1.createdAt }) { period in
+                Button {
+                    editingRecord = .period(period)
+                } label: {
+                    VStack(alignment: .leading) {
+                        Text(period.startLocalDate ?? String(localized: "Unknown start"))
+                        Text(
+                            period.isOngoing
+                                ? String(localized: "Ongoing")
+                                : period.endLocalDate ?? String(localized: "Unknown end")
+                        )
+                        .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            Button("Add Period", systemImage: "plus") { editingRecord = .newPeriod }
+        }
+    }
+
+    private var favoriteBinding: Binding<Bool> {
+        .init(
+            get: { item.isFavorite },
+            set: { value in
+                mutate { try ItemOperations.setFavorite(item, to: value, context: context) }
+            }
         )
     }
 
-    private func timeSection(today: LocalDay) -> some View {
-        ItemTimeSection(
-            snapshot: ItemTimeOperations.snapshot(for: item, today: today),
-            milestone: ItemTimeOperations.milestone(for: item, today: today),
-            report: ItemTimeOperations.report(for: item, today: today, locale: locale)
+    private var archivedBinding: Binding<Bool> {
+        .init(
+            get: { item.isArchived },
+            set: { value in
+                mutate { try ItemOperations.setArchived(item, to: value, context: context) }
+            }
         )
     }
 
-    func markToday() {
-        guard let today = currentDay() else {
-            presentError(
-                title: String(localized: "Could Not Save"),
-                message: String(localized: "Could Not Save")
-            )
-            return
-        }
-
-        performSave {
-            try ItemOperations.mark(
-                item,
-                on: today,
-                today: today,
-                context: modelContext
-            )
-        }
+    private var recordingBinding: Binding<Bool> {
+        .init(
+            get: { item.isMarkRecordingEnabled },
+            set: { value in
+                mutate { try ItemOperations.setMarkRecordingEnabled(item, to: value, context: context) }
+            }
+        )
     }
 
-    private func undoToday() {
-        guard let today = currentDay() else {
-            presentError(
-                title: String(localized: "Could Not Save"),
-                message: String(localized: "Could Not Save")
-            )
-            return
-        }
-
-        performSave {
-            try ItemOperations.undoMark(
-                item,
-                on: today,
-                context: modelContext
-            )
-        }
-    }
-
-    private func currentDay() -> LocalDay? {
-        let now = StallyActionDate.current
-        return .init(containing: now, in: timeZone)
-    }
-
-    private func performSave(_ action: @escaping () throws -> Void) {
+    private func mutate(_ operation: @escaping () throws -> Void) {
+        saving = true
         Task {
-            do {
-                try await remoteUpdates.checkMutationAllowed()
-                try action()
-            } catch {
-                presentError(
-                    title: String(localized: "Could Not Save"),
-                    message: error.localizedDescription
-                )
+            defer { saving = false }
+            do { try await updates.performMutation(operation) } catch {
+                errorMessage = error.localizedDescription
             }
         }
-    }
-
-    private func archiveItem() {
-        let now = StallyActionDate.current
-
-        performSave {
-            try ItemOperations.archive(
-                item,
-                on: now,
-                context: modelContext
-            )
-        }
-    }
-
-    private func moveBackToLibrary() {
-        performSave {
-            try ItemOperations.moveBackToLibrary(
-                item,
-                context: modelContext
-            )
-        }
-    }
-
-    private func presentEditItem() {
-        presentedSheet = .editItem
-    }
-
-    private func presentHistoryAdjustment() {
-        if let error = ItemOperations.historyChangeError(for: item) {
-            presentError(title: String(localized: "Could Not Update History"), message: error.localizedDescription)
-            return
-        }
-        let capturedTimeZone = timeZone
-        let now = StallyActionDate.current
-
-        guard let today = LocalDay(containing: now, in: capturedTimeZone),
-              let todayDate = today.date(in: capturedTimeZone) else {
-            presentError(
-                title: String(localized: "Could Not Update History"),
-                message: String(localized: "Choose a valid day no later than today.")
-            )
-            return
-        }
-
-        presentedSheet = .adjustHistory(
-            .init(
-                timeZone: capturedTimeZone,
-                today: today,
-                todayDate: todayDate
-            )
-        )
-    }
-
-    private func confirmDeleteItem() {
-        isConfirmingDeleteItem = true
-    }
-
-    private func cancelDeleteItem() {
-        isConfirmingDeleteItem = false
-    }
-
-    private func deleteItem() {
-        Task {
-            do {
-                try await remoteUpdates.checkMutationAllowed()
-                try ItemOperations.delete(item, context: modelContext)
-                dismiss()
-            } catch {
-                presentError(
-                    title: String(localized: "Could Not Delete"),
-                    message: error.localizedDescription
-                )
-            }
-        }
-    }
-
-    private func presentError(title: String, message: String) {
-        errorTitle = title
-        errorMessage = message
-        isPresentingError = true
-    }
-
-    private func clearError() {
-        errorTitle = ""
-        errorMessage = ""
-        isPresentingError = false
     }
 }

@@ -1,225 +1,71 @@
-//
-//  StallyApp.swift
-//  Stally
-//
-//  Created by Hiromu Nakano on 2026/06/25.
-//
-
 import AppIntents
 import MHPlatform
 import MHUI
+import StallyLibrary
 import SwiftData
 import SwiftUI
-import TipKit
 
 @main
 struct StallyApp: App {
-    private struct ModelContainerResolution {
-        let modelContainer: ModelContainer
-        let persistenceStatus: StallyPlatformEnvironment.PersistenceStatus
-    }
-
-    #if DEBUG
-    private static let previewLaunchConfiguration = StallyPreviewLaunchConfiguration.current
-    #endif
-
-    private static var readingDateModifier: StallyReadingDateModifier {
-        #if DEBUG
-        .init(previewClock: previewLaunchConfiguration.clock)
-        #else
-        .init()
-        #endif
-    }
-
-    private let platformEnvironment: StallyPlatformEnvironment
+    private let container: ModelContainer?
+    private let startupError: String?
+    private let runtimeBootstrap: MHAppRuntimeBootstrap
+    private let updates: RemoteUpdateOperations
 
     var body: some Scene {
         WindowGroup {
-            rootContent
-                .modifier(Self.readingDateModifier)
-                .stallyPlatformEnvironment(platformEnvironment)
-                .mhTheme(.standard)
-                .mhGlassPolicy(.automatic)
-                #if DEBUG
-                .modifier(StallyPreviewTextSizeModifier(size: Self.previewLaunchConfiguration.textSize))
-                .modifier(StallyPreviewTimeZoneModifier(referenceDate: Self.previewLaunchConfiguration.referenceDate))
-                .modifier(StallyPreviewClockRefreshModifier(clock: Self.previewLaunchConfiguration.clock))
-            #endif
+            if let container {
+                LibraryView()
+                    .modelContainer(container)
+                    .environment(updates)
+                    .mhTheme(.standard)
+                    .mhAppRuntimeEnvironment(runtimeBootstrap)
+                    .mhAppRuntimeLifecycle(
+                        runtime: runtimeBootstrap.runtime,
+                        plan: runtimeBootstrap.lifecyclePlan
+                    )
+                    .task {
+                        _ = try? await updates.prepare()
+                    }
+            } else {
+                ContentUnavailableView {
+                    Label(
+                        "Stally could not open its records",
+                        systemImage: "externaldrive.badge.exclamationmark"
+                    )
+                } description: {
+                    Text(startupError ?? "")
+                        .textSelection(.enabled)
+                }
+            }
         }
     }
 
-    @ViewBuilder private var rootContent: some View {
-        #if DEBUG
-        if let screen = Self.previewLaunchConfiguration.trackingScreen {
-            StallyTrackingPreviewHost(
-                screen: screen,
-                items: StallyPreviewData.items(in: platformEnvironment.modelContainer)
-            )
-        } else if let route = Self.previewLaunchConfiguration.route {
-            ContentView(initialPreviewRoute: route)
-        } else {
-            ContentView()
-        }
-        #else
-        ContentView()
-        #endif
-    }
-
-    @MainActor
     init() {
         let logging = StallyLogging.makeBootstrap()
-        let startupLogger = StallyLogging.logger(
-            logging: logging,
-            category: StallyLogging.Category.appStartup,
-            source: #fileID
+        let logger = StallyLogging.logger(logging: logging, category: "Persistence", source: #fileID)
+        let updateOperations = StallyRemoteUpdateConfiguration.makeOperations()
+        updates = updateOperations
+        runtimeBootstrap = .init(
+            configuration: .init(
+                subscriptionProductIDs: [StallyMonetizationConfiguration.subscriptionProductID],
+                nativeAdUnitID: StallyMonetizationConfiguration.nativeAdUnitID(for: .production),
+                showsLicenses: true,
+                adsConsent: .init()
+            )
         )
-        startupLogger.notice("startup.begin")
-        MHTheme.standard.configureNativeAppearance()
-        Self.configureTips(startupLogger: startupLogger)
-
-        let preferenceStore = MHPreferenceStore()
-        let syncsWithCloudKit = preferenceStore.bool(for: \.isICloudOn)
-        let modelContainerResolution = Self.makeModelContainer(
-            syncsWithCloudKit: syncsWithCloudKit,
-            startupLogger: startupLogger
-        )
-        let resolvedPlatformEnvironment = StallyPlatformEnvironmentFactory.make(
-            modelContainer: modelContainerResolution.modelContainer,
-            platformMode: .production,
-            logging: logging,
-            persistenceStatus: modelContainerResolution.persistenceStatus
-        )
-        platformEnvironment = resolvedPlatformEnvironment
-        startupLogger.notice("startup.dependencies_ready")
-
-        Self.registerDependencies(
-            platformEnvironment,
-            startupLogger: startupLogger
-        )
-        StallyShortcuts.updateAppShortcutParameters()
-        startupLogger.notice("startup.ready")
-    }
-}
-
-private extension StallyApp {
-    static func configureTips(startupLogger: MHLogger) {
         do {
-            try Tips.configure([
-                .displayFrequency(.daily)
-            ])
-            startupLogger.notice("tipkit.configured")
+            let sharedContainer = try StallyModelContainerFactory.persistent()
+            sharedContainer.mainContext.autosaveEnabled = false
+            container = sharedContainer
+            startupError = nil
+            AppDependencyManager.shared.add { sharedContainer }
+            AppDependencyManager.shared.add { updateOperations }
+            logger.notice("model_container.shared_cloudkit_created")
         } catch {
-            startupLogger.error(
-                "tipkit.configuration_failed",
-                metadata: StallyLogging.errorMetadata(error)
-            )
+            container = nil
+            startupError = error.localizedDescription
+            logger.error("model_container.open_failed", metadata: StallyLogging.errorMetadata(error))
         }
-    }
-
-    private static func makeModelContainer(
-        syncsWithCloudKit: Bool,
-        startupLogger: MHLogger
-    ) -> ModelContainerResolution {
-        #if DEBUG
-        if let modelContainer = Self.previewLaunchConfiguration.modelContainer {
-            startupLogger.notice("model_container.preview_created")
-            return .init(
-                modelContainer: modelContainer,
-                persistenceStatus: .local
-            )
-        }
-        #endif
-
-        do {
-            let modelContainer = try StallyModelContainerFactory.persistent(
-                syncsWithCloudKit: syncsWithCloudKit
-            )
-            startupLogger.notice(
-                syncsWithCloudKit
-                    ? "model_container.cloudkit_created"
-                    : "model_container.local_created"
-            )
-            return .init(
-                modelContainer: modelContainer,
-                persistenceStatus: syncsWithCloudKit ? .cloudKit : .local
-            )
-        } catch {
-            guard syncsWithCloudKit else {
-                startupLogger.critical(
-                    "model_container.local_failed",
-                    metadata: StallyLogging.errorMetadata(error)
-                )
-                return Self.makeTemporaryModelContainer(
-                    startupLogger: startupLogger
-                )
-            }
-
-            startupLogger.notice(
-                "model_container.cloudkit_unavailable_falling_back_local",
-                metadata: StallyLogging.errorMetadata(error)
-            )
-            return Self.makeLocalModelContainerAfterCloudKitFailure(
-                startupLogger: startupLogger
-            )
-        }
-    }
-
-    private static func makeLocalModelContainerAfterCloudKitFailure(
-        startupLogger: MHLogger
-    ) -> ModelContainerResolution {
-        do {
-            let modelContainer = try StallyModelContainerFactory.persistent(
-                syncsWithCloudKit: false
-            )
-            startupLogger.notice("model_container.local_created")
-            return .init(
-                modelContainer: modelContainer,
-                persistenceStatus: .cloudKitUnavailable
-            )
-        } catch {
-            startupLogger.critical(
-                "model_container.local_failed",
-                metadata: StallyLogging.errorMetadata(error)
-            )
-            return Self.makeTemporaryModelContainer(
-                startupLogger: startupLogger
-            )
-        }
-    }
-
-    private static func makeTemporaryModelContainer(
-        startupLogger: MHLogger
-    ) -> ModelContainerResolution {
-        do {
-            let modelContainer = try StallyModelContainerFactory.inMemory()
-            startupLogger.critical("model_container.temporary_created")
-            return .init(
-                modelContainer: modelContainer,
-                persistenceStatus: .temporaryLocal
-            )
-        } catch {
-            startupLogger.critical(
-                "model_container.temporary_failed",
-                metadata: StallyLogging.errorMetadata(error)
-            )
-            fatalError("Could not create temporary ModelContainer: \(error)")
-        }
-    }
-
-    @MainActor
-    static func registerDependencies(
-        _ platformEnvironment: StallyPlatformEnvironment,
-        startupLogger: MHLogger
-    ) {
-        AppDependencyManager.shared.add {
-            platformEnvironment.logging
-        }
-        AppDependencyManager.shared.add {
-            platformEnvironment.modelContainer
-        }
-        AppDependencyManager.shared.add {
-            platformEnvironment.remoteUpdates
-        }
-        startupLogger.notice("startup.dependencies_registered")
     }
 }

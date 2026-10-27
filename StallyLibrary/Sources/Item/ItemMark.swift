@@ -1,46 +1,27 @@
-//
-//  ItemMark.swift
-//  Stally
-//
-//  Created by Hiromu Nakano on 2026/06/25.
-//
-
 import Foundation
 import SwiftData
 
-/// A single calendar-day record that an item was chosen.
-@Model
-public final class ItemMark {
-    private static let defaultDayKey = 19_700_101
+/// One occurrence, retaining civil-day or minute precision without a time zone.
+public typealias ItemMark = StallySchemaV3.ItemMark
 
-    /// Stable mark identifier for backups and cross-surface references.
-    public internal(set) var uuid = UUID()
-    /// Compact proleptic Gregorian day representation used by SwiftData.
-    var dayKey = defaultDayKey
-    /// Date when this mark record was created.
-    public internal(set) var createdAt = Date()
-    /// The item this mark belongs to.
-    public internal(set) var item: Item?
+// The Model macro needs explicit class visibility for its generated protocol witnesses.
+// swiftlint:disable:next extension_access_modifier
+extension StallySchemaV3 {
+    /// One occurrence, retaining civil-day or minute precision without a time zone.
+    @Model
+    public final class ItemMark {
+        /// Application-owned identity, retained across corrections and identity-preserving imports.
+        public internal(set) var uuid = UUID()
+        /// Canonical Gregorian day or minute knowledge without a time zone.
+        public internal(set) var localDateTime: String = ""
+        /// Registration time, never an occurrence date or conflict ordering signal.
+        public internal(set) var createdAt = Date()
+        /// Owning Item, temporarily absent when a synchronized graph is incomplete.
+        public internal(set) var item: Item?
 
-    /// Timezone-independent calendar day when the item was chosen.
-    public var day: LocalDay {
-        guard let localDay = LocalDay(dayKey: dayKey) else {
-            preconditionFailure("ItemMark contains an invalid day key: \(dayKey)")
+        init(item: Item, localDateTime: String) {
+            self.item = item
+            self.localDateTime = localDateTime
         }
-
-        return localDay
-    }
-
-    /// Creates a mark for a calendar day.
-    init(
-        day: LocalDay,
-        createdAt: Date,
-        item: Item?,
-        uuid: UUID
-    ) {
-        self.uuid = uuid
-        dayKey = day.dayKey
-        self.createdAt = createdAt
-        self.item = item
     }
 }

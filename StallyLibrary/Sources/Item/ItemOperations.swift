@@ -1,314 +1,74 @@
-//
-//  ItemOperations.swift
-//  StallyLibrary
-//
-//  Created by Hiromu Nakano on 2026/06/26.
-//
-
 import Foundation
 import SwiftData
 
-/// Cross-surface item use cases for Library, item detail, and future system surfaces.
+/// Item identity, metadata, and independent user-selected state.
 public enum ItemOperations {
-    /// Creates and saves a validated Library item.
-    @discardableResult
-    public static func create(
-        context: ModelContext,
-        input: ItemFormInput,
-        createdAt: Date = .now
-    ) throws -> Item {
-        let item = try makeItem(
-            input: input,
-            createdAt: createdAt,
-            uuid: .init()
-        )
-        context.insert(item)
-        try saveOrRollback(context)
+    private static let ambiguousIdentityLimit = 2
 
+    /// Creates an Item without implicitly recording a Mark or period.
+    @discardableResult
+    public static func create(context: ModelContext, name: String, note: String = "") throws -> Item {
+        try RecordMutation.validate(context, models: [])
+        try RecordMutation.validateName(name)
+        let item = Item(name: name, note: note)
+        context.insert(item)
+        try RecordMutation.save(context)
         return item
     }
 
-    /// Returns active Library items in newest-created order.
-    public static func activeItems(from items: [Item]) -> [Item] {
-        items
-            .filter { item in
-                !item.isArchived
-            }
-            .sorted { lhsItem, rhsItem in
-                lhsItem.createdAt > rhsItem.createdAt
-            }
+    /// Corrects metadata without changing identity, history, or state.
+    public static func update(_ item: Item, name: String, note: String, context: ModelContext) throws {
+        try RecordMutation.validate(context, models: [item])
+        try RecordMutation.validateName(name)
+        item.name = name
+        item.note = note
+        try RecordMutation.save(context)
     }
 
-    /// Fetches Library items in newest-created order for app and system surfaces.
-    public static func items(context: ModelContext) throws -> [Item] {
-        var descriptor = FetchDescriptor<Item>(
-            sortBy: [
-                .init(\.createdAt, order: .reverse)
-            ]
-        )
-        descriptor.includePendingChanges = true
-        return try context.fetch(descriptor)
+    /// Changes Library placement without ending periods or altering history.
+    public static func setArchived(_ item: Item, to value: Bool, context: ModelContext) throws {
+        try RecordMutation.validate(context, models: [item])
+        item.isArchived = value
+        try RecordMutation.save(context)
     }
 
-    /// Fetches the item with a stable cross-surface identifier.
-    public static func item(
-        context: ModelContext,
-        uuid: UUID
-    ) throws -> Item? {
-        var descriptor = FetchDescriptor<Item>(
-            predicate: #Predicate { item in
-                item.uuid == uuid
-            },
-            sortBy: [.init(\.createdAt, order: .reverse)]
-        )
-        descriptor.fetchLimit = 1
-        descriptor.includePendingChanges = true
-        return try context.fetch(descriptor).first
+    /// Changes only the favorite preference.
+    public static func setFavorite(_ item: Item, to value: Bool, context: ModelContext) throws {
+        try RecordMutation.validate(context, models: [item])
+        item.isFavorite = value
+        try RecordMutation.save(context)
     }
 
-    /// Resolves a batch of stable identities without loading unrelated items.
-    public static func items(context: ModelContext, uuids: [UUID]) throws -> [Item] {
-        guard !uuids.isEmpty else {
-            return []
-        }
-        var descriptor = FetchDescriptor<Item>(
-            predicate: #Predicate { item in
-                uuids.contains(item.uuid)
-            },
-            sortBy: [.init(\.createdAt, order: .reverse)]
-        )
-        descriptor.includePendingChanges = true
-        return try context.fetch(descriptor)
+    /// Pausing preserves history and permits correction of existing occurrences.
+    public static func setMarkRecordingEnabled(_ item: Item, to value: Bool, context: ModelContext) throws {
+        try RecordMutation.validate(context, models: [item])
+        item.isMarkRecordingEnabled = value
+        try RecordMutation.save(context)
     }
 
-    /// A bounded recent active collection for system parameter suggestions.
-    public static func suggestedItems(context: ModelContext, limit: Int) throws -> [Item] {
-        guard limit > 0 else {
-            return []
-        }
-        var descriptor = FetchDescriptor<Item>(
-            predicate: #Predicate { item in
-                item.archivedAt == nil
-            },
-            sortBy: [.init(\.createdAt, order: .reverse)]
-        )
-        descriptor.fetchLimit = limit
-        descriptor.includePendingChanges = true
-        return try context.fetch(descriptor)
-    }
-
-    /// Fetches items whose user-facing name matches the query.
-    public static func items(
-        context: ModelContext,
-        matchingName query: String
-    ) throws -> [Item] {
-        let normalizedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !normalizedQuery.isEmpty else {
-            return try items(context: context)
-        }
-
-        return try items(context: context).filter { item in
-            item.name.localizedCaseInsensitiveContains(normalizedQuery)
-        }
-    }
-
-    /// Updates editable item context while preserving identity and history.
-    public static func update(
-        _ item: Item,
-        input: ItemFormInput,
-        context: ModelContext
-    ) throws {
-        let tracking = try trackingInput(for: item)
-        try validateMarkPolicy(tracking.recordsMarks, for: item)
-        try applyFormInput(input, to: item)
-        try saveOrRollback(context)
-    }
-
-    static func applyFormInput(_ input: ItemFormInput, to item: Item) throws {
-        let normalizedName = input.normalizedName
-
-        guard !normalizedName.isEmpty else {
-            throw ItemValidationError.nameRequired
-        }
-
-        let photoData = input.photoData == item.photoData
-            ? item.photoData
-            : try input.photoData.map { data in
-                try ItemPhotoOperations.prepare(data)
-            }
-
-        item.name = normalizedName
-        item.category = input.category
-        item.note = input.normalizedNote
-        item.photoData = photoData
-    }
-
-    /// Deletes an item and every mark attached to it.
-    public static func delete(
-        _ item: Item,
-        context: ModelContext
-    ) throws {
-        for mark in item.marks {
-            context.delete(mark)
-        }
-
+    /// Deletes this Item and its owned children; shared Tags and unrelated records survive.
+    public static func delete(_ item: Item, context: ModelContext) throws {
+        try RecordMutation.validate(context, models: [item])
         context.delete(item)
-        try saveOrRollback(context)
+        try RecordMutation.save(context)
     }
 
-    /// Returns archived items in newest-archived order.
-    public static func archivedItems(from items: [Item]) -> [Item] {
-        items
-            .filter(\.isArchived)
-            .sorted { lhsItem, rhsItem in
-                let lhsArchivedAt = lhsItem.archivedAt ?? lhsItem.createdAt
-                let rhsArchivedAt = rhsItem.archivedAt ?? rhsItem.createdAt
-                return lhsArchivedAt > rhsArchivedAt
-            }
+    /// Reads Items in registration order, without grouping equal names.
+    public static func items(context: ModelContext) throws -> [Item] {
+        try context.fetch(FetchDescriptor<Item>(sortBy: [.init(\.createdAt, order: .reverse)]))
     }
 
-    /// Returns whether an item is marked for a calendar day.
-    public static func isMarked(
-        _ item: Item,
-        on day: LocalDay
-    ) -> Bool {
-        item.isMarked(on: day)
-    }
-
-    /// Adds one mark for a calendar day and saves the context.
-    @discardableResult
-    public static func mark(
-        _ item: Item,
-        on day: LocalDay,
-        today: LocalDay,
-        context: ModelContext
-    ) throws -> Bool {
-        if let error = historyChangeError(for: item) {
-            throw error
+    /// Duplicate UUIDs are a conflict, never an instruction to choose or merge a record.
+    public static func item(context: ModelContext, uuid: UUID) throws -> Item {
+        var descriptor = FetchDescriptor<Item>(predicate: #Predicate { $0.uuid == uuid })
+        descriptor.fetchLimit = ambiguousIdentityLimit
+        let items = try context.fetch(descriptor)
+        guard items.count < ambiguousIdentityLimit else {
+            throw RecordError.ambiguousIdentity
         }
-
-        guard day <= today else {
-            throw ItemValidationError.futureMarksNotAllowed
+        guard let item = items.first else {
+            throw RecordError.missingRecord
         }
-
-        guard let mark = item.addMark(on: day) else {
-            return false
-        }
-
-        context.insert(mark)
-        try saveOrRollback(context)
-
-        return true
-    }
-
-    /// Removes the mark for a calendar day and saves the context.
-    @discardableResult
-    public static func undoMark(
-        _ item: Item,
-        on day: LocalDay,
-        context: ModelContext
-    ) throws -> Bool {
-        if let error = historyChangeError(for: item) {
-            throw error
-        }
-
-        let marks = item.removeMarks(on: day)
-
-        guard !marks.isEmpty else {
-            return false
-        }
-
-        for mark in marks {
-            context.delete(mark)
-        }
-        try saveOrRollback(context)
-
-        return true
-    }
-
-    /// Moves an active item into Archive while preserving its context and marks.
-    @discardableResult
-    public static func archive(
-        _ item: Item,
-        on date: Date,
-        context: ModelContext
-    ) throws -> Bool {
-        guard !item.isArchived else {
-            return false
-        }
-
-        item.archivedAt = date
-        try saveOrRollback(context)
-
-        return true
-    }
-
-    /// Moves an archived item back to the active Library.
-    @discardableResult
-    public static func moveBackToLibrary(
-        _ item: Item,
-        context: ModelContext
-    ) throws -> Bool {
-        guard item.isArchived else {
-            return false
-        }
-
-        item.archivedAt = nil
-        try saveOrRollback(context)
-
-        return true
-    }
-
-    /// Builds the current item-level history reading.
-    public static func historySnapshot(
-        for item: Item,
-        today: LocalDay
-    ) -> ItemHistorySnapshot {
-        .init(item: item, today: today)
-    }
-
-    static func saveOrRollback(_ context: ModelContext) throws {
-        try saveOrRollback(context) { context in
-            try context.save()
-        }
-    }
-
-    static func saveOrRollback(
-        _ context: ModelContext,
-        saving save: (ModelContext) throws -> Void
-    ) throws {
-        do {
-            try save(context)
-        } catch {
-            context.rollback()
-            throw error
-        }
-    }
-
-    static func makeItem(
-        input: ItemFormInput,
-        createdAt: Date,
-        uuid: UUID
-    ) throws -> Item {
-        let normalizedName = input.normalizedName
-
-        guard !normalizedName.isEmpty else {
-            throw ItemValidationError.nameRequired
-        }
-
-        let photoData = try input.photoData.map { photoData in
-            try ItemPhotoOperations.prepare(photoData)
-        }
-
-        return .init(
-            name: normalizedName,
-            category: input.category,
-            note: input.normalizedNote,
-            createdAt: createdAt,
-            uuid: uuid,
-            photoData: photoData,
-            archivedAt: nil
-        )
+        return item
     }
 }

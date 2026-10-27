@@ -19,6 +19,7 @@
       }
     },
     "Stally Data" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
