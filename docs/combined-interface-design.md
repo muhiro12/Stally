@@ -1,5 +1,10 @@
 # Combined Interface Design
 
+The October 27 five-model implementation supersedes the older implementation
+and evidence described here. See [foundation implementation](first-release-foundation-implementation.md)
+for current Operations, storage, UI, verification, and unfinished capabilities.
+Retain the details below as historical evidence, not as the new schema contract.
+
 ## Product Tasks Before Screens
 
 An Item owns identity, optional start knowledge, independent Mark policy, and

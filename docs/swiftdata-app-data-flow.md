@@ -1,5 +1,10 @@
 # SwiftData App Data Flow
 
+The October 27 five-model implementation supersedes the older implementation
+and evidence described here. See [foundation implementation](first-release-foundation-implementation.md)
+for current Operations, storage, UI, verification, and unfinished capabilities.
+Retain the details below as historical evidence, not as the new schema contract.
+
 ## Live Model Rule
 
 The main app uses the selected `Item` / `ItemMark` SwiftData graph as its live

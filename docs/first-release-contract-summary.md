@@ -1,5 +1,10 @@
 # First-Release Contract Summary
 
+For the integrated October 27 implementation, current evidence, and remaining
+work, see [foundation implementation](first-release-foundation-implementation.md).
+The design-session and standalone-probe statements below retain their original
+scope; they are not claims about the later application state.
+
 ## Status and Scope
 
 Consolidated on October 27, 2026 at the owner's request. This is the entry point

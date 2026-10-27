@@ -1,5 +1,10 @@
 # Consolidated Model Schema
 
+For the integrated October 27 implementation, current evidence, and remaining
+work, see [foundation implementation](first-release-foundation-implementation.md).
+The design-session and standalone-probe statements below retain their original
+scope; they are not claims about the later application state.
+
 ## Status
 
 On October 24, 2026, the owner accepted the ItemPeriod proposal after its

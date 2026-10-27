@@ -1,5 +1,10 @@
 # First Release Data Model
 
+The October 27 five-model implementation supersedes the older implementation
+and evidence described here. See [foundation implementation](first-release-foundation-implementation.md)
+for current Operations, storage, UI, verification, and unfinished capabilities.
+Retain the details below as historical evidence, not as the new schema contract.
+
 ## October 22 Design Review
 
 This document describes the implemented V2 baseline. The newer

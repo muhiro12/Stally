@@ -1,5 +1,10 @@
 # Portable Data Contract
 
+The October 27 five-model implementation supersedes the older implementation
+and evidence described here. See [foundation implementation](first-release-foundation-implementation.md)
+for current Operations, storage, UI, verification, and unfinished capabilities.
+Retain the details below as historical evidence, not as the new schema contract.
+
 The new [identity and conflict proposal](import-identity-design.md) describes
 the revised models. Its conservative omission handling and minimal
 1.0 scope are accepted, as are aligned data-schema numbering, a separate

@@ -9,18 +9,13 @@ removed after product intent was preserved under `docs/`, and the current tree
 now contains a fresh Apple-platform app project plus a local library package:
 
 - `Stally.xcodeproj`, with the `Stally` app target and `Stally` scheme.
-- `Stally/`, a SwiftUI app source tree for the rebuilt Library, Archive,
-  Review, Insights, Import & Export, Settings, shareable-link surfaces,
-  App Intents adapters, app-side MHUI presentation chrome, English and
-  Japanese string catalogs, and DEBUG-only preview support.
-- `StallyLibrary/`, a local Swift package for the durable item domain,
-  SwiftData models, CloudKit-aware persistence setup, localized library
-  resources, and product operations.
-- `StallyLibrary/Tests/`, Swift Testing coverage for the current domain
-  operations.
+- `Stally/`, a SwiftUI consumer for Library, Archive filtering, Item state,
+  Mark and Period editing, startup failure handling, and shared runtime wiring.
+- `StallyLibrary/`, a local Swift package for the five-model SwiftData schema,
+  App Group/CloudKit configuration, domain Operations, and localized errors.
+- `StallyLibrary/Tests/`, Swift Testing coverage for the integrated foundation,
+  plus preserved historical fixture resources.
 - `ci_scripts/`, repository-managed lint, rule, and library-test entrypoints.
-- `docs/ui-preview-report.md` and `docs/ui-preview-screenshots/`, a
-  current-state UI preview and screenshot audit for MHUI/MHDesign adoption.
 - `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
   manifest.
 
@@ -55,7 +50,7 @@ The October 27 [contract summary](docs/first-release-contract-summary.md) is the
 entry point for accepted redesign decisions, deferred feature choices, and
 required implementation evidence. The [core record design](docs/core-record-design.md)
 preserves their history. These decisions supersede earlier constraints where
-stated, but have not changed the implemented model or formats.
+stated, and now guide the integrated foundation described below.
 `docs/rebuild-implementation-direction.md` separately records explicit rebuild
 direction that did not come from the removed legacy source.
 
@@ -70,64 +65,44 @@ owner-directed decisions.
 
 ## Current Repository State
 
-This repository currently contains rebuilt core Stally surfaces for Library,
-Archive, Review, Insights, Import & Export, Settings, shareable links, CloudKit
-persistence baseline, App Intents, monetization, and English/Japanese
-localization. The app target owns SwiftUI presentation, app lifecycle wiring,
-navigation, MHUI visual chrome, file import/export presentation, route handling,
-App Intents adapters, and app string catalogs. The local `StallyLibrary` package owns SwiftData
-models, timezone-independent mark days, the versioned model-container factory,
-localized library resources, and durable operations for items, review lanes,
-insights, backups, and links.
+The first-release foundation now implements the five-model schema, shared
+App Group persistence, Item/Mark/Period/Tag Operations, and Library/detail
+adapters. Read [foundation implementation](docs/first-release-foundation-implementation.md)
+for schema 3.0.0, the explicit development-store guard, current test evidence,
+and the remaining first-release work. Historical documentation and old fixtures
+are retained as evidence, not as constraints overriding the accepted redesign.
 
-Further implementation decisions should continue to use the preserved product
-intent and owner-directed rebuild direction in `docs/`, without inferring
-requirements from the removed legacy implementation.
+The app and library require OS 27.2 or later. Development uses Xcode 27.2;
+match distribution verification to the candidate's actual Xcode Cloud build.
+MHPlatform owns shared runtime and remote-update infrastructure; MHUI owns
+presentation theming. Product Operations and tests remain in StallyLibrary.
 
-The project currently targets the iOS 27 family. Use the matching Xcode/SDK
-family and record the exact toolchain used. Match distribution verification to
-the candidate's actual Xcode Cloud build.
+The old category/single-start/day-toggle adapters, flat backup codec, Review,
+Insights, search projections, sample profiles, and old Intent adapters have been
+retired. Their redesigned features remain first-release work as applicable.
+The new package import/export, full Intent coverage, and Universal Links are
+not implemented by this foundation step. Photo storage is implemented;
+photo ingestion and presentation are not. No period readings have been accepted
+or implemented by implication.
 
-The app owns MHPlatform umbrella runtime, logging, routing, StoreKit, AdMob,
-license integration, and MHUI presentation. `StallyLibrary` stays on
-`MHPlatformCore` for library-safe route and preference primitives. MHUI
-re-exports MHDesign. Product linking is distinct from package declaration;
-recheck manifests and the owner-directed package baseline when changing it.
-The implemented subscription removes ads; it does not gate iCloud sync. See the
-[monetization direction](docs/rebuild-implementation-direction.md#monetization-direction)
-for the newer paid-cloud intent and unresolved paid-feature boundary,
-and keep production native ads disabled until a Stally-owned production native
-ad unit exists. Do not borrow another app's identifiers.
+Startup never automatically deletes a development store or substitutes an empty
+library on error. The old development locations cause an explanatory stop until
+reviewed recovery is implemented. No shipped-user compatibility is claimed for
+unreleased V1/V2 stores or flat files. Never open the checked-in V1 fixtures for
+writing or regenerate them; any future recovery test must use disposable copies
+including external photo storage and disable CloudKit.
 
-Widget, Watch, external AI integrations, and wider product expansion remain
-outside the current implementation. Use the selected contracts above before
-extending scope. Preserve the current V2 schema, tested V1 migration, v3/v2
-interchange mapping, UUID identities, and source-preserving import/export
-boundaries. The model and portable contract documents govern future evolution.
-Never regenerate or open checked-in original V1 stores for writing; tests use
-disposable copies, retain external photo storage, and disable CloudKit. Current
-golden interchange files remain independent of these original fixtures.
-
-Automated verification centers on the `StallyLibrary` unit tests and the
-`Stally` consumer build. Do not add, run, or maintain automated UI test suites
-or make them a publication requirement. App Intents use the same tested library
-operations; the app build verifies adapter compilation and metadata extraction.
-Synthetic launch profiles support previews and focused manual review. Their
-argument vocabulary is documented in the fixture architecture and is absent
-from Release builds. Ordinary launch retains real clock and storage.
-Keep this current-state map and the verification entry points aligned when
-adding targets, schemes, scripts, or app surfaces.
-
-Support/privacy sources live under `.github/pages/`; the Pages workflow is
-manually dispatched. Source pushes do not deploy the site, and a local edit
-does not establish that a public destination is live. Local Simulator evidence
-does not prove real-device iCloud convergence, production CloudKit, resolved
-purchases, production ad serving, or authorization for real-data/release actions.
+Verification centers on library unit tests and the app consumer build. Do not
+add or run automated UI test suites. Use targeted native manual interaction for
+runtime evidence. Simulator App Group access and local disk persistence do not
+prove signed-device provisioning, real-device CloudKit convergence, or deployed
+production-schema compatibility. Support/privacy sources remain under
+`.github/pages/`; their manually dispatched deployment is separate from commits.
 
 ## Build and Test
 
-The project uses the JSON `project.xcproj` configuration. Xcode 27 or later
-can read it; conversion requires Xcode 27.2 or later. See the
+Development uses Xcode 27.2. The project uses the JSON `project.xcproj`
+configuration, and all declared app/library deployment targets are 27.2. See the
 [conversion and qualification record](docs/project-format-qualification.md)
 for the original comparison, shared-verifier compatibility, and exact rollback.
 Historical trial results do not replace current-source verification below or
@@ -147,10 +122,10 @@ Choose the smallest evidence set proving the changed boundary:
 
 - Shared-library logic, models, resources, or tests: run
   `bash ci_scripts/tasks/test_stally_library.sh`. Set
-  `CI_IOS_SIMULATOR_DESTINATION` to a discovered iOS 27 Simulator rather than
+  `CI_IOS_SIMULATOR_DESTINATION` to a discovered iOS 27.2 Simulator rather than
   relying on the script's default device name.
 - Public APIs, `*Operations`, persistence, wire, or adapter contracts: also
-  build `Stally.xcodeproj`, scheme `Stally`, on a discovered iOS 27 Simulator.
+  build `Stally.xcodeproj`, scheme `Stally`, on a discovered iOS 27.2 Simulator.
 - Swift or Xcode project changes: build the `Stally` app scheme.
 - App Intents: confirm app-build metadata extraction and catalog-backed intent
   strings, and test the underlying library behavior with unit tests. These
