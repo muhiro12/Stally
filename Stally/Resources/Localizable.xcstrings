@@ -293,6 +293,23 @@
         }
       }
     },
+    "Add Development Samples": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Development Samples"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開発用サンプルを追加"
+          }
+        }
+      }
+    },
     "Add Item": {
       "localizations": {
         "en": {
@@ -403,6 +420,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "最初のアイテムを追加"
+          }
+        }
+      }
+    },
+    "Add samples now, even when automatic seeding is off. Existing records are never replaced.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add samples now, even when automatic seeding is off. Existing records are never replaced."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動追加がオフでも、今すぐサンプルを追加できます。既存の記録は置き換えません。"
           }
         }
       }
@@ -602,6 +636,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "アーカイブ済み"
+          }
+        }
+      }
+    },
+    "Automatic samples are added only when the local development store is first created.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic samples are added only when the local development store is first created."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動追加はローカルの開発用保存先を初めて作成するときだけ行われます。"
           }
         }
       }
@@ -1678,6 +1729,23 @@
         }
       }
     },
+    "Development Samples": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Development Samples"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開発用サンプル"
+          }
+        }
+      }
+    },
     "Diagnostics": {
       "localizations": {
         "en": {
@@ -1690,22 +1758,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "診断"
-          }
-        }
-      }
-    },
-    "Diagnostics do not change your saved records.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diagnostics do not change your saved records."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "診断によって保存済みの記録が変更されることはありません。"
           }
         }
       }
@@ -3228,6 +3280,23 @@
         }
       }
     },
+    "No store is open.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No store is open."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存先が開かれていません。"
+          }
+        }
+      }
+    },
     "No validation issues were found in this data.": {
       "extractionState": "stale",
       "localizations": {
@@ -3885,6 +3954,23 @@
         }
       }
     },
+    "Refreshing diagnostics does not change your saved records.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refreshing diagnostics does not change your saved records."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "診断情報の更新によって保存済みの記録が変更されることはありません。"
+          }
+        }
+      }
+    },
     "Remove Favorite": {
       "localizations": {
         "en": {
@@ -4234,23 +4320,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "サンプルアイテムは、自分で追加したアイテムと同じコレクション、履歴、時間、読み書き、同期機能を使用します。"
-          }
-        }
-      }
-    },
-    "Samples are added only when the local development store is first created.": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Samples are added only when the local development store is first created."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "サンプルはローカルの開発用保存先を初めて作成するときだけ追加されます。"
           }
         }
       }

@@ -8,7 +8,7 @@ in the app sandbox at `Application Support/StallyDevelopment/Development.store`.
 CloudKit is disabled for this store. Release continues to open the App Group
 store with its existing CloudKit configuration and legacy-store guard.
 
-Only initial creation of the development directory seeds records. Reopening an
+Only initial creation of the development directory automatically seeds records. Reopening an
 empty store, deleting all records, changing a preference, or updating the seed
 definition does not seed it again. An existing directory is conservatively
 considered already initialized, even if empty or left by a failed setup. A
@@ -36,6 +36,9 @@ The screen separates the actual open container from next-launch preferences:
 - Record counts: read-only Item, Mark, Period, Photo, and Tag counts, with an
   explicit refresh action. Fetching diagnostics never saves pending edits and
   does not load image payloads.
+- Development samples: explicitly add the representative graph now, only when
+  every record type in the isolated local store is empty. Automatic-seeding
+  preferences do not affect this action; restarting is unnecessary.
 - Next launch: select the shared store or initial-only sample creation. Selecting
   the shared store requires confirmation explaining that writes may sync with
   iCloud. Changing the choice does not replace the currently open container.
@@ -58,6 +61,32 @@ an individual run; overridden controls are disabled with an explanation:
 Use a fresh, dedicated Simulator for initial-empty launch checks, or a temporary
 URL through the library test API. Do not erase existing Simulator or device data
 to repeat initial setup. There is no automatic reset or reseed control.
+
+### Manual Sample Insertion
+
+The [owner clarification on Issue #34](https://github.com/muhiro12/Stally/issues/34#issuecomment-6465665557)
+adds a manual DEBUG action after initial opt-out or deliberate deletion. It does
+not change the initial-only automatic policy. Existing next-launch preferences
+remain useful and need no replacement with a new configuration system.
+
+`DevelopmentSampleOperations` validates the actual open container before
+inserting anything: exactly one writable on-disk configuration, the app-local
+development URL without directory/file redirection, no App Group or CloudKit
+container, the main context with no pending changes, and zero Items, Marks,
+Periods, Photos, and Tags. An orphan or remaining Tag therefore prevents a
+second graph from being inserted. Validation and insertion run synchronously
+on the main actor and save through the existing rollback-on-failure boundary.
+Neither an empty shared store nor a Preview container is a manual insertion
+target. Unit tests substitute a disposable directory through internal helpers;
+the public app entry cannot supply another target directory.
+
+The existing seed definition still serves initial setup and Previews. The
+manual action adds no persisted flag, schema change, reset, replacement, or
+developer mode. The DEBUG shared-store option remains a specialized inspection
+tool, not the ordinary development default. Deliberately prepared Release runs
+remain suitable for normal-store verification; neither route allows manual
+developer samples in a shared store. Release/TestFlight never include the manual
+insertion Operations or button.
 
 ### Representative Data and Reuse
 
@@ -85,11 +114,13 @@ type/domain/code rather than record contents in diagnostic metadata. Developer
 storage, seed construction, Preview wiring, and preference routing remain
 compiled only for DEBUG. The current all-build boundary is documented in
 [diagnostics access](diagnostics-access.md). Neither the development route nor the Preview adds
-entitlement bypasses, product sample controls, export, or database reset actions.
+entitlement bypasses, user-facing example-content controls, export, or database
+reset actions. DEBUG manual insertion is restricted as described above.
 
 ### Current Verification
 
-On Xcode 27.2 / iOS 27.2, all 35 library tests in nine suites pass, including
+Before the manual-action follow-up, all 35 library tests in nine suites passed
+on Xcode 27.2 / iOS 27.2, including
 six development-store tests and three diagnostic/preference tests. Disposable disk stores verify graph reload,
 identity/precision retention, preserving edits while seeding is disabled,
 no reseeding after deliberate deletion, permanent initial opt-out, conservative
@@ -147,6 +178,43 @@ are not a runtime entry point and may remain in the shared string catalog.
 Startup-error entry, dark appearance, Dynamic Type, and VoiceOver interaction
 remain unverified by this UI pass. Verification runs and sessions were stopped
 and the original Xcode selection restored.
+
+### Manual Insertion Follow-up
+
+All 42 Library tests in ten suites pass, including seven new manual-insertion
+tests. They cover initial automatic opt-out, disk reload, duplicate rejection,
+manual reinsertion after deliberate deletion without reopening the container,
+pending edits and other contexts, unrelated local stores and Previews, cloud/
+shared/read-only/multiple configurations, each of the five existing record
+types independently, and a redirected development directory. Cloud configuration
+refusal is tested before opening a container; no cloud account or schema is
+modified. The first redirection test exposed an incomplete path check; the
+corrected check passes the full suite. Existing negative-test diagnostics remain
+expected, and the package runner reports its unrelated App Intents metadata
+extraction warning. Strict repository rules and English/Japanese catalog checks
+also pass.
+
+On a dedicated initially empty iPhone Simulator, a per-run automatic-seeding
+opt-out produces an empty Library and an enabled manual button. One tap inserts
+5 Items, 5 Marks, 5 Periods, no Photos, and 3 Tags without relaunch, disables the
+button with an explanation, and updates the Library to four active Items plus
+one archived Item. An English relaunch with the same opt-out retains those
+records and the disabled action. Japanese and English labels and the footer
+that limits the read-only promise to diagnostic refresh were inspected.
+
+The existing shared-store Simulator retains its 2/3/4/0/1 counts and rejects
+the manual action with the local-development-only explanation. It reports the
+known CloudKit no-account code 134400; this is not synchronization evidence.
+No existing records or saved preferences were changed. The only UI mutation
+was one sample insertion into the newly provisioned local development store.
+All verification runs and sessions were stopped, and Simulator data retained.
+The current-source native Release iOS Simulator build succeeds without warnings
+or errors. Its executable retains diagnostics but excludes
+`DevelopmentSampleOperations`, the manual action, seed/preferences types, and
+development preference-key literals. The temporary Release launch configuration
+was restored byte-for-byte, and Xcode returned to Stally / My Mac. This pass
+does not qualify TestFlight installation, physical devices, production CloudKit
+schema, or real synchronization.
 
 ## Historical Architecture
 

@@ -8,6 +8,13 @@ The startup-error screen provides the same action when no store is available.
 No repeated taps, hidden gesture, saved unlock flag, account role, or TestFlight
 receipt check is required.
 
+The owner's [Issue #34 clarification](https://github.com/muhiro12/Stally/issues/34#issuecomment-6465665557)
+explicitly accepts this access direction. The former secret-command model was
+considered and deliberately retired: discoverable access is preferable to hidden
+functionality, and obscurity cannot protect privileged tools. Do not restore an
+`enable debug` command or saved unlock mode during a later refactor. The current
+name and secondary sidebar placement need no change to satisfy this direction.
+
 Stally does not yet have a full Settings surface. The sidebar is the current
 entry; moving this internal navigation action into Settings later does not create
 an external URL or persistent identity contract. TestFlight and App Store builds
@@ -25,10 +32,16 @@ Existing startup or read failures remain visible instead of presenting invented
 zero counts. There is no upload, log export, entitlement override, reset, or
 record mutation in the distributed screen.
 
-Only DEBUG adds the detailed store-location rows and the next-launch controls
-for shared-store selection and initial sample creation. Their preferences and
-seed factory remain compiled out of Release. A confirmation explains the shared
-store's possible iCloud writes; the current container does not switch in place.
+Only DEBUG adds detailed store-location rows, a manual sample action, and the
+next-launch controls for shared-store selection and initial sample creation.
+Manual insertion is available only for the actual isolated development store
+with no records or pending edits. It is independent of the automatic-seeding
+preference and does not require a relaunch. The Operations boundary rechecks
+eligibility when invoked; the disabled button is not the protection mechanism.
+These actions, preferences, and seed factory remain compiled out of Release.
+A confirmation explains the shared store's possible iCloud writes; the current
+container does not switch in place. Selecting or opening that store never
+permits developer-sample insertion.
 See [development setup](fixture-architecture.md#current-development-setup).
 
 ## Reference Assessment
@@ -42,7 +55,9 @@ still combined diagnostic reads with development actions.
 - Align: a visible, ordinary route to inspection that is safe to discover.
 - Adapt: use Stally's existing sidebar and MHUI Form; expose only its implemented
   summary diagnostics rather than copying another app's inspectors or log UI.
-- Keep: DEBUG-only store selection and sample lifecycle, with no record reset.
+- Keep: DEBUG-only store selection and initial-only automatic seeding, with no
+  record reset. The later clarification adds explicit, empty-store-only manual
+  insertion without making production example content part of this feature.
 
 Neither reference checkout was changed. This is a Stally decision, not a claim
 that either sibling has finished its redesign or defines the final answer.
@@ -81,3 +96,10 @@ App Store installation, physical-device behavior, CloudKit convergence, and
 App Review approval remain unverified. The startup-error entry is implemented
 but was not exercised in this UI pass; dark appearance, Dynamic Type, and
 VoiceOver interaction also remain unverified.
+
+The later Issue #34 clarification adds DEBUG manual insertion. Its
+[follow-up verification](fixture-architecture.md#manual-insertion-follow-up)
+records 42 passing Library tests, live initial-opt-out/manual-add behavior,
+relaunch retention, and shared-store rejection. The screen's footer now promises
+that **refreshing diagnostics** is read-only; it does not incorrectly apply that
+promise to the explicit development sample action.

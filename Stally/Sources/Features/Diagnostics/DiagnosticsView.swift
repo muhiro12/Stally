@@ -13,6 +13,9 @@ struct DiagnosticsView: View {
     @AppStorage(StallyDevelopmentPreferences.useSharedStoreKey)
     private var useSharedStore = false
     @State private var confirmingSharedStore = false
+    @State private var canInsertSamples = false
+    @State private var sampleInsertionIssue: String?
+    @State private var sampleActionError: String?
     #endif
 
     @State private var snapshot: DiagnosticsOperations.Snapshot?
@@ -53,6 +56,7 @@ struct DiagnosticsView: View {
                     countsSection(snapshot)
                 }
                 #if DEBUG
+                sampleSection
                 launchSection
                 #endif
                 Section {
@@ -61,7 +65,7 @@ struct DiagnosticsView: View {
                 } header: {
                     MHSectionHeader("App")
                 } footer: {
-                    MHSectionFooter("Diagnostics do not change your saved records.")
+                    MHSectionFooter("Refreshing diagnostics does not change your saved records.")
                 }
             }
         }
@@ -98,6 +102,26 @@ struct DiagnosticsView: View {
     }
 
     #if DEBUG
+    private var sampleSection: some View {
+        Section {
+            Button("Add Development Samples", systemImage: "plus.rectangle.on.rectangle", action: insertSamples)
+                .disabled(!canInsertSamples)
+            if let sampleActionError {
+                Text(sampleActionError).mhTextStyle(.supporting, colorRole: .destructive)
+            }
+        } header: {
+            MHSectionHeader("Development Samples")
+        } footer: {
+            MHSectionFooter(Text(verbatim: sampleExplanation))
+        }
+    }
+
+    private var sampleExplanation: String {
+        sampleInsertionIssue ?? String(
+            localized: "Add samples now, even when automatic seeding is off. Existing records are never replaced."
+        )
+    }
+
     private var launchSection: some View {
         Section {
             Toggle("Use Shared Store", isOn: sharedStoreSelection)
@@ -114,7 +138,7 @@ struct DiagnosticsView: View {
     private var launchExplanation: String {
         var messages = [
             String(localized: "Store changes apply after relaunch. Existing records stay."),
-            String(localized: "Samples are added only when the local development store is first created.")
+            String(localized: "Automatic samples are added only when the local development store is first created.")
         ]
         if isOverridden(StallyDevelopmentPreferences.useSharedStoreKey)
             || isOverridden(StallyDevelopmentPreferences.automaticallySeedRecordsKey) {
@@ -161,6 +185,34 @@ struct DiagnosticsView: View {
     }
 
     #if DEBUG
+    private func refreshSampleAvailability() {
+        canInsertSamples = false
+        guard let container else {
+            sampleInsertionIssue = String(localized: "No store is open.")
+            return
+        }
+        do {
+            try DevelopmentSampleOperations.validateInsertion(context: container.mainContext)
+            canInsertSamples = true
+            sampleInsertionIssue = nil
+        } catch {
+            sampleInsertionIssue = error.localizedDescription
+        }
+    }
+
+    private func insertSamples() {
+        guard let container else {
+            return
+        }
+        sampleActionError = nil
+        do {
+            try DevelopmentSampleOperations.insert(context: container.mainContext)
+        } catch {
+            sampleActionError = error.localizedDescription
+        }
+        refresh()
+    }
+
     private func isOverridden(_ key: String) -> Bool {
         UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)[key] != nil
     }
@@ -168,6 +220,9 @@ struct DiagnosticsView: View {
     #endif
 
     private func refresh() {
+        #if DEBUG
+        refreshSampleAvailability()
+        #endif
         guard let container else {
             return
         }

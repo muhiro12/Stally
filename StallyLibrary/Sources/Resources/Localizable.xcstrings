@@ -1703,6 +1703,40 @@
         }
       }
     },
+    "Samples can only be added to the local development store.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Samples can only be added to the local development store."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サンプルはローカルの開発用保存先にのみ追加できます。"
+          }
+        }
+      }
+    },
+    "Samples can only be added when all development records are empty.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Samples can only be added when all development records are empty."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サンプルは開発用の記録がすべて空の場合にのみ追加できます。"
+          }
+        }
+      }
+    },
     "Scope": {
       "extractionState": "stale",
       "localizations": {
