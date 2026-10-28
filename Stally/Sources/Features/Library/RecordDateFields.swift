@@ -1,3 +1,4 @@
+import MHUI
 import SwiftUI
 
 struct RecordDateFields: View {
@@ -7,6 +8,7 @@ struct RecordDateFields: View {
     var body: some View {
         if draft.unsupportedValue != nil {
             Text("This saved date needs review. It will be preserved until you replace it.")
+                .mhTextStyle(.supporting, colorRole: .warning)
             TextField(
                 "Saved Date",
                 text: Binding(
@@ -37,7 +39,7 @@ struct RecordDateFields: View {
             }
             switch draft.precision {
             case .unknown:
-                Text("Only record the date parts you know.").foregroundStyle(.secondary)
+                Text("Only record the date parts you know.").mhRowSupporting()
             case .year, .month:
                 TextField("Year", text: $draft.year)
                     .autocorrectionDisabled()

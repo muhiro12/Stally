@@ -1,3 +1,4 @@
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
@@ -93,23 +94,27 @@ struct RecordEditor: View {
             Section {
                 RecordDateFields(draft: $start, allowsPartialDate: false)
             } footer: {
-                Text("Each Mark is a separate occurrence, even on the same day. Time is optional.")
+                MHSectionFooter("Each Mark is a separate occurrence, even on the same day. Time is optional.")
             }
         case .end:
-            Section("End") {
+            Section {
                 RecordDateFields(draft: $end)
+            } header: {
+                MHSectionHeader("End")
             }
         case .resume:
             Section {
                 RecordDateFields(draft: $start)
             } header: {
-                Text("Start")
+                MHSectionHeader("Start")
             } footer: {
-                Text("Resuming adds a new period. The previous period stays as recorded.")
+                MHSectionFooter("Resuming adds a new period. The previous period stays as recorded.")
             }
         case .newPeriod, .period:
-            Section("Start") {
+            Section {
                 RecordDateFields(draft: $start)
+            } header: {
+                MHSectionHeader("Start")
             }
             Section {
                 Toggle("Ongoing", isOn: $ongoing)
@@ -117,30 +122,33 @@ struct RecordEditor: View {
                     RecordDateFields(draft: $end)
                 }
             } header: {
-                Text("End")
+                MHSectionHeader("End")
             } footer: {
-                Text("An ended period can have an unknown end date.")
+                MHSectionFooter("An ended period can have an unknown end date.")
             }
         }
     }
 
     private var recordForm: some View {
         Form {
-            recordFields
-            switch selection {
-            case .mark, .period:
-                Section {
-                    Button("Delete Record", role: .destructive) {
-                        confirmingDelete = true
+            MHContainerContent {
+                recordFields
+                switch selection {
+                case .mark, .period:
+                    Section {
+                        Button("Delete Record", role: .destructive) {
+                            confirmingDelete = true
+                        }
                     }
+                default:
+                    EmptyView()
                 }
-            default:
-                EmptyView()
-            }
-            if let errorMessage {
-                Text(errorMessage).foregroundStyle(.red)
+                if let errorMessage {
+                    Text(errorMessage).mhTextStyle(.supporting, colorRole: .destructive)
+                }
             }
         }
+        .mhFormChrome(.content)
     }
 
     init(item: Item, selection: Selection) {

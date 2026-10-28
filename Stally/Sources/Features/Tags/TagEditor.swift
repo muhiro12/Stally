@@ -1,3 +1,4 @@
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
@@ -48,28 +49,31 @@ struct TagEditor: View {
 
     private var tagForm: some View {
         Form {
-            Section {
-                TextField("Name", text: $name)
-            } footer: {
-                if tags.contains(where: { candidate in
-                    candidate !== tag && candidate.name.localizedStandardCompare(name) == .orderedSame
-                }) {
-                    Text("A similar tag already exists. Saving keeps these tags separate.")
-                }
-            }
-            if tag != nil {
+            MHContainerContent {
                 Section {
-                    Button("Delete Tag", role: .destructive) {
-                        confirmingDelete = true
-                    }
+                    TextField("Name", text: $name)
                 } footer: {
-                    Text("Deleting a tag removes its assignments. Your Items and records stay.")
+                    if tags.contains(where: { candidate in
+                        candidate !== tag && candidate.name.localizedStandardCompare(name) == .orderedSame
+                    }) {
+                        MHSectionFooter("A similar tag already exists. Saving keeps these tags separate.")
+                    }
                 }
-            }
-            if let errorMessage {
-                Text(errorMessage).foregroundStyle(.red)
+                if tag != nil {
+                    Section {
+                        Button("Delete Tag", role: .destructive) {
+                            confirmingDelete = true
+                        }
+                    } footer: {
+                        MHSectionFooter("Deleting a tag removes its assignments. Your Items and records stay.")
+                    }
+                }
+                if let errorMessage {
+                    Text(errorMessage).mhTextStyle(.supporting, colorRole: .destructive)
+                }
             }
         }
+        .mhFormChrome(.content)
     }
 
     init(tag: Tag?) {

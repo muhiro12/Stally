@@ -1,3 +1,4 @@
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
@@ -53,12 +54,15 @@ struct ItemListView: View {
     var body: some View {
         let displayedItems = visibleItems
         List(selection: $selection) {
-            ForEach(displayedItems) { item in
-                NavigationLink(value: item.persistentModelID) {
-                    ItemListRow(item: item)
+            MHContainerContent {
+                ForEach(displayedItems) { item in
+                    NavigationLink(value: item.persistentModelID) {
+                        ItemListRow(item: item)
+                    }
                 }
             }
         }
+        .mhListChrome(.content)
         .overlay {
             if displayedItems.isEmpty {
                 if !searchText.isEmpty {
@@ -96,7 +100,7 @@ struct ItemListView: View {
                 }
             }
             ToolbarItem(placement: .status) {
-                Text("\(displayedItems.count) Items").foregroundStyle(.secondary)
+                Text("\(displayedItems.count) Items").mhForegroundStyle(.secondaryText)
             }
         }
     }

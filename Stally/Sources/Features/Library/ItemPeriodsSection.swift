@@ -1,7 +1,10 @@
+import MHUI
 import StallyLibrary
 import SwiftUI
 
 struct ItemPeriodsSection: View {
+    @Environment(\.mhTheme)
+    private var theme
     let item: Item
     let edit: (RecordEditor.Selection) -> Void
 
@@ -19,15 +22,14 @@ struct ItemPeriodsSection: View {
         Section {
             if periods.isEmpty {
                 Label {
-                    VStack(alignment: .leading, spacing: LibraryLayout.compactSpacing) {
-                        Text("No Periods Yet")
+                    VStack(alignment: .leading, spacing: theme.spacing.inline) {
+                        Text("No Periods Yet").mhRowTitle()
                         Text("Keep the beginning and ending, even when dates are uncertain.")
-                            .font(.subheadline).foregroundStyle(.secondary)
+                            .mhRowSupporting()
                     }
                 } icon: {
-                    Image(systemName: "calendar").foregroundStyle(.secondary)
+                    Image(systemName: "calendar").mhForegroundStyle(.secondaryText)
                 }
-                .padding(.vertical, LibraryLayout.rowSpacing)
             }
             ForEach(periods) { period in
                 ItemPeriodRow(period: period, canResume: !hasOngoingPeriod, edit: edit)
@@ -36,7 +38,7 @@ struct ItemPeriodsSection: View {
                 edit(.newPeriod)
             }
         } header: {
-            Text("Periods")
+            MHSectionHeader("Periods")
         }
     }
 }

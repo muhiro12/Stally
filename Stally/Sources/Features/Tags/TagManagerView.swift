@@ -1,3 +1,4 @@
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
@@ -31,26 +32,29 @@ struct TagManagerView: View {
     }
     private var tagList: some View {
         List {
-            Section {
-                ForEach(tags) { tag in
-                    Button {
-                        editingTag = tag
-                    } label: {
-                        HStack {
-                            TagNameView(tag: tag, tags: tags)
-                            Spacer()
-                            Text("\((tag.items ?? []).count) Items")
-                                .foregroundStyle(.secondary)
+            MHContainerContent {
+                Section {
+                    ForEach(tags) { tag in
+                        Button {
+                            editingTag = tag
+                        } label: {
+                            HStack {
+                                TagNameView(tag: tag, tags: tags)
+                                Spacer()
+                                Text("\((tag.items ?? []).count) Items")
+                                    .mhForegroundStyle(.secondaryText)
+                            }
+                            .mhForegroundStyle(.primaryText)
                         }
-                        .foregroundStyle(.primary)
                     }
+                    Button("Add Tag", systemImage: "plus") {
+                        addingTag = true
+                    }
+                } footer: {
+                    MHSectionFooter("Tags with the same name remain separate. Choose the tag you want to use.")
                 }
-                Button("Add Tag", systemImage: "plus") {
-                    addingTag = true
-                }
-            } footer: {
-                Text("Tags with the same name remain separate. Choose the tag you want to use.")
             }
         }
+        .mhListChrome(.content)
     }
 }

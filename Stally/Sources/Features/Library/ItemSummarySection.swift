@@ -1,7 +1,10 @@
+import MHUI
 import StallyLibrary
 import SwiftUI
 
 struct ItemSummarySection: View {
+    @Environment(\.mhTheme)
+    private var theme
     let item: Item
     let chooseTags: () -> Void
 
@@ -25,29 +28,27 @@ struct ItemSummarySection: View {
                     Label("Tags", systemImage: "tag")
                 }
             }
-            .foregroundStyle(.primary)
+            .mhForegroundStyle(.primaryText)
         }
     }
     private var summary: some View {
-        VStack(alignment: .leading, spacing: LibraryLayout.sectionSpacing) {
+        VStack(alignment: .leading, spacing: theme.spacing.control) {
             if item.isFavorite || item.isArchived {
                 HStack {
                     if item.isFavorite {
-                        Label("Favorite", systemImage: "star.fill").foregroundStyle(.orange)
+                        Label("Favorite", systemImage: "star.fill").mhBadge(style: .neutral)
                     }
                     if item.isArchived {
-                        Label("Archived", systemImage: "archivebox").foregroundStyle(.secondary)
+                        Label("Archived", systemImage: "archivebox").mhBadge(style: .neutral)
                     }
                 }
-                .font(.subheadline)
+                .labelStyle(.titleAndIcon)
             }
             if !item.note.isEmpty {
-                Text(item.note).textSelection(.enabled)
+                Text(item.note).mhTextStyle(.body).textSelection(.enabled)
             } else {
-                Text("A place for the things you want to remember.")
-                    .foregroundStyle(.secondary)
+                Text("A place for the things you want to remember.").mhRowSupporting()
             }
         }
-        .padding(.vertical, LibraryLayout.iconSpacing)
     }
 }

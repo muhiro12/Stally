@@ -1,3 +1,4 @@
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
@@ -18,21 +19,24 @@ struct ItemDetailView: View {
 
     var body: some View {
         List {
-            ItemSummarySection(item: item) {
-                choosingTags = true
-            }
-            ItemMarksSection(item: item) { selection in
-                editingRecord = selection
-            }
-            ItemPeriodsSection(item: item) { selection in
-                editingRecord = selection
-            }
-            Section {
-                Toggle("Mark Recording", isOn: recordingBinding)
-            } footer: {
-                Text("Pausing stops new Marks. Your existing records and periods stay unchanged.")
+            MHContainerContent {
+                ItemSummarySection(item: item) {
+                    choosingTags = true
+                }
+                ItemMarksSection(item: item) { selection in
+                    editingRecord = selection
+                }
+                ItemPeriodsSection(item: item) { selection in
+                    editingRecord = selection
+                }
+                Section {
+                    Toggle("Mark Recording", isOn: recordingBinding)
+                } footer: {
+                    MHSectionFooter("Pausing stops new Marks. Your existing records and periods stay unchanged.")
+                }
             }
         }
+        .mhListChrome(.content)
         .disabled(saving)
         .navigationTitle(item.name)
         .toolbar { itemToolbar }

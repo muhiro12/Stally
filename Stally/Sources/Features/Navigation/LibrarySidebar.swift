@@ -1,3 +1,4 @@
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
@@ -41,6 +42,7 @@ struct LibrarySidebar: View {
                 Text("Tags")
             }
         }
+        .mhListChrome(.native)
         .listStyle(.sidebar)
         .navigationTitle("Stally")
         .navigationSplitViewColumnWidth(

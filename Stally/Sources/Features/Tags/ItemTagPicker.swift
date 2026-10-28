@@ -1,3 +1,4 @@
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
@@ -41,22 +42,25 @@ struct ItemTagPicker: View {
 
     private var tagList: some View {
         List {
-            Section {
-                ForEach(tags) { tag in
-                    Toggle(isOn: binding(for: tag)) {
-                        TagNameView(tag: tag, tags: tags)
+            MHContainerContent {
+                Section {
+                    ForEach(tags) { tag in
+                        Toggle(isOn: binding(for: tag)) {
+                            TagNameView(tag: tag, tags: tags)
+                        }
                     }
+                    Button("Add Tag", systemImage: "plus") {
+                        addingTag = true
+                    }
+                } footer: {
+                    MHSectionFooter("Choose the tags for this Item. Names alone never combine tags.")
                 }
-                Button("Add Tag", systemImage: "plus") {
-                    addingTag = true
+                if let errorMessage {
+                    Text(errorMessage).mhTextStyle(.supporting, colorRole: .destructive)
                 }
-            } footer: {
-                Text("Choose the tags for this Item. Names alone never combine tags.")
-            }
-            if let errorMessage {
-                Text(errorMessage).foregroundStyle(.red)
             }
         }
+        .mhListChrome(.content)
     }
 
     init(item: Item) {

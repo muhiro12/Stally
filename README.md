@@ -78,7 +78,8 @@ constraints overriding the accepted redesign.
 The app and library require OS 27.2 or later. Development uses Xcode 27.2;
 match distribution verification to the candidate's actual Xcode Cloud build.
 MHPlatform owns shared runtime and remote-update infrastructure; MHUI owns
-presentation theming. Product Operations and tests remain in StallyLibrary.
+shared presentation, typography, and spacing through its native List/Form
+integration. Product Operations and tests remain in StallyLibrary.
 
 The old category/single-start/day-toggle adapters, flat backup codec, Review,
 Insights, search projections, sample profiles, and old Intent adapters have been

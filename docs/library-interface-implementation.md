@@ -2,11 +2,12 @@
 
 ## Direction
 
-The October 28, 2026 interface work follows the owner's request to restore a
-usable app before completing each remaining subsystem. The accepted storage and
-identity contracts remain the foundation. Navigation, composition, and controls
-can be changed based on experience with the running app; the earlier proposal
-to complete photo ingestion first is not the current sequencing decision.
+The October 28, 2026 interface work follows the owner's request to build a usable
+interface for the new record design before completing each subsystem. The
+accepted storage and identity contracts remain the foundation. Navigation,
+composition, and controls can change based on experience with the running app;
+the earlier proposal to complete photo ingestion first is not the current
+sequencing decision.
 
 One `NavigationSplitView` owns collection selection, the Item list, and the
 selected Item. This uses the familiar sidebar/list/detail structure of native
@@ -56,6 +57,32 @@ The schema, shared store, CloudKit configuration, old-data guard, and existing
 saved records were not changed by this interface work. UI validation does not
 qualify physical-device signing, real CloudKit convergence, or production schema
 compatibility.
+
+## MHUI Presentation Ownership
+
+The owner's follow-up requires visible MHUI adoption, beyond a root theme.
+Stally uses the pinned MHUI 2.4.0
+[adoption guide](https://github.com/muhiro12/MHUI/blob/2.4.0/Designs/Guides/ADOPTION_GUIDE.md)
+as the presentation baseline. The package owns shared typography, semantic
+colors, row insets, section hierarchy, and spacing. Stally owns its record
+meaning, navigation, collection choices, editor drafts, and Operations.
+
+- Root: the standard theme and one-time iOS native appearance configuration.
+- Navigation source list: native sidebar presentation through
+  `mhListChrome(.native)`; system column backgrounds and dividers remain native.
+- Item list, detail, and Tag lists: `MHContainerContent` inside native `List`,
+  with `mhListChrome(.content)` and the default native content-list background.
+  Detail retains list behavior for its open-ended Mark and Period history.
+- Item, Mark, Period, and Tag editors: `MHContainerContent` inside native `Form`
+  with `mhFormChrome(.content)`. Fields, focus, sheets, and controls remain native.
+- Content: semantic row typography, section headers/footers, neutral status
+  badges, and environment-derived theme spacing. Shared row insets are not
+  supplemented with duplicate app padding.
+
+The remaining `LibraryLayout` values describe app-specific column allocation
+and text-preview limits, not a second spacing or color system. This adoption
+keeps the single split-view information architecture and does not change stored
+records, external identifiers, or the package itself.
 
 ## Verification
 
@@ -110,3 +137,20 @@ restored.
 
 The app's assigned Simulators retain their data; validation does not modify
 user-supplied photos, existing cloud records, or production schema settings.
+
+### MHUI Follow-up
+
+The MHUI adoption passed the app build, strict repository rules, and the
+English/Japanese catalog audit. On iPad, the light appearance pass covered
+selection, detail, Item/Mark/Period editors and cancellation, Tag assignment
+and management presentation. Dark appearance covered detail and the Item form;
+the original light appearance was restored afterward. iPhone light appearance
+covered compact navigation, detail, and the Item editor with cancellation.
+The iPhone pass exposed an icon-only favorite badge; an explicit title-and-icon
+label style now preserves its meaning, confirmed in a rebuilt app. The final
+build completed without warnings or errors, and the original Xcode destination
+was restored.
+Existing records were retained and no save or deletion was needed for this pass.
+
+These checks qualify presentation and adapter interaction. They do not add
+CloudKit, full VoiceOver, Dynamic Type, or iPhone dark-appearance evidence.

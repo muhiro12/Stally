@@ -1,3 +1,4 @@
+import MHUI
 import StallyLibrary
 import SwiftUI
 
@@ -13,11 +14,11 @@ struct TagNameView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text(tag.name)
+            Text(tag.name).mhRowTitle()
             if hasDuplicateName {
                 Text(tag.uuid.uuidString)
-                    .font(.caption2.monospaced())
-                    .foregroundStyle(.secondary)
+                    .mhTextStyle(.caption, colorRole: .secondaryText)
+                    .monospaced()
                     .lineLimit(1)
                     .truncationMode(.middle)
             }

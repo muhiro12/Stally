@@ -1,7 +1,10 @@
+import MHUI
 import StallyLibrary
 import SwiftUI
 
 struct ItemMarksSection: View {
+    @Environment(\.mhTheme)
+    private var theme
     let item: Item
     let edit: (RecordEditor.Selection) -> Void
 
@@ -18,15 +21,14 @@ struct ItemMarksSection: View {
         Section {
             if marks.isEmpty {
                 Label {
-                    VStack(alignment: .leading, spacing: LibraryLayout.compactSpacing) {
-                        Text("No Marks Yet")
+                    VStack(alignment: .leading, spacing: theme.spacing.inline) {
+                        Text("No Marks Yet").mhRowTitle()
                         Text("Record a moment whenever it matters.")
-                            .font(.subheadline).foregroundStyle(.secondary)
+                            .mhRowSupporting()
                     }
                 } icon: {
-                    Image(systemName: "checkmark.circle").foregroundStyle(.secondary)
+                    Image(systemName: "checkmark.circle").mhForegroundStyle(.secondaryText)
                 }
-                .padding(.vertical, LibraryLayout.rowSpacing)
             }
             ForEach(marks) { mark in
                 markButton(mark)
@@ -36,10 +38,10 @@ struct ItemMarksSection: View {
             }
             .disabled(!item.isMarkRecordingEnabled)
         } header: {
-            Text("Marks")
+            MHSectionHeader("Marks")
         } footer: {
             if !item.isMarkRecordingEnabled {
-                Text("Recording is paused. You can still edit existing Marks.")
+                MHSectionFooter("Recording is paused. You can still edit existing Marks.")
             }
         }
     }
@@ -50,10 +52,11 @@ struct ItemMarksSection: View {
         } label: {
             HStack {
                 Label(RecordDateDraft.display(mark.localDateTime), systemImage: "checkmark.circle")
+                    .mhTextStyle(.body)
                 Spacer()
-                Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
+                Image(systemName: "chevron.right").mhTextStyle(.caption, colorRole: .tertiaryText)
             }
-            .foregroundStyle(.primary)
+            .mhForegroundStyle(.primaryText)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

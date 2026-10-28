@@ -1,24 +1,27 @@
+import MHUI
 import StallyLibrary
 import SwiftUI
 
 struct ItemListRow: View {
+    @Environment(\.mhTheme)
+    private var theme
     let item: Item
 
     var body: some View {
-        VStack(alignment: .leading, spacing: LibraryLayout.rowSpacing) {
+        VStack(alignment: .leading, spacing: theme.spacing.inline) {
             HStack(alignment: .firstTextBaseline) {
-                Text(item.name).font(.headline).lineLimit(LibraryLayout.previewLines)
-                Spacer(minLength: LibraryLayout.iconSpacing)
+                Text(item.name).mhRowTitle().lineLimit(LibraryLayout.previewLines)
+                Spacer(minLength: theme.spacing.inline)
                 if item.isFavorite {
                     Image(systemName: "star.fill")
-                        .foregroundStyle(.orange)
+                        .mhForegroundStyle(.secondaryText)
                         .accessibilityLabel("Favorite")
                 }
             }
             if !item.note.isEmpty {
-                Text(item.note).font(.subheadline).foregroundStyle(.secondary).lineLimit(LibraryLayout.previewLines)
+                Text(item.note).mhRowSupporting().lineLimit(LibraryLayout.previewLines)
             }
-            HStack(spacing: LibraryLayout.sectionSpacing) {
+            HStack(spacing: theme.spacing.control) {
                 Label("\((item.marks ?? []).count)", systemImage: "checkmark.circle")
                     .accessibilityLabel("\((item.marks ?? []).count) Marks")
                 if item.isArchived {
@@ -27,10 +30,8 @@ struct ItemListRow: View {
                     Label("Recording Paused", systemImage: "pause.circle")
                 }
             }
-            .font(.caption)
-            .foregroundStyle(.secondary)
+            .mhTextStyle(.caption, colorRole: .secondaryText)
         }
-        .padding(.vertical, LibraryLayout.rowSpacing)
         .accessibilityElement(children: .combine)
     }
 }

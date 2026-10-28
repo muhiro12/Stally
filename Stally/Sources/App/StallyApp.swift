@@ -42,6 +42,9 @@ struct StallyApp: App {
     }
 
     init() {
+        #if os(iOS)
+        MHTheme.standard.configureNativeAppearance()
+        #endif
         let logging = StallyLogging.makeBootstrap()
         let logger = StallyLogging.logger(logging: logging, category: "Persistence", source: #fileID)
         let updateOperations = StallyRemoteUpdateConfiguration.makeOperations()

@@ -1,3 +1,4 @@
+import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
@@ -18,35 +19,46 @@ struct ItemEditor: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section("Item") {
-                    TextField("Name", text: $name)
+            itemForm
+                .disabled(saving)
+                .interactiveDismissDisabled(saving)
+                .navigationTitle(item == nil ? "Add Item" : "Edit Item")
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Cancel", systemImage: "xmark") {
+                            dismiss()
+                        }.disabled(saving)
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Save", systemImage: "checkmark") {
+                            save()
+                        }
+                        .disabled(saving || name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
                 }
-                Section("Note") {
+        }
+    }
+
+    private var itemForm: some View {
+        Form {
+            MHContainerContent {
+                Section {
+                    TextField("Name", text: $name)
+                } header: {
+                    MHSectionHeader("Item")
+                }
+                Section {
                     TextField("What would you like to remember?", text: $note, axis: .vertical)
                         .lineLimit(LibraryLayout.noteLines)
+                } header: {
+                    MHSectionHeader("Note")
                 }
                 if let errorMessage {
-                    Text(errorMessage).foregroundStyle(.red)
-                }
-            }
-            .disabled(saving)
-            .interactiveDismissDisabled(saving)
-            .navigationTitle(item == nil ? "Add Item" : "Edit Item")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", systemImage: "xmark") {
-                        dismiss()
-                    }.disabled(saving)
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save", systemImage: "checkmark") {
-                        save()
-                    }
-                    .disabled(saving || name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    Text(errorMessage).mhTextStyle(.supporting, colorRole: .destructive)
                 }
             }
         }
+        .mhFormChrome(.content)
     }
 
     init(item: Item?, onSave: ((Item) -> Void)?) {
