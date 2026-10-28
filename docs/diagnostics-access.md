@@ -1,8 +1,8 @@
-# Diagnostics Access
+# Debug Screen Access
 
 ## Entry and Availability
 
-The Library sidebar has a visible **Diagnostics** action in every build. It opens
+The Library sidebar has a visible **Debug** action in every build. It opens
 one MHUI-backed sheet without replacing the app's sidebar/list/detail navigation.
 The startup-error screen provides the same action when no store is available.
 No repeated taps, hidden gesture, saved unlock flag, account role, or TestFlight
@@ -12,8 +12,11 @@ The owner's [Issue #34 clarification](https://github.com/muhiro12/Stally/issues/
 explicitly accepts this access direction. The former secret-command model was
 considered and deliberately retired: discoverable access is preferable to hidden
 functionality, and obscurity cannot protect privileged tools. Do not restore an
-`enable debug` command or saved unlock mode during a later refactor. The current
-name and secondary sidebar placement need no change to satisfy this direction.
+`enable debug` command or saved unlock mode during a later refactor. The secondary
+sidebar placement remains unchanged. The owner subsequently
+selected **Debug** (Japanese: **デバッグ**) as the visible name because the screen
+also contains development tools in DEBUG builds. Its refresh action is labeled
+**Refresh Information**, and both entry points use the `ladybug` symbol.
 
 Stally does not yet have a full Settings surface. The sidebar is the current
 entry; moving this internal navigation action into Settings later does not create
@@ -64,7 +67,7 @@ that either sibling has finished its redesign or defines the final answer.
 
 Apple's current [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/)
 require accessible, accurately described functionality (2.3.1(a)) and disallow
-hidden or undocumented features (2.5.19). Include the Diagnostics entry and its
+hidden or undocumented features (2.5.19). Include the Debug entry and its
 read-only purpose in review notes when preparing a distribution submission.
 This implementation does not submit or publish a build.
 
@@ -101,5 +104,12 @@ The later Issue #34 clarification adds DEBUG manual insertion. Its
 [follow-up verification](fixture-architecture.md#manual-insertion-follow-up)
 records 42 passing Library tests, live initial-opt-out/manual-add behavior,
 relaunch retention, and shared-store rejection. The screen's footer now promises
-that **refreshing diagnostics** is read-only; it does not incorrectly apply that
+that **refreshing the displayed information** is read-only; it does not apply that
 promise to the explicit development sample action.
+
+The subsequent display-name adjustment was verified with a native DEBUG
+Simulator build and English/Japanese sidebar, sheet-title, refresh-action, and
+footer captures. Both entry points use the new label in source; the startup-error
+entry was not runtime-exercised. Formatting, repository rules, and catalog
+validation passed. This wording-only follow-up did not rerun Library tests or
+Release distribution verification.

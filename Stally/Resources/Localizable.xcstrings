@@ -1481,6 +1481,22 @@
         }
       }
     },
+    "Debug": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Debug"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デバッグ"
+          }
+        }
+      }
+    },
     "Default range": {
       "extractionState": "stale",
       "localizations": {
@@ -1742,22 +1758,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "開発用サンプル"
-          }
-        }
-      }
-    },
-    "Diagnostics": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diagnostics"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "診断"
           }
         }
       }
@@ -3937,36 +3937,36 @@
         }
       }
     },
-    "Refresh Diagnostics": {
+    "Refresh Information": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Refresh Diagnostics"
+            "value": "Refresh Information"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "診断情報を更新"
+            "value": "情報を更新"
           }
         }
       }
     },
-    "Refreshing diagnostics does not change your saved records.": {
+    "Refreshing this information does not change your saved records.": {
       "extractionState": "manual",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Refreshing diagnostics does not change your saved records."
+            "value": "Refreshing this information does not change your saved records."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "診断情報の更新によって保存済みの記録が変更されることはありません。"
+            "value": "この情報の更新によって保存済みの記録が変更されることはありません。"
           }
         }
       }

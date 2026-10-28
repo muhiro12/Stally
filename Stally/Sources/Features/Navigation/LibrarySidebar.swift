@@ -18,7 +18,7 @@ struct LibrarySidebar: View {
             collectionSection
             tagSection
             Section {
-                Button("Diagnostics", systemImage: "stethoscope") {
+                Button("Debug", systemImage: "ladybug") {
                     showingDiagnostics = true
                 }
             }

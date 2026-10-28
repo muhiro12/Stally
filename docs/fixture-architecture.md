@@ -22,7 +22,7 @@ not recovery from an error or a migration of earlier records.
 
 ### Developer Controls
 
-Open **Diagnostics** from the Library sidebar in any build. DEBUG adds the
+Open **Debug** from the Library sidebar in any build. DEBUG adds the
 development controls described below. See [diagnostics access](diagnostics-access.md)
 for the distributed read-only surface. The same
 screen is available from the startup-error screen so a failed shared-store open
@@ -108,7 +108,7 @@ new graph and survive reopening the same store; they are not exported contracts.
 
 ### Diagnostics Boundary
 
-Release provides the visible read-only Diagnostics screen and ordinary
+Release provides the visible read-only Debug screen and ordinary
 startup-failure presentation. Existing warning/error logging uses error
 type/domain/code rather than record contents in diagnostic metadata. Developer
 storage, seed construction, Preview wiring, and preference routing remain

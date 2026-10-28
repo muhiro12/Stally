@@ -26,7 +26,7 @@ struct DiagnosticsView: View {
     var body: some View {
         NavigationStack {
             diagnosticsForm
-                .navigationTitle("Diagnostics")
+                .navigationTitle("Debug")
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Done", systemImage: "checkmark") {
@@ -65,7 +65,7 @@ struct DiagnosticsView: View {
                 } header: {
                     MHSectionHeader("App")
                 } footer: {
-                    MHSectionFooter("Refreshing diagnostics does not change your saved records.")
+                    MHSectionFooter("Refreshing this information does not change your saved records.")
                 }
             }
         }
@@ -92,7 +92,7 @@ struct DiagnosticsView: View {
             if let error = startupError ?? diagnosticsError {
                 Text(error).mhTextStyle(.supporting, colorRole: .destructive).textSelection(.enabled)
             }
-            Button("Refresh Diagnostics", systemImage: "arrow.clockwise", action: refresh)
+            Button("Refresh Information", systemImage: "arrow.clockwise", action: refresh)
                 .disabled(container == nil)
         } header: {
             MHSectionHeader("Current Storage")

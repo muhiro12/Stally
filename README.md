@@ -89,7 +89,7 @@ not implemented by this foundation step. Photo storage is implemented;
 photo ingestion and presentation are not. DEBUG launches now use isolated local
 development records; see [development setup](docs/fixture-architecture.md#current-development-setup)
 for initial seeding, empty-store opt-out, and explicit shared-store verification.
-The sidebar [Diagnostics screen](docs/diagnostics-access.md) is available in all
+The sidebar [Debug screen](docs/diagnostics-access.md) is available in all
 builds; its development controls remain DEBUG-only.
 No period readings have been accepted or implemented by implication.
 

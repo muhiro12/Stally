@@ -45,7 +45,7 @@ struct StallyApp: App {
             Text(startupError ?? "")
                 .textSelection(.enabled)
         } actions: {
-            Button("Diagnostics", systemImage: "stethoscope") {
+            Button("Debug", systemImage: "ladybug") {
                 showingDiagnostics = true
             }
         }
