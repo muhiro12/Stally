@@ -78,6 +78,19 @@ are derived rather than separately stored assertions.
 The exact Swift schema remains in one linked document instead of copying a
 second implementation-shaped declaration into this summary.
 
+### October 28 Context Addition
+
+The owner subsequently accepted one optional, user-chosen representative URL
+per Item, providing direct access to its selected external destination. It is
+not the Item's own Stally deep link and is not inferred from note contents.
+The URL must be retained across storage, sync, and portable transfer. Older
+Items may have no link; an older import's absent field must not clear one.
+Favorites remain Bool, with no graded rating selected. Other unstructured
+context remains in notes until a concrete feature justifies dedicated fields.
+See [the accepted behavior](product-behavior-design.md#accepted-context-and-favorite-decisions).
+This addition is not yet in the implemented V3 schema; its successor schema,
+wire representation, and runtime behavior require implementation verification.
+
 ## Accepted Photo Contract
 
 The [photo design](photo-storage-design.md) is selected. Stally owns its saved

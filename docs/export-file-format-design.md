@@ -155,6 +155,14 @@ because its keys look familiar.
 
 ## Record Fields and Relationships
 
+The October 28 [representative-link decision](product-behavior-design.md#accepted-context-and-favorite-decisions)
+adds one optional retained URL per Item to the target design. The baseline
+field table and proposal example below predate that addition. When integrating
+it, bind the field to the actual successor schema, update the wire table and
+example, and distinguish an absent historical field from an explicit clear.
+An older supported file must not erase a destination Item's existing link.
+Do not silently add the field to an already-defined historical schema reader.
+
 Use one flat array per model. This avoids repeating child records in several
 places and keeps identity-based conflict choices explicit. SwiftData inverse
 arrays are not serialized a second time.

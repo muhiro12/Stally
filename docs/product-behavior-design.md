@@ -10,7 +10,9 @@ Implementation may inform feasibility after the intended behavior is clear.
 
 The [contract summary](first-release-contract-summary.md) and its linked
 decisions remain authoritative for identity, recorded meaning, preservation,
-ownership, and published boundaries. This document does not reopen them.
+ownership, and published boundaries. The explicitly accepted October 28
+representative-link addition below extends that foundation; other proposals
+do not change it.
 The shared Operations architecture remains selected; its concrete use cases,
 method signatures, and factoring remain design work.
 
@@ -41,6 +43,45 @@ cafe may accumulate visit Marks. A bicycle may have an ongoing period with
 only its start year known. None requires invented occurrences or dates to
 qualify as a useful record. These are usage examples, not built-in categories.
 
+## Accepted Context and Favorite Decisions
+
+On October 28, the owner accepted the following direction after discussing
+dedicated attributes, free-form context, and the value of additional choices.
+These decisions are selected product behavior, not completed implementation.
+
+- An Item can have **one optional representative URL**, chosen by the person.
+  Its purpose is a predictable, readily accessible action that opens the
+  Item's chosen destination, such as a store, product page, or another app.
+  It is separate from the link that opens this Item inside Stally.
+- Follow the platform's URL-opening behavior. An appropriate URL can open a
+  related app, but Stally does not guarantee that every destination has an
+  installed handler or remains available.
+- Do not infer the representative URL from the first URL in the note. Adding,
+  replacing, or clearing the representative link changes only that reference;
+  it does not rewrite the note or change Item identity and history.
+- Do not introduce a URL array, named-link collection, ordering, or primary-link
+  selection among several entries for this feature. Those would serve a
+  different, currently unselected reference-management capability.
+- Keep `isFavorite` as a Bool: an explicit choice to include the Item among
+  favorites. It is not a graded rating, priority, or relative ranking. Do not
+  replace it with an Int solely to reserve future values.
+- Use notes for additional context whose structured use is not yet selected.
+  Purchase dates, acquisition sources, gift givers, and rating levels do not
+  gain dedicated fields from hypothetical demand alone. Reconsider a field
+  when a concrete product behavior establishes its meaning and cardinality.
+
+The representative URL is a new retained fact and must participate in storage,
+sync, export/import, and applicable system access. Preserve existing notes and
+allow older Items to have no representative link; do not automatically extract
+one during migration. An older supported import without this field must not
+erase an existing link. Finalize its physical representation, wire key, input
+validation, and opening/failure presentation during implementation.
+
+The implemented V3 schema does not contain this field. Preserve its historical
+snapshot and qualify the successor schema and file version when integrating
+the addition. This design decision neither changes a store nor promotes a
+CloudKit schema.
+
 ## Capability and Behavior Map
 
 ### Keep a Subject and Its Context
@@ -50,6 +91,8 @@ Contract consequences:
 - Creating an Item does not implicitly create a Mark or period.
 - Changing its description preserves identity and existing history.
 - Classification is optional, user-defined, and can include several Tags.
+- The person can choose one representative link and open it directly, without
+  searching the note. See the accepted October 28 decision above.
 - Photos are independently retained attachments with captions and ordering;
   they are not references whose survival depends on the source photo library.
 - Deleting an Item also deletes its owned Marks, periods, and photos. Shared

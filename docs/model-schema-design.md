@@ -18,6 +18,17 @@ alternatives, [Mark comparison](mark-temporal-schema-comparison.md) for temporal
 evidence, and [Period validation](period-schema-validation.md) for lifecycle
 rules. The existing application models and stores are unchanged.
 
+### October 28 Accepted Addition
+
+The owner accepted one optional representative URL per Item and reaffirmed
+Bool favorites. See [the behavior decision](product-behavior-design.md#accepted-context-and-favorite-decisions).
+The Swift illustration below retains the earlier five-model baseline; the
+implemented `StallySchemaV3` does not yet contain the URL. Integrate the new
+fact through a successor schema rather than silently changing that historical
+snapshot. Decide the physical property representation and matching export key
+with the implementation, preserving identity, notes, and an absent-link state.
+This addition does not select a separate link entity or a collection of URLs.
+
 ## Swift Representation
 
 The initializers below describe ordinary creation. Operations validate input
