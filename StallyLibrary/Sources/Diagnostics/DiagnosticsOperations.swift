@@ -1,11 +1,10 @@
-#if DEBUG
 import Foundation
 import SwiftData
 
-/// Read-only development diagnostics for the actual open container.
+/// Read-only diagnostics for the actual open container.
 @preconcurrency
 @MainActor
-public enum DevelopmentOperations {
+public enum DiagnosticsOperations {
     /// Counts and configuration describe this local snapshot, not remote sync completion.
     public struct Snapshot {
         /// Number of Items visible to this context.
@@ -41,4 +40,3 @@ public enum DevelopmentOperations {
         )
     }
 }
-#endif

@@ -7,9 +7,7 @@ import SwiftUI
 
 @main
 struct StallyApp: App {
-    #if DEBUG
-    @State private var showingDevelopment = false
-    #endif
+    @State private var showingDiagnostics = false
 
     private let container: ModelContainer?
     private let startupError: String?
@@ -47,17 +45,13 @@ struct StallyApp: App {
             Text(startupError ?? "")
                 .textSelection(.enabled)
         } actions: {
-            #if DEBUG
-            Button("Developer Tools", systemImage: "hammer") {
-                showingDevelopment = true
+            Button("Diagnostics", systemImage: "stethoscope") {
+                showingDiagnostics = true
             }
-            #endif
         }
-        #if DEBUG
-        .sheet(isPresented: $showingDevelopment) {
-            DevelopmentView(container: nil, startupError: startupError)
+        .sheet(isPresented: $showingDiagnostics) {
+            DiagnosticsView(container: nil, startupError: startupError)
         }
-        #endif
     }
 
     init() {

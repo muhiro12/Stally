@@ -1678,6 +1678,38 @@
         }
       }
     },
+    "Diagnostics": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnostics"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "診断"
+          }
+        }
+      }
+    },
+    "Diagnostics do not change your saved records.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diagnostics do not change your saved records."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "診断によって保存済みの記録が変更されることはありません。"
+          }
+        }
+      }
+    },
     "Disabled": {
       "extractionState": "manual",
       "localizations": {
@@ -2259,7 +2291,6 @@
       }
     },
     "Items": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {

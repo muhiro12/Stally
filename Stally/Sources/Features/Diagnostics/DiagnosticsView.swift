@@ -1,26 +1,29 @@
-#if DEBUG
 import MHUI
 import StallyLibrary
 import SwiftData
 import SwiftUI
 
-struct DevelopmentView: View {
+struct DiagnosticsView: View {
     @Environment(\.dismiss)
     private var dismiss
+
+    #if DEBUG
     @AppStorage(StallyDevelopmentPreferences.automaticallySeedRecordsKey)
     private var automaticallySeedRecords = true
     @AppStorage(StallyDevelopmentPreferences.useSharedStoreKey)
     private var useSharedStore = false
     @State private var confirmingSharedStore = false
-    @State private var snapshot: DevelopmentOperations.Snapshot?
+    #endif
+
+    @State private var snapshot: DiagnosticsOperations.Snapshot?
     @State private var diagnosticsError: String?
     let container: ModelContainer?
     let startupError: String?
 
     var body: some View {
         NavigationStack {
-            developmentForm
-                .navigationTitle("Developer Tools")
+            diagnosticsForm
+                .navigationTitle("Diagnostics")
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Done", systemImage: "checkmark") {
@@ -29,6 +32,7 @@ struct DevelopmentView: View {
                     }
                 }
                 .task { refresh() }
+                #if DEBUG
                 .confirmationDialog("Use the shared store on next launch?", isPresented: $confirmingSharedStore) {
                     Button("Use Shared Store") {
                         useSharedStore = true
@@ -36,25 +40,28 @@ struct DevelopmentView: View {
                 } message: {
                     Text("Writes in the shared store may sync with iCloud. Development records will not be copied.")
                 }
+            #endif
         }
         .mhTheme(.standard)
     }
 
-    private var developmentForm: some View {
+    private var diagnosticsForm: some View {
         Form {
             MHContainerContent {
                 storageSection
                 if let snapshot {
                     countsSection(snapshot)
                 }
+                #if DEBUG
                 launchSection
+                #endif
                 Section {
                     LabeledContent("Version", value: version)
                     LabeledContent("Schema", value: StallyDataContract.schemaVersion)
                 } header: {
                     MHSectionHeader("App")
                 } footer: {
-                    MHSectionFooter("These tools are available only in DEBUG builds.")
+                    MHSectionFooter("Diagnostics do not change your saved records.")
                 }
             }
         }
@@ -70,11 +77,13 @@ struct DevelopmentView: View {
                 LabeledContent("CloudKit Configuration") {
                     Text(snapshot.cloudKitContainers.isEmpty ? "Disabled" : "Configured")
                 }
+                #if DEBUG
                 if !snapshot.isInMemory {
                     ForEach(snapshot.storeLocations, id: \.self) { location in
                         Text(location.path).mhTextStyle(.caption, colorRole: .secondaryText).textSelection(.enabled)
                     }
                 }
+                #endif
             }
             if let error = startupError ?? diagnosticsError {
                 Text(error).mhTextStyle(.supporting, colorRole: .destructive).textSelection(.enabled)
@@ -88,6 +97,7 @@ struct DevelopmentView: View {
         }
     }
 
+    #if DEBUG
     private var launchSection: some View {
         Section {
             Toggle("Use Shared Store", isOn: sharedStoreSelection)
@@ -125,12 +135,14 @@ struct DevelopmentView: View {
             }
         )
     }
+    #endif
+
     private var version: String {
         let info = Bundle.main.infoDictionary ?? [:]
         return "\(info["CFBundleShortVersionString"] as? String ?? "—") (\(info["CFBundleVersion"] as? String ?? "—"))"
     }
 
-    private func countsSection(_ snapshot: DevelopmentOperations.Snapshot) -> some View {
+    private func countsSection(_ snapshot: DiagnosticsOperations.Snapshot) -> some View {
         Section {
             count("Items", value: snapshot.items)
             count("Marks", value: snapshot.marks)
@@ -148,16 +160,19 @@ struct DevelopmentView: View {
         }
     }
 
+    #if DEBUG
     private func isOverridden(_ key: String) -> Bool {
         UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)[key] != nil
     }
+
+    #endif
 
     private func refresh() {
         guard let container else {
             return
         }
         do {
-            snapshot = try DevelopmentOperations.snapshot(context: container.mainContext)
+            snapshot = try DiagnosticsOperations.snapshot(context: container.mainContext)
             diagnosticsError = nil
         } catch {
             snapshot = nil
@@ -165,4 +180,3 @@ struct DevelopmentView: View {
         }
     }
 }
-#endif

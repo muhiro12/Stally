@@ -4,11 +4,9 @@ import SwiftData
 import SwiftUI
 
 struct LibrarySidebar: View {
-    #if DEBUG
     @Environment(\.modelContext)
     private var context
-    @State private var showingDevelopment = false
-    #endif
+    @State private var showingDiagnostics = false
 
     let items: [Item]
     let tags: [Tag]
@@ -19,13 +17,11 @@ struct LibrarySidebar: View {
         List(selection: $selection) {
             collectionSection
             tagSection
-            #if DEBUG
             Section {
-                Button("Developer Tools", systemImage: "hammer") {
-                    showingDevelopment = true
+                Button("Diagnostics", systemImage: "stethoscope") {
+                    showingDiagnostics = true
                 }
             }
-            #endif
         }
         .mhListChrome(.native)
         .listStyle(.sidebar)
@@ -34,11 +30,9 @@ struct LibrarySidebar: View {
             min: LibraryLayout.sidebarMinimum,
             ideal: LibraryLayout.sidebarIdeal,
             max: LibraryLayout.sidebarMaximum)
-        #if DEBUG
-        .sheet(isPresented: $showingDevelopment) {
-            DevelopmentView(container: context.container, startupError: nil)
+        .sheet(isPresented: $showingDiagnostics) {
+            DiagnosticsView(container: context.container, startupError: nil)
         }
-        #endif
     }
 
     private var collectionSection: some View {

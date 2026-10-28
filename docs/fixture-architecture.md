@@ -22,7 +22,9 @@ not recovery from an error or a migration of earlier records.
 
 ### Developer Controls
 
-Open **Developer Tools** from the Library sidebar in a DEBUG build. The same
+Open **Diagnostics** from the Library sidebar in any build. DEBUG adds the
+development controls described below. See [diagnostics access](diagnostics-access.md)
+for the distributed read-only surface. The same
 screen is available from the startup-error screen so a failed shared-store open
 does not prevent changing the next-launch choice. It uses native Form controls
 with MHUI presentation and has English/Japanese strings.
@@ -77,11 +79,12 @@ new graph and survive reopening the same store; they are not exported contracts.
 
 ### Diagnostics Boundary
 
-No production debug screen or hidden gesture is introduced. Release retains the
-ordinary startup-failure presentation and existing warning/error logging, with
-error type/domain/code rather than record contents in diagnostic metadata.
-Developer storage, seed construction, Preview wiring, and preference routing
-are compiled only for DEBUG. Neither the development route nor the Preview adds
+Release provides the visible read-only Diagnostics screen and ordinary
+startup-failure presentation. Existing warning/error logging uses error
+type/domain/code rather than record contents in diagnostic metadata. Developer
+storage, seed construction, Preview wiring, and preference routing remain
+compiled only for DEBUG. The current all-build boundary is documented in
+[diagnostics access](diagnostics-access.md). Neither the development route nor the Preview adds
 entitlement bypasses, product sample controls, export, or database reset actions.
 
 ### Current Verification
@@ -136,9 +139,10 @@ All modified preferences were restored to their initial values.
 The first pass exposed missing text when multiple MHUI footers were supplied to
 one Section. One footer now contains all explanatory paragraphs, confirmed in
 Japanese, English, and the iPad layout. No record edits or deletions were needed.
-The final Release build passes without warnings/errors; its executable omits
-the development view, diagnostic Operations, preference type, and preference-key
-literals, while the DEBUG executable contains them. Localized resource strings
+At that DEBUG-only stage, the Release build passed without warnings/errors and
+omitted the development view, diagnostic Operations, preference type, and
+preference-key literals. The later all-build diagnostics change supersedes that
+view/Operations exclusion; development preferences remain DEBUG-only. Localized resource strings
 are not a runtime entry point and may remain in the shared string catalog.
 Startup-error entry, dark appearance, Dynamic Type, and VoiceOver interaction
 remain unverified by this UI pass. Verification runs and sessions were stopped
