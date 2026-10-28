@@ -7,6 +7,41 @@ import Testing
 
 @MainActor
 struct DevelopmentStoreTests {
+    @Test(arguments: ["en", "ja"])
+    func localizedRecordsSurviveReopening(_ language: String) throws {
+        let directory = newDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let expected: [String: String] = language == "ja" ? [
+            "いつものリュック": "散歩やちょっとした旅に持っていく、軽いリュック。",
+            "川沿いのカフェ": "窓際の席で、本を読むひととき。",
+            "以前のアトリエ": "離れてからも、覚えておきたい場所。",
+            "読書用メガネ": "いつから使っているか、はっきりとは覚えていない。",
+            "旅のノート": ""
+        ] : [
+            "Everyday backpack": "A light bag for walks and small journeys.",
+            "Riverside café": "A window seat and time to read.",
+            "Old studio": "A place worth remembering after moving on.",
+            "Reading glasses": "No exact start date remembered.",
+            "Travel journal": ""
+        ]
+        let expectedTags = language == "ja" ? ["日常", "日常", "場所"] : ["Everyday", "Everyday", "Places"]
+        let identities = try autoreleasepool {
+            let container = try StallyDevelopmentStore.open(in: directory, automaticallySeed: false)
+            try StallyDevelopmentSeed.insert(in: container.mainContext, locale: .init(identifier: language))
+            let items = try ItemOperations.items(context: container.mainContext)
+            #expect(Dictionary(uniqueKeysWithValues: items.map { ($0.name, $0.note) }) == expected)
+            let tags = try container.mainContext.fetch(FetchDescriptor<StallyLibrary.Tag>())
+            #expect(tags.map(\.name).sorted() == expectedTags.sorted())
+            return Set(items.map(\.uuid))
+        }
+        try autoreleasepool {
+            let container = try StallyDevelopmentStore.open(in: directory)
+            let items = try ItemOperations.items(context: container.mainContext)
+            #expect(Set(items.map(\.uuid)) == identities)
+            #expect(Dictionary(uniqueKeysWithValues: items.map { ($0.name, $0.note) }) == expected)
+        }
+    }
+
     @Test
     func representativeGraphSurvivesDiskReopen() throws {
         let directory = newDirectory()
@@ -29,7 +64,7 @@ struct DevelopmentStoreTests {
             let context = ModelContext(container)
             let items = try ItemOperations.items(context: context)
             #expect(Set(items.map(\.uuid)) == identities)
-            let bag = try #require(items.first { $0.name == "Everyday backpack" })
+            let bag = try #require(items.first { $0.isFavorite && !$0.isArchived })
             #expect(Set((bag.marks ?? []).map(\.localDateTime)) == ["2026-10-27", "2026-10-27T09:30"])
             let ended = try #require(bag.periods?.first { !$0.isOngoing })
             #expect(ended.startLocalDate == "2024" && ended.endLocalDate == "2025-10")
@@ -38,7 +73,8 @@ struct DevelopmentStoreTests {
             let studio = try #require(archivedItem)
             #expect(studio.isFavorite && !studio.isMarkRecordingEnabled && studio.marks?.count == 1)
             let tags = try context.fetch(FetchDescriptor<StallyLibrary.Tag>())
-            let sameNames = tags.filter { $0.name == "Everyday" }
+            let everydayName = try #require(bag.tags?.first?.name)
+            let sameNames = tags.filter { $0.name == everydayName }
             #expect(sameNames.count == 2 && Set(sameNames.map(\.uuid)).count == 2)
         }
     }

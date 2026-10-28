@@ -95,8 +95,18 @@ Periods, and three Tags. It covers two Marks on one day with different time
 precision; unknown/year/month/day period precision; an ended and resumed
 relationship; archived favorites; paused recording with retained history;
 shared Tags and distinct same-name Tag identities; and an Item with no history.
-The English names and notes are fictional test data, not localized product copy.
+Names, notes, and Tags resolve through the English/Japanese `DevelopmentSamples`
+string catalog when each graph is created, using the current app locale. Initial
+setup, manual insertion, and Previews share this localized definition. Saved
+records retain their text after a language change, including any edits; existing
+English development records are not rewritten or automatically reseeded.
 Photos remain absent until photo ingestion has its own representative fixtures.
+
+The localization follow-up passes all 65 native Library test cases on iOS 27.2,
+including English/Japanese text and disk-reopen checks. The app consumer build,
+strict repository rules, and all 11 sample catalog entries pass verification.
+Direct `LibraryPreview` captures show localized names and notes in both languages;
+archived content and Tags are checked by the Library tests.
 
 The library builds the graph in one owned context and saves once. It is not a
 public insertion operation on arbitrary user contexts. The DEBUG-only
