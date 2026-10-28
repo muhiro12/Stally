@@ -1,6 +1,54 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        }
+      }
+    },
+    "%lld Items": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld Items"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld件のアイテム"
+          }
+        }
+      }
+    },
+    "%lld Marks": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld Marks"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld件のマーク"
+          }
+        }
+      }
+    },
     "%lld marks": {
       "extractionState": "stale",
       "localizations": {
@@ -83,6 +131,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "一緒に過ごして1年"
+          }
+        }
+      }
+    },
+    "A place for the things you want to remember.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A place for the things you want to remember."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "覚えておきたいことを、ここに。"
+          }
+        }
+      }
+    },
+    "A similar tag already exists. Saving keeps these tags separate.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A similar tag already exists. Saving keeps these tags separate."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "似た名前のタグがあります。保存すると、別のタグとして残ります。"
           }
         }
       }
@@ -220,6 +300,38 @@
         }
       }
     },
+    "Add Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Tag"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タグを追加"
+          }
+        }
+      }
+    },
+    "Add Tags": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Tags"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タグを追加"
+          }
+        }
+      }
+    },
     "Add Your First Item": {
       "extractionState": "stale",
       "localizations": {
@@ -233,6 +345,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "最初のアイテムを追加"
+          }
+        }
+      }
+    },
+    "Add to Favorites": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add to Favorites"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "お気に入りに追加"
           }
         }
       }
@@ -305,6 +433,22 @@
         }
       }
     },
+    "An ended period can have an unknown end date.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An ended period can have an unknown end date."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終了した期間でも、終了日を不明のまま残せます。"
+          }
+        }
+      }
+    },
     "Archive": {
       "localizations": {
         "en": {
@@ -339,7 +483,6 @@
       }
     },
     "Archive Item": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -574,6 +717,22 @@
         }
       }
     },
+    "Choose Tags": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Tags"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タグを選択"
+          }
+        }
+      }
+    },
     "Choose a valid day no later than today.": {
       "extractionState": "stale",
       "localizations": {
@@ -608,6 +767,22 @@
         }
       }
     },
+    "Choose an Item": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose an Item"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテムを選択"
+          }
+        }
+      }
+    },
     "Choose another photo and try again.": {
       "extractionState": "stale",
       "localizations": {
@@ -621,6 +796,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "別の写真を選んでもう一度お試しください。"
+          }
+        }
+      }
+    },
+    "Choose the tags for this Item. Names alone never combine tags.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose the tags for this Item. Names alone never combine tags."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このアイテムのタグを選んでください。同名のタグも別々に扱います。"
           }
         }
       }
@@ -655,6 +846,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "無効な開始時期をクリア"
+          }
+        }
+      }
+    },
+    "Collection": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collection"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コレクション"
           }
         }
       }
@@ -762,7 +969,6 @@
       }
     },
     "Could Not Save": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1017,7 +1223,6 @@
       }
     },
     "Date": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1033,7 +1238,24 @@
         }
       }
     },
+    "Date Precision": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date Precision"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日付の精度"
+          }
+        }
+      }
+    },
     "Date and optional time": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1050,7 +1272,6 @@
       }
     },
     "Day": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1200,6 +1421,22 @@
         }
       }
     },
+    "Delete Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete Tag"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タグを削除"
+          }
+        }
+      }
+    },
     "Delete this Item and its Marks, periods, and photos?": {
       "localizations": {
         "en": {
@@ -1232,6 +1469,22 @@
         }
       }
     },
+    "Delete this tag and its assignments?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this tag and its assignments?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このタグとアイテムへの割り当てを削除しますか？"
+          }
+        }
+      }
+    },
     "Deleted every item from the current library.\nItems: %lld. Marks: %lld.": {
       "extractionState": "stale",
       "localizations": {
@@ -1245,6 +1498,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "現在のライブラリからすべてのアイテムを削除しました。\nアイテム: %lld。マーク: %lld。"
+          }
+        }
+      }
+    },
+    "Deleting a tag removes its assignments. Your Items and records stay.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deleting a tag removes its assignments. Your Items and records stay."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タグを削除すると割り当てが解除されます。アイテムと記録は残ります。"
           }
         }
       }
@@ -1267,7 +1536,6 @@
       }
     },
     "Done": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1300,7 +1568,24 @@
         }
       }
     },
+    "Each Mark is a separate occurrence, even on the same day. Time is optional.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Each Mark is a separate occurrence, even on the same day. Time is optional."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同じ日のマークも、一つひとつ別の記録です。時刻は任意です。"
+          }
+        }
+      }
+    },
     "Edit": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1332,6 +1617,70 @@
         }
       }
     },
+    "Edit Mark": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit Mark"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マークを編集"
+          }
+        }
+      }
+    },
+    "Edit Period": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit Period"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "期間を編集"
+          }
+        }
+      }
+    },
+    "Edit Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit Tag"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タグを編集"
+          }
+        }
+      }
+    },
+    "Edit this Mark": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit this Mark"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このマークを編集します"
+          }
+        }
+      }
+    },
     "Elapsed Time": {
       "extractionState": "stale",
       "localizations": {
@@ -1355,6 +1704,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "End"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終了"
+          }
+        }
+      }
+    },
+    "End Period": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End Period"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "期間を終了"
+          }
+        }
+      }
+    },
+    "Ended": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ended"
           }
         },
         "ja": {
@@ -1439,6 +1820,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Favorite"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "お気に入り"
+          }
+        }
+      }
+    },
+    "Favorites": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favorites"
           }
         },
         "ja": {
@@ -1551,6 +1948,22 @@
         }
       }
     },
+    "Include Time": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include Time"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "時刻を記録"
+          }
+        }
+      }
+    },
     "Include archived items": {
       "extractionState": "stale",
       "localizations": {
@@ -1602,8 +2015,23 @@
         }
       }
     },
+    "Item": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Item"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテム"
+          }
+        }
+      }
+    },
     "Item Actions": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1721,6 +2149,22 @@
         }
       }
     },
+    "Keep a record of something that matters to you.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep a record of something that matters to you."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大切なものや場所を、記録に残しましょう。"
+          }
+        }
+      }
+    },
     "Keep one recent export before you try any replace-style restore.": {
       "extractionState": "stale",
       "localizations": {
@@ -1734,6 +2178,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "置き換え型の復元を試す前に、最近の書き出しをひとつ残しておきましょう。"
+          }
+        }
+      }
+    },
+    "Keep the beginning and ending, even when dates are uncertain.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep the beginning and ending, even when dates are uncertain."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日付が曖昧でも、始まりと終わりを残せます。"
           }
         }
       }
@@ -1873,7 +2333,24 @@
         }
       }
     },
+    "Manage Tags": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manage Tags"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タグを管理"
+          }
+        }
+      }
+    },
     "Mark": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -2126,7 +2603,6 @@
       }
     },
     "Month": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -2227,6 +2703,22 @@
         }
       }
     },
+    "Move to Library": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move to Library"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ライブラリに戻す"
+          }
+        }
+      }
+    },
     "Name": {
       "localizations": {
         "en": {
@@ -2277,6 +2769,22 @@
         }
       }
     },
+    "Newest First": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Newest First"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登録が新しい順"
+          }
+        }
+      }
+    },
     "Next Moves": {
       "extractionState": "stale",
       "localizations": {
@@ -2311,6 +2819,38 @@
         }
       }
     },
+    "No Items Here": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Items Here"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテムはありません"
+          }
+        }
+      }
+    },
+    "No Marks Yet": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Marks Yet"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マークはまだありません"
+          }
+        }
+      }
+    },
     "No Matching Archived Items": {
       "extractionState": "stale",
       "localizations": {
@@ -2341,6 +2881,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "一致するアイテムはありません"
+          }
+        }
+      }
+    },
+    "No Periods Yet": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Periods Yet"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "期間はまだありません"
           }
         }
       }
@@ -2602,6 +3158,22 @@
     "OK": {
       "shouldTranslate": false
     },
+    "Oldest First": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oldest First"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登録が古い順"
+          }
+        }
+      }
+    },
     "One mark is enough for today.": {
       "extractionState": "stale",
       "localizations": {
@@ -2631,6 +3203,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "継続中"
+          }
+        }
+      }
+    },
+    "Only record the date parts you know.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only record the date parts you know."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "わかっている範囲の日付だけを記録します。"
           }
         }
       }
@@ -2686,7 +3274,24 @@
         }
       }
     },
+    "Pausing stops new Marks. Your existing records and periods stay unchanged.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausing stops new Marks. Your existing records and periods stay unchanged."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録を停止しても、これまでのマークや期間はそのまま残ります。"
+          }
+        }
+      }
+    },
     "Period": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -2922,6 +3527,54 @@
         }
       }
     },
+    "Record a moment whenever it matters.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record a moment whenever it matters."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "残しておきたい出来事を、マークに。"
+          }
+        }
+      }
+    },
+    "Recording Paused": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recording Paused"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録停止中"
+          }
+        }
+      }
+    },
+    "Recording is paused. You can still edit existing Marks.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recording is paused. You can still edit existing Marks."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録を停止しています。既存のマークは編集できます。"
+          }
+        }
+      }
+    },
     "Refine": {
       "extractionState": "stale",
       "localizations": {
@@ -2935,6 +3588,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "絞り込み"
+          }
+        }
+      }
+    },
+    "Remove Favorite": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove Favorite"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "お気に入りから外す"
           }
         }
       }
@@ -3075,6 +3744,22 @@
         }
       }
     },
+    "Resume Period": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume Period"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "期間を再開"
+          }
+        }
+      }
+    },
     "Resume with a new period": {
       "localizations": {
         "en": {
@@ -3087,6 +3772,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "新しい期間として再開"
+          }
+        }
+      }
+    },
+    "Resuming adds a new period. The previous period stays as recorded.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resuming adds a new period. The previous period stays as recorded."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再開すると新しい期間を追加します。過去の期間はそのまま残ります。"
           }
         }
       }
@@ -3277,6 +3978,22 @@
         }
       }
     },
+    "Saved Date": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved Date"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存された日付"
+          }
+        }
+      }
+    },
     "Scope": {
       "extractionState": "stale",
       "localizations": {
@@ -3324,6 +4041,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "アイテムを検索"
+          }
+        }
+      }
+    },
+    "Search names, notes, and tags": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search names, notes, and tags"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "名前・メモ・タグを検索"
           }
         }
       }
@@ -3516,6 +4249,7 @@
       }
     },
     "Show Archive": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -3582,8 +4316,23 @@
         }
       }
     },
+    "Sort Items": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sort Items"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "並べ替え"
+          }
+        }
+      }
+    },
     "Stally": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -3750,6 +4499,54 @@
         }
       }
     },
+    "Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tag"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タグ"
+          }
+        }
+      }
+    },
+    "Tags": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tags"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タグ"
+          }
+        }
+      }
+    },
+    "Tags with the same name remain separate. Choose the tag you want to use.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tags with the same name remain separate. Choose the tag you want to use."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同じ名前でも別のタグとして残ります。使いたいタグを選んでください。"
+          }
+        }
+      }
+    },
     "The linked Item is missing or has a conflicting identity.": {
       "localizations": {
         "en": {
@@ -3901,6 +4698,38 @@
         }
       }
     },
+    "This saved date needs review. It will be preserved until you replace it.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This saved date needs review. It will be preserved until you replace it."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この日付は確認が必要です。修正するまで保存内容を保持します。"
+          }
+        }
+      }
+    },
+    "Time": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "時刻"
+          }
+        }
+      }
+    },
     "Time Together": {
       "extractionState": "stale",
       "localizations": {
@@ -4037,7 +4866,24 @@
         }
       }
     },
+    "Unknown": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不明"
+          }
+        }
+      }
+    },
     "Unknown end": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4054,6 +4900,7 @@
       }
     },
     "Unknown start": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4082,6 +4929,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "サポートされていないリンク"
+          }
+        }
+      }
+    },
+    "Until %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Until %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@まで"
           }
         }
       }
@@ -4154,7 +5017,24 @@
         }
       }
     },
+    "What would you like to remember?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What would you like to remember?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "覚えておきたいこと"
+          }
+        }
+      }
+    },
     "YYYY, YYYY-MM, or YYYY-MM-DD. Leave unknown dates empty.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4171,6 +5051,7 @@
       }
     },
     "YYYY-MM-DD or YYYY-MM-DDTHH:mm": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4187,7 +5068,6 @@
       }
     },
     "Year": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4233,6 +5113,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "年ごとの節目"
+          }
+        }
+      }
+    },
+    "Your Marks, periods, and notes will appear here.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Marks, periods, and notes will appear here."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "マーク・期間・メモをここに表示します。"
           }
         }
       }

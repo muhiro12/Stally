@@ -5,12 +5,12 @@ import SwiftUI
 struct ItemDetailView: View {
     @Environment(\.modelContext)
     private var context
-    @Environment(\.dismiss)
-    private var dismiss
     @Environment(RemoteUpdateOperations.self)
     private var updates
     let item: Item
+    let onDelete: () -> Void
     @State private var editingItem = false
+    @State private var choosingTags = false
     @State private var editingRecord: RecordEditor.Selection?
     @State private var confirmingDelete = false
     @State private var errorMessage: String?
@@ -18,21 +18,33 @@ struct ItemDetailView: View {
 
     var body: some View {
         List {
-            stateSection
-            markSection
-            periodSection
-            if let errorMessage {
-                Text(errorMessage).foregroundStyle(.red)
+            ItemSummarySection(item: item) {
+                choosingTags = true
+            }
+            ItemMarksSection(item: item) { selection in
+                editingRecord = selection
+            }
+            ItemPeriodsSection(item: item) { selection in
+                editingRecord = selection
             }
             Section {
-                Button("Delete Item", role: .destructive) { confirmingDelete = true }
+                Toggle("Mark Recording", isOn: recordingBinding)
+            } footer: {
+                Text("Pausing stops new Marks. Your existing records and periods stay unchanged.")
             }
         }
         .disabled(saving)
         .navigationTitle(item.name)
-        .toolbar { Button("Edit") { editingItem = true } }
-        .sheet(isPresented: $editingItem) { ItemEditor(item: item) }
-        .sheet(item: $editingRecord) { selection in RecordEditor(item: item, selection: selection) }
+        .toolbar { itemToolbar }
+        .sheet(isPresented: $editingItem) {
+            ItemEditor(item: item, onSave: nil)
+        }
+        .sheet(isPresented: $choosingTags) {
+            ItemTagPicker(item: item)
+        }
+        .sheet(item: $editingRecord) { selection in
+            RecordEditor(item: item, selection: selection)
+        }
         .confirmationDialog(
             "Delete this Item and its Marks, periods, and photos?",
             isPresented: $confirmingDelete,
@@ -41,84 +53,89 @@ struct ItemDetailView: View {
             Button("Delete Item", role: .destructive) {
                 mutate {
                     try ItemOperations.delete(item, context: context)
-                    dismiss()
+                    onDelete()
                 }
             }
         }
-    }
-
-    private var stateSection: some View {
-        Section {
-            if !item.note.isEmpty { Text(item.note) }
-            Toggle("Favorite", isOn: favoriteBinding)
-            Toggle("Archived", isOn: archivedBinding)
-            Toggle("Mark Recording", isOn: recordingBinding)
-        }
-    }
-
-    private var markSection: some View {
-        Section("Marks") {
-            ForEach((item.marks ?? []).sorted { $0.localDateTime > $1.localDateTime }) { mark in
-                Button(mark.localDateTime) { editingRecord = .mark(mark) }
+        .alert("Could Not Save", isPresented: showingError) {
+            Button("OK") {
+                errorMessage = nil
             }
-            Button("Add Mark", systemImage: "plus") { editingRecord = .newMark }
-                .disabled(!item.isMarkRecordingEnabled)
+        } message: {
+            Text(errorMessage ?? "")
         }
     }
 
-    private var periodSection: some View {
-        Section("Periods") {
-            ForEach((item.periods ?? []).sorted { $0.createdAt < $1.createdAt }) { period in
-                Button {
-                    editingRecord = .period(period)
-                } label: {
-                    VStack(alignment: .leading) {
-                        Text(period.startLocalDate ?? String(localized: "Unknown start"))
-                        Text(
-                            period.isOngoing
-                                ? String(localized: "Ongoing")
-                                : period.endLocalDate ?? String(localized: "Unknown end")
-                        )
-                        .foregroundStyle(.secondary)
+    @ToolbarContentBuilder private var itemToolbar: some ToolbarContent {
+        ToolbarItem(placement: .primaryAction) {
+            Button("Edit Item", systemImage: "square.and.pencil") {
+                editingItem = true
+            }
+            .disabled(saving)
+        }
+        ToolbarItem(placement: .secondaryAction) {
+            Menu("Item Actions", systemImage: "ellipsis") {
+                Button(
+                    item.isFavorite ? "Remove Favorite" : "Add to Favorites",
+                    systemImage: item.isFavorite ? "star.slash" : "star"
+                ) {
+                    mutate {
+                        try ItemOperations.setFavorite(item, to: !item.isFavorite, context: context)
                     }
                 }
+                Button(
+                    item.isArchived ? "Move to Library" : "Archive Item",
+                    systemImage: item.isArchived ? "tray.and.arrow.up" : "archivebox"
+                ) {
+                    mutate {
+                        try ItemOperations.setArchived(item, to: !item.isArchived, context: context)
+                    }
+                }
+                Button("Choose Tags", systemImage: "tag") {
+                    choosingTags = true
+                }
+                Divider()
+                Button("Delete Item", systemImage: "trash", role: .destructive) {
+                    confirmingDelete = true
+                }
             }
-            Button("Add Period", systemImage: "plus") { editingRecord = .newPeriod }
+            .disabled(saving)
         }
     }
 
-    private var favoriteBinding: Binding<Bool> {
+    private var showingError: Binding<Bool> {
         .init(
-            get: { item.isFavorite },
-            set: { value in
-                mutate { try ItemOperations.setFavorite(item, to: value, context: context) }
-            }
-        )
-    }
-
-    private var archivedBinding: Binding<Bool> {
-        .init(
-            get: { item.isArchived },
-            set: { value in
-                mutate { try ItemOperations.setArchived(item, to: value, context: context) }
-            }
-        )
+            get: {
+                errorMessage != nil
+            },
+            set: { isPresented in
+                if !isPresented {
+                    errorMessage = nil
+                }
+            })
     }
 
     private var recordingBinding: Binding<Bool> {
         .init(
-            get: { item.isMarkRecordingEnabled },
+            get: {
+                item.isMarkRecordingEnabled
+            },
             set: { value in
-                mutate { try ItemOperations.setMarkRecordingEnabled(item, to: value, context: context) }
-            }
-        )
+                mutate {
+                    try ItemOperations.setMarkRecordingEnabled(item, to: value, context: context)
+                }
+            })
     }
 
     private func mutate(_ operation: @escaping () throws -> Void) {
         saving = true
         Task {
-            defer { saving = false }
-            do { try await updates.performMutation(operation) } catch {
+            defer {
+                saving = false
+            }
+            do {
+                try await updates.performMutation(operation)
+            } catch {
                 errorMessage = error.localizedDescription
             }
         }
