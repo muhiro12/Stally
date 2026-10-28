@@ -73,7 +73,7 @@ struct ItemDetailView: View {
             }
             .disabled(saving)
         }
-        ToolbarItem(placement: .secondaryAction) {
+        ToolbarItem(placement: .primaryAction) {
             Menu("Item Actions", systemImage: "ellipsis") {
                 Button(
                     item.isFavorite ? "Remove Favorite" : "Add to Favorites",

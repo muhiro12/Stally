@@ -9,8 +9,8 @@ removed after product intent was preserved under `docs/`, and the current tree
 now contains a fresh Apple-platform app project plus a local library package:
 
 - `Stally.xcodeproj`, with the `Stally` app target and `Stally` scheme.
-- `Stally/`, a SwiftUI consumer for Library, Archive filtering, Item state,
-  Mark and Period editing, startup failure handling, and shared runtime wiring.
+- `Stally/`, a SwiftUI sidebar/list/detail app for collections, search, Tags,
+  Item state, Mark and Period editing, startup recovery, and shared runtime wiring.
 - `StallyLibrary/`, a local Swift package for the five-model SwiftData schema,
   App Group/CloudKit configuration, domain Operations, and localized errors.
 - `StallyLibrary/Tests/`, Swift Testing coverage for the integrated foundation,
@@ -41,7 +41,8 @@ Start with the documentation relevant to the changed boundary:
 | Derived Item search, index recovery, and synthetic isolation | [Spotlight indexing](docs/spotlight-indexing.md) |
 | Samples, DEBUG profiles, frozen migration evidence, and scale | [Fixture architecture](docs/fixture-architecture.md), [original V1 fixtures](StallyLibrary/Tests/Default/Fixtures/V1/README.md), [current interchange fixtures](StallyLibrary/Tests/Default/Fixtures/Interchange/README.md) |
 | Earlier implemented single-start behavior | [Item start and elapsed time](docs/item-start-and-elapsed-time-proposal.md) |
-| Current UI and integration evidence | [Tracking verification](docs/item-tracking-verification.md), [combined interface](docs/combined-interface-design.md), [near-term brief](docs/near-term-development-brief.md) |
+| Current unified interface | [Library interface implementation](docs/library-interface-implementation.md) |
+| Earlier UI and integration evidence | [Tracking verification](docs/item-tracking-verification.md), [combined interface](docs/combined-interface-design.md), [near-term brief](docs/near-term-development-brief.md) |
 | Legacy extraction evidence | [Rebuild handoff](docs/rebuild-handoff.md) |
 
 These documents describe what Stally is, why it exists, which concepts must
@@ -68,9 +69,11 @@ owner-directed decisions.
 The first-release foundation now implements the five-model schema, shared
 App Group persistence, Item/Mark/Period/Tag Operations, and Library/detail
 adapters. Read [foundation implementation](docs/first-release-foundation-implementation.md)
-for schema 3.0.0, the explicit development-store guard, current test evidence,
-and the remaining first-release work. Historical documentation and old fixtures
-are retained as evidence, not as constraints overriding the accepted redesign.
+for schema 3.0.0 and the explicit development-store guard. The subsequent
+[unified library interface](docs/library-interface-implementation.md) adds the
+sidebar/list/detail experience, search, Tag controls, and calendar-based editors.
+Historical documentation and old fixtures are retained as evidence, not as
+constraints overriding the accepted redesign.
 
 The app and library require OS 27.2 or later. Development uses Xcode 27.2;
 match distribution verification to the candidate's actual Xcode Cloud build.

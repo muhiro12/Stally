@@ -30,7 +30,6 @@ struct ItemSummarySection: View {
     }
     private var summary: some View {
         VStack(alignment: .leading, spacing: LibraryLayout.sectionSpacing) {
-            Text(item.name).font(.title2.bold()).textSelection(.enabled)
             if item.isFavorite || item.isArchived {
                 HStack {
                     if item.isFavorite {

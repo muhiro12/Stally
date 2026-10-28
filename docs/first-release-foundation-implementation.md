@@ -2,6 +2,10 @@
 
 ## Scope and Status
 
+The subsequent [October 28 interface implementation](library-interface-implementation.md)
+adds unified navigation, search, Tag controls, and calendar-based editors.
+The statements below retain the scope of the October 27 foundation work.
+
 The October 27, 2026 implementation follows the accepted
 [contract summary](first-release-contract-summary.md) and
 [model schema](model-schema-design.md). The owner explicitly permits breaking

@@ -9,7 +9,9 @@ struct LibraryView: View {
     private var tags: [Tag]
     @State private var destination: LibraryDestination? = .library
     @State private var selectedItemID: PersistentIdentifier?
+    @State private var columnVisibility = NavigationSplitViewVisibility.all
     @State private var compactColumn = NavigationSplitViewColumn.content
+    @State private var searchText = ""
     @State private var addingItem = false
     @State private var managingTags = false
     @State private var routeError: String?
@@ -31,7 +33,10 @@ struct LibraryView: View {
     }
 
     var body: some View {
-        NavigationSplitView(preferredCompactColumn: $compactColumn) {
+        NavigationSplitView(
+            columnVisibility: $columnVisibility,
+            preferredCompactColumn: $compactColumn
+        ) {
             LibrarySidebar(items: items, tags: tags, selection: $destination) {
                 managingTags = true
             }
@@ -41,7 +46,8 @@ struct LibraryView: View {
                     (destination ?? .library).includes(item)
                 },
                 title: title,
-                selection: $selectedItemID
+                selection: $selectedItemID,
+                searchText: $searchText
             ) {
                 addingItem = true
             }
@@ -68,6 +74,7 @@ struct LibraryView: View {
         .sheet(isPresented: $addingItem) {
             ItemEditor(item: nil) { item in
                 destination = .library
+                searchText = ""
                 selectedItemID = item.persistentModelID
                 compactColumn = .detail
             }
@@ -120,6 +127,7 @@ struct LibraryView: View {
             return
         }
         destination = item.isArchived ? .archive : .library
+        searchText = ""
         selectedItemID = item.persistentModelID
         compactColumn = .detail
     }

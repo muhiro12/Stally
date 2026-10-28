@@ -26,8 +26,8 @@ struct ItemListView: View {
     let items: [Item]
     let title: String
     @Binding var selection: PersistentIdentifier?
+    @Binding var searchText: String
     let addItem: () -> Void
-    @State private var searchText = ""
     @State private var sortOrder = SortOrder.newest
 
     private var visibleItems: [Item] {
@@ -86,7 +86,7 @@ struct ItemListView: View {
                 Button("Add Item", systemImage: "plus", action: addItem)
                     .keyboardShortcut("n", modifiers: .command)
             }
-            ToolbarItem(placement: .secondaryAction) {
+            ToolbarItem(placement: .primaryAction) {
                 Menu("Sort Items", systemImage: "arrow.up.arrow.down") {
                     Picker("Sort Items", selection: $sortOrder) {
                         ForEach(SortOrder.allCases) { order in

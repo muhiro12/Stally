@@ -12,8 +12,9 @@ struct ItemPeriodRow: View {
                 edit(.period(period))
             } label: {
                 periodLabel
+                    .contentShape(Rectangle())
             }
-            .buttonStyle(.borderless)
+            .buttonStyle(.plain)
             if period.isOngoing {
                 Button("End Period") {
                     edit(.end(period))

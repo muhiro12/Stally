@@ -36,7 +36,7 @@ struct LibrarySidebar: View {
                         .badge((tag.items ?? []).count)
                     }
                 }
-                Button("Manage Tags", systemImage: "tag.badge.plus", action: manageTags)
+                Button("Manage Tags", systemImage: "tag", action: manageTags)
             } header: {
                 Text("Tags")
             }

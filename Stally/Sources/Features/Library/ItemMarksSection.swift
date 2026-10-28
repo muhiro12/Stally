@@ -29,17 +29,7 @@ struct ItemMarksSection: View {
                 .padding(.vertical, LibraryLayout.rowSpacing)
             }
             ForEach(marks) { mark in
-                Button {
-                    edit(.mark(mark))
-                } label: {
-                    HStack {
-                        Label(RecordDateDraft.display(mark.localDateTime), systemImage: "checkmark.circle")
-                        Spacer()
-                        Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
-                    }
-                    .foregroundStyle(.primary)
-                }
-                .accessibilityHint("Edit this Mark")
+                markButton(mark)
             }
             Button("Add Mark", systemImage: "plus") {
                 edit(.newMark)
@@ -52,5 +42,21 @@ struct ItemMarksSection: View {
                 Text("Recording is paused. You can still edit existing Marks.")
             }
         }
+    }
+
+    private func markButton(_ mark: ItemMark) -> some View {
+        Button {
+            edit(.mark(mark))
+        } label: {
+            HStack {
+                Label(RecordDateDraft.display(mark.localDateTime), systemImage: "checkmark.circle")
+                Spacer()
+                Image(systemName: "chevron.right").font(.caption).foregroundStyle(.tertiary)
+            }
+            .foregroundStyle(.primary)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint("Edit this Mark")
     }
 }

@@ -30,6 +30,7 @@ struct RecordDateDraft {
     static var calendar: Calendar {
         var result = Calendar(identifier: .gregorian)
         result.timeZone = .gmt
+        result.locale = .current
         return result
     }
 
@@ -128,7 +129,7 @@ struct RecordDateDraft {
         if precision == .day {
             year = Self.formatter("yyyy").string(from: date)
             month = Self.calendar.component(.month, from: date)
-        } else if newPrecision == .day {
+        } else if newPrecision == .day, precision != .unknown {
             let monthValue = precision == .year ? 1 : month
             let candidate = year + String(format: "-%02d-01", monthValue)
             if let parsed = Self.formatter("yyyy-MM-dd").date(from: candidate) {
