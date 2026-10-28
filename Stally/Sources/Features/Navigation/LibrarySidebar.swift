@@ -4,6 +4,12 @@ import SwiftData
 import SwiftUI
 
 struct LibrarySidebar: View {
+    #if DEBUG
+    @Environment(\.modelContext)
+    private var context
+    @State private var showingDevelopment = false
+    #endif
+
     let items: [Item]
     let tags: [Tag]
     @Binding var selection: LibraryDestination?
@@ -11,36 +17,15 @@ struct LibrarySidebar: View {
 
     var body: some View {
         List(selection: $selection) {
-            Section("Collection") {
-                ForEach(LibraryDestination.collections, id: \.self) { destination in
-                    NavigationLink(value: destination) {
-                        Label {
-                            Text(destination.title)
-                        } icon: {
-                            Image(systemName: destination.symbol)
-                        }
-                        .badge(
-                            items.count { item in
-                                destination.includes(item)
-                            })
-                    }
-                }
-            }
+            collectionSection
+            tagSection
+            #if DEBUG
             Section {
-                ForEach(tags) { tag in
-                    NavigationLink(value: LibraryDestination.tag(tag.persistentModelID)) {
-                        Label {
-                            TagNameView(tag: tag, tags: tags)
-                        } icon: {
-                            Image(systemName: "tag")
-                        }
-                        .badge((tag.items ?? []).count)
-                    }
+                Button("Developer Tools", systemImage: "hammer") {
+                    showingDevelopment = true
                 }
-                Button("Manage Tags", systemImage: "tag", action: manageTags)
-            } header: {
-                Text("Tags")
             }
+            #endif
         }
         .mhListChrome(.native)
         .listStyle(.sidebar)
@@ -49,5 +34,46 @@ struct LibrarySidebar: View {
             min: LibraryLayout.sidebarMinimum,
             ideal: LibraryLayout.sidebarIdeal,
             max: LibraryLayout.sidebarMaximum)
+        #if DEBUG
+        .sheet(isPresented: $showingDevelopment) {
+            DevelopmentView(container: context.container, startupError: nil)
+        }
+        #endif
+    }
+
+    private var collectionSection: some View {
+        Section("Collection") {
+            ForEach(LibraryDestination.collections, id: \.self) { destination in
+                NavigationLink(value: destination) {
+                    Label {
+                        Text(destination.title)
+                    } icon: {
+                        Image(systemName: destination.symbol)
+                    }
+                    .badge(
+                        items.count { item in
+                            destination.includes(item)
+                        })
+                }
+            }
+        }
+    }
+
+    private var tagSection: some View {
+        Section {
+            ForEach(tags) { tag in
+                NavigationLink(value: LibraryDestination.tag(tag.persistentModelID)) {
+                    Label {
+                        TagNameView(tag: tag, tags: tags)
+                    } icon: {
+                        Image(systemName: "tag")
+                    }
+                    .badge((tag.items ?? []).count)
+                }
+            }
+            Button("Manage Tags", systemImage: "tag", action: manageTags)
+        } header: {
+            Text("Tags")
+        }
     }
 }

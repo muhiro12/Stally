@@ -88,7 +88,8 @@ The new package import/export, full Intent coverage, and Universal Links are
 not implemented by this foundation step. Photo storage is implemented;
 photo ingestion and presentation are not. DEBUG launches now use isolated local
 development records; see [development setup](docs/fixture-architecture.md#current-development-setup)
-for initial seeding, empty-store opt-out, and explicit shared-store verification.
+for the DEBUG Developer Tools screen, initial seeding, empty-store opt-out,
+and explicit shared-store verification.
 No period readings have been accepted or implemented by implication.
 
 Startup never automatically deletes a development store or substitutes an empty

@@ -22,9 +22,28 @@ not recovery from an error or a migration of earlier records.
 
 ### Developer Controls
 
-The defaults below are read only inside `#if DEBUG`. No custom Scheme is needed
+Open **Developer Tools** from the Library sidebar in a DEBUG build. The same
+screen is available from the startup-error screen so a failed shared-store open
+does not prevent changing the next-launch choice. It uses native Form controls
+with MHUI presentation and has English/Japanese strings.
+
+The screen separates the actual open container from next-launch preferences:
+
+- Current storage: disk/in-memory configuration, local store locations, and
+  configured CloudKit status. This is not a claim of completed synchronization.
+- Record counts: read-only Item, Mark, Period, Photo, and Tag counts, with an
+  explicit refresh action. Fetching diagnostics never saves pending edits and
+  does not load image payloads.
+- Next launch: select the shared store or initial-only sample creation. Selecting
+  the shared store requires confirmation explaining that writes may sync with
+  iCloud. Changing the choice does not replace the currently open container.
+- App: current version/build and domain schema version. No entitlement overrides,
+  database reset, arbitrary mutations, or log export controls are provided.
+
+The preferences below are read only inside `#if DEBUG`, from standard local
+UserDefaults rather than shared production settings. No custom Scheme is needed
 for ordinary development. Native UserDefaults launch overrides can opt out for
-an individual run:
+an individual run; overridden controls are disabled with an explanation:
 
 - `-development.automaticallySeedRecords NO`: create an initially empty local
   development store. Setting this after initial setup preserves existing records.
@@ -67,14 +86,18 @@ entitlement bypasses, product sample controls, export, or database reset actions
 
 ### Current Verification
 
-On Xcode 27.2 / iOS 27.2, all 32 library tests in eight suites pass, including
-six development-store tests. Disposable disk stores verify graph reload,
+On Xcode 27.2 / iOS 27.2, all 35 library tests in nine suites pass, including
+six development-store tests and three diagnostic/preference tests. Disposable disk stores verify graph reload,
 identity/precision retention, preserving edits while seeding is disabled,
 no reseeding after deliberate deletion, permanent initial opt-out, conservative
 handling of an existing directory, and retaining an unreadable store without
 fallback. Independent in-memory graphs verify Preview isolation and ordinary
-Operations. Expected diagnostics from the read-only save test and malformed
-SQLite fixture were reviewed against their passing tests.
+Operations. Diagnostic tests also verify that counts refresh, unsaved edits
+remain unsaved, and default registration preserves explicit preferences and
+launch overrides. Expected diagnostics from the read-only save test and malformed
+SQLite fixture were reviewed against their passing tests. The package test
+runner also reports skipped App Intents metadata extraction because that test
+product has no AppIntents framework dependency.
 
 Strict SwiftLint and repository boundary checks pass. The historical counts
 and screenshots in the next section are not evidence for this implementation.
@@ -92,7 +115,7 @@ automatic seeding disabled retains the collection without duplication. No
 app-owned persistence, CloudKit, or crash error appeared; Simulator framework
 noise was reviewed separately. The shared store was not opened in this pass.
 
-Direct rendering of the single `LibraryPreview` was attempted but timed out in
+During the initial store work, direct rendering of the single `LibraryPreview` was attempted but timed out in
 the Preview renderer without returning an image. Its source compiles and the
 in-memory graph is unit-tested; direct Preview appearance remains unverified.
 Live-app captures verify the same representative content in the persistent
@@ -100,6 +123,26 @@ development route, not the Preview renderer. Owned runs/sessions were stopped
 and the original Xcode destination restored. Actual CloudKit synchronization and
 initial-empty app launch remain outside this runtime pass; initial opt-out is
 covered by disk tests.
+
+The subsequent Developer Tools pass covers Japanese and English on iPhone and
+Japanese on iPad Simulators. It verifies the sidebar entry, actual local-store
+configuration and counts, sample-preference persistence across relaunch,
+shared-store confirmation/cancellation, and the distinction between the current
+store and next-launch choice. Shared-store selection was restored to off before
+relaunch; that store was never opened during the pass. A launch override disables
+the affected control and explains why. Removing it restores the saved choice.
+All modified preferences were restored to their initial values.
+
+The first pass exposed missing text when multiple MHUI footers were supplied to
+one Section. One footer now contains all explanatory paragraphs, confirmed in
+Japanese, English, and the iPad layout. No record edits or deletions were needed.
+The final Release build passes without warnings/errors; its executable omits
+the development view, diagnostic Operations, preference type, and preference-key
+literals, while the DEBUG executable contains them. Localized resource strings
+are not a runtime entry point and may remain in the shared string catalog.
+Startup-error entry, dark appearance, Dynamic Type, and VoiceOver interaction
+remain unverified by this UI pass. Verification runs and sessions were stopped
+and the original Xcode selection restored.
 
 ## Historical Architecture
 

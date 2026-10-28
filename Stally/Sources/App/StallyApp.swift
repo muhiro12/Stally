@@ -7,6 +7,10 @@ import SwiftUI
 
 @main
 struct StallyApp: App {
+    #if DEBUG
+    @State private var showingDevelopment = false
+    #endif
+
     private let container: ModelContainer?
     private let startupError: String?
     private let runtimeBootstrap: MHAppRuntimeBootstrap
@@ -28,17 +32,32 @@ struct StallyApp: App {
                         _ = try? await updates.prepare()
                     }
             } else {
-                ContentUnavailableView {
-                    Label(
-                        "Stally could not open its records",
-                        systemImage: "externaldrive.badge.exclamationmark"
-                    )
-                } description: {
-                    Text(startupError ?? "")
-                        .textSelection(.enabled)
-                }
+                startupFailure
             }
         }
+    }
+
+    private var startupFailure: some View {
+        ContentUnavailableView {
+            Label(
+                "Stally could not open its records",
+                systemImage: "externaldrive.badge.exclamationmark"
+            )
+        } description: {
+            Text(startupError ?? "")
+                .textSelection(.enabled)
+        } actions: {
+            #if DEBUG
+            Button("Developer Tools", systemImage: "hammer") {
+                showingDevelopment = true
+            }
+            #endif
+        }
+        #if DEBUG
+        .sheet(isPresented: $showingDevelopment) {
+            DevelopmentView(container: nil, startupError: startupError)
+        }
+        #endif
     }
 
     init() {
@@ -75,10 +94,10 @@ struct StallyApp: App {
     private static func makeContainer() throws -> ModelContainer {
         #if DEBUG
         let defaults = UserDefaults.standard
-        defaults.register(defaults: ["development.automaticallySeedRecords": true])
-        if !defaults.bool(forKey: "development.useSharedStore") {
+        StallyDevelopmentPreferences.register(in: defaults)
+        if !defaults.bool(forKey: StallyDevelopmentPreferences.useSharedStoreKey) {
             return try StallyDevelopmentStore.open(
-                automaticallySeed: defaults.bool(forKey: "development.automaticallySeedRecords")
+                automaticallySeed: defaults.bool(forKey: StallyDevelopmentPreferences.automaticallySeedRecordsKey)
             )
         }
         #endif

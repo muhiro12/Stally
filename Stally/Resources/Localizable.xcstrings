@@ -159,6 +159,23 @@
         }
       }
     },
+    "A launch argument overrides the disabled setting for this run.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A launch argument overrides the disabled setting for this run."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無効になっている設定は、この起動では起動引数で指定されています。"
+          }
+        }
+      }
+    },
     "A place for the things you want to remember.": {
       "localizations": {
         "en": {
@@ -324,6 +341,23 @@
         }
       }
     },
+    "Add Samples on Initial Setup": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Samples on Initial Setup"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "初回にサンプルを追加"
+          }
+        }
+      }
+    },
     "Add Tag": {
       "localizations": {
         "en": {
@@ -469,6 +503,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "終了した期間でも、終了日を不明のまま残せます。"
+          }
+        }
+      }
+    },
+    "App": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "App"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アプリ"
           }
         }
       }
@@ -874,6 +925,23 @@
         }
       }
     },
+    "CloudKit Configuration": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CloudKit Configuration"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CloudKit設定"
+          }
+        }
+      }
+    },
     "Collection": {
       "localizations": {
         "en": {
@@ -920,6 +988,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "コレクションの状態"
+          }
+        }
+      }
+    },
+    "Configured": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configured"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定済み"
           }
         }
       }
@@ -1088,6 +1173,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "アイテム${name}を作成"
+          }
+        }
+      }
+    },
+    "Current Storage": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current Storage"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在の保存先"
           }
         }
       }
@@ -1559,6 +1661,40 @@
         }
       }
     },
+    "Developer Tools": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Developer Tools"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開発ツール"
+          }
+        }
+      }
+    },
+    "Disabled": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disabled"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無効"
+          }
+        }
+      }
+    },
     "Done": {
       "localizations": {
         "en": {
@@ -1968,6 +2104,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "読み込みのプレビュー"
+          }
+        }
+      }
+    },
+    "In Memory": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Memory"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "メモリ内"
           }
         }
       }
@@ -2809,6 +2962,23 @@
         }
       }
     },
+    "Next Launch": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Next Launch"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "次回起動"
+          }
+        }
+      }
+    },
     "Next Moves": {
       "extractionState": "stale",
       "localizations": {
@@ -3198,6 +3368,23 @@
         }
       }
     },
+    "On Disk": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On Disk"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ディスク"
+          }
+        }
+      }
+    },
     "One mark is enough for today.": {
       "extractionState": "stale",
       "localizations": {
@@ -3398,6 +3585,23 @@
         }
       }
     },
+    "Photos": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photos"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真"
+          }
+        }
+      }
+    },
     "Precision": {
       "extractionState": "stale",
       "localizations": {
@@ -3534,6 +3738,23 @@
         }
       }
     },
+    "Record Counts": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record Counts"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録の件数"
+          }
+        }
+      }
+    },
     "Record Marks": {
       "extractionState": "stale",
       "localizations": {
@@ -3612,6 +3833,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "絞り込み"
+          }
+        }
+      }
+    },
+    "Refresh Diagnostics": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh Diagnostics"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "診断情報を更新"
           }
         }
       }
@@ -3969,6 +4207,23 @@
         }
       }
     },
+    "Samples are added only when the local development store is first created.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Samples are added only when the local development store is first created."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サンプルはローカルの開発用保存先を初めて作成するときだけ追加されます。"
+          }
+        }
+      }
+    },
     "Save": {
       "localizations": {
         "en": {
@@ -4014,6 +4269,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "保存された日付"
+          }
+        }
+      }
+    },
+    "Schema": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schema"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキーマ"
           }
         }
       }
@@ -4472,6 +4744,23 @@
         }
       }
     },
+    "Storage": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Storage"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存方式"
+          }
+        }
+      }
+    },
     "Storage Is Temporary": {
       "extractionState": "stale",
       "localizations": {
@@ -4485,6 +4774,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "一時ストレージで実行中"
+          }
+        }
+      }
+    },
+    "Store changes apply after relaunch. Existing records stay.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Store changes apply after relaunch. Existing records stay."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存先は次回起動時に切り替わります。既存の記録は保持されます。"
           }
         }
       }
@@ -4621,6 +4927,23 @@
         }
       }
     },
+    "These tools are available only in DEBUG builds.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "These tools are available only in DEBUG builds."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このツールはDEBUGビルドでのみ利用できます。"
+          }
+        }
+      }
+    },
     "This destination is not available yet.": {
       "localizations": {
         "en": {
@@ -4734,6 +5057,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "この日付は確認が必要です。修正するまで保存内容を保持します。"
+          }
+        }
+      }
+    },
+    "This shows the open store's configuration, not iCloud sync progress.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This shows the open store's configuration, not iCloud sync progress."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在開いている保存先の設定を表示しています。iCloudの同期状況を示すものではありません。"
           }
         }
       }
@@ -5024,6 +5364,57 @@
         }
       }
     },
+    "Use Shared Store": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use Shared Store"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "共有ストアを使う"
+          }
+        }
+      }
+    },
+    "Use the shared store on next launch?": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use the shared store on next launch?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "次回起動時に共有ストアを使いますか？"
+          }
+        }
+      }
+    },
+    "Version": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バージョン"
+          }
+        }
+      }
+    },
     "Weekdays": {
       "extractionState": "stale",
       "localizations": {
@@ -5053,6 +5444,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "覚えておきたいこと"
+          }
+        }
+      }
+    },
+    "Writes in the shared store may sync with iCloud. Development records will not be copied.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Writes in the shared store may sync with iCloud. Development records will not be copied."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "共有ストアへの変更はiCloudと同期される場合があります。開発用の記録はコピーされません。"
           }
         }
       }
