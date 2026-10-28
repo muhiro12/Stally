@@ -1,11 +1,114 @@
 # Sample and Fixture Architecture
 
+## Current Development Setup
+
+Issue [#34](https://github.com/muhiro12/Stally/issues/34) applies to the new
+five-model foundation. A normal `DEBUG` launch opens an explicitly local store
+in the app sandbox at `Application Support/StallyDevelopment/Development.store`.
+CloudKit is disabled for this store. Release continues to open the App Group
+store with its existing CloudKit configuration and legacy-store guard.
+
+Only initial creation of the development directory seeds records. Reopening an
+empty store, deleting all records, changing a preference, or updating the seed
+definition does not seed it again. An existing directory is conservatively
+considered already initialized, even if empty or left by a failed setup. A
+failed open/save is surfaced by the existing startup error screen; the directory
+and database are retained for diagnosis, never deleted or replaced by a fallback.
+This is a single-app development setup, not a multi-process seed coordinator.
+
+Existing shared and older development stores are neither moved nor deleted.
+They are not shown by the default DEBUG route. This is explicit store selection,
+not recovery from an error or a migration of earlier records.
+
+### Developer Controls
+
+The defaults below are read only inside `#if DEBUG`. No custom Scheme is needed
+for ordinary development. Native UserDefaults launch overrides can opt out for
+an individual run:
+
+- `-development.automaticallySeedRecords NO`: create an initially empty local
+  development store. Setting this after initial setup preserves existing records.
+  Removing the override later does not backfill the opted-out store.
+- `-development.useSharedStore YES`: explicitly open the existing App Group /
+  CloudKit store for integration verification. This path never injects developer
+  records and retains the old-store review guard. It does not copy local
+  developer data into the shared store. Normal shared-store writes can sync.
+
+Use a fresh, dedicated Simulator for initial-empty launch checks, or a temporary
+URL through the library test API. Do not erase existing Simulator or device data
+to repeat initial setup. There is no automatic reset or reseed control.
+
+### Representative Data and Reuse
+
+`StallyDevelopmentSeed` owns one synthetic graph: five Items, five Marks, five
+Periods, and three Tags. It covers two Marks on one day with different time
+precision; unknown/year/month/day period precision; an ended and resumed
+relationship; archived favorites; paused recording with retained history;
+shared Tags and distinct same-name Tag identities; and an Item with no history.
+The English names and notes are fictional test data, not localized product copy.
+Photos remain absent until photo ingestion has its own representative fixtures.
+
+The library builds the graph in one owned context and saves once. It is not a
+public insertion operation on arbitrary user contexts. The DEBUG-only
+`StallyDevelopmentStore.preview()` returns a fresh in-memory, CloudKit-disabled
+container using the same graph. `LibraryPreview` supplies the existing MHUI theme
+and isolated remote-update environment. Unit tests reuse that entry point while
+keeping independent behavioral assertions. UUIDs are newly generated for each
+new graph and survive reopening the same store; they are not exported contracts.
+
+### Diagnostics Boundary
+
+No production debug screen or hidden gesture is introduced. Release retains the
+ordinary startup-failure presentation and existing warning/error logging, with
+error type/domain/code rather than record contents in diagnostic metadata.
+Developer storage, seed construction, Preview wiring, and preference routing
+are compiled only for DEBUG. Neither the development route nor the Preview adds
+entitlement bypasses, product sample controls, export, or database reset actions.
+
+### Current Verification
+
+On Xcode 27.2 / iOS 27.2, all 32 library tests in eight suites pass, including
+six development-store tests. Disposable disk stores verify graph reload,
+identity/precision retention, preserving edits while seeding is disabled,
+no reseeding after deliberate deletion, permanent initial opt-out, conservative
+handling of an existing directory, and retaining an unreadable store without
+fallback. Independent in-memory graphs verify Preview isolation and ordinary
+Operations. Expected diagnostics from the read-only save test and malformed
+SQLite fixture were reviewed against their passing tests.
+
+Strict SwiftLint and repository boundary checks pass. The historical counts
+and screenshots in the next section are not evidence for this implementation.
+
+The DEBUG consumer builds through Xcode MCP. A separate Release Simulator build
+passes without warnings or errors. Symbol and literal inspection finds the
+development store/seed/Preview types, preference keys, seed name, and local store
+filename in DEBUG and absent from the Release executable. This is not an Archive
+or distribution-signing qualification.
+
+The assigned iPhone Simulator shows four Library Items, one archived Item, two
+favorites, three recording-enabled Items, and three Tags. The backpack detail
+shows the same-day Marks and ended/ongoing periods. Stopping and relaunching with
+automatic seeding disabled retains the collection without duplication. No
+app-owned persistence, CloudKit, or crash error appeared; Simulator framework
+noise was reviewed separately. The shared store was not opened in this pass.
+
+Direct rendering of the single `LibraryPreview` was attempted but timed out in
+the Preview renderer without returning an image. Its source compiles and the
+in-memory graph is unit-tested; direct Preview appearance remains unverified.
+Live-app captures verify the same representative content in the persistent
+development route, not the Preview renderer. Owned runs/sessions were stopped
+and the original Xcode destination restored. Actual CloudKit synchronization and
+initial-empty app launch remain outside this runtime pass; initial opt-out is
+covered by disk tests.
+
+## Historical Architecture
+
 The October 27 five-model implementation supersedes the older implementation
 and evidence described here. See [foundation implementation](first-release-foundation-implementation.md)
 for current Operations, storage, UI, verification, and unfinished capabilities.
 Retain the details below as historical evidence, not as the new schema contract.
 
-## Roles and Ownership
+### Roles and Ownership
 
 | Role | Source |
 | --- | --- |
@@ -33,7 +136,7 @@ UUID, rather than localized names. The app adapter supplies only its UIKit
 placeholder image and native presentation environment. There is no second
 domain model, fixture database, general generator framework, or package.
 
-## Profile Vocabulary
+### Profile Vocabulary
 
 | Profile | Items / Archive / Marks | Purpose |
 | --- | --- | --- |
@@ -59,7 +162,7 @@ are technical numbered fixture labels. The app produces a placeholder image
 for ordinary visual profiles; stress deliberately excludes large photos so it
 measures collection/history scale independently of the validated photo limits.
 
-## Reproducible Use
+### Reproducible Use
 
 For library tests or an explicit debug seed, create an in-memory container and
 call `StallyFixtureOperations.seed(.integration, in: context)`. The facade
@@ -104,7 +207,7 @@ checksums. Tests copy them before opening with CloudKit disabled. The v3 golden
 interchange JSON and malformed validation cases stay independent of the current
 seed builder, so changing a seed cannot silently bless migration/wire behavior.
 
-## Historical Implementation Evidence
+### Historical Implementation Evidence
 
 The following observations record the original fixture implementation. The
 current automated gate uses unit tests, the app build, and repository rules;

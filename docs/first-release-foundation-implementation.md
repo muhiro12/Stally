@@ -4,6 +4,9 @@
 
 The subsequent [October 28 interface implementation](library-interface-implementation.md)
 adds unified navigation, search, Tag controls, and calendar-based editors.
+The later [development setup](fixture-architecture.md#current-development-setup)
+selects a separate local DEBUG store with initial-only synthetic data; shared
+store selection, recovery guards, and Release startup retain the behavior below.
 The statements below retain the scope of the October 27 foundation work.
 
 The October 27, 2026 implementation follows the accepted

@@ -86,12 +86,16 @@ Insights, search projections, sample profiles, and old Intent adapters have been
 retired. Their redesigned features remain first-release work as applicable.
 The new package import/export, full Intent coverage, and Universal Links are
 not implemented by this foundation step. Photo storage is implemented;
-photo ingestion and presentation are not. No period readings have been accepted
-or implemented by implication.
+photo ingestion and presentation are not. DEBUG launches now use isolated local
+development records; see [development setup](docs/fixture-architecture.md#current-development-setup)
+for initial seeding, empty-store opt-out, and explicit shared-store verification.
+No period readings have been accepted or implemented by implication.
 
 Startup never automatically deletes a development store or substitutes an empty
-library on error. The old development locations cause an explanatory stop until
-reviewed recovery is implemented. No shipped-user compatibility is claimed for
+library on error. DEBUG local storage is selected before opening a container;
+it is not a fallback for shared-store failure. When opening the shared store,
+the old development locations cause an explanatory stop until reviewed recovery
+is implemented. No shipped-user compatibility is claimed for
 unreleased V1/V2 stores or flat files. Never open the checked-in V1 fixtures for
 writing or regenerate them; any future recovery test must use disposable copies
 including external photo storage and disable CloudKit.

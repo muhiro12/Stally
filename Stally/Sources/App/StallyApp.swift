@@ -58,17 +58,30 @@ struct StallyApp: App {
             )
         )
         do {
-            let sharedContainer = try StallyModelContainerFactory.persistent()
-            sharedContainer.mainContext.autosaveEnabled = false
-            container = sharedContainer
+            let modelContainer = try Self.makeContainer()
+            modelContainer.mainContext.autosaveEnabled = false
+            container = modelContainer
             startupError = nil
-            AppDependencyManager.shared.add { sharedContainer }
+            AppDependencyManager.shared.add { modelContainer }
             AppDependencyManager.shared.add { updateOperations }
-            logger.notice("model_container.shared_cloudkit_created")
+            logger.notice("model_container.opened")
         } catch {
             container = nil
             startupError = error.localizedDescription
             logger.error("model_container.open_failed", metadata: StallyLogging.errorMetadata(error))
         }
+    }
+
+    private static func makeContainer() throws -> ModelContainer {
+        #if DEBUG
+        let defaults = UserDefaults.standard
+        defaults.register(defaults: ["development.automaticallySeedRecords": true])
+        if !defaults.bool(forKey: "development.useSharedStore") {
+            return try StallyDevelopmentStore.open(
+                automaticallySeed: defaults.bool(forKey: "development.automaticallySeedRecords")
+            )
+        }
+        #endif
+        return try StallyModelContainerFactory.persistent()
     }
 }
