@@ -12,6 +12,12 @@ for the decisions reached in the first-release contract-design session. It
 summarizes accepted direction without accepting previously unresolved proposals,
 claiming completed implementation, or authorizing release.
 
+On October 28, the owner clarified the next phase: derive product capabilities
+and behavior from these foundations before designing concrete Operations and
+App Intent adapters. Existing Operations and temporary UI are not accepted
+feature specifications. See [product behavior design](product-behavior-design.md)
+for contract consequences and explicitly unaccepted proposals.
+
 A contract is a persisted or published identity, structure, or meaning whose
 consumers can outlive the current implementation and leave material migration,
 compatibility, recovery, or support responsibility. Fulfill that responsibility

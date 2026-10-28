@@ -29,6 +29,7 @@ Start with the documentation relevant to the changed boundary:
 | Decision | Current entry point |
 | --- | --- |
 | Accepted first-release contract direction and implementation handoff | [Contract summary](docs/first-release-contract-summary.md), [consolidated Swift schema](docs/model-schema-design.md), [design history](docs/core-record-design.md) |
+| Product capabilities and behavior after the foundation | [Product behavior design](docs/product-behavior-design.md): owner-directed design order, contract consequences, and proposals |
 | Product purpose, domain, workflows, and language | [Product brief](docs/product-brief.md), [purpose](docs/product-purpose.md), [preserved concepts](docs/preserved-concepts.md), [domain](docs/domain-concepts.md), [workflows](docs/user-workflows.md), [experience principles](docs/user-experience-principles.md), [language](docs/product-language.md) |
 | Owner-directed baseline and scope | [Rebuild implementation direction](docs/rebuild-implementation-direction.md), [implementation principles](docs/rebuild-implementation-principles.md) |
 | Live SwiftData read ownership and value lifetimes | [App data flow](docs/swiftdata-app-data-flow.md) |
@@ -63,6 +64,16 @@ evidence. Do not infer architecture, persistence, routes, or future features
 from removed legacy implementation details. Keep product-intent documents in
 their existing English voice and distinguish extracted evidence from later
 owner-directed decisions.
+
+The owner's October 28 clarification establishes the next design order:
+accepted foundational contracts, product capabilities and behavior, Operations,
+then app/system adapters. Current Operations and temporary UI are implementation
+evidence, not an approved feature specification. Start new feature design from
+the [behavior discussion](docs/product-behavior-design.md). Older product
+documents retain legacy requirements such as mandatory categories, one Mark per
+day, and whole-library replacement; those do not override the accepted contracts
+or require restoration of the old product surface. New behavior proposals remain
+proposals until selected.
 
 ## Current Repository State
 

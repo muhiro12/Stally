@@ -11,6 +11,12 @@ The [five-model design](model-schema-design.md) defines the selected domain
 facts. The [system interface document](system-interface-contract.md) records
 the older implementation and its historical verification.
 
+On October 28, the owner clarified that existing Operations are not a finalized
+product interface. Begin with [product capabilities and behavior](product-behavior-design.md)
+under the accepted foundational contracts, then shape Operations and their
+Intent adapters. Do not treat this document as a request to freeze current
+methods or decide product behavior through Intent parameters alone.
+
 ## Accepted Direction
 
 Represent all application capabilities with App Intents that invoke the shared
