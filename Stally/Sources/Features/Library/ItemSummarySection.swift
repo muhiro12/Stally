@@ -3,10 +3,13 @@ import StallyLibrary
 import SwiftUI
 
 struct ItemSummarySection: View {
+    @Environment(\.openURL)
+    private var openURL
     @Environment(\.mhTheme)
     private var theme
     let item: Item
     let chooseTags: () -> Void
+    @State private var linkFailed = false
 
     private var tags: [Tag] {
         (item.tags ?? []).sorted { first, second in
@@ -17,6 +20,13 @@ struct ItemSummarySection: View {
     var body: some View {
         Section {
             summary
+            if let value = item.representativeURL, let url = URL(string: value) {
+                Button("Open Link", systemImage: "arrow.up.right.square") {
+                    openURL(url) { accepted in
+                        linkFailed = !accepted
+                    }
+                }
+            }
             Button(action: chooseTags) {
                 LabeledContent {
                     if tags.isEmpty {
@@ -29,6 +39,13 @@ struct ItemSummarySection: View {
                 }
             }
             .mhForegroundStyle(.primaryText)
+        }
+        .alert("Could Not Open Link", isPresented: $linkFailed) {
+            Button("OK", role: .cancel) {
+                linkFailed = false
+            }
+        } message: {
+            Text("The destination could not be opened on this device.")
         }
     }
     private var summary: some View {

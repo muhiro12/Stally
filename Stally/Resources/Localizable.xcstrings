@@ -358,6 +358,22 @@
         }
       }
     },
+    "Add Photos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Photos"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真を追加"
+          }
+        }
+      }
+    },
     "Add Samples on Initial Setup": {
       "extractionState": "manual",
       "localizations": {
@@ -686,6 +702,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "キャンセル"
+          }
+        }
+      }
+    },
+    "Caption": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caption"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "キャプション"
           }
         }
       }
@@ -1107,6 +1139,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "削除できませんでした"
+          }
+        }
+      }
+    },
+    "Could Not Open Link": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could Not Open Link"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リンクを開けませんでした"
           }
         }
       }
@@ -2593,6 +2641,22 @@
         }
       }
     },
+    "Link": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Link"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リンク"
+          }
+        }
+      }
+    },
     "Manage Tags": {
       "localizations": {
         "en": {
@@ -2946,6 +3010,38 @@
         }
       }
     },
+    "Move Photo Down": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move Photo Down"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真を下へ移動"
+          }
+        }
+      }
+    },
+    "Move Photo Up": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move Photo Up"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真を上へ移動"
+          }
+        }
+      }
+    },
     "Move Selected Back to Library": {
       "extractionState": "stale",
       "localizations": {
@@ -3008,6 +3104,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "新規"
+          }
+        }
+      }
+    },
+    "New Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Tag"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しいタグ"
           }
         }
       }
@@ -3534,6 +3646,22 @@
         }
       }
     },
+    "Open Link": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Link"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リンクを開く"
+          }
+        }
+      }
+    },
     "Overview": {
       "extractionState": "stale",
       "localizations": {
@@ -3652,7 +3780,6 @@
       }
     },
     "Photo": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -3681,6 +3808,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "写真のカバー率"
+          }
+        }
+      }
+    },
+    "Photo unavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photo unavailable"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真を表示できません"
           }
         }
       }
@@ -3743,6 +3886,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Preparing Photo"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真を準備中"
+          }
+        }
+      }
+    },
+    "Preparing Photos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preparing Photos"
           }
         },
         "ja": {
@@ -4005,7 +4164,6 @@
       }
     },
     "Remove Photo": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4051,6 +4209,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "サンプルアイテムを削除しますか？"
+          }
+        }
+      }
+    },
+    "Remove Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove Tag"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タグを外す"
           }
         }
       }
@@ -4977,6 +5151,22 @@
         }
       }
     },
+    "The destination could not be opened on this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The destination could not be opened on this device."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このデバイスではリンク先を開けませんでした。"
+          }
+        }
+      }
+    },
     "The linked Item is missing or has a conflicting identity.": {
       "localizations": {
         "en": {
@@ -5511,6 +5701,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "バージョン"
+          }
+        }
+      }
+    },
+    "View Photo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View Photo"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真を見る"
+          }
+        }
+      }
+    },
+    "Website or App URL": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Website or App URL"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WebサイトまたはアプリのURL"
           }
         }
       }

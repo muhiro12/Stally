@@ -27,7 +27,6 @@ struct SaveFailureTests {
             )
             let container = try ModelContainer(
                 for: schema,
-                migrationPlan: StallyMigrationPlan.self,
                 configurations: [configuration]
             )
             let context = ModelContext(container)

@@ -2,11 +2,11 @@ import Foundation
 import SwiftData
 
 /// A personally meaningful subject with independent state and owned records.
-public typealias Item = StallySchemaV3.Item
+public typealias Item = StallySchema.Item
 
 // The Model macro needs explicit class visibility for its generated protocol witnesses.
 // swiftlint:disable:next extension_access_modifier
-extension StallySchemaV3 {
+extension StallySchema {
     /// A personally meaningful subject with independent state and owned records.
     @Model
     public final class Item {
@@ -16,6 +16,8 @@ extension StallySchemaV3 {
         public internal(set) var name: String = ""
         /// User-authored context.
         public internal(set) var note: String = ""
+        /// One user-selected external destination; absence does not infer a link from the note.
+        public internal(set) var representativeURL: String?
         /// Registration time, never an occurrence date or conflict ordering signal.
         public internal(set) var createdAt = Date()
         /// Library placement, independent of recording and period state.

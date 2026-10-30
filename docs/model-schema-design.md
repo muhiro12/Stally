@@ -22,11 +22,11 @@ rules. The existing application models and stores are unchanged.
 
 The owner accepted one optional representative URL per Item and reaffirmed
 Bool favorites. See [the behavior decision](product-behavior-design.md#accepted-context-and-favorite-decisions).
-The Swift illustration below retains the earlier five-model baseline; the
-implemented `StallySchemaV3` does not yet contain the URL. Integrate the new
-fact through a successor schema rather than silently changing that historical
-snapshot. Decide the physical property representation and matching export key
-with the implementation, preserving identity, notes, and an absent-link state.
+The October 31 implementation uses optional `representativeURL: String?` in
+the new `StallySchema` baseline (1.0.0). The owner's explicit prerelease breaking-
+change authority supersedes retaining development V3 or migrating old test
+stores. The portable key and codec still belong to export/import implementation.
+Preserve identity, notes, and an absent-link state in that implementation.
 This addition does not select a separate link entity or a collection of URLs.
 
 ## Swift Representation
@@ -45,6 +45,7 @@ final class Item {
     var uuid: UUID = UUID()
     var name: String = ""
     var note: String = ""
+    var representativeURL: String?
     var createdAt: Date = Date()
 
     var isArchived: Bool = false

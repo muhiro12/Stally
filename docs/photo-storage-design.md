@@ -15,8 +15,9 @@ supported metadata and independent previews. Cookle informed the comparison;
 Apple capabilities, Stally's preservation purpose, and verification results
 remain the basis for the selected behavior.
 
-This is a design specification with bounded standalone evidence. The production
-application has not adopted it. Earlier 2,560-pixel, quality-0.85, five-MiB,
+The [October 31 Item implementation](item-context-implementation.md) adopts
+this policy in the library and app. The standalone evidence below retains its
+original scope and does not substitute for current-source verification. Earlier 2,560-pixel, quality-0.85, five-MiB,
 and memory-only-thumbnail recommendations are superseded. The subsequent
 owner direction to retain useful delivered metadata supersedes blanket source-
 metadata omission; it does not change the Item, Mark, or Period contracts.

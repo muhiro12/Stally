@@ -1,6 +1,9 @@
 import Foundation
 
 enum LibraryLayout {
+    static let minimumControlSize: CGFloat = 44
+    static let editorPhotoHeight: CGFloat = 160
+    static let detailPhotoHeight: CGFloat = 240
     static let previewLines = 2
     static let noteLines = 4...10
     static let sidebarMinimum: CGFloat = 190

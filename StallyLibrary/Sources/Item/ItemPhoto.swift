@@ -2,11 +2,11 @@ import Foundation
 import SwiftData
 
 /// An independently owned attachment and optional rebuildable preview.
-public typealias ItemPhoto = StallySchemaV3.ItemPhoto
+public typealias ItemPhoto = StallySchema.ItemPhoto
 
 // The Model macro needs explicit class visibility for its generated protocol witnesses.
 // swiftlint:disable:next extension_access_modifier
-extension StallySchemaV3 {
+extension StallySchema {
     /// An independently owned attachment and optional rebuildable preview.
     @Model
     public final class ItemPhoto {

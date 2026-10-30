@@ -23,6 +23,7 @@ struct ItemDetailView: View {
                 ItemSummarySection(item: item) {
                     choosingTags = true
                 }
+                ItemPhotosSection(item: item)
                 ItemMarksSection(item: item) { selection in
                     editingRecord = selection
                 }

@@ -2,6 +2,12 @@
 
 ## Scope and Status
 
+The [October 31 Item implementation](item-context-implementation.md) replaces
+the development schema declarations and legacy-store guard described below.
+Its `StallySchema` 1.0.0 is the current prerelease baseline, with no migration
+support for the earlier development stores. The following October 27 record
+is historical evidence, not a requirement to restore those compatibility paths.
+
 The subsequent [October 28 interface implementation](library-interface-implementation.md)
 adds unified navigation, search, Tag controls, and calendar-based editors.
 The later [development setup](fixture-architecture.md#current-development-setup)

@@ -7,7 +7,7 @@ import Testing
 struct CloudSchemaRequirementsTests {
     @Test
     func generatedSchemaHasCloudCompatibleDefaultsAndRelationships() throws {
-        let model = try #require(NSManagedObjectModel.makeManagedObjectModel(for: StallySchemaV3.models))
+        let model = try #require(NSManagedObjectModel.makeManagedObjectModel(for: StallySchema.models))
         for entity in model.entities {
             for attribute in entity.attributesByName.values {
                 #expect(

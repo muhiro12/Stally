@@ -2,11 +2,11 @@ import Foundation
 import SwiftData
 
 /// One period of a relationship, retaining unknown and partial boundaries.
-public typealias ItemPeriod = StallySchemaV3.ItemPeriod
+public typealias ItemPeriod = StallySchema.ItemPeriod
 
 // The Model macro needs explicit class visibility for its generated protocol witnesses.
 // swiftlint:disable:next extension_access_modifier
-extension StallySchemaV3 {
+extension StallySchema {
     /// One period of a relationship, retaining unknown and partial boundaries.
     @Model
     public final class ItemPeriod {

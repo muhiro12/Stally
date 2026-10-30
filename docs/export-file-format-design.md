@@ -7,9 +7,12 @@ This October 25, 2026 design makes the accepted
 proceeding with the revised package and preservation policy after reviewing
 the sibling-app comparison. This is an accepted design direction, not an
 implemented codec or a published, immutable format.
-The [development v2/v3 contract](portable-data-contract.md) still describes the
-shipping code in this checkout. No store, entitlement, or document declaration
-is changed by this design.
+The October 31 [Item implementation](item-context-implementation.md) uses
+`StallySchema` 1.0.0 and reserves envelope version 1. The package codec is still
+unimplemented. The owner's prerelease replacement instruction removes any
+requirement to read the old development v2/v3 flat files. Earlier examples and
+version pairs below retain their design-history scope; align the first public
+codec with the actual release schema before publication.
 
 The owner subsequently expressed a preference for `.stally` and requested
 adoption of independently justified safeguards from the sibling apps. The

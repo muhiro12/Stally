@@ -1,8 +1,8 @@
 import SwiftData
 
-/// The first-release five-model schema. Versions 1 and 2 were development stores.
-public enum StallySchemaV3: VersionedSchema {
-    private static let majorVersion = 3
+/// The first-release baseline; prerelease development stores are not migration inputs.
+public enum StallySchema: VersionedSchema {
+    private static let majorVersion = 1
 
     public static var versionIdentifier: Schema.Version { .init(majorVersion, 0, 0) }
     public static var models: [any PersistentModel.Type] {

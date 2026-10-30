@@ -108,10 +108,12 @@ one during migration. An older supported import without this field must not
 erase an existing link. Finalize its physical representation, wire key, input
 validation, and opening/failure presentation during implementation.
 
-The implemented V3 schema does not contain this field. Preserve its historical
-snapshot and qualify the successor schema and file version when integrating
-the addition. This design decision neither changes a store nor promotes a
-CloudKit schema.
+The October 31 prerelease replacement instruction supersedes the earlier
+requirement to retain development V3 as a migration snapshot. The current
+`StallySchema` baseline includes the optional `representativeURL` string.
+No development-store migration or legacy-file compatibility is provided.
+Storage and Item editing are implemented; export/import and system adapters
+must include this fact when those features are implemented.
 
 ## Capability and Behavior Map
 

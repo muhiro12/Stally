@@ -10,7 +10,7 @@ now contains a fresh Apple-platform app project plus a local library package:
 
 - `Stally.xcodeproj`, with the `Stally` app target and `Stally` scheme.
 - `Stally/`, a SwiftUI sidebar/list/detail app for collections, search, Tags,
-  Item state, Mark and Period editing, startup recovery, and shared runtime wiring.
+  Item context, photos, Mark and Period editing, and shared runtime wiring.
 - `StallyLibrary/`, a local Swift package for the five-model SwiftData schema,
   App Group/CloudKit configuration, domain Operations, and localized errors.
 - `StallyLibrary/Tests/`, Swift Testing coverage for the integrated foundation,
@@ -80,7 +80,11 @@ proposals until selected.
 The first-release foundation now implements the five-model schema, shared
 App Group persistence, Item/Mark/Period/Tag Operations, and Library/detail
 adapters. Read [foundation implementation](docs/first-release-foundation-implementation.md)
-for schema 3.0.0 and the explicit development-store guard. The subsequent
+for the historical October 27 baseline. The October 31
+[Item implementation](docs/item-context-implementation.md) replaces development
+schemas with `StallySchema` 1.0.0, removes the old-store guard, and adds atomic
+Item editing with a representative URL, Tags, and independently owned photos.
+The subsequent
 [unified library interface](docs/library-interface-implementation.md) adds the
 sidebar/list/detail experience, search, Tag controls, and calendar-based editors.
 Historical documentation and old fixtures are retained as evidence, not as
@@ -96,22 +100,22 @@ The old category/single-start/day-toggle adapters, flat backup codec, Review,
 Insights, search projections, sample profiles, and old Intent adapters have been
 retired. Their redesigned features remain first-release work as applicable.
 The new package import/export, full Intent coverage, and Universal Links are
-not implemented by this foundation step. Photo storage is implemented;
-photo ingestion and presentation are not. DEBUG launches now use isolated local
+not implemented by this step. Photo ingestion, captions, ordering, deletion,
+and viewing now use the accepted preservation policy. DEBUG launches use isolated local
 development records; see [development setup](docs/fixture-architecture.md#current-development-setup)
 for initial seeding, empty-store opt-out, and explicit shared-store verification.
 The sidebar [Debug screen](docs/diagnostics-access.md) is available in all
 builds; its development controls remain DEBUG-only.
-No period readings have been accepted or implemented by implication.
+Current and cumulative period readings, including estimates, are selected in
+the behavior design but are not implemented yet.
 
 Startup never automatically deletes a development store or substitutes an empty
 library on error. DEBUG local storage is selected before opening a container;
-it is not a fallback for shared-store failure. When opening the shared store,
-the old development locations cause an explanatory stop until reviewed recovery
-is implemented. No shipped-user compatibility is claimed for
-unreleased V1/V2 stores or flat files. Never open the checked-in V1 fixtures for
-writing or regenerate them; any future recovery test must use disposable copies
-including external photo storage and disable CloudKit.
+it is not a fallback for shared-store failure. The owner authorized breaking
+prerelease installations and reinstalling test copies. Old development stores,
+flat files, and schema definitions are not compatibility obligations; no rescue
+path or old-location startup guard is provided. Historical fixtures are retained
+as evidence only and are not migration inputs for the current schema.
 
 Verification centers on library unit tests and the app consumer build. Do not
 add or run automated UI test suites. Use targeted native manual interaction for

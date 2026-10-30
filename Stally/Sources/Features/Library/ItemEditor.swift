@@ -12,16 +12,16 @@ struct ItemEditor: View {
     private var updates
     let item: Item?
     let onSave: ((Item) -> Void)?
-    @State private var name: String
-    @State private var note: String
+    @State private var draft: ItemDraft
+    @State private var loadingPhotos = false
     @State private var errorMessage: String?
     @State private var saving = false
 
     var body: some View {
         NavigationStack {
             itemForm
-                .disabled(saving)
-                .interactiveDismissDisabled(saving)
+                .disabled(saving || loadingPhotos)
+                .interactiveDismissDisabled(saving || loadingPhotos)
                 .navigationTitle(item == nil ? "Add Item" : "Edit Item")
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
@@ -33,29 +33,60 @@ struct ItemEditor: View {
                         Button("Save", systemImage: "checkmark") {
                             save()
                         }
-                        .disabled(saving || name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        .disabled(cannotSave)
                     }
                 }
+                .alert("Could Not Save", isPresented: showingError) {
+                    Button("OK", role: .cancel) {
+                        errorMessage = nil
+                    }
+                } message: {
+                    Text(errorMessage ?? "")
+                }
         }
+    }
+
+    private var cannotSave: Bool {
+        saving || loadingPhotos || draft.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var showingError: Binding<Bool> {
+        .init(
+            get: { errorMessage != nil },
+            set: { presented in
+                if !presented {
+                    errorMessage = nil
+                }
+            }
+        )
     }
 
     private var itemForm: some View {
         Form {
             MHContainerContent {
                 Section {
-                    TextField("Name", text: $name)
+                    TextField("Name", text: $draft.name)
                 } header: {
                     MHSectionHeader("Item")
                 }
                 Section {
-                    TextField("What would you like to remember?", text: $note, axis: .vertical)
+                    TextField("What would you like to remember?", text: $draft.note, axis: .vertical)
                         .lineLimit(LibraryLayout.noteLines)
                 } header: {
                     MHSectionHeader("Note")
                 }
-                if let errorMessage {
-                    Text(errorMessage).mhTextStyle(.supporting, colorRole: .destructive)
+                Section {
+                    TextField("Website or App URL", text: $draft.representativeURL)
+                        .autocorrectionDisabled()
+                        #if os(iOS)
+                        .textInputAutocapitalization(.never)
+                        .keyboardType(.URL)
+                    #endif
+                } header: {
+                    MHSectionHeader("Link")
                 }
+                ItemDraftTagsSection(draft: $draft)
+                ItemDraftPhotosSection(draft: $draft, loading: $loadingPhotos, errorMessage: $errorMessage)
             }
         }
         .mhFormChrome(.content)
@@ -64,8 +95,7 @@ struct ItemEditor: View {
     init(item: Item?, onSave: ((Item) -> Void)?) {
         self.onSave = onSave
         self.item = item
-        _name = State(initialValue: item?.name ?? "")
-        _note = State(initialValue: item?.note ?? "")
+        _draft = State(initialValue: item.map(ItemOperations.draft) ?? .init())
     }
 
     private func save() {
@@ -76,13 +106,8 @@ struct ItemEditor: View {
             }
             do {
                 try await updates.performMutation {
-                    if let item {
-                        try ItemOperations.update(item, name: name, note: note, context: context)
-                        onSave?(item)
-                    } else {
-                        let created = try ItemOperations.create(context: context, name: name, note: note)
-                        onSave?(created)
-                    }
+                    let saved = try ItemOperations.save(draft, context: context)
+                    onSave?(saved)
                 }
                 dismiss()
             } catch {

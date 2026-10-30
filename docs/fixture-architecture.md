@@ -6,7 +6,9 @@ Issue [#34](https://github.com/muhiro12/Stally/issues/34) applies to the new
 five-model foundation. A normal `DEBUG` launch opens an explicitly local store
 in the app sandbox at `Application Support/StallyDevelopment/Development.store`.
 CloudKit is disabled for this store. Release continues to open the App Group
-store with its existing CloudKit configuration and legacy-store guard.
+store with its existing CloudKit configuration. The October 31 replacement
+removed the legacy-store guard and old schema definitions. Incompatible
+prerelease installations may be reinstalled; no recovery adapter is provided.
 
 Only initial creation of the development directory automatically seeds records. Reopening an
 empty store, deleting all records, changing a preference, or updating the seed
@@ -55,7 +57,7 @@ an individual run; overridden controls are disabled with an explanation:
   Removing the override later does not backfill the opted-out store.
 - `-development.useSharedStore YES`: explicitly open the existing App Group /
   CloudKit store for integration verification. This path never injects developer
-  records and retains the old-store review guard. It does not copy local
+  records. It does not copy local
   developer data into the shared store. Normal shared-store writes can sync.
 
 Use a fresh, dedicated Simulator for initial-empty launch checks, or a temporary

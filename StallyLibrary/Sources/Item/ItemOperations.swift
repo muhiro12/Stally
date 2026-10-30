@@ -5,6 +5,22 @@ import SwiftData
 public enum ItemOperations {
     private static let ambiguousIdentityLimit = 2
 
+    /// Takes editing values without creating pending model changes.
+    public static func draft(for item: Item) -> ItemDraft {
+        .init(item: item)
+    }
+
+    /// Commits metadata, Tag changes, and prepared photos together; failure preserves the draft.
+    @discardableResult
+    public static func save(_ draft: ItemDraft, context: ModelContext) throws -> Item {
+        try RecordMutation.validate(context, models: [])
+        // A failed graph save must not expose rolled-back relationship snapshots to the editor.
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let identity = try ItemDraftMutation.save(draft, context: writer).uuid
+        return try item(context: context, uuid: identity)
+    }
+
     /// Creates an Item without implicitly recording a Mark or period.
     @discardableResult
     public static func create(context: ModelContext, name: String, note: String = "") throws -> Item {

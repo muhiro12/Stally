@@ -150,7 +150,7 @@ struct CorePersistenceTests {
     }
 
     @Test
-    func pendingChangesAndLegacyFilesArePreserved() throws {
+    func unrelatedPendingChangesArePreserved() throws {
         let container = try StallyModelContainerFactory.inMemory()
         let context = ModelContext(container)
         let item = try ItemOperations.create(context: context, name: "Saved")
@@ -159,13 +159,6 @@ struct CorePersistenceTests {
             try MarkOperations.add(to: item, localDateTime: "2026-10-27", context: context)
         }
         #expect(item.note == "Unrelated pending edit" && context.hasChanges)
-        let url = try storeURL()
-        let bytes = Data("Existing development data".utf8)
-        try bytes.write(to: url)
-        #expect(throws: StallyPersistenceError.self) {
-            try StallyModelContainerFactory.requireReviewedDevelopmentStores(at: [url])
-        }
-        #expect(try Data(contentsOf: url) == bytes)
     }
 
     private func storeURL() throws -> URL {

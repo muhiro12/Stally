@@ -2,11 +2,11 @@ import Foundation
 import SwiftData
 
 /// One occurrence, retaining civil-day or minute precision without a time zone.
-public typealias ItemMark = StallySchemaV3.ItemMark
+public typealias ItemMark = StallySchema.ItemMark
 
 // The Model macro needs explicit class visibility for its generated protocol witnesses.
 // swiftlint:disable:next extension_access_modifier
-extension StallySchemaV3 {
+extension StallySchema {
     /// One occurrence, retaining civil-day or minute precision without a time zone.
     @Model
     public final class ItemMark {

@@ -324,22 +324,6 @@
         }
       }
     },
-    "An earlier development store needs review before Stally can open. No data was moved or deleted.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "An earlier development store needs review before Stally can open. No data was moved or deleted."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "以前の開発用データが見つかりました。起動前にデータの扱いを確認する必要があります。移動や削除は行っていません。"
-          }
-        }
-      }
-    },
     "Archive": {
       "localizations": {
         "en": {
@@ -793,6 +777,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "既存の履歴を保持するにはマーク記録を有効にしてください"
+          }
+        }
+      }
+    },
+    "Enter a complete website or app URL.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a complete website or app URL."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Webサイトまたはアプリの完全なURLを入力してください。"
           }
         }
       }
@@ -1522,6 +1522,7 @@
       }
     },
     "Other": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {

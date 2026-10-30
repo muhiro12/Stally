@@ -1,5 +1,16 @@
 # Rebuild Implementation Direction
 
+## October 31 Prerelease Replacement Authority
+
+The owner explicitly authorized implementation from the accepted contracts,
+including breaking changes to the existing prerelease code and test data.
+PoC code, Fluel integration remnants, and provisional implementations are not
+compatibility requirements. Test installations may be reinstalled when needed.
+Do not add migrations, rescue paths, or fallbacks solely for intermediate
+development environments. Normal failure handling and the accepted preservation
+semantics for the product's records still apply. This authority does not publish
+code or deploy a CloudKit production schema.
+
 ## Purpose
 
 The [October 22 core record design](core-record-design.md) is the newer source

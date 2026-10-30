@@ -2,11 +2,11 @@ import Foundation
 import SwiftData
 
 /// A shared identity; equal names do not imply equal Tags.
-public typealias Tag = StallySchemaV3.Tag
+public typealias Tag = StallySchema.Tag
 
 // The Model macro needs explicit class visibility for its generated protocol witnesses.
 // swiftlint:disable:next extension_access_modifier
-extension StallySchemaV3 {
+extension StallySchema {
     /// A shared identity; equal names do not imply equal Tags.
     @Model
     public final class Tag {

@@ -1,5 +1,11 @@
 # First-Release Contract Summary
 
+The owner's October 31 [prerelease replacement direction](rebuild-implementation-direction.md#october-31-prerelease-replacement-authority)
+permits breaking existing development stores and code. Earlier development
+schema/version retention requirements are superseded; the underlying selected
+record meanings remain the basis for implementation. See the current
+[Item implementation](item-context-implementation.md).
+
 For the integrated October 27 implementation, current evidence, and remaining
 work, see [foundation implementation](first-release-foundation-implementation.md).
 The design-session and standalone-probe statements below retain their original
