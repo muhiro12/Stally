@@ -98,20 +98,37 @@ Contract consequences:
 - Deleting an Item also deletes its owned Marks, periods, and photos. Shared
   Tags and unrelated Items survive.
 
-Proposal:
+Accepted product behavior on October 30:
 
-- Start with a name; allow notes, photos, Tags, and history to be added later.
-- Offer explicit first-occurrence or relationship-start entry when relevant,
-  without requiring it or asserting that creation means either event happened.
-- Support describing, correcting, and recognizing an Item over time, rather
-  than making creation a complete inventory questionnaire.
-- Explain the scope of Item deletion at the deletion action. Removing one
-  attachment or clearing a note should not require recreating the Item.
+- Create an Item with a nonblank name. Notes, photos, Tags, and the
+  representative URL are optional; they can also be added or edited later.
+- Permit distinct Items with the same name. Do not infer that the person
+  intended to reuse, replace, or combine an existing Item.
+- Edit name and note while preserving Item identity and unrelated information.
+- Add multiple photos, edit their captions and order, and delete individual
+  attachments without recreating the Item.
+- Set, replace, clear, and open the one optional representative URL.
+- Assign or remove existing Tags and allow explicit creation of a new Tag
+  when needed. Same-name identity rules continue to apply.
+- Confirm Item deletion with its owned Mark, period, and photo consequences.
+  Shared Tags and unrelated records survive.
 
-To decide: which optional context belongs in initial entry, whether explicit
-initial history can be submitted together, and the cancel/failure behavior of
-that combined action. Multiple database entities do not require multiple forms;
-one form does not authorize partially saving a claimed single action.
+Treat the content submitted as one save action as a unit. If that submission
+includes photos, a partial save must not be presented as full completion.
+Cancellation leaves existing records unchanged. A save failure retains the
+editing input for correction and retry; this does not establish a separate
+promise of draft recovery after process termination. An edit preserves values
+the person did not change rather than resetting omitted fields.
+
+Item registration and the first Mark or period express separate intentions.
+Registration does not imply purchase, use, or relationship start. A continuous
+screen flow may offer explicit history entry, but must not create today's Mark
+or begin a period merely because an Item was added. If a future flow submits
+Item and explicit history together as one action, apply the same save-unit rule.
+
+Screen composition, the initial visibility of optional inputs, and Operations
+signatures remain implementation/design work. These accepted behaviors do not
+freeze the current editor or its existing method calls.
 
 ### Record and Correct Occurrences
 
