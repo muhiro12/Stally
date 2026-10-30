@@ -229,18 +229,37 @@ Contract consequences:
 - Explicit Tag consolidation has the accepted bounded reassignment/deletion
   meaning, including its limits on unseen remote assignments and old references.
 
-Proposal:
+Accepted product behavior on October 30:
 
-- Help people find Items by remembered description and chosen Tags, and
-  inspect related Items without imposing a fixed classification system.
-- Provide deliberate access to archived records and useful favorite filtering.
-  Filters should make their archive scope understandable.
-- Support adding/removing classifications and an explicit reviewed way to
-  consolidate Tags. Do not infer consolidation from spelling similarity.
+- Archive and unarchive change ordinary list visibility while retaining
+  favorites, recording availability, and all history. They do not assert that
+  the person stopped using or possessing the subject.
+- Favorite and unfavorite change explicit selection as a favorite, preserving
+  Archive state, recording availability, and history. Favorite is not inferred
+  from recorded activity.
+- Pause and resume Mark recording change the ability to add occurrences,
+  preserving existing Marks, periods, and list placement.
+- Add and remove Tag assignments without changing Item identity, independent
+  state, or history.
+- Ordinary browsing starts with unarchived Items. Allow the person to choose
+  archived Items only or both archived and unarchived Items.
+- Search Item names, notes, and assigned Tag names within the selected scope.
+  Allow further filtering by favorites and selected Tags. Search, filtering,
+  and sorting do not mutate records.
+- Favorite and Tag filters respect the selected archive scope. A favorite
+  filter in ordinary browsing does not implicitly include archived Items;
+  selecting the combined scope makes them eligible without unarchiving them.
+- Provide Tag creation, renaming, assignment, removal, deletion, and explicit
+  reviewed consolidation. The person selects the surviving Tag. Equal names
+  do not trigger consolidation, and Tag deletion preserves its assigned Items.
 
-To decide: search fields and matching, filter combinations, sorting, and bulk
-actions. Independent stored state does not require a permanent switch for each
-field, a dedicated screen for each state, or the current sidebar arrangement.
+The goal is to find the same records within a useful scope and conditions.
+Independent state and classifications do not mandate dedicated screens,
+permanent switches, or the current sidebar arrangement.
+
+Still to decide: text matching details, multiple-Tag matching semantics, sort
+options and defaults, and bulk action behavior. The selected search fields and
+scope rules above do not freeze those interaction or implementation choices.
 
 ### Revisit and Understand the Record
 
