@@ -2,6 +2,22 @@
 
 ## Status
 
+On October 30, the owner selected **current ongoing period length** and
+**cumulative length across recorded periods**, personally favoring the latter.
+See [the accepted product scope](product-behavior-design.md#revisit-and-understand-the-record).
+The current-period reading replaces this earlier proposal's "since first
+start" candidate for the selected pair. It starts at the current ongoing
+period, not at the earliest historical start. If no period is ongoing, there
+is no current-period length; retained ended periods still contribute to the
+cumulative reading when calculable.
+
+The October 25 proposal below remains historical engineering material. Its
+counting, precision, incomplete-total, and conflict policies are not accepted
+by the October 30 feature selection. In particular, do not silently inherit
+either its since-first-start definition or its all-or-nothing numeric-total
+policy. Update the calculation specification after the remaining product
+choices are made; the earlier probe does not verify that future specification.
+
 This October 25, 2026 engineering recommendation builds on the accepted
 [ItemPeriod schema and lifecycle](period-schema-validation.md). It awaits owner
 review. No production calculator, UI, schema, migration, or export codec changes.

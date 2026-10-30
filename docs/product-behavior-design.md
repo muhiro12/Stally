@@ -263,6 +263,19 @@ scope rules above do not freeze those interaction or implementation choices.
 
 ### Revisit and Understand the Record
 
+Accepted period-reading scope on October 30:
+
+- Provide the length of the current ongoing period and the cumulative length
+  across recorded periods, excluding the gaps between them.
+- The owner personally values the cumulative reading slightly more. Prioritize
+  its design discussion without treating that preference as evidence that all
+  users want the same hierarchy or as a fixed screen layout.
+- The current-period reading starts at the current period's own start. It is
+  not elapsed time from the earliest historical start across intervening gaps.
+- This selects the two product capabilities, not their counting conventions,
+  units, approximate values, or incomplete/conflicting-history presentation.
+  Those policies remain to be designed. See [period readings](period-readings-design.md).
+
 Contract consequences:
 
 - Occurrence count and number of days with occurrences are different readings.
