@@ -272,9 +272,15 @@ Accepted period-reading scope on October 30:
   users want the same hierarchy or as a fixed screen layout.
 - The current-period reading starts at the current period's own start. It is
   not elapsed time from the earliest historical start across intervening gaps.
-- This selects the two product capabilities, not their counting conventions,
-  units, approximate values, or incomplete/conflicting-history presentation.
-  Those policies remain to be designed. See [period readings](period-readings-design.md).
+- Provide approximate readings as well as readings supported by exact dates.
+  The owner emphasized that an understandable sense of accumulated time is a
+  user goal; exact computation alone does not fulfill that goal. Estimates
+  complement rather than replace access to the recorded facts and their
+  supported precision.
+- These decisions select the product capabilities, not their counting rules,
+  estimation method, units, rounding, or incomplete/conflicting-history
+  presentation. Those policies remain to be designed. See
+  [period readings](period-readings-design.md).
 
 Contract consequences:
 

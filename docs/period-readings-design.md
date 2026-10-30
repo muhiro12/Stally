@@ -11,6 +11,25 @@ period, not at the earliest historical start. If no period is ongoing, there
 is no current-period length; retained ended periods still contribute to the
 cumulative reading when calculable.
 
+In the subsequent October 30 discussion, the owner explicitly selected
+approximate readings **in addition to** exact-date readings. The product must
+help people understand roughly how much time they have accumulated, while
+retaining the facts and uncertainty behind that result. This supersedes the
+earlier proposal to defer estimates; it does not accept an estimation formula.
+
+The next specification must distinguish rounding a duration derived from exact
+dates from estimating a duration whose boundaries are known only by year or
+month. Both may support an approachable headline, but the latter carries
+additional uncertainty. Estimated boundaries are calculation assumptions,
+not corrections to stored dates. A subtotal over known periods must remain
+distinguishable from a reading covering all recorded periods.
+
+The primary display, precision labels, rounding rules, and treatment of wholly
+unknown boundaries remain proposals to develop. Do not treat a completely
+unknown boundary as zero duration, a registration date, or an arbitrary known
+date merely to produce a headline. The selection of estimates does not resolve
+incoming contradictions or authorize silent repair.
+
 The October 25 proposal below remains historical engineering material. Its
 counting, precision, incomplete-total, and conflict policies are not accepted
 by the October 30 feature selection. In particular, do not silently inherit
