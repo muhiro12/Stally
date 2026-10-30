@@ -145,24 +145,39 @@ Contract consequences:
 - Pausing new recording retains history and permits correction. Resuming
   recording does not add a Mark or change a relationship period.
 
-Proposal:
+Accepted product behavior on October 30:
 
-- Provide a lightweight way to record today and a deliberate way to enter a
-  past occurrence, with optional time in both cases.
-- Show the resulting occurrence so an accidental addition can be removed
-  specifically, even when other Marks exist that day.
-- Let people inspect and correct individual occurrences. Consider a day-count
-  editor as another expression of those same changes, with clear selection
-  when reducing a count would remove distinguishable records.
-- Preserve a calm experience for someone who records once a day; multiple
-  records should not imply better participation.
+- The common task adds one occurrence to an Item with a known day and
+  optional minute knowledge.
+- **Record today:** use today's date without an occurrence time. This is the
+  default lightweight capture behavior, including when recording later in the
+  day; entry time must not silently become occurrence time.
+- **Record now:** explicitly record the current date and clock time to minute
+  precision. This retains the selected civil-date/time meaning, not a stored
+  time zone or an absolute occurrence instant.
+- **Record a specified date/time:** use the selected day and an optional time,
+  including for backdated entry.
+- Each deliberate addition creates another occurrence, even if another Mark
+  has the same day or minute. Do not infer identity from those values.
+- Undo of the just-added occurrence targets that particular record, leaving
+  other Marks intact. It must not resolve to whichever record is now latest
+  after another entry or synchronization.
+- Allow later date/time correction, adding a previously unknown time, and
+  removing time knowledge while retaining the known day. These changes retain
+  the same Mark identity and registration metadata.
+- While new recording is paused, reject additions but retain access to
+  correction and deletion of existing Marks.
 
-To decide: whether quick capture means day-only or explicitly "used now,"
-how optional time is entered, whether both shortcuts are useful, and the
-first-release shape of count correction. These are product behaviors before
-they are Intent parameter defaults. A second deliberate addition represents
-another occurrence; handling accidental repeated activation must not silently
-reinstate a one-per-day rule.
+The three capture meanings do not prescribe three always-visible buttons,
+three Operations methods, or a particular App Intent inventory. Their surface
+composition remains design work. Preserve a calm experience for someone who
+records once a day; additional occurrences do not imply better participation.
+
+Still to decide: the first-release interaction for day-count correction and
+the presentation of date/time input and undo. A count editor must express the
+accepted additions/removals, with clear selection when reducing a count would
+remove distinguishable timed records. Handling accidental repeated activation
+must not silently reinstate a one-per-day rule.
 
 ### Keep Relationship Periods
 
