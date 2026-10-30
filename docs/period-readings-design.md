@@ -67,6 +67,12 @@ and units, same-year or same-month short spans, and possible overlaps or
 conflicting history. Do not infer those policies from the historical proposal
 below or silently treat them as resolved by the examples above.
 
+Under the owner's [decision boundary](product-behavior-design.md#decision-boundary-for-this-design-phase),
+these remaining calculation and presentation details are deferred to feature
+implementation, not prerequisites for finishing the current design discussion.
+Preserve source facts so readings can evolve. Define the meaning and units of
+any externally consumed result before publishing its App Intent interface.
+
 ## Historical October 25 Proposal
 
 This October 25, 2026 engineering recommendation builds on the accepted

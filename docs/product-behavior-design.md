@@ -23,6 +23,37 @@ product records supply intent and examples, not an obligation to restore every
 legacy feature. The database does not, by itself, decide which experiences are
 valuable or how a person should use them.
 
+## Decision Boundary for This Design Phase
+
+On October 30, the owner limited this phase to decisions whose later reversal
+would lose information, create compatibility obligations, or require material
+rework. Do not complete every Operations detail before development. Leave
+reversible experience choices open so implementation evidence and user feedback
+can shape them during development and after release.
+
+- Resolve foundational meaning, identity, retained precision, ownership, and
+  destructive or preservation semantics before dependent implementation makes
+  a change costly. Reuse the accepted contracts rather than reopening them.
+- Review stored formats, published identifiers, and externally consumed inputs,
+  outputs, units, defaults, and side effects before their first persistence or
+  publication creates continuing obligations. Exact interface details can be
+  decided during feature implementation before crossing that boundary.
+- Defer app-local search matching, multi-Tag matching, sort choices, bulk-action
+  scope, review grouping, screen composition, and derived display refinements.
+  These are not blockers to concluding this design phase. A choice exposed in
+  a saved workflow or persisted format needs a separate compatibility check.
+- Keep Operations factoring and internal types adaptable. For approximate
+  readings, preserve source facts and distinguish unknown values; defer mixed-
+  precision aggregation and presentation details until the feature is built.
+  An externally returned duration still needs defined semantics before release.
+- Do not add speculative fields or generic extension mechanisms just to keep
+  hypothetical options open. Identify a concrete irreversible effect or material
+  rework cost before bringing a deferred decision back into this phase.
+
+The remaining questions below are a deferred design backlog, not a checklist
+requiring owner approval now. Accepted behavior remains the current direction;
+it does not make every app-local interaction a permanent compatibility promise.
+
 ## Product Center
 
 Stally preserves a person's record of a subject and their relationship with it.
@@ -214,10 +245,10 @@ Having no recorded period is different from explicitly recording an ongoing
 period with an unknown start. Do not infer one from the other or from Item
 registration, Mark additions, or Archive changes.
 
-Establish these history operations before selecting elapsed/total readings.
-Exact screen wording, entry controls, and calculation policies remain design
-work. The existing period-readings proposal remains unaccepted; unknown
-boundaries must not become exact totals.
+The history behavior above supplies the facts for the accepted readings below.
+Exact screen wording, entry controls, and remaining calculation policies are
+deferred design work. The historical October 25 reading proposal is not the
+selected policy; unknown boundaries must not become exact totals.
 
 ### Organize and Find Records
 
@@ -365,12 +396,14 @@ adapters should not be discoverable. This is not one Intent per helper method.
 
 ## Discussion Order
 
-Proposal: begin with Item creation and description, then occurrence capture
-and correction, period history, organization, readings, and external use.
-Design complete user actions at each step; translate them into Operations and
-adapters after agreement. Validate cross-cutting failure behavior as those
-actions become concrete.
+The earlier capability-by-capability discussion established the accepted
+behavior above. Do not continue that sequence merely to exhaust all remaining
+questions. Close this phase when concrete irreversible or materially costly
+decisions are covered by the accepted foundation or assigned to a specific
+implementation/publication boundary.
 
-This order is a discussion plan, not a release cut or an instruction to finish
-every screen before considering system use. Revisit existing implementation
-only to identify what can serve the chosen behavior and what needs replacement.
+During implementation, shape Operations and adapters from those contracts and
+the accepted behavior, and resolve reversible choices with usable product
+evidence. Validate failure and cancellation behavior as the actions become
+concrete. Revisit existing implementation only to identify what can serve the
+chosen behavior and what needs replacement.
