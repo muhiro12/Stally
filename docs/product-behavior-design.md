@@ -277,9 +277,17 @@ Accepted period-reading scope on October 30:
   user goal; exact computation alone does not fulfill that goal. Estimates
   complement rather than replace access to the recorded facts and their
   supported precision.
-- These decisions select the product capabilities, not their counting rules,
-  estimation method, units, rounding, or incomplete/conflicting-history
-  presentation. Those policies remain to be designed. See
+- Use the difference between recorded years for year-only estimates and the
+  difference between recorded year/month components for month-level
+  estimates. Make the calculation basis available in details. For example,
+  2020 to 2021 can read "about 1 year" without asserting an exact year of
+  elapsed time. Uncertainty ranges are optional supplements, not prerequisites
+  for an ordinary approximate reading.
+- Wholly unknown boundaries do not supply a calculation basis. Distinguish
+  the subtotal over calculable periods from a reading covering all periods.
+- Mixed precision, aggregation, units, rounding, exact-date counting, and
+  detailed incomplete/conflicting-history presentation remain to be designed.
+  The accepted approximation basis does not settle those policies. See
   [period readings](period-readings-design.md).
 
 Contract consequences:

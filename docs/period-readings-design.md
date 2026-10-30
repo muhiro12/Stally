@@ -15,7 +15,8 @@ In the subsequent October 30 discussion, the owner explicitly selected
 approximate readings **in addition to** exact-date readings. The product must
 help people understand roughly how much time they have accumulated, while
 retaining the facts and uncertainty behind that result. This supersedes the
-earlier proposal to defer estimates; it does not accept an estimation formula.
+earlier proposal to defer estimates. The subsequently accepted approximation
+behavior is specified below; a complete calculation policy remains open.
 
 The next specification must distinguish rounding a duration derived from exact
 dates from estimating a duration whose boundaries are known only by year or
@@ -24,11 +25,10 @@ additional uncertainty. Estimated boundaries are calculation assumptions,
 not corrections to stored dates. A subtotal over known periods must remain
 distinguishable from a reading covering all recorded periods.
 
-The primary display, precision labels, rounding rules, and treatment of wholly
-unknown boundaries remain proposals to develop. Do not treat a completely
-unknown boundary as zero duration, a registration date, or an arbitrary known
-date merely to produce a headline. The selection of estimates does not resolve
-incoming contradictions or authorize silent repair.
+Detailed display wording and rounding rules remain to be designed. Do not
+treat a completely unknown boundary as zero duration, a registration date,
+or an arbitrary known date merely to produce a headline. The selection of
+estimates does not resolve incoming contradictions or authorize silent repair.
 
 The October 25 proposal below remains historical engineering material. Its
 counting, precision, incomplete-total, and conflict policies are not accepted
@@ -36,6 +36,38 @@ by the October 30 feature selection. In particular, do not silently inherit
 either its since-first-start definition or its all-or-nothing numeric-total
 policy. Update the calculation specification after the remaining product
 choices are made; the earlier probe does not verify that future specification.
+
+## Accepted Approximation Behavior
+
+In the subsequent October 30 discussion, the owner accepted differences at
+the recorded precision as the basis for understandable estimates:
+
+- For year-only boundaries, use the difference between the recorded years.
+  For example, 2020 to 2021 supports "about 1 year" even though the unknown
+  months and days permit a much shorter or longer actual span.
+- For year-and-month boundaries, use the difference between those calendar
+  components. For example, April 2020 to October 2025 supports "about
+  5 and a half years" without inventing either boundary's day.
+- Make the calculation basis available in details. For the year-only example,
+  explain that the estimate subtracts the start year from the end year and
+  that unknown months and days can change the actual duration.
+- An uncertainty range may supplement an estimate, but is not a prerequisite
+  for showing it and need not replace the ordinary approximate reading.
+  A midpoint or most-likely-date model is not required for this approach.
+- Keep the original dates and precision unchanged. The estimate does not
+  assert completed exact years or establish missing boundary dates.
+- A wholly unknown boundary provides no subtraction basis. Distinguish a
+  subtotal over calculable periods from the cumulative reading covering all
+  recorded periods; do not force unknown periods to zero.
+
+This accepts the approximation basis and its explainability, not a complete
+calculator or final UI copy. Still to decide: mixed boundary precision,
+ongoing-period evaluation, combining periods of different precision, rounding
+and units, same-year or same-month short spans, and possible overlaps or
+conflicting history. Do not infer those policies from the historical proposal
+below or silently treat them as resolved by the examples above.
+
+## Historical October 25 Proposal
 
 This October 25, 2026 engineering recommendation builds on the accepted
 [ItemPeriod schema and lifecycle](period-schema-validation.md). It awaits owner
