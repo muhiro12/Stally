@@ -193,17 +193,31 @@ Contract consequences:
   overlap rules. Incoming conflicts remain inspectable rather than silently
   repaired. See [period rules](period-schema-validation.md).
 
-Proposal:
+Accepted product behavior on October 30:
 
-- Let a person enter an earlier relationship, describe an ongoing one, finish
-  one, or record a later resumption, using only the precision they know.
-- Make "it ended and later began again" distinguishable from "that ending
-  was a mistake" in the interaction, without requiring knowledge of UUIDs.
-- Show recorded boundaries and gaps before offering calculated durations.
+- **Add a period:** allow both an ongoing relationship and a previously ended
+  relationship to be recorded, using only the boundary precision known.
+- **End a period:** mark that period as ended while preserving its start and
+  identity. Its end may remain unknown; use today only when explicitly chosen,
+  not merely because the end action was performed today.
+- **Resume a relationship:** retain the ended period and create a new ongoing
+  period. Do not erase the previous ending or the gap between periods.
+- **Correct a period:** edit its start, end, or continuation state while
+  retaining identity. Correcting a mistaken ending is different from recording
+  a genuine later resumption; it does not create another period.
+- **Delete a period:** remove only the selected period, preserving its Item,
+  Marks, and other periods.
 
-To decide: the entry language for different subjects, how to enter several
-past periods, and any elapsed/total readings. The existing period-readings
-proposal remains unaccepted; unknown boundaries must not become exact totals.
+Year-only, month-only, and day knowledge are valid inputs. An ongoing period
+may have an unknown start, and an ended period may have an unknown end.
+Having no recorded period is different from explicitly recording an ongoing
+period with an unknown start. Do not infer one from the other or from Item
+registration, Mark additions, or Archive changes.
+
+Establish these history operations before selecting elapsed/total readings.
+Exact screen wording, entry controls, and calculation policies remain design
+work. The existing period-readings proposal remains unaccepted; unknown
+boundaries must not become exact totals.
 
 ### Organize and Find Records
 
