@@ -35,6 +35,7 @@ Start with the documentation relevant to the changed boundary:
 | Live SwiftData read ownership and value lifetimes | [App data flow](docs/swiftdata-app-data-flow.md) |
 | Durable writes and cross-surface use cases | [Domain Operations](docs/domain-operations.md) |
 | Shared update policy, offline behavior, and protected writes | [Remote update control](docs/remote-update.md) |
+| Resume implementation after the October 31 contract review | [Open decisions, remaining work, and completion checks](docs/remaining-capabilities-implementation.md#remaining-contract-work) |
 | Current persistence baseline before the redesign | [First release data model](docs/first-release-data-model.md) |
 | Publication identities, stored preferences, and support lifetimes | [Publication contracts](docs/publication-contracts.md), [saved-key and identifier review](docs/saved-key-and-identifier-design.md) |
 | Accepted export/import direction and current implementation | [File design](docs/export-file-format-design.md), [import identity](docs/import-identity-design.md), [older portable baseline](docs/portable-data-contract.md) |

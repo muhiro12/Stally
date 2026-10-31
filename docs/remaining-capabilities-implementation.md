@@ -151,26 +151,54 @@ and verify installed HTTPS handoff before publishing this surface.
 
 ## Remaining Contract Work
 
-The implemented families above do not complete every accepted delivery boundary.
-The following work is explicitly deferred while the current changes are reviewed
-and compared with the sibling apps:
+Resume from the published October 31, 2026 baseline `a498f55`. Recheck HEAD
+and the paths below before starting. This baseline includes strict URL
+validation shared by import and editing (`1064ca8`) and the persistent test
+fixture lifetime fix (`a498f55`). Publication checks passed for 72 library tests
+in 18 suites, the Simulator app build, lint and repository rules. The earlier
+interaction evidence below applies only to the flows actually exercised.
 
-- Auxiliary records-only JSON sharing needs an output operation and app/Intent
-  adapters. Reading standalone JSON is implemented; writing `records.json` inside
-  a package does not provide this external-tool sharing capability.
-- Cloud-account changes need to invalidate editing drafts and import reviews
-  tied to the prior account session. Snapshot comparison detects record changes,
-  but does not identify an account transition with equivalent contents.
-- Image-inclusive export needs the selected explanation that retained embedded
-  metadata, including location when present, travels with saved image bytes.
-- Universal Link deployment and installed qualification remain as described above.
+### Decide the portable names before wiring new output
 
-These are distinct from deferred experience choices such as promoted App
-Shortcuts, Widget/Watch delivery, or legacy Review/Insights screens.
+The [file design](export-file-format-design.md) and current reader/writer use
+`.stally`, UTI `com.muhiro12.stally.export`, JSON `"format": "stally"`,
+`records.json` and optional `media/`. The subsequent comparison proposed
+`com.muhiro12.Stally.data` for both the UTI and the JSON format value, and
+Cookle's `manifest.json` and `photos/` names. These are proposals awaiting an
+owner decision. A dated suggested filename and indented JSON can be decided
+separately; neither determines which files the reader accepts.
 
-Import now uses the editor's strict representative-URL validation. It rejects
-values needing implicit percent encoding rather than storing a link that a later
-metadata edit cannot save. Valid encoded links retain their original value.
+If the names change, update Info.plist, StallyDataContract, TransferCodec,
+package paths and validation, app/Intent output, fixtures, tests, example
+and active format documentation together. Keep UUID identity, time precision,
+image availability states and the format/schema version distinction. Old
+development stores and files have no compatibility commitment.
+
+### Resume the accepted implementation
+
+| Work | Current entry point | Completion evidence |
+| --- | --- | --- |
+| Share records as standalone JSON | [Package operations](../StallyLibrary/Sources/Transfer/TransferFileOperations.swift), [app export](../Stally/Sources/Features/Transfer/TransferView.swift), [Intent export](../Stally/Sources/Intents/ExportLibraryIntent.swift) | An external tool receives a standalone JSON file through the app and an Intent. It reimports without package media; the ordinary export still produces a package. |
+| Invalidate drafts and import reviews on iCloud account transition | [Sync contract](sync-lifecycle-design.md), [Item editor](../Stally/Sources/Features/Library/ItemEditor.swift), [import apply](../StallyLibrary/Sources/Transfer/TransferOperations+Import.swift) | A draft or review opened in the prior account cannot write even when the new account has equivalent records. Reopening starts a fresh edit or review. Existing data-change checks still apply. |
+| Explain photo metadata at export | [Photo export contract](export-file-format-design.md#attachment-availability), app and Intent export above | Before choosing image-inclusive output, a person can tell that the saved bytes may contain embedded information such as location. Records-only output omits the bytes. |
+| Complete Universal Links | [Routing](../StallyLibrary/Sources/Link/StallyLinkOperations.swift), [association entry](deployment/stally-applinks-entry.json) | Verify the deployed association and signed entitlement, exercise installed HTTPS handoff to the intended Item, and switch shared link generation to the qualified HTTPS route. |
+| Reconcile remote update lifecycle and presentation | [Update contract](remote-update.md), [app startup](../Stally/Sources/App/StallyApp.swift), [write guard](../StallyLibrary/Sources/RemoteUpdate/RemoteUpdateOperations.swift) | The October 31 comparison found startup preparation and write checks, but no foreground refresh or dedicated update/retry UI. Exercise foreground refresh and a confirmed requirement using isolated evidence, preserving drafts and the offline policy. |
+
+The first three rows and the link integration came from the original gap
+review; the last row came from the later cross-app comparison. Account
+invalidation and remote update wiring can proceed independently of the naming
+decision. Verify current site state and deployment ownership before external
+work. The existing MHAppConfig endpoint already uses the shared policy format.
+
+### Keep implementation and release qualification separate
+
+Use the [repository verification instructions](../README.md#build-and-test)
+for each change. Physical photo/file providers, multi-device CloudKit account
+changes and convergence, installed Universal Links, locked-device Intent
+authentication, and previously saved Shortcuts need their own evidence.
+Record exactly which environment and entry point passed. Promoted Shortcuts,
+Widget/Watch delivery and earlier Review/Insights screens are separate product
+choices and are outside this resumption list.
 
 ## Verification
 
