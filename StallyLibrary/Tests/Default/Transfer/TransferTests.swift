@@ -97,6 +97,33 @@ struct TransferTests {
     }
 
     @Test
+    func importedLinksRemainEditableWithoutImplicitURLRepair() async throws {
+        let source = ModelContext(try StallyModelContainerFactory.inMemory())
+        try ItemOperations.create(context: source, name: "Linked")
+        let archive = try TransferOperations.export(context: source, includingImages: false)
+        var manifest = archive.manifest
+        for invalid in ["https://example.com/a b", "https://example.com/%GG", " https://example.com", ""] {
+            manifest.items[0].representativeURL = invalid
+            let data = try TransferCodec.encode(manifest)
+            await #expect(throws: RecordError.invalidURL) {
+                try await TransferFileOperations.readRecords(data)
+            }
+        }
+        let link = "https://example.com/a%20b"
+        manifest.items[0].representativeURL = link
+        let loaded = try await TransferFileOperations.readRecords(TransferCodec.encode(manifest))
+        let target = ModelContext(try StallyModelContainerFactory.inMemory())
+        let review = try TransferOperations.review(loaded, context: target)
+        try TransferOperations.apply(review, selection: review.defaultSelection, today: "2026-10-31", context: target)
+        let item = try ItemOperations.item(context: target, uuid: manifest.items[0].uuid)
+        var draft = ItemOperations.draft(for: item)
+        draft.note = "Edited after import"
+        let saved = try ItemOperations.save(draft, context: target)
+        #expect(saved.representativeURL == link)
+        #expect(saved.note == "Edited after import")
+    }
+
+    @Test
     func registrationMillisecondsDoNotCreateFalseConflict() throws {
         let context = ModelContext(try StallyModelContainerFactory.inMemory())
         let item = try ItemOperations.create(context: context, name: "Precision")

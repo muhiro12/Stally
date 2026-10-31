@@ -5,7 +5,7 @@
 The October 31, 2026 implementation continues the accepted
 [product behavior](product-behavior-design.md) from the
 [Item context baseline](item-context-implementation.md). It implements the
-remaining selected local capability families without restoring the earlier
+selected local capability families without restoring the earlier
 PoC, Fluel, Review, Insights, or development-store compatibility code.
 
 ## Recorded Time Together
@@ -148,6 +148,29 @@ entries, but no Stally entry. This change does not publish that file, change the
 website, or claim installed Universal Link activation. Merge the prepared entry
 into the owned site's association document, configure the signing capability,
 and verify installed HTTPS handoff before publishing this surface.
+
+## Remaining Contract Work
+
+The implemented families above do not complete every accepted delivery boundary.
+The following work is explicitly deferred while the current changes are reviewed
+and compared with the sibling apps:
+
+- Auxiliary records-only JSON sharing needs an output operation and app/Intent
+  adapters. Reading standalone JSON is implemented; writing `records.json` inside
+  a package does not provide this external-tool sharing capability.
+- Cloud-account changes need to invalidate editing drafts and import reviews
+  tied to the prior account session. Snapshot comparison detects record changes,
+  but does not identify an account transition with equivalent contents.
+- Image-inclusive export needs the selected explanation that retained embedded
+  metadata, including location when present, travels with saved image bytes.
+- Universal Link deployment and installed qualification remain as described above.
+
+These are distinct from deferred experience choices such as promoted App
+Shortcuts, Widget/Watch delivery, or legacy Review/Insights screens.
+
+Import now uses the editor's strict representative-URL validation. It rejects
+values needing implicit percent encoding rather than storing a link that a later
+metadata edit cannot save. Valid encoded links retain their original value.
 
 ## Verification
 

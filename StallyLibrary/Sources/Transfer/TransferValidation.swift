@@ -37,11 +37,7 @@ enum TransferValidation {
     }
 
     static func validateURL(_ text: String) throws {
-        guard let url = URL(string: text), let scheme = url.scheme?.lowercased(),
-              !["file", "data", "javascript"].contains(scheme),
-              !scheme.isEmpty, text == text.trimmingCharacters(in: .whitespacesAndNewlines),
-              !["http", "https"].contains(scheme) || url.host?.isEmpty == false
-        else {
+        guard let validated = try ItemDraftMutation.representativeURL(text), validated == text else {
             throw RecordError.invalidURL
         }
     }
