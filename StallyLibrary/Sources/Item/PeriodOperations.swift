@@ -76,7 +76,26 @@ public enum PeriodOperations {
     }
 }
 
-private extension PeriodOperations {
+extension PeriodOperations {
+    static func validateHistory(_ periods: [ItemPeriod], today: String) throws {
+        let todayDate = try CivilDate.parse(today, formats: [CivilDate.dayLength: "yyyy-MM-dd"])
+        guard periods.filter(\.isOngoing).count <= 1 else { throw RecordError.ongoingPeriodExists }
+        var definiteIntervals: [DateInterval] = []
+        for period in periods {
+            let start = try CivilDate.range(period.startLocalDate)
+            let end = try CivilDate.range(period.endLocalDate)
+            try validateBoundaries(start: start, end: end, isOngoing: period.isOngoing)
+            if let start, let earliestEnd = period.isOngoing ? todayDate : end?.start {
+                let latestStart = CivilDate.latestDay(in: start)
+                if latestStart < earliestEnd { definiteIntervals.append(.init(start: latestStart, end: earliestEnd)) }
+            }
+        }
+        let sorted = definiteIntervals.sorted { $0.start < $1.start }
+        guard !zip(sorted, sorted.dropFirst()).contains(where: { $0.end > $1.start }) else {
+            throw RecordError.overlappingPeriods
+        }
+    }
+
     static func validate(
         start: String?,
         end: String?,

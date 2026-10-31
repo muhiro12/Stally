@@ -11,11 +11,8 @@ import Foundation
 public enum StallyLinkDestination: String, CaseIterable, Codable, Identifiable, Sendable {
     case library
     case archive
-    case review
-    case insights
-    case backupCenter = "backup-center"
+    case importExport = "import-export"
     case createItem = "create-item"
-    case settings
 
     /// Stable destination identity.
     public var id: String {
@@ -29,16 +26,10 @@ public enum StallyLinkDestination: String, CaseIterable, Codable, Identifiable, 
             .init("Library", bundle: #bundle)
         case .archive:
             .init("Archive", bundle: #bundle)
-        case .review:
-            .init("Review", bundle: #bundle)
-        case .insights:
-            .init("Insights", bundle: #bundle)
-        case .backupCenter:
+        case .importExport:
             .init("Import & Export", bundle: #bundle)
         case .createItem:
             .init("Create Item", bundle: #bundle)
-        case .settings:
-            .init("Settings", bundle: #bundle)
         }
     }
 }

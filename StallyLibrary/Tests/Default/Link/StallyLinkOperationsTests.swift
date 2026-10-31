@@ -13,11 +13,8 @@ struct StallyLinkOperationsTests {
     @Test(arguments: [
         (StallyLinkDestination.library, "stally://library"),
         (.archive, "stally://archive"),
-        (.review, "stally://review"),
-        (.insights, "stally://insights"),
-        (.backupCenter, "stally://backup-center"),
-        (.createItem, "stally://create-item"),
-        (.settings, "stally://settings")
+        (.importExport, "stally://import-export"),
+        (.createItem, "stally://create-item")
     ])
     func `builds and opens the first release destination URLs`(
         destination: StallyLinkDestination,
@@ -36,6 +33,21 @@ struct StallyLinkOperationsTests {
 
         #expect(url.absoluteString == "stally://item/12345678-1234-1234-1234-123456789ABC")
         #expect(StallyLinkOperations.parse(url) == .supported(.item(itemID)))
+    }
+
+    @Test
+    func universalLinksAreScopedToTheOwnedHostAndAppPath() throws {
+        let uuid = UUID()
+        let url = try #require(URL(string: "https://muhiro12.github.io/Stally/item/\(uuid.uuidString)"))
+        #expect(StallyLinkOperations.parse(url) == .supported(.item(uuid)))
+        for text in [
+            "https://muhiro12.github.io/Cookle/library", "https://example.com/Stally/library",
+            "https://muhiro12.github.io/library",
+            "http://muhiro12.github.io/Stally/library"
+        ] {
+            let unsupported = try #require(URL(string: text))
+            #expect(StallyLinkOperations.parse(unsupported) == .unsupported)
+        }
     }
 
     @Test

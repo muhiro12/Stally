@@ -1,3 +1,4 @@
+import Foundation
 import SwiftData
 
 /// Callers supply a clean context. Save failure rolls back only this operation's changes.
@@ -20,6 +21,16 @@ enum RecordMutation {
             context.rollback()
             throw error
         }
+    }
+
+    static func index<Model: PersistentModel>(_ records: [Model], identity: (Model) -> UUID) throws -> [UUID: Model] {
+        var indexed: [UUID: Model] = [:]
+        for record in records {
+            guard indexed.updateValue(record, forKey: identity(record)) == nil else {
+                throw RecordError.ambiguousIdentity
+            }
+        }
+        return indexed
     }
 
     static func validateName(_ name: String) throws {

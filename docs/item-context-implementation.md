@@ -90,7 +90,8 @@ preparation and actual external-URL handoff were not manually exercised.
 ## Remaining Work
 
 Package export/import, redesigned App Intent coverage, period readings, and
-other deferred capabilities remain separate implementation work. In particular,
+organization capabilities are now implemented in the subsequent
+[shared Operations work](remaining-capabilities-implementation.md). In particular,
 export/import must carry the representative link and saved image bytes without
 recompression when implemented. No CloudKit production schema is deployed by
 this change.

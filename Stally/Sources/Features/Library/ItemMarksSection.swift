@@ -33,6 +33,7 @@ struct ItemMarksSection: View {
             ForEach(marks) { mark in
                 markButton(mark)
             }
+            QuickMarkButtons(item: item)
             Button("Add Mark", systemImage: "plus") {
                 edit(.newMark)
             }

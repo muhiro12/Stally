@@ -9,7 +9,10 @@ struct TagManagerView: View {
     @Query(sort: \Tag.name)
     private var tags: [Tag]
     @State private var addingTag = false
+    @State private var consolidating = false
     @State private var editingTag: Tag?
+
+    private let minimumConsolidationCount = 2
 
     var body: some View {
         NavigationStack {
@@ -22,6 +25,7 @@ struct TagManagerView: View {
                         }
                     }
                 }
+                .sheet(isPresented: $consolidating) { TagConsolidationView() }
                 .sheet(isPresented: $addingTag) {
                     TagEditor(tag: nil)
                 }
@@ -47,6 +51,7 @@ struct TagManagerView: View {
                             .mhForegroundStyle(.primaryText)
                         }
                     }
+                    Button("Consolidate Tags") { consolidating = true }.disabled(tags.count < minimumConsolidationCount)
                     Button("Add Tag", systemImage: "plus") {
                         addingTag = true
                     }

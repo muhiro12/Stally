@@ -1,6 +1,7 @@
 import CryptoKit
 import Foundation
 import ImageIO
+import UniformTypeIdentifiers
 
 /// Owned photo preparation; no source-library identifiers or permissions are retained.
 public enum PhotoOperations {
@@ -30,6 +31,16 @@ public enum PhotoOperations {
     @concurrent
     public static func prepare(data: Data) async throws -> PreparedPhoto {
         try PhotoProcessor.prepare(data)
+    }
+
+    /// Identifies a validated saved image for native file handoff without re-encoding it.
+    public static func contentType(of data: Data) throws -> UTType {
+        _ = try PhotoProcessor.display(data, edge: PhotoProcessor.previewEdgeLimit)
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+              let identifier = CGImageSourceGetType(source) as String?, let type = UTType(identifier) else {
+            throw RecordError.invalidPhoto
+        }
+        return type
     }
 
     /// Decodes a small SDR preview; the bounded cache is a disposable derivative.

@@ -26,29 +26,19 @@ struct ItemListView: View {
 
     let items: [Item]
     let title: String
+    let initialScope: ItemQuery.ArchiveScope
     @Binding var selection: PersistentIdentifier?
     @Binding var searchText: String
     let addItem: () -> Void
     @State private var sortOrder = SortOrder.newest
+    @State private var archiveScope = ItemQuery.ArchiveScope.library
 
     private var visibleItems: [Item] {
-        let matching = items.filter { item in
-            searchText.isEmpty || item.name.localizedStandardContains(searchText)
-                || item.note.localizedStandardContains(searchText)
-                || (item.tags ?? []).contains { tag in
-                    tag.name.localizedStandardContains(searchText)
-                }
-        }
-        return matching.sorted { first, second in
-            switch sortOrder {
-            case .newest:
-                first.createdAt > second.createdAt
-            case .oldest:
-                first.createdAt < second.createdAt
-            case .name:
-                first.name.localizedStandardCompare(second.name) == .orderedAscending
-            }
-        }
+        var query = ItemQuery()
+        query.text = searchText
+        query.archiveScope = archiveScope
+        query.order = ItemQuery.Order(rawValue: sortOrder.rawValue) ?? .newest
+        return query.matching(items)
     }
 
     var body: some View {
@@ -63,6 +53,8 @@ struct ItemListView: View {
             }
         }
         .mhListChrome(.content)
+        .onAppear { archiveScope = initialScope }
+        .onChange(of: initialScope) { _, scope in archiveScope = scope }
         .overlay {
             if displayedItems.isEmpty {
                 if !searchText.isEmpty {
@@ -84,7 +76,12 @@ struct ItemListView: View {
             ideal: LibraryLayout.listIdeal,
             max: LibraryLayout.listMaximum
         )
-        .searchable(text: $searchText, prompt: "Search names, notes, and tags")
+        .searchable(
+            text: $searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: "Search names, notes, and tags"
+        )
+        .searchPresentationToolbarBehavior(.avoidHidingContent)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button("Add Item", systemImage: "plus", action: addItem)
@@ -92,6 +89,11 @@ struct ItemListView: View {
             }
             ToolbarItem(placement: .primaryAction) {
                 Menu("Sort Items", systemImage: "arrow.up.arrow.down") {
+                    Picker("Include", selection: $archiveScope) {
+                        Text("Library").tag(ItemQuery.ArchiveScope.library)
+                        Text("Archive").tag(ItemQuery.ArchiveScope.archived)
+                        Text("All Items").tag(ItemQuery.ArchiveScope.all)
+                    }
                     Picker("Sort Items", selection: $sortOrder) {
                         ForEach(SortOrder.allCases) { order in
                             Text(order.title).tag(order)

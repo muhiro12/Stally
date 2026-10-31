@@ -24,6 +24,7 @@ struct ItemDetailView: View {
                     choosingTags = true
                 }
                 ItemPhotosSection(item: item)
+                PeriodReadingsSection(item: item)
                 ItemMarksSection(item: item) { selection in
                     editingRecord = selection
                 }
@@ -117,7 +118,8 @@ struct ItemDetailView: View {
                 if !isPresented {
                     errorMessage = nil
                 }
-            })
+            }
+        )
     }
 
     private var recordingBinding: Binding<Bool> {
@@ -129,7 +131,8 @@ struct ItemDetailView: View {
                 mutate {
                     try ItemOperations.setMarkRecordingEnabled(item, to: value, context: context)
                 }
-            })
+            }
+        )
     }
 
     private func mutate(_ operation: @escaping () throws -> Void) {

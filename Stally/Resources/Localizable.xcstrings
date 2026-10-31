@@ -1,6 +1,38 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
+          }
+        }
+      }
+    },
+    "%@ → %@ (%lld Items)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ → %2$@ (%3$lld Items)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ → %2$@（%3$lld件のItem）"
+          }
+        }
+      }
+    },
     "%lld": {
       "localizations": {
         "en": {
@@ -69,6 +101,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld件のマーク"
+          }
+        }
+      }
+    },
+    "%lld days": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld days"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld日"
+          }
+        }
+      }
+    },
+    "%lld exact days": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld exact days"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正確にわかる日数：%lld日"
           }
         }
       }
@@ -159,6 +223,54 @@
         }
       }
     },
+    "; about %lld years + %lld months (partial dates)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "; about %1$lld years + %2$lld months (partial dates)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "、部分的な日付からの概算：%1$lld年 ＋ %2$lldか月"
+          }
+        }
+      }
+    },
+    "; assumes partial-date periods do not overlap": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "; assumes partial-date periods do not overlap"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "、部分的な日付の期間は重複しないと仮定"
+          }
+        }
+      }
+    },
+    "; calculable subtotal, excluding %lld periods": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "; calculable subtotal, excluding %lld periods"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "、%lld件の期間を除く計算可能な小計"
+          }
+        }
+      }
+    },
     "A launch argument overrides the disabled setting for this run.": {
       "extractionState": "manual",
       "localizations": {
@@ -221,6 +333,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "このアプリについて"
+          }
+        }
+      }
+    },
+    "About %@ years": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About %@ years"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "約%@年"
           }
         }
       }
@@ -342,6 +470,22 @@
         }
       }
     },
+    "Add Mark on Date": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Mark on Date"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日付を指定してMarkを追加"
+          }
+        }
+      }
+    },
     "Add Period": {
       "localizations": {
         "en": {
@@ -370,6 +514,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "写真を追加"
+          }
+        }
+      }
+    },
+    "Add Record": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add Record"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録を追加"
           }
         }
       }
@@ -507,6 +667,22 @@
         }
       }
     },
+    "Affected Items will use the kept Tag. The replaced Tag will be deleted.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Affected Items will use the kept Tag. The replaced Tag will be deleted."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "対象のItemは残すTagを使用します。置き換えるTagは削除されます。"
+          }
+        }
+      }
+    },
     "All Categories": {
       "extractionState": "stale",
       "localizations": {
@@ -524,6 +700,22 @@
         }
       }
     },
+    "All Items": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All Items"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべてのItem"
+          }
+        }
+      }
+    },
     "All review lanes are clear right now.": {
       "extractionState": "stale",
       "localizations": {
@@ -537,6 +729,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "今は確認が必要なレーンはありません。"
+          }
+        }
+      }
+    },
+    "Already Matches": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Already Matches"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すでに一致しています"
           }
         }
       }
@@ -656,6 +864,22 @@
         }
       }
     },
+    "Attach Photo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attach Photo"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真を追加"
+          }
+        }
+      }
+    },
     "Automatic samples are added only when the local development store is first created.": {
       "extractionState": "manual",
       "localizations": {
@@ -686,6 +910,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "最長ストリーク"
+          }
+        }
+      }
+    },
+    "Calculable subtotal. %lld periods have unknown or future boundaries.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calculable subtotal. %lld periods have unknown or future boundaries."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計算できる範囲の小計です。%lld件の期間は日付不明または未来の開始日を含みます。"
+          }
+        }
+      }
+    },
+    "Calculated from differences in recorded years or months, plus exact days.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Calculated from differences in recorded years or months, plus exact days."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録された年・月の差と、正確にわかる日数から計算しています。"
           }
         }
       }
@@ -875,6 +1131,38 @@
         }
       }
     },
+    "Choose Stally File": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Stally File"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stallyファイルを選択"
+          }
+        }
+      }
+    },
+    "Choose Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose Tag"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tagを選択"
+          }
+        }
+      }
+    },
     "Choose Tags": {
       "localizations": {
         "en": {
@@ -970,6 +1258,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "このアイテムのタグを選んでください。同名のタグも別々に扱います。"
+          }
+        }
+      }
+    },
+    "Choosing a file value replaces that record's fields. Other records stay unchanged.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choosing a file value replaces that record's fields. Other records stay unchanged."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイルの値を選ぶと、その記録の内容を置き換えます。他の記録は変更されません。"
           }
         }
       }
@@ -1105,6 +1409,118 @@
           "stringUnit": {
             "state": "translated",
             "value": "継続性"
+          }
+        }
+      }
+    },
+    "Consolidate": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Consolidate"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "統合"
+          }
+        }
+      }
+    },
+    "Consolidate %@ into %@? %lld Items.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Consolidate %1$@ into %2$@? %3$lld Items."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@を%2$@に統合しますか？ 対象は%3$lld件のItemです。"
+          }
+        }
+      }
+    },
+    "Consolidate Tags": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Consolidate Tags"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tagを統合"
+          }
+        }
+      }
+    },
+    "Consolidate these Tags?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Consolidate these Tags?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "これらのTagを統合しますか？"
+          }
+        }
+      }
+    },
+    "Correct Date": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Correct Date"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "訂正後の日付"
+          }
+        }
+      }
+    },
+    "Correct Mark": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Correct Mark"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markを訂正"
+          }
+        }
+      }
+    },
+    "Correct Period": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Correct Period"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "期間を訂正"
           }
         }
       }
@@ -1259,6 +1675,38 @@
         }
       }
     },
+    "Create Item": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create Item"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Itemを作成"
+          }
+        }
+      }
+    },
+    "Create Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create Tag"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tagを作成"
+          }
+        }
+      }
+    },
     "Create item ${name}": {
       "extractionState": "stale",
       "localizations": {
@@ -1272,6 +1720,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "アイテム${name}を作成"
+          }
+        }
+      }
+    },
+    "Current Period": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current Period"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在の期間"
           }
         }
       }
@@ -1306,6 +1770,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "現在のストリーク"
+          }
+        }
+      }
+    },
+    "Current Value": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current Value"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在の値"
+          }
+        }
+      }
+    },
+    "Current: %@\nCumulative: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current: %1$@\nCumulative: %2$@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在の期間：%1$@\n記録された期間の合計：%2$@"
           }
         }
       }
@@ -1459,6 +1955,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "日付"
+          }
+        }
+      }
+    },
+    "Date (YYYY-MM-DD or YYYY-MM-DDTHH:mm)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Date (YYYY-MM-DD or YYYY-MM-DDTHH:mm)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日付（YYYY-MM-DD または YYYY-MM-DDTHH:mm）"
           }
         }
       }
@@ -1646,6 +2158,54 @@
         }
       }
     },
+    "Delete Mark": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete Mark"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markを削除"
+          }
+        }
+      }
+    },
+    "Delete Period": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete Period"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "期間を削除"
+          }
+        }
+      }
+    },
+    "Delete Photo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete Photo"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真を削除"
+          }
+        }
+      }
+    },
     "Delete Record": {
       "localizations": {
         "en": {
@@ -1690,6 +2250,70 @@
           "stringUnit": {
             "state": "translated",
             "value": "このアイテムと、そのマーク・期間・写真を削除しますか？"
+          }
+        }
+      }
+    },
+    "Delete this Mark?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this Mark?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このMarkを削除しますか？"
+          }
+        }
+      }
+    },
+    "Delete this Tag and remove it from all Items?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this Tag and remove it from all Items?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このTagを削除し、すべてのItemから割り当てを解除しますか？"
+          }
+        }
+      }
+    },
+    "Delete this period?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this period?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この期間を削除しますか？"
+          }
+        }
+      }
+    },
+    "Delete this photo?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delete this photo?"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この写真を削除しますか？"
           }
         }
       }
@@ -1772,6 +2396,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "このアイテムを削除すると、すべてのマークも削除されます。"
+          }
+        }
+      }
+    },
+    "Details": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Details"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "詳細"
           }
         }
       }
@@ -1909,6 +2549,22 @@
         }
       }
     },
+    "Edit Item Details": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit Item Details"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Itemの詳細を編集"
+          }
+        }
+      }
+    },
     "Edit Mark": {
       "localizations": {
         "en": {
@@ -1937,6 +2593,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "期間を編集"
+          }
+        }
+      }
+    },
+    "Edit Photo Caption": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Edit Photo Caption"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真のキャプションを編集"
           }
         }
       }
@@ -1990,6 +2662,22 @@
         }
       }
     },
+    "Enabled": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enabled"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有効"
+          }
+        }
+      }
+    },
     "End": {
       "localizations": {
         "en": {
@@ -2002,6 +2690,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "終了"
+          }
+        }
+      }
+    },
+    "End (Unknown If Empty)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End (Unknown If Empty)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終了日（空欄は不明）"
           }
         }
       }
@@ -2089,6 +2793,38 @@
         }
       }
     },
+    "Export": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "書き出し"
+          }
+        }
+      }
+    },
+    "Export Completed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export Completed"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "書き出しました"
+          }
+        }
+      }
+    },
     "Export Data": {
       "extractionState": "stale",
       "localizations": {
@@ -2102,6 +2838,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "データを書き出す"
+          }
+        }
+      }
+    },
+    "Export Library": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export Library"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ライブラリを書き出す"
+          }
+        }
+      }
+    },
+    "Export Stally Library": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export Stally Library"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stallyライブラリを書き出す"
+          }
+        }
+      }
+    },
+    "Exports all Items, including archived records and unused Tags.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exports all Items, including archived records and unused Tags."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アーカイブ済みの記録や未使用のTagを含め、すべてのItemを書き出します。"
           }
         }
       }
@@ -2138,6 +2922,38 @@
         }
       }
     },
+    "Favorites Only": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favorites Only"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "お気に入りのみ"
+          }
+        }
+      }
+    },
+    "File Value": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "File Value"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイルの値"
+          }
+        }
+      }
+    },
     "Filter": {
       "extractionState": "stale",
       "localizations": {
@@ -2151,6 +2967,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "フィルタ"
+          }
+        }
+      }
+    },
+    "Find Items": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Find Items"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Itemを検索"
+          }
+        }
+      }
+    },
+    "Finish the current import review first.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finish the current import review first."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在の取り込み内容の確認を先に完了してください。"
           }
         }
       }
@@ -2172,8 +3020,151 @@
         }
       }
     },
+    "Get Item Details": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get Item Details"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Itemの詳細を取得"
+          }
+        }
+      }
+    },
+    "Get Item Marks": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get Item Marks"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ItemのMarkを取得"
+          }
+        }
+      }
+    },
+    "Get Item Periods": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get Item Periods"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Itemの期間を取得"
+          }
+        }
+      }
+    },
+    "Get Item Photos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get Item Photos"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Itemの写真を取得"
+          }
+        }
+      }
+    },
+    "Get Item Tags": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get Item Tags"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ItemのTagを取得"
+          }
+        }
+      }
+    },
+    "Get Photo File": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get Photo File"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真ファイルを取得"
+          }
+        }
+      }
+    },
+    "Get Time Together": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get Time Together"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ともに過ごした期間を取得"
+          }
+        }
+      }
+    },
+    "Image": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画像"
+          }
+        }
+      }
+    },
+    "Import": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取り込み"
+          }
+        }
+      }
+    },
     "Import & Export": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -2240,6 +3231,38 @@
         }
       }
     },
+    "Import Selected": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Import Selected"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択した記録を取り込む"
+          }
+        }
+      }
+    },
+    "Imported %lld records.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Imported %lld records."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld件の記録を取り込みました。"
+          }
+        }
+      }
+    },
     "In Memory": {
       "extractionState": "manual",
       "localizations": {
@@ -2253,6 +3276,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "メモリ内"
+          }
+        }
+      }
+    },
+    "Include": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "対象"
+          }
+        }
+      }
+    },
+    "Include Photos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include Photos"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真を含める"
           }
         }
       }
@@ -2440,6 +3495,22 @@
         }
       }
     },
+    "Keep Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep Tag"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "残すTag"
+          }
+        }
+      }
+    },
     "Keep a portable snapshot": {
       "extractionState": "stale",
       "localizations": {
@@ -2590,6 +3661,22 @@
         }
       }
     },
+    "Library Scope": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Library Scope"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ライブラリの範囲"
+          }
+        }
+      }
+    },
     "Library and Archive": {
       "extractionState": "stale",
       "localizations": {
@@ -2674,7 +3761,6 @@
       }
     },
     "Mark": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -3010,6 +4096,22 @@
         }
       }
     },
+    "Move Photo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Move Photo"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写真の順序を変更"
+          }
+        }
+      }
+    },
     "Move Photo Down": {
       "localizations": {
         "en": {
@@ -3120,6 +4222,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "新しいタグ"
+          }
+        }
+      }
+    },
+    "New records may restore deleted records. Deselect anything you do not want to add.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New records may restore deleted records. Deselect anything you do not want to add."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しい記録には、削除済みの記録が含まれる場合があります。追加しない記録は選択を解除してください。"
           }
         }
       }
@@ -3460,6 +4578,22 @@
         }
       }
     },
+    "Not enough recorded dates": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not enough recorded dates"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計算に必要な日付がありません"
+          }
+        }
+      }
+    },
     "Not marked": {
       "extractionState": "stale",
       "localizations": {
@@ -3646,6 +4780,54 @@
         }
       }
     },
+    "Only recorded periods are added. Gaps are excluded.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only recorded periods are added. Gaps are excluded."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録された期間だけを足し合わせます。期間の間の空白は含みません。"
+          }
+        }
+      }
+    },
+    "Open Item": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Item"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Itemを開く"
+          }
+        }
+      }
+    },
+    "Open Item Link": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Item Link"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Itemのリンクを開く"
+          }
+        }
+      }
+    },
     "Open Link": {
       "localizations": {
         "en": {
@@ -3696,6 +4878,22 @@
         }
       }
     },
+    "Partial dates may overlap. This estimate assumes separate periods.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partial dates may overlap. This estimate assumes separate periods."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "部分的な日付のため、期間が重なる可能性があります。概算では重複しないと仮定しています。"
+          }
+        }
+      }
+    },
     "Past favorites can stay nearby without crowding the main list.": {
       "extractionState": "stale",
       "localizations": {
@@ -3730,7 +4928,6 @@
       }
     },
     "Period": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -3845,6 +5042,22 @@
         }
       }
     },
+    "Position (Starting at 1)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position (Starting at 1)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "位置（1から始まる順序）"
+          }
+        }
+      }
+    },
     "Precision": {
       "extractionState": "stale",
       "localizations": {
@@ -3875,6 +5088,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "プレミアム"
+          }
+        }
+      }
+    },
+    "Preparing File": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preparing File"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイルを準備中"
           }
         }
       }
@@ -4031,6 +5260,54 @@
         }
       }
     },
+    "Record Now": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record Now"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今を記録"
+          }
+        }
+      }
+    },
+    "Record Now with Time": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record Now with Time"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今を時刻付きで記録"
+          }
+        }
+      }
+    },
+    "Record Today": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record Today"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日を記録"
+          }
+        }
+      }
+    },
     "Record a moment whenever it matters.": {
       "localizations": {
         "en": {
@@ -4043,6 +5320,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "残しておきたい出来事を、マークに。"
+          }
+        }
+      }
+    },
+    "Recorded Time Together": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recorded Time Together"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録された期間の合計"
+          }
+        }
+      }
+    },
+    "Recording Enabled": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recording Enabled"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録が有効"
           }
         }
       }
@@ -4229,6 +5538,38 @@
         }
       }
     },
+    "Rename Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename Tag"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tagの名前を変更"
+          }
+        }
+      }
+    },
+    "Renaming affects %lld existing Items, including those outside this file.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renaming affects %lld existing Items, including those outside this file."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "名前の変更は、このファイルに含まれないものも含め、既存の%lld件のItemに反映されます。"
+          }
+        }
+      }
+    },
     "Replace Library": {
       "extractionState": "stale",
       "localizations": {
@@ -4263,6 +5604,22 @@
         }
       }
     },
+    "Replace Tag": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replace Tag"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "置き換えるTag"
+          }
+        }
+      }
+    },
     "Replaced the current library.": {
       "extractionState": "stale",
       "localizations": {
@@ -4276,6 +5633,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "現在のライブラリを置き換えました。"
+          }
+        }
+      }
+    },
+    "Representative URL": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Representative URL"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "代表URL"
           }
         }
       }
@@ -4309,6 +5682,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "期間を再開"
+          }
+        }
+      }
+    },
+    "Resume with New Period": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume with New Period"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しい期間として再開"
           }
         }
       }
@@ -4362,6 +5751,70 @@
         }
       }
     },
+    "Review Again": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review Again"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "もう一度確認"
+          }
+        }
+      }
+    },
+    "Review Consolidation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review Consolidation"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "統合内容を確認"
+          }
+        }
+      }
+    },
+    "Review Import": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review Import"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取り込み内容を確認"
+          }
+        }
+      }
+    },
+    "Review Stally Import": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review Stally Import"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stallyの取り込み内容を確認"
+          }
+        }
+      }
+    },
     "Review Updated": {
       "extractionState": "stale",
       "localizations": {
@@ -4379,6 +5832,22 @@
         }
       }
     },
+    "Review before saving. Current records are kept unless you choose otherwise.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review before saving. Current records are kept unless you choose otherwise."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存前に内容を確認します。変更を選ばなければ現在の記録を保持します。"
+          }
+        }
+      }
+    },
     "Review brings together items waiting for a first mark, dormant items, and past favorites that may return.": {
       "extractionState": "stale",
       "localizations": {
@@ -4392,6 +5861,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "見直しには、最初のマークを待つアイテム、休眠中のアイテム、もう一度出番がありそうな以前のお気に入りが集まります。"
+          }
+        }
+      }
+    },
+    "Review conflicting periods before calculating time together.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review conflicting periods before calculating time together."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "期間の整合性を確認すると、ともに過ごした期間を計算できます。"
+          }
+        }
+      }
+    },
+    "Review the file in Stally. Nothing has been imported yet.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Review the file in Stally. Nothing has been imported yet."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stallyでファイルの内容を確認してください。まだ何も取り込んでいません。"
           }
         }
       }
@@ -4565,7 +6066,6 @@
       }
     },
     "Scope": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4627,6 +6127,70 @@
           "stringUnit": {
             "state": "translated",
             "value": "名前・メモ・タグを検索"
+          }
+        }
+      }
+    },
+    "Set Item Archive": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set Item Archive"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Itemのアーカイブ状態を設定"
+          }
+        }
+      }
+    },
+    "Set Item Favorite": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set Item Favorite"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Itemのお気に入りを設定"
+          }
+        }
+      }
+    },
+    "Set Item Recording": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set Item Recording"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Itemの記録の有効・無効を設定"
+          }
+        }
+      }
+    },
+    "Set Item Tags": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set Item Tags"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ItemのTagを設定"
           }
         }
       }
@@ -4902,6 +6466,22 @@
         }
       }
     },
+    "Source": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "置き換えるTag"
+          }
+        }
+      }
+    },
     "Stally": {
       "localizations": {
         "en": {
@@ -4931,6 +6511,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Stallyデータ"
+          }
+        }
+      }
+    },
+    "Stally File": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stally File"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stallyファイル"
           }
         }
       }
@@ -4980,6 +6576,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "開始時期"
+          }
+        }
+      }
+    },
+    "Start (Unknown If Empty)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start (Unknown If Empty)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開始日（空欄は不明）"
+          }
+        }
+      }
+    },
+    "Start (YYYY, YYYY-MM, or YYYY-MM-DD)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start (YYYY, YYYY-MM, or YYYY-MM-DD)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開始日（YYYY、YYYY-MM、またはYYYY-MM-DD）"
           }
         }
       }
@@ -5103,6 +6731,22 @@
         }
       }
     },
+    "Survivor": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Survivor"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "残すTag"
+          }
+        }
+      }
+    },
     "Tag": {
       "localizations": {
         "en": {
@@ -5147,6 +6791,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "同じ名前でも別のタグとして残ります。使いたいタグを選んでください。"
+          }
+        }
+      }
+    },
+    "Text": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "検索テキスト"
           }
         }
       }
@@ -5385,7 +7045,6 @@
       }
     },
     "Time Together": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -5448,6 +7107,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "サンプルアイテムを試す"
+          }
+        }
+      }
+    },
+    "Undo Last Addition": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo Last Addition"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "直前の追加を取り消す"
           }
         }
       }
@@ -5650,6 +7325,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Stallyをアップデート"
+          }
+        }
+      }
+    },
+    "Use File Value": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use File Value"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイルの値を使用"
           }
         }
       }
@@ -5867,6 +7558,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "年ごとの節目"
+          }
+        }
+      }
+    },
+    "Years: %lld, months: %lld, days: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Years: %1$lld, months: %2$lld, days: %3$lld"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "年の差：%1$lld年、月の差：%2$lldか月、日数：%3$lld日"
           }
         }
       }

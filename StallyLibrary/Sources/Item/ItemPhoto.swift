@@ -28,7 +28,7 @@ extension StallySchema {
 
         init(
             item: Item,
-            imageData: Data,
+            imageData: Data?,
             thumbnailData: Data?,
             caption: String,
             sortOrder: Int

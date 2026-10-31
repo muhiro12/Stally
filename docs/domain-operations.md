@@ -1,5 +1,10 @@
 # Domain Operations
 
+For the October 31 shared Operations, reviewed transfers, period readings, and
+redesigned App Intent implementation, see
+[Shared Product Operations and System Adapters](remaining-capabilities-implementation.md).
+The implementation descriptions below retain their historical scope.
+
 The October 27 five-model implementation supersedes the older implementation
 and evidence described here. See [foundation implementation](first-release-foundation-implementation.md)
 for current Operations, storage, UI, verification, and unfinished capabilities.

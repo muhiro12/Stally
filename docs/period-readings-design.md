@@ -73,6 +73,11 @@ implementation, not prerequisites for finishing the current design discussion.
 Preserve source facts so readings can evolve. Define the meaning and units of
 any externally consumed result before publishing its App Intent interface.
 
+The October 31 [implementation](remaining-capabilities-implementation.md#recorded-time-together)
+now defines the initial mixed-precision, aggregation, uncertainty, and display
+choices, with behavior tests. Those choices preserve the recorded facts and can
+be revised from product feedback without changing this accepted basis.
+
 ## Historical October 25 Proposal
 
 This October 25, 2026 engineering recommendation builds on the accepted

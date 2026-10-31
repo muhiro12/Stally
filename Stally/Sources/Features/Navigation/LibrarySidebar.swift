@@ -12,12 +12,14 @@ struct LibrarySidebar: View {
     let tags: [Tag]
     @Binding var selection: LibraryDestination?
     let manageTags: () -> Void
+    let transfer: () -> Void
 
     var body: some View {
         List(selection: $selection) {
             collectionSection
             tagSection
             Section {
+                Button("Import & Export", systemImage: "arrow.up.arrow.down.square", action: transfer)
                 Button("Debug", systemImage: "ladybug") {
                     showingDiagnostics = true
                 }
@@ -29,7 +31,8 @@ struct LibrarySidebar: View {
         .navigationSplitViewColumnWidth(
             min: LibraryLayout.sidebarMinimum,
             ideal: LibraryLayout.sidebarIdeal,
-            max: LibraryLayout.sidebarMaximum)
+            max: LibraryLayout.sidebarMaximum
+        )
         .sheet(isPresented: $showingDiagnostics) {
             DiagnosticsView(container: context.container, startupError: nil)
         }
@@ -46,8 +49,9 @@ struct LibrarySidebar: View {
                     }
                     .badge(
                         items.count { item in
-                            destination.includes(item)
-                        })
+                            destination.includes(item) && item.isArchived == (destination == .archive)
+                        }
+                    )
                 }
             }
         }
@@ -62,7 +66,7 @@ struct LibrarySidebar: View {
                     } icon: {
                         Image(systemName: "tag")
                     }
-                    .badge((tag.items ?? []).count)
+                    .badge((tag.items ?? []).filter { !$0.isArchived }.count)
                 }
             }
             Button("Manage Tags", systemImage: "tag", action: manageTags)

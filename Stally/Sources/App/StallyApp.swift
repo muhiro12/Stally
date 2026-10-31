@@ -9,6 +9,7 @@ import SwiftUI
 struct StallyApp: App {
     @State private var showingDiagnostics = false
 
+    private let transferPresentation: TransferPresentation
     private let container: ModelContainer?
     private let startupError: String?
     private let runtimeBootstrap: MHAppRuntimeBootstrap
@@ -20,6 +21,7 @@ struct StallyApp: App {
                 LibraryView()
                     .modelContainer(container)
                     .environment(updates)
+                    .environment(transferPresentation)
                     .mhTheme(.standard)
                     .mhAppRuntimeEnvironment(runtimeBootstrap)
                     .mhAppRuntimeLifecycle(
@@ -55,6 +57,8 @@ struct StallyApp: App {
     }
 
     init() {
+        let presentation = TransferPresentation()
+        transferPresentation = presentation
         #if os(iOS)
         MHTheme.standard.configureNativeAppearance()
         #endif
@@ -76,6 +80,7 @@ struct StallyApp: App {
             container = modelContainer
             startupError = nil
             AppDependencyManager.shared.add { modelContainer }
+            AppDependencyManager.shared.add { presentation }
             AppDependencyManager.shared.add { updateOperations }
             logger.notice("model_container.opened")
         } catch {

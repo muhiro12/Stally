@@ -99,15 +99,18 @@ integration. Product Operations and tests remain in StallyLibrary.
 The old category/single-start/day-toggle adapters, flat backup codec, Review,
 Insights, search projections, sample profiles, and old Intent adapters have been
 retired. Their redesigned features remain first-release work as applicable.
-The new package import/export, full Intent coverage, and Universal Links are
-not implemented by this step. Photo ingestion, captions, ordering, deletion,
+The [remaining capabilities implementation](docs/remaining-capabilities-implementation.md)
+adds reviewed package import/export, 37 App Intent adapters, period readings,
+quick Marks with identity-based undo, Tag consolidation, and shared search scope.
+Universal Link routing and entitlement are present locally; the site's association
+entry and installed handoff remain external deployment qualification. Photo ingestion, captions, ordering, deletion,
 and viewing now use the accepted preservation policy. DEBUG launches use isolated local
 development records; see [development setup](docs/fixture-architecture.md#current-development-setup)
 for initial seeding, empty-store opt-out, and explicit shared-store verification.
 The sidebar [Debug screen](docs/diagnostics-access.md) is available in all
 builds; its development controls remain DEBUG-only.
-Current and cumulative period readings, including estimates, are selected in
-the behavior design but are not implemented yet.
+Current and cumulative readings distinguish exact days, explainable estimates,
+and calculable subtotals when history is incomplete.
 
 Startup never automatically deletes a development store or substitutes an empty
 library on error. DEBUG local storage is selected before opening a container;

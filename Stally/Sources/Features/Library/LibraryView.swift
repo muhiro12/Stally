@@ -3,6 +3,8 @@ import SwiftData
 import SwiftUI
 
 struct LibraryView: View {
+    @Environment(TransferPresentation.self)
+    private var transferPresentation
     @Query(sort: \Item.createdAt, order: .reverse)
     private var items: [Item]
     @Query(sort: \Tag.name)
@@ -14,6 +16,8 @@ struct LibraryView: View {
     @State private var searchText = ""
     @State private var addingItem = false
     @State private var managingTags = false
+    @State private var transferring = false
+    @State private var importURL: URL?
     @State private var routeError: String?
 
     private var selectedItem: Item? {
@@ -33,19 +37,28 @@ struct LibraryView: View {
     }
 
     var body: some View {
+        @Bindable var presentation = transferPresentation
         NavigationSplitView(
             columnVisibility: $columnVisibility,
             preferredCompactColumn: $compactColumn
         ) {
-            LibrarySidebar(items: items, tags: tags, selection: $destination) {
-                managingTags = true
-            }
+            LibrarySidebar(
+                items: items,
+                tags: tags,
+                selection: $destination,
+                manageTags: { managingTags = true },
+                transfer: {
+                    importURL = nil
+                    transferring = true
+                }
+            )
         } content: {
             ItemListView(
                 items: items.filter { item in
                     (destination ?? .library).includes(item)
                 },
                 title: title,
+                initialScope: destination == .archive ? .archived : .library,
                 selection: $selectedItemID,
                 searchText: $searchText
             ) {
@@ -71,6 +84,12 @@ struct LibraryView: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
+        .sheet(item: $presentation.review) { review in
+            ImportReviewView(review: review) { _ in transferPresentation.review = nil }
+        }
+        .sheet(isPresented: $transferring) {
+            TransferView(initialURL: importURL)
+        }
         .sheet(isPresented: $addingItem) {
             ItemEditor(item: nil) { item in
                 destination = .library
@@ -111,10 +130,30 @@ struct LibraryView: View {
                 if !isPresented {
                     routeError = nil
                 }
-            })
+            }
+        )
     }
 
     private func openLink(_ url: URL) {
+        if url.isFileURL {
+            importURL = url
+            transferring = true
+            return
+        }
+        if case .supported(.destination(let target)) = StallyLinkOperations.parse(url) {
+            switch target {
+            case .library:
+                destination = .library
+            case .archive:
+                destination = .archive
+            case .importExport:
+                importURL = nil
+                transferring = true
+            case .createItem:
+                addingItem = true
+            }
+            return
+        }
         guard case .supported(.item(let uuid)) = StallyLinkOperations.parse(url) else {
             routeError = String(localized: "This destination is not available yet.")
             return

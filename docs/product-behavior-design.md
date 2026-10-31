@@ -112,8 +112,8 @@ The October 31 prerelease replacement instruction supersedes the earlier
 requirement to retain development V3 as a migration snapshot. The current
 `StallySchema` baseline includes the optional `representativeURL` string.
 No development-store migration or legacy-file compatibility is provided.
-Storage and Item editing are implemented; export/import and system adapters
-must include this fact when those features are implemented.
+Storage, Item editing, reviewed export/import, and system adapters now include
+this fact. See the [current implementation](remaining-capabilities-implementation.md).
 
 ## Capability and Behavior Map
 

@@ -19,6 +19,7 @@ private struct LibraryPreview: View {
             LibraryView()
                 .modelContainer(container)
                 .environment(RemoteUpdateOperations())
+                .environment(TransferPresentation())
                 .mhTheme(.standard)
         case .failure(let error):
             Text(verbatim: error.localizedDescription)

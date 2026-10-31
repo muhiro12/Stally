@@ -5,11 +5,12 @@
 This October 25, 2026 design makes the accepted
 [import identity policy](import-identity-design.md) concrete. The owner accepted
 proceeding with the revised package and preservation policy after reviewing
-the sibling-app comparison. This is an accepted design direction, not an
-implemented codec or a published, immutable format.
+the sibling-app comparison. This document records the accepted design direction; it does not by itself
+constitute implementation evidence or a published, immutable format.
 The October 31 [Item implementation](item-context-implementation.md) uses
-`StallySchema` 1.0.0 and reserves envelope version 1. The package codec is still
-unimplemented. The owner's prerelease replacement instruction removes any
+`StallySchema` 1.0.0. The subsequent [shared Operations implementation](remaining-capabilities-implementation.md)
+implements package envelope version 1, identity-preserving reviewed import,
+and byte-preserving media restoration. The owner's prerelease replacement instruction removes any
 requirement to read the old development v2/v3 flat files. Earlier examples and
 version pairs below retain their design-history scope; align the first public
 codec with the actual release schema before publication.
@@ -18,16 +19,19 @@ The owner subsequently expressed a preference for `.stally` and requested
 adoption of independently justified safeguards from the sibling apps. The
 selected design below uses one native package container with or without photos,
 per-image integrity metadata, and auxiliary JSON sharing for external use.
-These changes remain design work.
+The sections below preserve the design rationale; current implementation and
+qualification evidence are maintained in the linked implementation document.
 
-### Readiness to Continue Design
+### Historical Design Readiness
 
 No additional product-contract choice blocks moving to derived readings and
 presentation. Identity, conflict review, omission, version evolution, the
 consistent package container, and attachment preservation have a selected
 direction. Do not repeatedly reopen them as speculative sync guarantees.
 
-The following work remains mandatory before release, in its appropriate phase:
+The original design checklist identified these implementation and qualification
+areas. Current status and prerelease replacement authority are described in the
+implementation document linked above:
 
 - Measure aggregate byte/count limits, memory and disk use, including the
   single-save import path; qualify the provisional 32-MiB JSON budget.
@@ -159,20 +163,13 @@ because its keys look familiar.
 ## Record Fields and Relationships
 
 The October 28 [representative-link decision](product-behavior-design.md#accepted-context-and-favorite-decisions)
-adds one optional retained URL per Item to the target design. The baseline
-field table and proposal example below predate that addition. When integrating
-it, bind the field to the actual successor schema, update the wire table and
-example, and distinguish an absent historical field from an explicit clear.
-An older supported file must not erase a destination Item's existing link.
-Do not silently add the field to an already-defined historical schema reader.
-
-Use one flat array per model. This avoids repeating child records in several
-places and keeps identity-based conflict choices explicit. SwiftData inverse
-arrays are not serialized a second time.
+is included in the first public schema and codec. `representativeURL` is a
+required nullable key: null explicitly clears the selected record's link.
+There are no supported development-file readers in this prerelease baseline.
 
 | Record | Required fields |
 | --- | --- |
-| Item | `uuid`, `name`, `note`, `createdAt`, `isArchived`, `isFavorite`, `isMarkRecordingEnabled`, `tagUUIDs` |
+| Item | `uuid`, `name`, `note`, `representativeURL`, `createdAt`, `isArchived`, `isFavorite`, `isMarkRecordingEnabled`, `tagUUIDs` |
 | ItemMark | `uuid`, `itemUUID`, `localDateTime`, `createdAt` |
 | ItemPeriod | `uuid`, `itemUUID`, `startLocalDate`, `endLocalDate`, `isOngoing`, `createdAt` |
 | ItemPhoto | `uuid`, `itemUUID`, `caption`, `sortOrder`, `createdAt`, `image` |

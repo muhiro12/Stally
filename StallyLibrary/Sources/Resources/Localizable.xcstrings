@@ -340,6 +340,22 @@
         }
       }
     },
+    "Archived": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Archived"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アーカイブ済み"
+          }
+        }
+      }
+    },
     "Archived items whose history suggests they may deserve another turn.": {
       "extractionState": "stale",
       "localizations": {
@@ -829,6 +845,22 @@
         }
       }
     },
+    "Favorite": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Favorite"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "お気に入り"
+          }
+        }
+      }
+    },
     "Finish the pending edit before starting another operation.": {
       "localizations": {
         "en": {
@@ -862,6 +894,22 @@
         }
       }
     },
+    "Image Included": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image Included"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画像あり"
+          }
+        }
+      }
+    },
     "Import & Export": {
       "localizations": {
         "en": {
@@ -878,7 +926,40 @@
         }
       }
     },
+    "In Library": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Library"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ライブラリ内"
+          }
+        }
+      }
+    },
+    "Include the required Items and Tags, and resolve conflicting periods.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include the required Items and Tags, and resolve conflicting periods."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "必要なItemとTagを選択し、期間の矛盾を解消してください。"
+          }
+        }
+      }
+    },
     "Insights": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1351,6 +1432,22 @@
         }
       }
     },
+    "No Image Supplied; Keep Any Local Image": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Image Supplied; Keep Any Local Image"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画像の指定なし。端末にある画像を保持します"
+          }
+        }
+      }
+    },
     "No items in this scope record Marks.": {
       "extractionState": "stale",
       "localizations": {
@@ -1415,6 +1512,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "開始前"
+          }
+        }
+      }
+    },
+    "Not a Favorite": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not a Favorite"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "お気に入りではない"
           }
         }
       }
@@ -1487,6 +1600,22 @@
         }
       }
     },
+    "Ongoing": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ongoing"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "継続中"
+          }
+        }
+      }
+    },
     "Open Today": {
       "extractionState": "stale",
       "localizations": {
@@ -1534,6 +1663,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "その他"
+          }
+        }
+      }
+    },
+    "Position: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position: %lld"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "位置：%lld"
+          }
+        }
+      }
+    },
+    "Position: %llu": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position: %llu"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "位置：%llu"
           }
         }
       }
@@ -1589,6 +1750,38 @@
         }
       }
     },
+    "Recording Enabled": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recording Enabled"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録が有効"
+          }
+        }
+      }
+    },
+    "Recording Paused": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recording Paused"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録を一時停止中"
+          }
+        }
+      }
+    },
     "Recovery Candidates": {
       "extractionState": "stale",
       "localizations": {
@@ -1606,6 +1799,22 @@
         }
       }
     },
+    "Registered: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registered: %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登録日時：%@"
+          }
+        }
+      }
+    },
     "Reload this record before editing it.": {
       "localizations": {
         "en": {
@@ -1618,6 +1827,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "記録を読み込み直してから編集してください。"
+          }
+        }
+      }
+    },
+    "Resolve missing relationships or conflicting identities before transferring.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resolve missing relationships or conflicting identities before transferring."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取り込みや書き出しの前に、参照先の欠落や識別情報の競合を解消してください。"
           }
         }
       }
@@ -1639,6 +1864,7 @@
       }
     },
     "Review": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1773,6 +1999,7 @@
       }
     },
     "Settings": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1890,6 +2117,38 @@
         }
       }
     },
+    "The file is incomplete, damaged, or is not a Stally export.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The file is incomplete, damaged, or is not a Stally export."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイルが不完全か破損しているか、Stallyの書き出しファイルではありません。"
+          }
+        }
+      }
+    },
+    "The library changed. Review the import again before saving.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The library changed. Review the import again before saving."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ライブラリが変更されました。保存前に取り込み内容をもう一度確認してください。"
+          }
+        }
+      }
+    },
     "The period has inconsistent boundaries or continuation state.": {
       "localizations": {
         "en": {
@@ -1989,6 +2248,22 @@
         }
       }
     },
+    "This export version is not supported by this app.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This export version is not supported by this app."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この書き出し形式のバージョンには対応していません。"
+          }
+        }
+      }
+    },
     "This image is not a supported complete still image within the saved limits.": {
       "localizations": {
         "en": {
@@ -2034,6 +2309,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "この記録は利用できなくなりました。"
+          }
+        }
+      }
+    },
+    "This transfer exceeds the supported size limits.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This transfer exceeds the supported size limits."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このファイルは対応するサイズの上限を超えています。"
           }
         }
       }
@@ -2102,6 +2393,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "マークしたアイテム"
+          }
+        }
+      }
+    },
+    "Unknown": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unknown"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不明"
           }
         }
       }
@@ -2221,6 +2528,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "履歴なし"
+          }
+        }
+      }
+    },
+    "The records changed. Review this operation again before saving.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The records changed. Review this operation again before saving."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録が変更されました。保存前にこの操作の内容をもう一度確認してください。"
           }
         }
       }

@@ -4,7 +4,8 @@ The owner's October 31 [prerelease replacement direction](rebuild-implementation
 permits breaking existing development stores and code. Earlier development
 schema/version retention requirements are superseded; the underlying selected
 record meanings remain the basis for implementation. See the current
-[Item implementation](item-context-implementation.md).
+[Item implementation](item-context-implementation.md) and the subsequent
+[shared product Operations](remaining-capabilities-implementation.md).
 
 For the integrated October 27 implementation, current evidence, and remaining
 work, see [foundation implementation](first-release-foundation-implementation.md).

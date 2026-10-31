@@ -44,13 +44,13 @@ enum LibraryDestination: Hashable {
     func includes(_ item: Item) -> Bool {
         switch self {
         case .library:
-            !item.isArchived
+            true
         case .favorites:
             item.isFavorite
         case .recording:
             item.isMarkRecordingEnabled
         case .archive:
-            item.isArchived
+            true
         case .tag(let identifier):
             (item.tags ?? []).contains { tag in
                 tag.persistentModelID == identifier

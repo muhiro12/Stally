@@ -14,6 +14,7 @@ public enum RecordError: LocalizedError, Equatable {
     case wrongContext
     case invalidPhoto
     case invalidURL
+    case staleReview
 
     public var errorDescription: String? {
         switch self {
@@ -48,6 +49,8 @@ public enum RecordError: LocalizedError, Equatable {
                 localized: "This image is not a supported complete still image within the saved limits.",
                 bundle: .module
             )
+        case .staleReview:
+            String(localized: "The records changed. Review this operation again before saving.", bundle: .module)
         case .invalidURL:
             String(localized: "Enter a complete website or app URL.", bundle: .module)
         }
