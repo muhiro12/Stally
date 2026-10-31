@@ -8,9 +8,8 @@ import Testing
 struct TransferSafetyTests {
     @Test
     func failedDiskSaveLeavesEverySelectedRecordUnchanged() throws {
-        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let directory = PersistentTestDirectory.makeURL()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appendingPathComponent("records.store")
         let archive = try autoreleasepool {
             let context = ModelContext(try StallyModelContainerFactory.disk(at: url))

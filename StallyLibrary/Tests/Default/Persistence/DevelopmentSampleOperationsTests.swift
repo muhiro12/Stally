@@ -10,7 +10,6 @@ struct DevelopmentSampleOperationsTests {
     @Test
     func manualInsertionAfterInitialOptOutSurvivesReopenAndRejectsDuplicates() throws {
         let directory = newDirectory()
-        defer { try? FileManager.default.removeItem(at: directory) }
         let identities = try autoreleasepool {
             let container = try StallyDevelopmentStore.open(in: directory, automaticallySeed: false)
             let context = container.mainContext
@@ -32,7 +31,6 @@ struct DevelopmentSampleOperationsTests {
     @Test
     func manualInsertionAfterDeliberateDeletionNeedsNoRestart() throws {
         let directory = newDirectory()
-        defer { try? FileManager.default.removeItem(at: directory) }
         try autoreleasepool {
             let container = try StallyDevelopmentStore.open(in: directory)
             let context = container.mainContext
@@ -52,7 +50,6 @@ struct DevelopmentSampleOperationsTests {
     @Test
     func pendingEditsAndOtherContextsArePreserved() throws {
         let directory = newDirectory()
-        defer { try? FileManager.default.removeItem(at: directory) }
         try autoreleasepool {
             let container = try StallyDevelopmentStore.open(in: directory, automaticallySeed: false)
             let context = container.mainContext
@@ -73,7 +70,6 @@ struct DevelopmentSampleOperationsTests {
     @Test
     func publicEntryRejectsAnUnrelatedLocalStoreAndPreview() throws {
         let directory = newDirectory()
-        defer { try? FileManager.default.removeItem(at: directory) }
         try autoreleasepool {
             let container = try StallyDevelopmentStore.open(in: directory, automaticallySeed: false)
             #expect(throws: DevelopmentSampleOperations.InsertionError.unsupportedStore) {
@@ -127,7 +123,6 @@ struct DevelopmentSampleOperationsTests {
     @Test(arguments: ["item", "mark", "period", "photo", "tag"])
     func anyExistingRecordPreventsInsertion(_ kind: String) throws {
         let directory = newDirectory()
-        defer { try? FileManager.default.removeItem(at: directory) }
         try autoreleasepool {
             let container = try StallyDevelopmentStore.open(in: directory, automaticallySeed: false)
             let context = container.mainContext
@@ -180,7 +175,7 @@ struct DevelopmentSampleOperationsTests {
     }
 
     private func newDirectory() -> URL {
-        FileManager.default.temporaryDirectory.appending(path: UUID().uuidString, directoryHint: .isDirectory)
+        PersistentTestDirectory.makeURL()
     }
 }
 #endif

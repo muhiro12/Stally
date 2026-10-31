@@ -8,7 +8,7 @@ import Testing
 struct SaveFailureTests {
     @Test
     func failedSaveRollsBackOnlyTheAttemptedOperation() throws {
-        let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        let directory = PersistentTestDirectory.makeURL()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let url = directory.appending(path: "readonly.store")
         let identity = try autoreleasepool {

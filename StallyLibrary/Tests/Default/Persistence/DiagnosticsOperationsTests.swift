@@ -30,8 +30,7 @@ struct DiagnosticsOperationsTests {
 
     @Test
     func refreshUsesTheOpenDiskStoreAndCurrentCounts() throws {
-        let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
-        defer { try? FileManager.default.removeItem(at: directory) }
+        let directory = PersistentTestDirectory.makeURL()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let container = try StallyModelContainerFactory.disk(at: directory.appending(path: "test.store"))
         let context = container.mainContext

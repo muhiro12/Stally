@@ -162,7 +162,7 @@ struct CorePersistenceTests {
     }
 
     private func storeURL() throws -> URL {
-        let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        let directory = PersistentTestDirectory.makeURL()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         return directory.appending(path: "test.store")
     }

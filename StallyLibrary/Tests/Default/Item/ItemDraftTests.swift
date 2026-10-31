@@ -8,11 +8,8 @@ import Testing
 struct ItemDraftTests {
     @Test
     func completeItemSaveSurvivesReopenWithoutImplicitHistory() async throws {
-        let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        let directory = PersistentTestDirectory.makeURL()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        defer {
-            try? FileManager.default.removeItem(at: directory)
-        }
         let url = directory.appending(path: "item.store")
         let prepared = try await PhotoOperations.prepare(data: PhotoTestImages.imageData())
         var draft = ItemDraft(name: "Camera", note: "A gift")
@@ -106,11 +103,8 @@ struct ItemDraftTests {
 
     @Test
     func failedCompoundSaveRollsBackMetadataTagsAndPhotos() async throws {
-        let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+        let directory = PersistentTestDirectory.makeURL()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        defer {
-            try? FileManager.default.removeItem(at: directory)
-        }
         let url = directory.appending(path: "readonly.store")
         let identity = try autoreleasepool {
             let container = try StallyModelContainerFactory.disk(at: url)

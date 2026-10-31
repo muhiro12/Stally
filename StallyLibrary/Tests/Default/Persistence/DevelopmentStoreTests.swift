@@ -10,7 +10,6 @@ struct DevelopmentStoreTests {
     @Test(arguments: ["en", "ja"])
     func localizedRecordsSurviveReopening(_ language: String) throws {
         let directory = newDirectory()
-        defer { try? FileManager.default.removeItem(at: directory) }
         let expected: [String: String] = language == "ja" ? [
             "いつものリュック": "散歩やちょっとした旅に持っていく、軽いリュック。",
             "川沿いのカフェ": "窓際の席で、本を読むひととき。",
@@ -45,7 +44,6 @@ struct DevelopmentStoreTests {
     @Test
     func representativeGraphSurvivesDiskReopen() throws {
         let directory = newDirectory()
-        defer { try? FileManager.default.removeItem(at: directory) }
         let identities = try autoreleasepool {
             let container = try StallyDevelopmentStore.open(in: directory)
             let context = container.mainContext
@@ -82,7 +80,6 @@ struct DevelopmentStoreTests {
     @Test
     func editsAndDeliberateDeletionNeverTriggerReseeding() throws {
         let directory = newDirectory()
-        defer { try? FileManager.default.removeItem(at: directory) }
         let identity = try autoreleasepool {
             let container = try StallyDevelopmentStore.open(in: directory)
             let context = ModelContext(container)
@@ -115,7 +112,6 @@ struct DevelopmentStoreTests {
     @Test
     func initialOptOutRemainsEmptyWhenReenabled() throws {
         let directory = newDirectory()
-        defer { try? FileManager.default.removeItem(at: directory) }
         try autoreleasepool {
             let container = try StallyDevelopmentStore.open(in: directory, automaticallySeed: false)
             let context = ModelContext(container)
@@ -131,7 +127,6 @@ struct DevelopmentStoreTests {
     @Test
     func existingDirectoryIsNotAnInitialSetup() throws {
         let directory = newDirectory()
-        defer { try? FileManager.default.removeItem(at: directory) }
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let container = try StallyDevelopmentStore.open(in: directory)
         let context = ModelContext(container)
@@ -141,7 +136,6 @@ struct DevelopmentStoreTests {
     @Test
     func unreadableStoreIsRetainedWithoutFallback() throws {
         let directory = newDirectory()
-        defer { try? FileManager.default.removeItem(at: directory) }
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let url = directory.appending(path: "Development.store")
         let bytes = Data("Not a SQLite store; preserve for diagnosis".utf8)
@@ -171,7 +165,7 @@ struct DevelopmentStoreTests {
     }
 
     private func newDirectory() -> URL {
-        FileManager.default.temporaryDirectory.appending(path: UUID().uuidString, directoryHint: .isDirectory)
+        PersistentTestDirectory.makeURL()
     }
 }
 #endif
