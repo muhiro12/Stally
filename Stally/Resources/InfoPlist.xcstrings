@@ -18,23 +18,6 @@
         }
       }
     },
-    "Stally Data": {
-      "extractionState": "stale",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stally Data"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stallyデータ"
-          }
-        }
-      }
-    },
     "Stally Export": {
       "localizations": {
         "en": {

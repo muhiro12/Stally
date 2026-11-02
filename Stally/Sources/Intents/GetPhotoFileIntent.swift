@@ -15,7 +15,6 @@ struct GetPhotoFileIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
     @Parameter(title: "Photo")
     var photo: PhotoEntity
 

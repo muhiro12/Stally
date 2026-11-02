@@ -14,8 +14,7 @@ simply look back on your time together.
 - Add a start year, month, or exact day when you know it. Unknown dates can
   stay unset, and approximate dates keep their original precision.
 - Include things that do not need daily Marks, such as a home or a plant.
-  They remain in your collection without appearing in Mark reminders or
-  choice-count readings.
+  You can keep notes, photos or periods for them without adding Marks.
 - Move items to Archive to hide them from Library. Their information is kept
   and elapsed time continues.
 

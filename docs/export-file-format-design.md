@@ -1,54 +1,9 @@
 # Export File Format Design
 
-## Status
-
-This October 25, 2026 design makes the accepted
-[import identity policy](import-identity-design.md) concrete. The owner accepted
-proceeding with the revised package and preservation policy after reviewing
-the sibling-app comparison. This document records the accepted design direction; it does not by itself
-constitute implementation evidence or a published, immutable format.
-The October 31 [Item implementation](item-context-implementation.md) uses
-`StallySchema` 1.0.0. The subsequent [shared Operations implementation](remaining-capabilities-implementation.md)
-implements package envelope version 1, identity-preserving reviewed import,
-and byte-preserving media restoration. The owner's prerelease replacement instruction removes any
-requirement to read the old development v2/v3 flat files. Earlier examples and
-version pairs below retain their design-history scope; align the first public
-codec with the actual release schema before publication.
-
-The owner subsequently expressed a preference for `.stally` and requested
-adoption of independently justified safeguards from the sibling apps. The
-selected design below uses one native package container with or without photos,
-per-image integrity metadata, and auxiliary JSON sharing for external use.
-The sections below preserve the design rationale; current implementation and
-qualification evidence are maintained in the linked implementation document.
-
-### Historical Design Readiness
-
-No additional product-contract choice blocks moving to derived readings and
-presentation. Identity, conflict review, omission, version evolution, the
-consistent package container, and attachment preservation have a selected
-direction. Do not repeatedly reopen them as speculative sync guarantees.
-
-The original design checklist identified these implementation and qualification
-areas. Current status and prerelease replacement authority are described in the
-implementation document linked above:
-
-- Measure aggregate byte/count limits, memory and disk use, including the
-  single-save import path; qualify the provisional 32-MiB JSON budget.
-- Implement and verify strict historical/current codecs, invalid-file rejection,
-  coherent export staging, stale review, failed-save preservation, and media
-  integrity with the actual five-model importer.
-- Qualify the installed document type, Files/providers, export/cancel flows,
-  and the timing of omission, metadata, and conflict explanations.
-- During schema integration, bind the initial file version to the actual
-  VersionedSchema baseline and execute an explicit development-data transition.
-  The proposed retirement of development readers does not authorize store loss.
-
-These are bounded implementation/qualification or integration decisions, not
-new reasons to change the five models now. If measurements require partial
-commits, lossy conversion, identity changes, or different user-visible guarantees,
-reopen the affected contract explicitly instead of treating that as an internal
-optimization. Passing temporary probes does not complete these release checks.
+The first-release file format pairs envelope version 1 with `StallySchema`
+1.0.0. The [Operations record](remaining-capabilities-implementation.md#portable-file-and-import-boundary)
+describes the implemented limits and the [import contract](import-identity-design.md)
+explains UUID matching and preservation.
 
 ## One Native Package, Optional Photos
 
@@ -66,11 +21,6 @@ sync checkpoint, or guarantee that every device has finished uploading.
 Export includes the current local saved collection, including archived Items,
 all their children, and unused Tags. Selection-only export can be added later
 without changing the rule that absence never deletes a local record.
-
-The [complete synthetic records example](examples/stally-records-proposal.json)
-shows all five record types, two separate same-name Tags, two same-day Marks,
-an unknown Period end, and deliberately omitted photo bytes. It is a proposal
-example, not a frozen fixture for a published format.
 
 The package layout is:
 
@@ -383,20 +333,6 @@ implementation acceptance criteria. They are independent of UUID matching;
 having UUIDs does not replace them. The concrete new addition in this revision
 is per-image integrity metadata. Aggregate resource qualification is made
 explicit rather than treated as solved by the smaller per-image limit.
-
-## Development Format Transition
-
-Recommend retiring the unreleased `.stallybackup` v2/v3 readers when the new
-five-model format is integrated. They remain distinct historical formats and
-must never be reinterpreted as `(1, "1.0.0")`. Preserve existing fixture meanings
-and reject old files with a specific unsupported-development-format explanation.
-This recommendation uses the owner's explicit pre-release breaking-change
-permission; it is not the policy for any future publicly released export.
-
-Retiring a file reader does not authorize deleting an existing development store
-or silently resetting it. The separate schema integration step must decide how
-to retain or deliberately retire development data. No reader or store is removed
-in this documentation change.
 
 ## Bounded Verification and Remaining Qualification
 

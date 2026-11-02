@@ -51,11 +51,6 @@ public final class RemoteUpdateOperations {
         return try await adapter.prepare()
     }
 
-    /// Restores retained evidence without fetching on each edit. Unavailable evidence permits offline edits.
-    public func checkMutationAllowed() async throws {
-        try await performMutation { () }
-    }
-
     /// Runs a synchronous write immediately after checking retained evidence and cancellation.
     public func performMutation<Value>(
         _ operation: () throws -> Value

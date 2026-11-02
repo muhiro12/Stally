@@ -2,11 +2,7 @@
 
 ## Scope
 
-The October 31, 2026 implementation follows the accepted
-[product behavior](product-behavior-design.md) and
-[prerelease replacement direction](rebuild-implementation-direction.md#october-31-prerelease-replacement-authority).
-This is an implementation unit for Item context, not completion of the full
-first-release feature set.
+Shared Item Operations implement the [accepted product behavior](product-behavior-design.md).
 
 ## Current Baseline
 
@@ -21,9 +17,7 @@ first-release feature set.
   unchanged. Opening errors still surface normally; the app does not silently
   substitute an empty store or erase data. Incompatible test copies can be
   reinstalled under the owner's instruction.
-- `schemaVersion` is now `1.0.0`; `formatVersion` 1 remains reserved for the
-  unimplemented package codec. Earlier development fixtures and format examples
-  are historical evidence, not supported import formats for this baseline.
+- The portable format uses the supported pair `(1, "1.0.0")`.
 
 ## Item Save Behavior
 
@@ -91,10 +85,7 @@ preparation and actual external-URL handoff were not manually exercised.
 
 Package export/import, redesigned App Intent coverage, period readings, and
 organization capabilities are now implemented in the subsequent
-[shared Operations work](remaining-capabilities-implementation.md). In particular,
-export/import must carry the representative link and saved image bytes without
-recompression when implemented. No CloudKit production schema is deployed by
-this change.
+[shared Operations work](remaining-capabilities-implementation.md).
 
 Simulator unit tests and targeted app interaction qualify the changed paths;
 physical-device photo providers, HDR source coverage, resource measurements,

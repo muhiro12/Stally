@@ -17,7 +17,6 @@ struct FindItemsIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
     @Parameter(title: "Text", default: "")
     var text: String
     @Parameter(title: "Scope", default: .library)

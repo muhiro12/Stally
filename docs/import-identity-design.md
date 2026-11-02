@@ -9,9 +9,7 @@ The owner also accepted aligned store/export schema versions, a separate file
 format version, and shared semantic conversion rules without mandatory reuse
 of SwiftData migration execution. These decisions apply
 protection of recorded facts and user intent to the five planned models.
-No production importer, store, or cloud schema was changed.
-The [portable data contract](portable-data-contract.md) still describes the
-implemented development v2/v3 codec, not this new design.
+See the [implemented import boundary](remaining-capabilities-implementation.md#portable-file-and-import-boundary) for review, application and release checks.
 
 Recommend one ordinary, identity-preserving import workflow: review additions
 and differences, retain current values by default, and apply file values only
@@ -206,51 +204,7 @@ pairs, not every possible Cartesian combination. Every exported model version
 must have an explicit file reader and coverage of the schema transitions to the
 current import candidate. This detects a missing file adapter when store schemas
 evolve; it does not promise support for schemas that never exported a file.
-The concrete first revisions, extension, and package layout remain to be chosen;
-examples called F1/F2 do not renumber the existing development v2/v3 files.
-
-The October 25 [concrete file-format proposal](export-file-format-design.md)
-now recommends the first version pair, a consistent `.stally` package with
-auxiliary JSON sharing, explicit media states and integrity metadata,
-millisecond registration precision, and development-file retirement.
-The owner accepted proceeding with the revised package and preservation policy.
-The file-design status separates that acceptance from provisional resource
-budgets, physical-schema integration, and release qualification. No codec has
-been changed by this design acceptance.
-
-An app 2.0 using storage schema S2 can read an export declaring schema S1:
-
-1. Validate the format identifier and supported format/schema version pair.
-2. Decode the historical representation into ordinary Foundation value types.
-3. Apply the S1-to-current semantic mapping, preserving field availability.
-4. Validate identities and relationships, then use the same UUID conflict review.
-5. Save only approved differences into the already-current SwiftData store.
-
-Do not rewrite the original file, swap the live store for an old store, or
-assume SwiftData migrations automatically decode JSON. Apple's
-[ModelContainer migrationPlan][migration-plan] describes store-schema evolution.
-An explicit file reader is a separate application responsibility.
-
-Recommend keeping a reader for every publicly released Stally format as the app
-evolves. Export writes the current format; newer apps retain older readers,
-including skipped-version paths. Frozen means historical field meanings, date
-units, requiredness, and defaults are not silently changed to match today's
-model initializer. Correct bugs with regression evidence without reinterpreting
-past facts. Current development v2/v3 compatibility remains an explicit pre-release
-transition choice; it is not erased or promised by the new versioning proposal.
-
-Unknown future file revisions must fail before mutation with a clear update
-message. An older unsupported format and a malformed file should not be described
-as the same error. Do not partially decode known fields from an unknown revision
-and report a successful import after discarding facts. No downgrade writer or
-arbitrary future-format forward compatibility is promised.
-
-Version changes are driven by meaning, not just whether JSON still decodes.
-Changes to ownership, date interpretation, record identity, field units, image
-coverage, or authoritative user fields require a new appropriate schema or format revision unless
-the existing contract already defines their interpretation. Only explicitly
-ignorable non-authoritative metadata can evolve without forcing a new reader.
-Keep this simple rather than introducing a capability-negotiation framework.
+The first supported pair is `(1, "1.0.0")`. See the [file format](export-file-format-design.md).
 
 ### Old Missing Fields Are Not New Empty Values
 

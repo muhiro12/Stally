@@ -1,60 +1,11 @@
 # First-Release Contract Summary
 
-The owner's October 31 [prerelease replacement direction](rebuild-implementation-direction.md#october-31-prerelease-replacement-authority)
-permits breaking existing development stores and code. Earlier development
-schema/version retention requirements are superseded; the underlying selected
-record meanings remain the basis for implementation. See the current
-[Item implementation](item-context-implementation.md) and the subsequent
-[shared product Operations](remaining-capabilities-implementation.md).
-
-For the integrated October 27 implementation, current evidence, and remaining
-work, see [foundation implementation](first-release-foundation-implementation.md).
-The design-session and standalone-probe statements below retain their original
-scope; they are not claims about the later application state.
-
-## Status and Scope
-
-Consolidated on October 27, 2026 at the owner's request. This is the entry point
-for the decisions reached in the first-release contract-design session. It
-summarizes accepted direction without accepting previously unresolved proposals,
-claiming completed implementation, or authorizing release.
-
-On October 28, the owner clarified the next phase: derive product capabilities
-and behavior from these foundations before designing concrete Operations and
-App Intent adapters. Existing Operations and temporary UI are not accepted
-feature specifications. See [product behavior design](product-behavior-design.md)
-for contract consequences and explicitly unaccepted proposals.
-
-A contract is a persisted or published identity, structure, or meaning whose
-consumers can outlive the current implementation and leave material migration,
-compatibility, recovery, or support responsibility. Fulfill that responsibility
-within its applicable scope and lifetime; neither perpetual support nor an
-arbitrary expiry is assumed. Replaceable screen presentation and internal
-factoring are not automatically such contracts.
-
-**Session conclusion:** the foundational preservation and interface policies
-are established. Detailed feature/interface design, physical schema integration,
-and publication qualification can proceed in a separate development session.
-Some concrete external values still require selection before publication; they
-are explicitly assigned below rather than silently treated as finalized.
-
-No production model, preference store, entitlement, cloud schema, website, or
-file codec was changed by this consolidation. Existing documentation contains
-bounded standalone experiments; those are not an integrated app or a complete
-multi-device qualification.
-
-## Reading Order and Authority
-
-1. Use this summary to distinguish settled direction from deferred work.
-2. Use the linked current design documents for exact fields, rules, selected
-   engineering budgets, and recorded evidence.
-3. Use source and older implementation documents to understand what exists now,
-   not to override the accepted redesign merely because code already exists.
-
-Current owner instructions take precedence. If implementation evidence requires
-changing a selected meaning or preservation guarantee, explain the concrete
-reason and revisit that contract. Routine implementation choices do not need to
-reopen all decisions or prolong this contract-design session.
+These are the contracts for developing Stally 1.0. Use the
+[implementation record](remaining-capabilities-implementation.md) for the
+current Operations and [release readiness](release-readiness.md) for outstanding
+qualification. Changes to identifiers, stored facts, file semantics or destructive
+effects require a compatibility decision. Screen layout and internal factoring
+can evolve during development.
 
 ## Accepted Persistence and Domain Contracts
 
@@ -85,7 +36,7 @@ are derived rather than separately stored assertions.
 The exact Swift schema remains in one linked document instead of copying a
 second implementation-shaped declaration into this summary.
 
-### October 28 Context Addition
+### Item context
 
 The owner subsequently accepted one optional, user-chosen representative URL
 per Item, providing direct access to its selected external destination. It is
@@ -95,8 +46,7 @@ Items may have no link; an older import's absent field must not clear one.
 Favorites remain Bool, with no graded rating selected. Other unstructured
 context remains in notes until a concrete feature justifies dedicated fields.
 See [the accepted behavior](product-behavior-design.md#accepted-context-and-favorite-decisions).
-This addition is not yet in the implemented V3 schema; its successor schema,
-wire representation, and runtime behavior require implementation verification.
+The current `StallySchema` stores this optional URL. Both file representations preserve it.
 
 ## Accepted Photo Contract
 
@@ -149,10 +99,8 @@ The export's `schemaVersion` aligns with the actual SwiftData schema version;
 `formatVersion` versions its container/envelope/encoding separately. App release
 numbers are not decoder selectors. Store migration and historical import share
 preservation semantics, without requiring the same execution path or code.
-Keep historical decoding/fixtures for the supported published formats and make
-any retirement deliberate; do not invent a forever-readability promise or a
-support cutoff in this summary. The initial physical version pair is still an
-integration decision.
+Support published formats according to an explicit compatibility policy. The first pair is `(1, "1.0.0")`. Each package contains `manifest.json`
+and, when it carries image bytes, `assets/<lowercase-photo-uuid>.<extension>`.
 
 ## Accepted Platform and Interface Direction
 
@@ -167,14 +115,12 @@ integration decision.
   so Watch transport and exact target topology remain implementation design.
 - **Links:** Universal Links are in the first release, alongside the existing
   custom-scheme direction. UUID references retain their meaning; a missing
-  record is not replaced by a same-name record. Exact HTTPS paths and association
-  entries must be selected and verified before publication.
-- **App Intents:** represent all application capabilities through Operations-
-  backed Intent adapters. Keep non-public adapters for capabilities that must
-  not be discoverable. Assess native authentication per action, requiring it
-  from the start when the need is clear. Discovery, authentication, and action
-  confirmation are separate decisions. Exact action metadata is not frozen by
-  the withdrawn small-surface proposal. See [Intent direction](app-intents-contract-design.md).
+  record is not replaced by a same-name record. Share `https://muhiro12.github.io/Stally/item/<UUID>`;
+  installed-device handoff is a release check.
+- **App Intents:** UI and Shortcuts call the same Operations. The
+  [publication inventory](app-intents-publication-review.md) records the 38
+  actions, their inputs and results, required authentication and destructive
+  confirmations. Saved workflows depend on those identifiers and meanings.
 - **App Shortcuts:** promotion, phrases, and composed workflows are later
   experience design and may follow 1.0. Their deferral does not remove Intent
   coverage or make discoverable actions unavailable to users' own workflows.
@@ -187,66 +133,4 @@ integration decision.
 The [identifier inventory](saved-key-and-identifier-design.md) retains the
 current bundle ID, CloudKit container, configured App Store ID and monthly
 product ID, and remote-update endpoint. It distinguishes selected identities
-from account-registration evidence. Registry read-back remains release work;
-this session did not create or verify external registrations.
-
-## Deferred Decisions and Required Evidence
-
-These are not all merely tests: some are concrete feature/integration decisions
-that must be made in the phase capable of evaluating them.
-
-| Work | Decide or verify before | Boundary to preserve |
-| --- | --- | --- |
-| Physical schema placement, initial version pair, generated CloudKit fields, and App Group store URL | Integrating the new persistence layer and any production schema promotion | Selected model meanings, existing-data handling, and stable store identity |
-| Handling current development stores/files/settings | Changing their storage or readers | No automatic destructive reset; no invented public compatibility obligation |
-| First-launch sync configuration, any app-controlled switch, and entitlement coupling | Shipping those settings/operations | Native account lifecycle and no entitlement-driven data erasure or silent store substitution |
-| Exact Intent types/parameters/properties/results, discovery and authentication policies | Publishing each capability | Complete feature coverage and the meaning relied on by saved workflows |
-| HTTPS routes, domain association, actual preference raw values/defaults, extension IDs and widget kinds | Publishing the corresponding surface | Stable identifiers, no incompatible key reuse, selected first-release scope |
-| File/resource limits and implementation mechanics | Shipping export/import | Identity, omission, integrity, explicit conflict handling, and failed-save preservation |
-| Period readings, calendar intensity, Review/Insights preferences, screen composition | Feature implementation; before externally exposing calculated values | Preserve source precision; do not silently turn a display approximation into stored fact |
-| Disk-store, provider/photo, installed document/link/Shortcuts, and multi-device checks | Release qualification | Test actual selected behavior rather than claiming standalone probes prove it |
-
-The [period-readings document](period-readings-design.md) remains an unaccepted
-engineering proposal. Its elapsed/total calculation and counting conventions
-are not approved by this consolidation. It needs no new persisted totals at
-this point. If a reading becomes an Intent result, define its meaning/unit and
-unknown-value behavior before publishing that result.
-
-Do not preallocate unrelated extension identifiers, future model columns, or
-version-history infrastructure just to make this list look complete.
-
-## Superseded Assumptions to Avoid
-
-Do not revive the following as accepted 1.0 requirements:
-
-- One Mark per Item/day, fixed product categories, or a single start on Item.
-- Automatic Tag equivalence, grouped duplicate identities, or permanent merge
-  redirects.
-- Recompression of every image, blanket metadata stripping, or memory-only
-  thumbnail storage.
-- Separate user-visible local/cloud libraries or app-owned account retention.
-- A deliberately restricted App Intent subset or the proposed five App Shortcuts.
-- Standard-only storage until an extension exists, deferring Universal Links,
-  or treating iCloud itself as undecided scope.
-- Treating prototype IDs, schemas, and old flat `.stallybackup` files as already
-  shipped obligations merely because they exist in source.
-
-The previous [first-release model](first-release-data-model.md),
-[portable contract](portable-data-contract.md),
-[system interface](system-interface-contract.md), and
-[publication inventory](publication-contracts.md) remain useful implementation
-baselines and historical evidence. They are not the approved target design
-where this session explicitly superseded them.
-
-## Handoff and Closure
-
-Start the next development session from this summary and the consolidated Swift
-schema. Integrate the shared persistence boundary and explicitly handle current
-development data before building the remaining adapters. Complete feature
-choices and qualifications in their appropriate phase. Do not resume this
-session by redesigning reversible UI under the label of contracts.
-
-Reopen a settled decision only for a concrete requirement or evidence that
-changes identity, retained facts, ownership/deletion, public file semantics, or
-other continuing obligations. Ending this design session is not build/test
-certification, registration verification, or authorization to release or push.
+from account-registration evidence. Registry read-back remains release work.

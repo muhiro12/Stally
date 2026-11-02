@@ -1,24 +1,10 @@
 # Consolidated Model Schema
 
-For the integrated October 27 implementation, current evidence, and remaining
-work, see [foundation implementation](first-release-foundation-implementation.md).
-The design-session and standalone-probe statements below retain their original
-scope; they are not claims about the later application state.
+The implemented schema is `StallySchema` 1.0.0. The [model sources](../StallyLibrary/Sources/Item)
+define stored fields and relationships. The [Mark comparison](mark-temporal-schema-comparison.md)
+and [period lifecycle](period-schema-validation.md) explain the chosen time representations.
 
-## Status
-
-On October 24, 2026, the owner accepted the ItemPeriod proposal after its
-standalone validation. This document consolidates that decision with the
-accepted ItemMark representation and the selected Item, photo, and tag design.
-It is a Swift illustration of the intended five-model schema, not the
-application's current implementation or a promoted CloudKit schema.
-
-See [core record design](core-record-design.md) for field meanings and
-alternatives, [Mark comparison](mark-temporal-schema-comparison.md) for temporal
-evidence, and [Period validation](period-schema-validation.md) for lifecycle
-rules. The existing application models and stores are unchanged.
-
-### October 28 Accepted Addition
+## Item context
 
 The owner accepted one optional representative URL per Item and reaffirmed
 Bool favorites. See [the behavior decision](product-behavior-design.md#accepted-context-and-favorite-decisions).

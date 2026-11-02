@@ -4,132 +4,31 @@ Stally is a pre-release iPhone and iPad app for keeping a quiet record of the
 things and places that matter to you. Record everyday choices with Marks,
 look back on time together, or keep both kinds of knowledge for the same Item.
 
-The repository is in rebuild implementation. The legacy implementation was
-removed after product intent was preserved under `docs/`, and the current tree
-now contains a fresh Apple-platform app project plus a local library package:
+## Development
 
-- `Stally.xcodeproj`, with the `Stally` app target and `Stally` scheme.
-- `Stally/`, a SwiftUI sidebar/list/detail app for collections, search, Tags,
-  Item context, photos, Mark and Period editing, and shared runtime wiring.
-- `StallyLibrary/`, a local Swift package for the five-model SwiftData schema,
-  App Group/CloudKit configuration, domain Operations, and localized errors.
-- `StallyLibrary/Tests/`, Swift Testing coverage for the integrated foundation,
-  plus preserved historical fixture resources.
-- `ci_scripts/`, repository-managed lint, rule, and library-test entrypoints.
-- `Stally.xcodeproj/xcshareddata/xcodecloud/manifest.json`, an Xcode Cloud
-  manifest.
+Start with the [first-release contracts](docs/first-release-contract-summary.md).
+Use the [product behavior](docs/product-behavior-design.md) to derive Operations
+and the app and system interfaces that call them.
 
-The current implementation is intentionally small. It is not a restoration of
-the removed legacy architecture, navigation, persistence model, or feature set.
-
-## Rebuild Documentation
-
-Start with the documentation relevant to the changed boundary:
-
-| Decision | Current entry point |
+| Work | Entry point |
 | --- | --- |
-| Accepted first-release contract direction and implementation handoff | [Contract summary](docs/first-release-contract-summary.md), [consolidated Swift schema](docs/model-schema-design.md), [design history](docs/core-record-design.md) |
-| Product capabilities and behavior after the foundation | [Product behavior design](docs/product-behavior-design.md): owner-directed design order, contract consequences, and proposals |
-| Product purpose, domain, workflows, and language | [Product brief](docs/product-brief.md), [purpose](docs/product-purpose.md), [preserved concepts](docs/preserved-concepts.md), [domain](docs/domain-concepts.md), [workflows](docs/user-workflows.md), [experience principles](docs/user-experience-principles.md), [language](docs/product-language.md) |
-| Owner-directed baseline and scope | [Rebuild implementation direction](docs/rebuild-implementation-direction.md), [implementation principles](docs/rebuild-implementation-principles.md) |
-| Live SwiftData read ownership and value lifetimes | [App data flow](docs/swiftdata-app-data-flow.md) |
-| Durable writes and cross-surface use cases | [Domain Operations](docs/domain-operations.md) |
-| Shared update policy, offline behavior, and protected writes | [Remote update control](docs/remote-update.md) |
-| First-release contract implementation and remaining qualification | [Implementation status and remaining checks](docs/remaining-capabilities-implementation.md#remaining-contract-work) |
-| Current persistence baseline before the redesign | [First release data model](docs/first-release-data-model.md) |
-| Publication identities, stored preferences, and support lifetimes | [Publication contracts](docs/publication-contracts.md), [saved-key and identifier review](docs/saved-key-and-identifier-design.md) |
-| Accepted export/import direction and current implementation | [File design](docs/export-file-format-design.md), [import identity](docs/import-identity-design.md), [older portable baseline](docs/portable-data-contract.md) |
-| App Intents, entity identity, replay, and Widget/Watch scope | [Current system interface](docs/system-interface-contract.md), [redesign direction and contract boundary](docs/app-intents-contract-design.md) |
-| Derived Item search, index recovery, and synthetic isolation | [Spotlight indexing](docs/spotlight-indexing.md) |
-| Samples, DEBUG profiles, frozen migration evidence, and scale | [Fixture architecture](docs/fixture-architecture.md), [original V1 fixtures](StallyLibrary/Tests/Default/Fixtures/V1/README.md), [current interchange fixtures](StallyLibrary/Tests/Default/Fixtures/Interchange/README.md) |
-| Earlier implemented single-start behavior | [Item start and elapsed time](docs/item-start-and-elapsed-time-proposal.md) |
-| Current unified interface | [Library interface implementation](docs/library-interface-implementation.md) |
-| Earlier UI and integration evidence | [Tracking verification](docs/item-tracking-verification.md), [combined interface](docs/combined-interface-design.md), [near-term brief](docs/near-term-development-brief.md) |
-| Legacy extraction evidence | [Rebuild handoff](docs/rebuild-handoff.md) |
+| Persistence and record ownership | [Five-model schema](docs/model-schema-design.md), [native sync](docs/sync-lifecycle-design.md) |
+| Editing, photos and time together | [Item editing](docs/item-context-implementation.md), [period readings](docs/period-readings-design.md) |
+| Import, export and conflicts | [File format](docs/export-file-format-design.md), [identity and review](docs/import-identity-design.md) |
+| Published interfaces | [Identifiers](docs/saved-key-and-identifier-design.md), [App Intent inventory](docs/app-intents-publication-review.md) |
+| Implementation and release work | [Operations and remaining checks](docs/remaining-capabilities-implementation.md), [distribution readiness](docs/release-readiness.md) |
+| Local development | [DEBUG store and samples](docs/fixture-architecture.md), [diagnostics](docs/diagnostics-access.md), [update policy](docs/remote-update.md) |
 
-These documents describe what Stally is, why it exists, which concepts must
-survive, and which legacy implementation details were intentionally discarded.
-The October 27 [contract summary](docs/first-release-contract-summary.md) is the
-entry point for accepted redesign decisions, deferred feature choices, and
-required implementation evidence. The [core record design](docs/core-record-design.md)
-preserves their history. These decisions supersede earlier constraints where
-stated, and now guide the integrated foundation described below.
-`docs/rebuild-implementation-direction.md` separately records explicit rebuild
-direction that did not come from the removed legacy source.
+`Stally/` contains the SwiftUI app and App Intent adapters. `StallyLibrary/`
+owns the SwiftData schema and shared Operations. MHPlatform 1.21.0 supplies
+strict HTTPS routing, bounded package I/O and guarded writes. MHUI supplies
+shared native List and Form presentation.
 
-Some documents preserve the phase-boundary language from when they were
-created. This README describes the current repository state. The selected
-first-release model and accepted implementation choices govern current model
-work; earlier integration assessments and their approval gates are historical
-evidence. Do not infer architecture, persistence, routes, or future features
-from removed legacy implementation details. Keep product-intent documents in
-their existing English voice and distinguish extracted evidence from later
-owner-directed decisions.
-
-The owner's October 28 clarification establishes the next design order:
-accepted foundational contracts, product capabilities and behavior, Operations,
-then app/system adapters. Current Operations and temporary UI are implementation
-evidence, not an approved feature specification. Start new feature design from
-the [behavior discussion](docs/product-behavior-design.md). Older product
-documents retain legacy requirements such as mandatory categories, one Mark per
-day, and whole-library replacement; those do not override the accepted contracts
-or require restoration of the old product surface. New behavior proposals remain
-proposals until selected.
-
-## Current Repository State
-
-The first-release foundation now implements the five-model schema, shared
-App Group persistence, Item/Mark/Period/Tag Operations, and Library/detail
-adapters. Read [foundation implementation](docs/first-release-foundation-implementation.md)
-for the historical October 27 baseline. The October 31
-[Item implementation](docs/item-context-implementation.md) replaces development
-schemas with `StallySchema` 1.0.0, removes the old-store guard, and adds atomic
-Item editing with a representative URL, Tags, and independently owned photos.
-The subsequent
-[unified library interface](docs/library-interface-implementation.md) adds the
-sidebar/list/detail experience, search, Tag controls, and calendar-based editors.
-Historical documentation and old fixtures are retained as evidence, not as
-constraints overriding the accepted redesign.
-
-The app and library require OS 27.2 or later. Development uses Xcode 27.2;
-match distribution verification to the candidate's actual Xcode Cloud build.
-MHPlatform 1.21.0 supplies the strict HTTPS link codec, bounded native package
-I/O, and the update adapter used before record writes. Stally owns its route
-grammar, file format, image validation and offline editing policy. MHUI owns
-shared presentation, typography, and spacing through its native List/Form
-integration. Product Operations and tests remain in StallyLibrary.
-
-The old category/single-start/day-toggle adapters, flat backup codec, Review,
-Insights, search projections, sample profiles, and old Intent adapters have been
-retired. Their redesigned features remain first-release work as applicable.
-The [remaining capabilities implementation](docs/remaining-capabilities-implementation.md)
-adds reviewed package import/export, standalone records JSON, 38 App Intent adapters, period readings,
-quick Marks with identity-based undo, Tag consolidation, and shared search scope.
-Item links use `https://muhiro12.github.io/Stally/item/<UUID>` for sharing and
-opening from Shortcuts. The site associates the Item path with Stally; signed
-physical-device handoff is a separate qualification. Photo ingestion, captions, ordering, deletion,
-and viewing now use the accepted preservation policy. DEBUG launches use isolated local
-development records; see [development setup](docs/fixture-architecture.md#current-development-setup)
-for initial seeding, empty-store opt-out, and explicit shared-store verification.
-The sidebar [Debug screen](docs/diagnostics-access.md) is available in all
-builds; its development controls remain DEBUG-only.
-Current and cumulative readings distinguish exact days, explainable estimates,
-and calculable subtotals when history is incomplete.
-
-Startup never automatically deletes a development store or substitutes an empty
-library on error. DEBUG local storage is selected before opening a container;
-it is not a fallback for shared-store failure. The owner authorized breaking
-prerelease installations and reinstalling test copies. Old development stores,
-flat files, and schema definitions are not compatibility obligations; no rescue
-path or old-location startup guard is provided. Historical fixtures are retained
-as evidence only and are not migration inputs for the current schema.
-
-Verification centers on library unit tests and the app consumer build. Do not
-add or run automated UI test suites. Use targeted native manual interaction for
-runtime evidence. Simulator App Group access and local disk persistence do not
-prove signed-device provisioning, real-device CloudKit convergence, or deployed
-production-schema compatibility. Support/privacy sources remain under
-`.github/pages/`; their manually dispatched deployment is separate from commits.
+Production opens the App Group store with native CloudKit mirroring. A failed
+open surfaces the error. DEBUG can select an isolated local store with sample
+records before opening a container. Incompatible prerelease test installations
+can be reinstalled. The first-release schema and portable format define the
+compatibility baseline for future published versions.
 
 ## Build and Test
 

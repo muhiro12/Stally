@@ -1,21 +1,9 @@
 # App Intents Direction and Contract Boundary
 
-## Status
-
-On October 27, 2026, the owner clarified the direction below. It supersedes the
-assistant's earlier proposal to restrict the first-release intent surface to a
-small subset of actions. This is a design record, not an implementation change
-or evidence of installed Shortcuts behavior.
-
-The [five-model design](model-schema-design.md) defines the selected domain
-facts. The [system interface document](system-interface-contract.md) records
-the older implementation and its historical verification.
-
-On October 28, the owner clarified that existing Operations are not a finalized
-product interface. Begin with [product capabilities and behavior](product-behavior-design.md)
-under the accepted foundational contracts, then shape Operations and their
-Intent adapters. Do not treat this document as a request to freeze current
-methods or decide product behavior through Intent parameters alone.
+The [publication inventory](app-intents-publication-review.md) specifies the
+first-release actions, parameter defaults, results and protected writes.
+Start changes from the [product behavior](product-behavior-design.md) and the
+shared Operations called by each adapter.
 
 ## Accepted Direction
 
@@ -35,13 +23,11 @@ Decide authentication separately from discovery. Where Stally's needs are
 already clear with high confidence, require authentication from the first
 release. Do not mechanically inherit another app's provisional permissive
 policy, or require authentication for every operation without considering its
-purpose. Concrete per-action policies remain to be assessed during design and
-implementation.
+purpose. The publication inventory records the policy for each implemented action.
 
 App Shortcuts, invocation phrases, preconfigured entrypoints, and composed
 workflows are delivery and experience design. They remain deferred, including
-potential delivery after 1.0. The earlier recommendation for five App Shortcuts
-is withdrawn; no count or phrase set is selected here.
+potential delivery after 1.0. No promoted phrases are defined for 1.0.
 
 ## What Is a Contract
 
@@ -92,27 +78,6 @@ Operations must retain the app's domain validation regardless of entrypoint.
 For a truly prohibited external action, do not treat a presentation flag as the
 only execution guard. Internal support/repair code is not automatically a
 user-facing app capability that needs discoverable automation.
-
-## Deferred Work and Session Exit
-
-Do not freeze the previous proposal's exact action inventory, Swift type or
-parameter names, entity property set, date parameter representation, deletion
-confirmation policy, or automation exclusions. Those were assistant proposals,
-not accepted decisions. Existing accepted model and data-preservation semantics
-continue to apply when these interfaces are implemented.
-
-During feature implementation, maintain coverage from application capability to
-Operations, Intent adapter, discovery, and authentication/confirmation policy.
-Before first publication, review extracted identities, inputs, results, side
-effects, and saved-workflow behavior. Use repository build/library checks and
-appropriate manual system-surface verification; a design document is not proof
-of metadata extraction, Siri, locked-device, or installed Shortcuts behavior.
-
-For this contract-design session, the architectural direction and publication
-boundary are sufficient. Completing the feature inventory, designing adapters,
-and selecting promoted shortcuts belong to the implementation/experience phase.
-They remain pre-publication work where applicable, not reasons to prolong this
-session or to omit functionality from the intent architecture.
 
 ## Apple References
 

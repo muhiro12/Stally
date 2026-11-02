@@ -98,7 +98,6 @@ struct StallyApp: App {
             startupError = nil
             AppDependencyManager.shared.add { modelContainer }
             AppDependencyManager.shared.add { session }
-            AppDependencyManager.shared.add { updateOperations }
             logger.notice("model_container.opened")
         } catch {
             container = nil

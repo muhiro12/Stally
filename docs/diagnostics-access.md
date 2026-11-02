@@ -101,7 +101,7 @@ but was not exercised in this UI pass; dark appearance, Dynamic Type, and
 VoiceOver interaction also remain unverified.
 
 The later Issue #34 clarification adds DEBUG manual insertion. Its
-[follow-up verification](fixture-architecture.md#manual-insertion-follow-up)
+[manual sample insertion](fixture-architecture.md#manual-sample-insertion)
 records 42 passing Library tests, live initial-opt-out/manual-add behavior,
 relaunch retention, and shared-store rejection. The screen's footer now promises
 that **refreshing the displayed information** is read-only; it does not apply that

@@ -13,8 +13,8 @@ decisions remain authoritative for identity, recorded meaning, preservation,
 ownership, and published boundaries. The explicitly accepted October 28
 representative-link addition below extends that foundation; other proposals
 do not change it.
-The shared Operations architecture remains selected; its concrete use cases,
-method signatures, and factoring remain design work.
+The [implementation record](remaining-capabilities-implementation.md) describes the
+current Operations and the app and system adapters that call them.
 
 Below, **contract consequence** means behavior already constrained by accepted
 decisions. **Proposal** means a recommended product expression for discussion,

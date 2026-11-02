@@ -14,7 +14,6 @@ struct OpenItemLinkIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
     @Parameter(title: "Item")
     var item: ItemEntity
 
