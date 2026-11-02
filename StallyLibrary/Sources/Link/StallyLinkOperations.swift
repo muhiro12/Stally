@@ -15,7 +15,10 @@ public enum StallyLinkOperations {
 
     /// Builds a shareable URL for a supported Stally link.
     public static func url(for link: StallyLink) -> URL {
-        codec.url(for: link, transport: .customScheme) ?? fallbackURL(for: link)
+        guard let url = codec.url(for: link, transport: .customScheme) else {
+            preconditionFailure("A supported Stally route must produce a valid URL.")
+        }
+        return url
     }
 
     /// Parses an incoming URL into a supported Stally link.
@@ -43,13 +46,4 @@ private extension StallyLinkOperations {
             preferredTransport: .customScheme
         )
     )
-
-    static func fallbackURL(for link: StallyLink) -> URL {
-        switch link {
-        case .destination(let destination):
-            URL(string: "\(scheme)://\(destination.rawValue)") ?? URL(fileURLWithPath: "/")
-        case .item(let itemID):
-            URL(string: "\(scheme)://item/\(itemID.uuidString)") ?? URL(fileURLWithPath: "/")
-        }
-    }
 }

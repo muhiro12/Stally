@@ -31,14 +31,14 @@ struct StallyLinkOperationsTests {
         let itemID = try #require(UUID(uuidString: "12345678-1234-1234-1234-123456789ABC"))
         let url = StallyLinkOperations.url(for: .item(itemID))
 
-        #expect(url.absoluteString == "stally://item/12345678-1234-1234-1234-123456789ABC")
+        #expect(url.absoluteString == "stally://item?id=12345678-1234-1234-1234-123456789ABC")
         #expect(StallyLinkOperations.parse(url) == .supported(.item(itemID)))
     }
 
     @Test
     func universalLinksAreScopedToTheOwnedHostAndAppPath() throws {
         let uuid = UUID()
-        let url = try #require(URL(string: "https://muhiro12.github.io/Stally/item/\(uuid.uuidString)"))
+        let url = try #require(URL(string: "https://muhiro12.github.io/Stally/item?id=\(uuid.uuidString)"))
         #expect(StallyLinkOperations.parse(url) == .supported(.item(uuid)))
         for text in [
             "https://muhiro12.github.io/Cookle/library", "https://example.com/Stally/library",
@@ -47,6 +47,15 @@ struct StallyLinkOperationsTests {
         ] {
             let unsupported = try #require(URL(string: text))
             #expect(StallyLinkOperations.parse(unsupported) == .unsupported)
+        }
+    }
+
+    @Test(arguments: ["stally://item", "https://muhiro12.github.io/Stally/item"])
+    func itemRoutesRequireOneUUIDQueryValue(base: String) throws {
+        let uuid = UUID().uuidString
+        for suffix in ["", "?id", "?id=", "?id=invalid", "?id=\(uuid)&id=\(uuid)", "/\(uuid)"] {
+            let url = try #require(URL(string: base + suffix))
+            #expect(StallyLinkOperations.parse(url) == .unsupported)
         }
     }
 

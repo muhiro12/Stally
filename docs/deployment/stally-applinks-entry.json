@@ -5,6 +5,6 @@
     {"/": "/Stally/archive"},
     {"/": "/Stally/import-export"},
     {"/": "/Stally/create-item"},
-    {"/": "/Stally/item/*"}
+    {"/": "/Stally/item", "?": {"id": "?*"}}
   ]
 }

@@ -9,13 +9,9 @@ import Foundation
 import MHPlatformCore
 
 extension StallyLink: MHDeepLinkRoute {
-    private enum LinkComponent {
+    private enum Component {
         static let item = "item"
-    }
-
-    private enum LinkPathComponentCount {
-        static let destination = 1
-        static let item = 2
+        static let id = "id"
     }
 
     public var deepLinkDescriptor: MHDeepLinkDescriptor {
@@ -24,36 +20,27 @@ extension StallyLink: MHDeepLinkRoute {
             .init(pathComponents: [destination.rawValue])
         case .item(let itemID):
             .init(
-                pathComponents: [
-                    LinkComponent.item,
-                    itemID.uuidString
-                ]
+                pathComponents: [Component.item],
+                queryItems: [.init(name: Component.id, value: itemID.uuidString)]
             )
         }
     }
 
     public init?(deepLinkDescriptor: MHDeepLinkDescriptor) {
-        let pathComponents = deepLinkDescriptor.pathComponents
-
-        if pathComponents.count == LinkPathComponentCount.item,
-           pathComponents[0] == LinkComponent.item {
-            let itemIDValue = pathComponents[1]
-            guard let itemID = UUID(uuidString: itemIDValue) else {
-                return nil
-            }
-            self = .item(itemID)
-            return
+        let path = deepLinkDescriptor.pathComponents
+        guard path.count == 1, let route = path.first else {
+            return nil
         }
-
-        if pathComponents.count == LinkPathComponentCount.destination {
-            let destinationValue = pathComponents[0]
-            guard let destination = StallyLinkDestination(rawValue: destinationValue) else {
+        if route == Component.item {
+            let ids = deepLinkDescriptor.queryItems.filter { $0.name == Component.id }
+            guard ids.count == 1, let value = ids.first?.value, let uuid = UUID(uuidString: value) else {
                 return nil
             }
+            self = .item(uuid)
+        } else if let destination = StallyLinkDestination(rawValue: route) {
             self = .destination(destination)
-            return
+        } else {
+            return nil
         }
-
-        return nil
     }
 }

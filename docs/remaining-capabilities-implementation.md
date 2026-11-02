@@ -135,19 +135,28 @@ and saved-workflow behavior still need release review.
 ## Links and External Deployment
 
 The active destinations are `library`, `archive`, `import-export`, and
-`create-item`, plus `item/<UUID>`. Unsupported provisional destinations were
+`create-item`, plus `item?id=<UUID>`. Unsupported provisional destinations were
 removed. Creating a link or opening the creation screen never creates a record.
+
+The route names the destination; the `id` query selects one record, the same
+rule as Incomes Item and Cookle Recipe links. An Item's stable UUID works
+independently of its position in the URL. Both `stally://item?id=<UUID>` and
+`https://muhiro12.github.io/Stally/item?id=<UUID>` require one valid `id`.
+Earlier development links with the UUID in the path are rejected.
 
 The app accepts HTTPS routes only under `https://muhiro12.github.io/Stally/`,
 with a matching Associated Domains entitlement. Custom-scheme links remain the
 currently emitted transport. The scoped association-file entry is prepared at
 [stally-applinks-entry.json](deployment/stally-applinks-entry.json).
 
-On November 2 the [published association entry](https://github.com/muhiro12/muhiro12.github.io/commit/3f3439065ddf835c88d8edd49c52fe88af64cf54)
+Before the query change, the [first published association entry](https://github.com/muhiro12/muhiro12.github.io/commit/3f3439065ddf835c88d8edd49c52fe88af64cf54)
 was verified at both the site and Apple's CDN. The five Stally routes leave
-the Incomes and Cookle entries unchanged. A Release build for generic iOS,
+the Incomes and Cookle entries unchanged. The [updated association entry](https://github.com/muhiro12/muhiro12.github.io/commit/c5c903c31ec04526cec560bcae15d3c8a6bd8857)
+matches the exact Item path and a nonempty `id` query; UUID validation belongs
+to the app. The Pages origin served the query rule on November 2; at the
+same check Apple’s CDN still served the earlier path rule. A Release build for generic iOS,
 signed for development, contains the matching app ID and associated-domain
-entitlement. The Simulator app also embeds that entitlement. Opening an Item
+entitlement. The Simulator app also embeds that entitlement. Opening the former path-based Item
 HTTPS URL via the OS and tapping it from a different web origin both stayed
 in Safari (404); neither opened the Item. Keep the Item share action and Open
 Item Intent on the custom scheme until an installed HTTPS handoff succeeds.
@@ -165,7 +174,7 @@ The previous published baseline was `a498f55`.
 | Photo privacy | The app explains that included images retain embedded metadata such as location; the package Intent explains it in the photo parameter. Standalone JSON never carries image bytes. |
 | iCloud account transitions | [Write session](../StallyLibrary/Sources/Persistence/RecordWriteSession.swift) binds outstanding drafts and confirmations to the observed account session. The app replaces editor state and clears pending import review when CloudKit signals a change. The last check runs after the asynchronous update check, immediately before mutation. Exercise real account changes separately. |
 | Remote update | Startup and foreground entry refresh evidence. A confirmed requirement disables editing, retains the presented draft, and offers Store and retry actions. Unavailable evidence permits offline edits. |
-| Universal Links | The entitlement and scoped HTTPS parser are present; the app receives browsing activities. The association file includes Stally at the origin and Apple CDN. Verify signed installed handoff before switching generated links to HTTPS. |
+| Universal Links | The entitlement and scoped HTTPS parser are present; the app receives browsing activities. The origin serves the query rule; at the November 2 check the Apple CDN still served the former Item path. Verify signed installed handoff before switching generated links to HTTPS. |
 
 ### Keep implementation and release qualification separate
 
@@ -179,7 +188,7 @@ choices and are outside this resumption list.
 
 ## November 2 verification
 
-The Simulator app built and all 73 library tests in 19 suites passed. The suite
+The Simulator app built and all 74 library tests in 19 suites passed. The suite
 checks standalone JSON reimport with omitted media, byte preservation,
 stale-session rejection and fresh-session writes. Repository lint and boundary
 checks passed. On the dedicated Simulator, exporting from the app with
