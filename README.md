@@ -103,8 +103,9 @@ retired. Their redesigned features remain first-release work as applicable.
 The [remaining capabilities implementation](docs/remaining-capabilities-implementation.md)
 adds reviewed package import/export, standalone records JSON, 38 App Intent adapters, period readings,
 quick Marks with identity-based undo, Tag consolidation, and shared search scope.
-Universal Link routing and entitlement are present locally; the association entry is live on the
-site and Apple's CDN. Signed installed handoff is a separate qualification. Photo ingestion, captions, ordering, deletion,
+Item links use `https://muhiro12.github.io/Stally/item/<UUID>` for sharing and
+opening from Shortcuts. The site associates the Item path with Stally; signed
+physical-device handoff is a separate qualification. Photo ingestion, captions, ordering, deletion,
 and viewing now use the accepted preservation policy. DEBUG launches use isolated local
 development records; see [development setup](docs/fixture-architecture.md#current-development-setup)
 for initial seeding, empty-store opt-out, and explicit shared-store verification.

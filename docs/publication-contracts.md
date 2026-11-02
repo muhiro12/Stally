@@ -76,7 +76,7 @@ update evidence remain package-owned; no app-wide defaults cleanup is needed.
 
 ## Saved Routes and System Actions
 
-The path-based Item URLs below are historical. The first-release [route contract](remaining-capabilities-implementation.md#links-and-external-deployment) specifies `item?id=<UUID>`.
+The first-release [route contract](remaining-capabilities-implementation.md#links-and-external-deployment) emits HTTPS Item links with the UUID in the path.
 
 The [route and intent contract](system-interface-contract.md) keeps `stally://`
 destination paths, including `backup-center` and `create-item`, and

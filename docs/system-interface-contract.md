@@ -154,7 +154,7 @@ person intended after midnight.
 
 ## Links and Incoming Data
 
-The path-based Item URLs below are historical. The first-release [route contract](remaining-capabilities-implementation.md#links-and-external-deployment) specifies `item?id=<UUID>`.
+The first-release [route contract](remaining-capabilities-implementation.md#links-and-external-deployment) emits HTTPS Item links with the UUID in the path.
 
 Existing `stally://` destination and `stally://item/<UUID>` links retain their
 wire identifiers, including `backup-center` for the visible Import & Export

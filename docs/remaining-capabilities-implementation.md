@@ -134,33 +134,27 @@ and saved-workflow behavior still need release review.
 
 ## Links and External Deployment
 
-The active destinations are `library`, `archive`, `import-export`, and
-`create-item`, plus `item?id=<UUID>`. Unsupported provisional destinations were
-removed. Creating a link or opening the creation screen never creates a record.
+The canonical Item link is `https://muhiro12.github.io/Stally/item/<UUID>`.
+It addresses the record itself: renaming the Item, restoring it from an export,
+or redesigning the detail screen does not change its address. Query parameters
+are available for optional views or filters. The first release requires exactly
+one UUID path segment for an Item and rejects the earlier query-only form or a
+competing `id` query. The URL carries no private Item contents.
 
-The route names the destination; the `id` query selects one record, the same
-rule as Incomes Item and Cookle Recipe links. An Item's stable UUID works
-independently of its position in the URL. Both `stally://item?id=<UUID>` and
-`https://muhiro12.github.io/Stally/item?id=<UUID>` require one valid `id`.
-Earlier development links with the UUID in the path are rejected.
+Item sharing and the Open Item Intent use the same HTTPS link generator.
+Stally also accepts `stally://item/<UUID>` for direct app navigation.
+The shared host and product prefix follow the Incomes and Cookle Universal
+Link setup. Stally handles `library`, `archive`, `import-export`, and
+`create-item`, plus Item paths; opening a link does not mutate a record.
+The [association entry](deployment/stally-applinks-entry.json) specifies the
+`/Stally/item/*` path and the app validates the UUID.
 
-The app accepts HTTPS routes only under `https://muhiro12.github.io/Stally/`,
-with a matching Associated Domains entitlement. Custom-scheme links remain the
-currently emitted transport. The scoped association-file entry is prepared at
-[stally-applinks-entry.json](deployment/stally-applinks-entry.json).
-
-Before the query change, the [first published association entry](https://github.com/muhiro12/muhiro12.github.io/commit/3f3439065ddf835c88d8edd49c52fe88af64cf54)
-was verified at both the site and Apple's CDN. The five Stally routes leave
-the Incomes and Cookle entries unchanged. The [updated association entry](https://github.com/muhiro12/muhiro12.github.io/commit/c5c903c31ec04526cec560bcae15d3c8a6bd8857)
-matches the exact Item path and a nonempty `id` query; UUID validation belongs
-to the app. The Pages origin served the query rule on November 2; at the
-same check Apple’s CDN still served the earlier path rule. A Release build for generic iOS,
-signed for development, contains the matching app ID and associated-domain
-entitlement. The Simulator app also embeds that entitlement. Opening the former path-based Item
-HTTPS URL via the OS and tapping it from a different web origin both stayed
-in Safari (404); neither opened the Item. Keep the Item share action and Open
-Item Intent on the custom scheme until an installed HTTPS handoff succeeds.
-A physical device has not been tested.
+The [published site configuration](https://github.com/muhiro12/muhiro12.github.io/commit/e73f991225a7a5dcbcf0b243880d66aaa6ba28e7)
+replaces the pre-release query rule. On November 2 the Pages origin served the
+final rule; an initial Apple CDN check still returned the query rule. The iOS
+Release build passed signature verification and contains the matching app ID
+and associated domain. Installed
+HTTPS handoff on a physical device is a separate release check.
 
 ## Remaining Contract Work
 
@@ -174,7 +168,7 @@ The previous published baseline was `a498f55`.
 | Photo privacy | The app explains that included images retain embedded metadata such as location; the package Intent explains it in the photo parameter. Standalone JSON never carries image bytes. |
 | iCloud account transitions | [Write session](../StallyLibrary/Sources/Persistence/RecordWriteSession.swift) binds outstanding drafts and confirmations to the observed account session. The app replaces editor state and clears pending import review when CloudKit signals a change. The last check runs after the asynchronous update check, immediately before mutation. Exercise real account changes separately. |
 | Remote update | Startup and foreground entry refresh evidence. A confirmed requirement disables editing, retains the presented draft, and offers Store and retry actions. Unavailable evidence permits offline edits. |
-| Universal Links | The entitlement and scoped HTTPS parser are present; the app receives browsing activities. The origin serves the query rule; at the November 2 check the Apple CDN still served the former Item path. Verify signed installed handoff before switching generated links to HTTPS. |
+| Universal Links | Sharing and Open Item emit the HTTPS Item path. The site declares `/Stally/item/*`; the app receives browsing activities and validates each UUID. Verify OS handoff on a signed physical installation. |
 
 ### Keep implementation and release qualification separate
 

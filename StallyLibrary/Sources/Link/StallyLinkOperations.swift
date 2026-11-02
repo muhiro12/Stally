@@ -15,7 +15,7 @@ public enum StallyLinkOperations {
 
     /// Builds a shareable URL for a supported Stally link.
     public static func url(for link: StallyLink) -> URL {
-        guard let url = codec.url(for: link, transport: .customScheme) else {
+        guard let url = codec.preferredURL(for: link) else {
             preconditionFailure("A supported Stally route must produce a valid URL.")
         }
         return url
@@ -43,7 +43,7 @@ private extension StallyLinkOperations {
             preferredUniversalLinkHost: "muhiro12.github.io",
             allowedUniversalLinkHosts: ["muhiro12.github.io"],
             universalLinkPathPrefix: "Stally",
-            preferredTransport: .customScheme
+            preferredTransport: .universalLink
         )
     )
 }

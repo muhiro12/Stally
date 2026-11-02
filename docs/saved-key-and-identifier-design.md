@@ -36,7 +36,7 @@ registered identifier can acquire restrictions before public release, so
 | App Store app ID | `6760996986` | Keep the configured product destination; verify the account record before release |
 | Monthly product ID | `com.muhiro12.Stally.subscriptions.monthly` | Keep this identity if the monthly product remains; do not reinterpret it as an unrelated purchase |
 | Native portable document | `.stally`, selected package UTI `com.muhiro12.Stally.data` | Retain the accepted package identity and physical format |
-| Product links and Item target | `stally://item?id=<UUID>` and `/Stally/item?id=<UUID>` on the associated host | Use the path for the destination and the query for record selection across apps; preserve the Item UUID across restore |
+| Product links and Item target | `https://muhiro12.github.io/Stally/item/<UUID>` | Address the Item itself across UI changes and restore; use query parameters for optional views or filters |
 | Remote-update configuration | `https://raw.githubusercontent.com/muhiro12/MHAppConfig/main/stally/app.json` | Retain the installed-client endpoint and package policy semantics |
 
 Source declarations are not evidence that all these IDs are registered, that a

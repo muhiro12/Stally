@@ -11,7 +11,7 @@ import MHPlatformCore
 extension StallyLink: MHDeepLinkRoute {
     private enum Component {
         static let item = "item"
-        static let id = "id"
+        static let itemPathLength = 2
     }
 
     public var deepLinkDescriptor: MHDeepLinkDescriptor {
@@ -19,25 +19,19 @@ extension StallyLink: MHDeepLinkRoute {
         case .destination(let destination):
             .init(pathComponents: [destination.rawValue])
         case .item(let itemID):
-            .init(
-                pathComponents: [Component.item],
-                queryItems: [.init(name: Component.id, value: itemID.uuidString)]
-            )
+            .init(pathComponents: [Component.item, itemID.uuidString])
         }
     }
 
     public init?(deepLinkDescriptor: MHDeepLinkDescriptor) {
         let path = deepLinkDescriptor.pathComponents
-        guard path.count == 1, let route = path.first else {
-            return nil
-        }
-        if route == Component.item {
-            let ids = deepLinkDescriptor.queryItems.filter { $0.name == Component.id }
-            guard ids.count == 1, let value = ids.first?.value, let uuid = UUID(uuidString: value) else {
+        if path.count == Component.itemPathLength, path.first == Component.item {
+            guard !deepLinkDescriptor.queryItems.contains(where: { $0.name == "id" }),
+                  let uuid = UUID(uuidString: path[1]) else {
                 return nil
             }
             self = .item(uuid)
-        } else if let destination = StallyLinkDestination(rawValue: route) {
+        } else if path.count == 1, let route = path.first, let destination = StallyLinkDestination(rawValue: route) {
             self = .destination(destination)
         } else {
             return nil
