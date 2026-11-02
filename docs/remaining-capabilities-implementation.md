@@ -129,8 +129,10 @@ note or link clears that field. Empty optional period-boundary text means unknow
 while nonempty text must follow the canonical Gregorian forms. Get Time Together
 returns localized explanatory text, not a scalar claiming exact cumulative time.
 Typed entities and date strings retain their underlying identity/precision.
-Before publication, the extracted type/parameter identities, defaults, policies,
-and saved-workflow behavior still need release review.
+The [first-publication review](app-intents-publication-review.md) records the
+extracted identifiers, defaults, results and policies for all 38 actions.
+It identifies four behaviors to correct before freezing the interface. Replay
+of saved workflows and locked-device authentication remain release checks.
 
 ## Links and External Deployment
 
