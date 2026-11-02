@@ -10,34 +10,34 @@ public final class RemoteUpdateOperations {
     /// Whether this environment participates in remote update checks.
     public let isEnabled: Bool
     /// The latest package-owned evaluation; unavailable evidence is not a confirmed requirement.
-    public private(set) var evaluation: MHRemoteUpdateEvaluation?
+    public var evaluation: MHRemoteUpdateEvaluation? { adapter.evaluation }
 
     /// The last observed decision, updated by preparation and mutation checks.
     public var decision: MHRemoteUpdateDecision {
         evaluation?.decision ?? .unavailable
     }
 
-    private let controller: MHRemoteUpdateController?
+    private let adapter: MHRemoteUpdateAdapter
     private let configurationError: (any Error)?
 
     /// Disables remote checks for previews and isolated environments.
     public init() {
         isEnabled = false
-        controller = nil
+        adapter = .preview()
         configurationError = nil
     }
 
     /// Uses one controller for the environment's UI and headless operations.
     public init(controller: MHRemoteUpdateController) {
         isEnabled = true
-        self.controller = controller
+        adapter = .init(controller: controller)
         configurationError = nil
     }
 
     /// Retains a setup failure for diagnostics while preserving offline access.
     public init(configurationError: any Error) {
         isEnabled = true
-        controller = nil
+        adapter = .preview()
         self.configurationError = configurationError
     }
 
@@ -48,47 +48,22 @@ public final class RemoteUpdateOperations {
         if let configurationError {
             throw configurationError
         }
-        guard let controller else {
-            return nil
-        }
-        let preparation = try await controller.prepare()
-        evaluation = preparation.evaluation
-        return preparation
+        return try await adapter.prepare()
     }
 
-    /// Rechecks retained evidence immediately before a write, including timed activation.
-    ///
-    /// Stally's local records remain usable offline when evidence is unavailable.
-    /// This check restores and merges evidence without adding networking to each edit.
-    /// A confirmed requirement always blocks, including from App Intents.
+    /// Restores retained evidence without fetching on each edit. Unavailable evidence permits offline edits.
     public func checkMutationAllowed() async throws {
-        try Task.checkCancellation()
-        guard let controller else {
-            return
-        }
-        do {
-            try await controller.checkOperationAllowed(for: .allowWhenUnavailable)
-            evaluation = await controller.evaluation()
-            try Task.checkCancellation()
-            try decision.checkOperationAllowed(whenUnavailable: .allow)
-        } catch {
-            evaluation = await controller.evaluation()
-            if error is CancellationError || Task.isCancelled {
-                throw CancellationError()
-            }
-            if (error as? MHRemoteUpdateOperationError) == .updateRequired {
-                throw RemoteUpdateError.updateRequired
-            }
-            throw error
-        }
+        try await performMutation { () }
     }
 
-    /// Runs a write and its success effects without another suspension after the check.
+    /// Runs a synchronous write immediately after checking retained evidence and cancellation.
     public func performMutation<Value>(
         _ operation: () throws -> Value
     ) async throws -> Value {
-        try await checkMutationAllowed()
-        try Task.checkCancellation()
-        return try operation()
+        do {
+            return try await adapter.perform(policy: .allowWhenUnavailable, operation)
+        } catch MHRemoteUpdateOperationError.updateRequired {
+            throw RemoteUpdateError.updateRequired
+        }
     }
 }

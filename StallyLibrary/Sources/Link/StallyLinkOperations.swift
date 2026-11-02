@@ -23,12 +23,6 @@ public enum StallyLinkOperations {
 
     /// Parses an incoming URL into a supported Stally link.
     public static func parse(_ url: URL) -> StallyLinkParseResult {
-        if ["http", "https"].contains(url.scheme?.lowercased() ?? "") {
-            guard url.scheme?.lowercased() == "https", url.pathComponents.dropFirst().first == "Stally",
-                  url.user == nil, url.password == nil, url.port == nil else {
-                return .unsupported
-            }
-        }
         guard let link = codec.parse(url) else {
             return .unsupported
         }
@@ -43,7 +37,8 @@ private extension StallyLinkOperations {
             preferredUniversalLinkHost: "muhiro12.github.io",
             allowedUniversalLinkHosts: ["muhiro12.github.io"],
             universalLinkPathPrefix: "Stally",
-            preferredTransport: .universalLink
+            preferredTransport: .universalLink,
+            webLinkPolicy: .strict
         )
     )
 }

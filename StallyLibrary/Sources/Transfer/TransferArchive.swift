@@ -7,15 +7,6 @@ public struct TransferArchive: Sendable {
 
     /// Builds the native directory package from already validated, saved bytes.
     public func fileWrapper() throws -> FileWrapper {
-        let records = try TransferCodec.encode(manifest)
-        var children = [StallyDataContract.manifestFilename: FileWrapper(regularFileWithContents: records)]
-        if !media.isEmpty {
-            children[StallyDataContract.assetDirectory] = FileWrapper(
-                directoryWithFileWrappers: media.mapValues { data in
-                    FileWrapper(regularFileWithContents: data)
-                }
-            )
-        }
-        return FileWrapper(directoryWithFileWrappers: children)
+        try TransferPackage.fileWrapper(manifest: TransferCodec.encode(manifest), files: media)
     }
 }

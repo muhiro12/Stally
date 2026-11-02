@@ -32,41 +32,20 @@ public enum TransferFileOperations {
     public static func read(_ url: URL) async throws -> TransferArchive {
         let accessible = url.startAccessingSecurityScopedResource()
         defer { if accessible { url.stopAccessingSecurityScopedResource() } }
+        let values = try url.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey])
+        guard values.isSymbolicLink != true else { throw TransferError.invalidFile }
+        if values.isDirectory == true {
+            return try await TransferPackage.read(url)
+        }
         var coordinationError: NSError?
-        var result: Result<TransferArchive, any Error>?
+        var result: Result<Data, any Error>?
         NSFileCoordinator().coordinate(readingItemAt: url, options: [], error: &coordinationError) { coordinated in
-            result = Result { try readCoordinated(coordinated) }
+            result = Result { try readFile(coordinated, limit: TransferCodec.maximumJSONBytes) }
         }
         if let coordinationError { throw coordinationError }
         guard let result else { throw TransferError.invalidFile }
-        return try result.get()
-    }
-
-    private static func readCoordinated(_ url: URL) throws -> TransferArchive {
         try Task.checkCancellation()
-        let values = try url.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey, .isRegularFileKey])
-        guard values.isSymbolicLink != true else { throw TransferError.invalidFile }
-        let isPackage = values.isDirectory == true
-        let recordsURL = isPackage ? url.appendingPathComponent(StallyDataContract.manifestFilename) : url
-        let manifest = try TransferCodec.decode(readFile(recordsURL, limit: TransferCodec.maximumJSONBytes))
-        var media: [String: Data] = [:]
-        var byteCount = 0
-        for photo in manifest.itemPhotos where photo.image.state == .included {
-            try Task.checkCancellation()
-            guard isPackage, let path = photo.image.path else { throw TransferError.invalidFile }
-            let directory = url.appendingPathComponent(StallyDataContract.assetDirectory)
-            let directoryValues = try directory.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey])
-            guard directoryValues.isDirectory == true, directoryValues.isSymbolicLink != true else {
-                throw TransferError.invalidFile
-            }
-            let count = photo.image.byteCount ?? 0
-            guard count <= TransferCodec.maximumMediaBytes - byteCount else { throw TransferError.limitExceeded }
-            let data = try readFile(url.appendingPathComponent(path), limit: TransferCodec.maximumImageBytes)
-            try TransferMedia.validate(data, image: photo.image)
-            byteCount += data.count
-            media[String(path.dropFirst(StallyDataContract.assetPathPrefix.count))] = data
-        }
-        return .init(manifest: manifest, media: media)
+        return try await readRecords(result.get())
     }
 
     private static func readFile(_ url: URL, limit: Int) throws -> Data {

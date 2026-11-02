@@ -83,7 +83,7 @@ public enum TransferOperations {
                     throw TransferError.limitExceeded
                 }
                 byteCount += data.count
-                media[String(path.dropFirst(StallyDataContract.assetPathPrefix.count))] = data
+                media[path] = data
             }
             return .init(
                 uuid: photo.uuid,

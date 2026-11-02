@@ -93,7 +93,9 @@ constraints overriding the accepted redesign.
 
 The app and library require OS 27.2 or later. Development uses Xcode 27.2;
 match distribution verification to the candidate's actual Xcode Cloud build.
-MHPlatform owns shared runtime and remote-update infrastructure; MHUI owns
+MHPlatform 1.21.0 supplies the strict HTTPS link codec, bounded native package
+I/O, and the update adapter used before record writes. Stally owns its route
+grammar, file format, image validation and offline editing policy. MHUI owns
 shared presentation, typography, and spacing through its native List/Form
 integration. Product Operations and tests remain in StallyLibrary.
 
