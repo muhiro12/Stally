@@ -165,7 +165,10 @@ Choose the smallest evidence set proving the changed boundary:
   Mobile Ads, fatal, crash, and exception logs.
 - Visible UI: use targeted Preview, manual smoke review, or screenshots when
   the changed risk warrants it. Do not introduce an automated UI test runner.
-  Launch success alone does not prove visible behavior.
+  Launch success alone does not prove visible behavior. Use the library's
+  disk-store tests for Mark and Period edits, sample insertion refusal, and
+  persistence after reopen. Revisit the live flow when the control wiring,
+  displayed counts, or app startup path changes.
 - Localization: audit catalogs for `en,ja`, confirm app resource processing,
   and capture the affected English/Japanese surfaces. When the
   `string-catalog-maintainer` skill is available, resolve its audit script from
