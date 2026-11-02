@@ -54,7 +54,7 @@ public enum TransferFileOperations {
         for photo in manifest.itemPhotos where photo.image.state == .included {
             try Task.checkCancellation()
             guard isPackage, let path = photo.image.path else { throw TransferError.invalidFile }
-            let directory = url.appendingPathComponent(StallyDataContract.photoDirectory)
+            let directory = url.appendingPathComponent(StallyDataContract.assetDirectory)
             let directoryValues = try directory.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey])
             guard directoryValues.isDirectory == true, directoryValues.isSymbolicLink != true else {
                 throw TransferError.invalidFile
@@ -64,7 +64,7 @@ public enum TransferFileOperations {
             let data = try readFile(url.appendingPathComponent(path), limit: TransferCodec.maximumImageBytes)
             try TransferMedia.validate(data, image: photo.image)
             byteCount += data.count
-            media[String(path.dropFirst(StallyDataContract.photoPathPrefix.count))] = data
+            media[String(path.dropFirst(StallyDataContract.assetPathPrefix.count))] = data
         }
         return .init(manifest: manifest, media: media)
     }

@@ -8,6 +8,6 @@ public enum StallyDataContract {
     public static let fileTypeIdentifier = "com.muhiro12.Stally.data"
 
     static let manifestFilename = "manifest.json"
-    static let photoDirectory = "photos"
-    static let photoPathPrefix = photoDirectory + "/"
+    static let assetDirectory = "assets"
+    static let assetPathPrefix = assetDirectory + "/"
 }

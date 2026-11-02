@@ -50,7 +50,7 @@ non-overlap. Exact same-day periods can contribute zero days.
 The implemented version pair is `(1, "1.0.0")`, backed by `StallySchema` and
 `StallyDataContract`. Unsupported pairs and old development files are rejected.
 One native `.stally` directory package contains `manifest.json` and optional
-`photos/<lowercase-photo-uuid>.<extension>` entries. The app exports
+`assets/<lowercase-photo-uuid>.<extension>` entries. The app exports
 `com.muhiro12.Stally.data`, conforming to `com.apple.package`, and registers
 that document type without taking ownership of generic JSON.
 
@@ -160,7 +160,7 @@ The previous published baseline was `a498f55`.
 
 | Contract | Implementation and resumption point |
 | --- | --- |
-| Portable identity | The package UTI and JSON format are `com.muhiro12.Stally.data`. The package contains `manifest.json` and optional `photos/<lowercase-uuid>.<ext>`. Suggested filenames use a UTC timestamp. Old development packages have no fallback. |
+| Portable identity | The package UTI and JSON format are `com.muhiro12.Stally.data`. The package contains `manifest.json` and optional `assets/<lowercase-uuid>.<ext>`. Suggested filenames use a UTC timestamp. Old development packages have no fallback. |
 | Records-only JSON | [Export operations](../StallyLibrary/Sources/Transfer/TransferOperations.swift), the app file exporter and [Export Records as JSON](../Stally/Sources/Intents/ExportRecordsIntent.swift) share one media-free snapshot. Reimport preserves local photo bytes. |
 | Photo privacy | The app explains that included images retain embedded metadata such as location; the package Intent explains it in the photo parameter. Standalone JSON never carries image bytes. |
 | iCloud account transitions | [Write session](../StallyLibrary/Sources/Persistence/RecordWriteSession.swift) binds outstanding drafts and confirmations to the observed account session. The app replaces editor state and clears pending import review when CloudKit signals a change. The last check runs after the asynchronous update check, immediately before mutation. Exercise real account changes separately. |

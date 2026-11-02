@@ -10,7 +10,7 @@ public struct TransferArchive: Sendable {
         let records = try TransferCodec.encode(manifest)
         var children = [StallyDataContract.manifestFilename: FileWrapper(regularFileWithContents: records)]
         if !media.isEmpty {
-            children[StallyDataContract.photoDirectory] = FileWrapper(
+            children[StallyDataContract.assetDirectory] = FileWrapper(
                 directoryWithFileWrappers: media.mapValues { data in
                     FileWrapper(regularFileWithContents: data)
                 }

@@ -46,7 +46,7 @@ enum TransferValidation {
         let digestLength = 64
         if image.state == .included {
             let extensions = ["jpg", "heic", "heif", "png"]
-            let stem = StallyDataContract.photoPathPrefix + uuid.uuidString.lowercased() + "."
+            let stem = StallyDataContract.assetPathPrefix + uuid.uuidString.lowercased() + "."
             guard let path = image.path,
                   extensions.contains(where: { path == stem + $0 }),
                   let count = image.byteCount, count > 0, count <= TransferCodec.maximumImageBytes,

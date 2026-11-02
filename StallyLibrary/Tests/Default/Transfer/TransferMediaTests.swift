@@ -60,7 +60,7 @@ struct TransferMediaTests {
         let url = try await TransferFileOperations.writeTemporary(archive)
         defer { try? FileManager.default.removeItem(at: url) }
         let path = try #require(archive.manifest.itemPhotos.first?.image.path)
-        #expect(path.hasPrefix("photos/"))
+        #expect(path.hasPrefix("assets/"))
         try Data("corrupt".utf8).write(to: url.appendingPathComponent(path))
         await #expect(throws: (any Error).self) { try await TransferFileOperations.read(url) }
         let records = url.appendingPathComponent("manifest.json")

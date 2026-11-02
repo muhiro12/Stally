@@ -77,16 +77,21 @@ The package layout is:
 ```text
 Stally-Export-<timestamp>.stally/
   manifest.json
-  photos/
+  assets/
     <photo-uuid>.jpg
     <photo-uuid>.heic
     <photo-uuid>.heif
     <photo-uuid>.png
 ```
 
+The manifest is the entry point for the format, records, and attachment references.
+The optional `assets/` directory holds the files those records reference. These
+names describe roles reusable across package formats. Stally currently writes
+only photo files, named for their attachment UUIDs.
+
 The app suggests the same UTC-dated stem for package and standalone JSON exports.
 The JSON encoder indents and sorts keys; the reader does not depend on whitespace
-or the suggested filename. Only actual images are present; an empty media directory may be omitted. Names
+or the suggested filename. The writer omits `assets/` when there are no image files. Names
 use lowercase UUID strings, never Item names, captions, or source file paths.
 Each included photo references its own file even when another photo happens to
 have identical bytes. No content-addressed blob registry or deduplication store
@@ -261,7 +266,7 @@ Every ItemPhoto has one of these image objects:
 ```json
 {
   "state": "included",
-  "path": "photos/20000000-0000-4000-8000-000000000001.jpg",
+  "path": "assets/20000000-0000-4000-8000-000000000001.jpg",
   "byteCount": 123456,
   "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 }
@@ -335,7 +340,7 @@ the proposed import before any database writes.
 ## Reading and Resource Boundaries
 
 Resolve media through package child entries with the exact grammar
-`photos/<photo-uuid>.<supported-extension>`. Reject symbolic links, directories
+`assets/<photo-uuid>.<supported-extension>`. Reject symbolic links, directories
 where regular files are expected, duplicate/ambiguous record UUIDs, invalid
 parent references, and path escapes. Never fetch URLs declared in a file.
 The writer emits no extra entries; the reader does not traverse or import

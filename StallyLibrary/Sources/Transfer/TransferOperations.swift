@@ -83,7 +83,7 @@ public enum TransferOperations {
                     throw TransferError.limitExceeded
                 }
                 byteCount += data.count
-                media[String(path.dropFirst(StallyDataContract.photoPathPrefix.count))] = data
+                media[String(path.dropFirst(StallyDataContract.assetPathPrefix.count))] = data
             }
             return .init(
                 uuid: photo.uuid,
@@ -107,7 +107,7 @@ public enum TransferOperations {
         let fileExtension = try TransferMedia.fileExtension(data)
         return .init(
             state: .included,
-            path: StallyDataContract.photoPathPrefix + "\(photo.uuid.uuidString.lowercased()).\(fileExtension)",
+            path: StallyDataContract.assetPathPrefix + "\(photo.uuid.uuidString.lowercased()).\(fileExtension)",
             byteCount: data.count,
             sha256: TransferMedia.digest(data)
         )
