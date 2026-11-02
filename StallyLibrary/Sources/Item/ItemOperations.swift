@@ -5,6 +5,16 @@ import SwiftData
 public enum ItemOperations {
     private static let ambiguousIdentityLimit = 2
 
+    /// Returns the saved photo sequence, resolving equal positions by attachment identity.
+    public static func orderedPhotos(for item: Item) -> [ItemPhoto] {
+        (item.photos ?? []).sorted { first, second in
+            if first.sortOrder != second.sortOrder {
+                return first.sortOrder < second.sortOrder
+            }
+            return first.uuid.uuidString < second.uuid.uuidString
+        }
+    }
+
     /// Takes editing values without creating pending model changes.
     public static func draft(for item: Item) -> ItemDraft {
         .init(item: item)

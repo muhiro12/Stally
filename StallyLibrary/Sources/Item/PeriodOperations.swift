@@ -28,6 +28,9 @@ public enum PeriodOperations {
 
     /// Ending preserves identity and start. Pass nil when the end date is unknown.
     public static func end(_ period: ItemPeriod, on end: String?, today: String, context: ModelContext) throws {
+        guard period.isOngoing else {
+            throw RecordError.periodAlreadyEnded
+        }
         try correct(
             period,
             input: .init(start: period.startLocalDate, end: end, isOngoing: false),

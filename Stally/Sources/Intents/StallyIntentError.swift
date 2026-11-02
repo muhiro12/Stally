@@ -1,8 +1,9 @@
 import AppIntents
 import Foundation
 
-struct StallyIntentError: Error, CustomLocalizedStringResourceConvertible {
+struct StallyIntentError: LocalizedError, CustomLocalizedStringResourceConvertible {
     let message: String
 
+    var errorDescription: String? { message }
     var localizedStringResource: LocalizedStringResource { "\(message)" }
 }

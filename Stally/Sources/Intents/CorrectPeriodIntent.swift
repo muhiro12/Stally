@@ -12,7 +12,9 @@ struct CorrectPeriodIntent: AppIntent {
             \.$period
             \.$start
             \.$end
-            \.$ongoing
+            \.$clearStart
+            \.$clearEnd
+            \.$continuation
         }
     }
 
@@ -22,22 +24,33 @@ struct CorrectPeriodIntent: AppIntent {
     var period: PeriodEntity
     @Parameter(title: "Start (YYYY, YYYY-MM, or YYYY-MM-DD)")
     var start: String?
-    @Parameter(title: "End (Unknown If Empty)")
+    @Parameter(title: "End (YYYY, YYYY-MM, or YYYY-MM-DD)")
     var end: String?
-    @Parameter(title: "Ongoing", default: true)
-    var ongoing: Bool
+    @Parameter(title: "Clear Start Date", default: false)
+    var clearStart: Bool
+    @Parameter(title: "Clear End Date", default: false)
+    var clearEnd: Bool
+    @Parameter(title: "Continuation", default: .unchanged)
+    var continuation: PeriodContinuationChange
 
     @MainActor
     func perform() async throws -> some IntentResult {
         let session = librarySession.writer
         try await IntentAccess.write(container: container, session: session) { context in
             let record = try IntentRecordLookup.record(ItemPeriod.self, uuid: period.id, context: context) { $0.uuid }
+            let revisedStart = try IntentTextEdit.value(start, clearing: clearStart, current: record.startLocalDate)
+            let revisedEnd = try IntentTextEdit.value(end, clearing: clearEnd, current: record.endLocalDate)
+            let isOngoing = continuation.applying(to: record.isOngoing)
+            guard revisedStart != record.startLocalDate || revisedEnd != record.endLocalDate
+                    || isOngoing != record.isOngoing else {
+                return
+            }
             try PeriodOperations.correct(
                 record,
                 input: .init(
-                    start: IntentDateInput.optional(start),
-                    end: IntentDateInput.optional(end),
-                    isOngoing: ongoing
+                    start: revisedStart,
+                    end: revisedEnd,
+                    isOngoing: isOngoing
                 ),
                 today: MarkOperations.localDateTime(at: .now, includesTime: false),
                 context: context

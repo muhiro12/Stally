@@ -2563,6 +2563,22 @@
           }
         }
       }
+    },
+    "This period has already ended.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This period has already ended."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この期間はすでに終了しています。"
+          }
+        }
+      }
     }
   },
   "version": "1.3"

@@ -125,13 +125,15 @@ whose temporary file is removed when the Shortcut finishes. Photo handoff
 identifies the native format and preserves saved bytes.
 
 Optional Edit Item fields leave the current value unchanged; an explicit empty
-note or link clears that field. Empty optional period-boundary text means unknown,
-while nonempty text must follow the canonical Gregorian forms. Get Time Together
+note or link clears that field. Empty boundaries on new periods mean unknown. Correct Period preserves omitted
+boundaries and continuation state. Explicit clear switches remove known dates or a
+photo caption. Supplied dates must follow the canonical Gregorian forms. Get Time Together
 returns localized explanatory text, not a scalar claiming exact cumulative time.
 Typed entities and date strings retain their underlying identity/precision.
 The [first-publication review](app-intents-publication-review.md) records the
 extracted identifiers, defaults, results and policies for all 38 actions.
-It identifies four behaviors to correct before freezing the interface. Replay
+It records the corrections to period edits, repeated endings, caption clearing
+and ordered photo reads. Replay
 of saved workflows and locked-device authentication remain release checks.
 
 ## Links and External Deployment

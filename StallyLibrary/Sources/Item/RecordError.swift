@@ -5,6 +5,7 @@ public enum RecordError: LocalizedError, Equatable {
     case nameRequired
     case invalidDate
     case recordingPaused
+    case periodAlreadyEnded
     case invalidPeriod
     case overlappingPeriods
     case ongoingPeriodExists
@@ -24,6 +25,8 @@ public enum RecordError: LocalizedError, Equatable {
             String(localized: "Enter a valid Gregorian date with the stated precision.", bundle: .module)
         case .recordingPaused:
             String(localized: "Resume Mark recording before adding an occurrence.", bundle: .module)
+        case .periodAlreadyEnded:
+            String(localized: "This period has already ended.", bundle: .module)
         case .invalidPeriod:
             String(
                 localized: "The period has inconsistent boundaries or continuation state.",

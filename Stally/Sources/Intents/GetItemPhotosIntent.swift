@@ -22,7 +22,7 @@ struct GetItemPhotosIntent: AppIntent {
     func perform() throws -> some IntentResult & ReturnsValue<[PhotoEntity]> {
         let value = try IntentAccess.read(container: container) { context in
             let record = try ItemOperations.item(context: context, uuid: item.id)
-            return (record.photos ?? []).map(PhotoEntity.init)
+            return ItemOperations.orderedPhotos(for: record).map(PhotoEntity.init)
         }
         return .result(value: value)
     }

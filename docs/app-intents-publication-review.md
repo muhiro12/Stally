@@ -2,34 +2,28 @@
 
 ## Release decision
 
-Use the identifiers and types in the inventory below as the proposed 1.0 baseline.
-Four behaviors need correction before freezing it. The findings come from the
-existing iOS Release extraction and source inspection. Saved workflow replay,
-locked-device authentication, and delivery of omitted versus explicitly empty
-values through Shortcuts remain release checks.
+The first-publication inventory incorporates the four corrections identified in
+the November 2 review. Saved workflow replay and locked-device authentication
+remain release checks.
 
-| Action | Why the present behavior matters | Recommended first-release behavior |
-| --- | --- | --- |
-| Correct Period | With an ended 2018–2020 period, setting only the start to 2019 supplies a missing end and the default ongoing state. If validation succeeds, this loses 2020 and reopens the period. | Treat omitted fields as unchanged, including continuation state. Changes to unknown boundaries or a mistaken ending must be deliberate. Validate the resulting combination before saving. Distinguish an explicit clear from an omitted parameter in Shortcuts. |
-| End Period | Calling it again on an already ended period can overwrite the recorded end with an unknown or different date. | Only end an ongoing period. A repeated call on an ended period must preserve its end and report that it is already ended. Correct Period is the operation for revising it. |
-| Edit Photo Caption | The default empty string is assigned unconditionally. A workflow that only selects a photo can erase an existing caption. | Require a deliberate replacement or clear. An omitted caption must preserve the saved caption. If the editor cannot express an explicit empty value reliably, provide an explicit clear choice. |
-| Get Item Photos | Move Photo writes an explicit position, but the reader returns relationship array order. The first returned photo can differ from the first photo in the app. | Return saved position order, breaking ties by UUID as in the app. Shortcuts can then rely on a move to position 1 being reflected by the next read. |
-
-These are proposed corrections. The inventory records the parameters extracted
-**before** the corrections. Update it from the candidate build after implementation.
+| Action | First-release behavior |
+| --- | --- |
+| Correct Period | Omitting a boundary preserves it. A clear switch explicitly makes that boundary unknown. Continuation defaults to unchanged. The resulting combination must be valid before saving. Correcting only the start of an ended 2018–2020 period preserves 2020 and its ended state. |
+| End Period | Only ongoing periods can end. Repetition on an ended period reports that it has already ended and preserves the original end. Use Correct Period to revise it. |
+| Edit Photo Caption | An omitted or empty caption preserves the current text. Clear Caption removes it. Supplying both a replacement and a clear request for the same field fails without saving, as for period boundaries. |
+| Get Item Photos | Return attachments in the app's saved order, using UUID to break position ties. Moving a photo to position 1 makes it the first result on the next read. |
 
 ## Inventory
 
-The November 2 review compared the source at `d984300` with the retained
-iOS device Release `Metadata.appintents/extract.actionsdata` (SHA-256
-`d83475e393692b85b9c1f227173fe8fdc35f2ff8f18eb86f834a908ab11d1418`).
+The November 2 iOS Release build extracted the corrected input definitions in
+`Metadata.appintents/extract.actionsdata` (SHA-256
+`5703bc41459328a9cb9d012f19a202af3877d9a98780ef995240c9da407e0610`).
 All 38 Stally actions are discoverable and explicitly require authentication.
 Review Import runs in the foreground. The other 37 declare background execution,
 including the two Open actions that return an instruction to open a URL.
-The package has no promoted App Shortcuts. Five delete actions and tag
+The app has no promoted App Shortcuts. Five delete actions and tag
 consolidation request confirmation before mutation. All writes go through
-the session's guarded write operation. The review used the existing build
-artifact and did not run tests or install the app.
+the session's guarded write operation. This inventory covers extracted metadata and source behavior.
 
 Parameter names are identifiers. Types, optionality, declared defaults and
 results are part of the workflow interface. A question mark denotes an optional
@@ -43,7 +37,7 @@ value. An em dash in the result column means no returned value.
 | `AttachPhotoIntent` | `item: ItemEntity`, `file: IntentFile`, `caption: String = ""` | — | Write |
 | `ConsolidateTagsIntent` | `source: TagEntity`, `survivor: TagEntity` | — | Confirm + write |
 | `CorrectMarkIntent` | `mark: MarkEntity`, `localDateTime: String` | — | Write |
-| `CorrectPeriodIntent` | `period: PeriodEntity`, `start: String?`, `end: String?`, `ongoing: Bool = true` | — | Write |
+| `CorrectPeriodIntent` | `period: PeriodEntity`, `start: String?`, `end: String?`, `clearStart: Bool = false`, `clearEnd: Bool = false`, `continuation: PeriodContinuationChange = .unchanged` | — | Write |
 | `CreateItemIntent` | `name: String`, `note: String = ""`, `link: String = ""` | ItemEntity | Write |
 | `CreateTagIntent` | `name: String` | TagEntity | Write |
 | `DeleteItemIntent` | `item: ItemEntity` | — | Confirm + write |
@@ -52,7 +46,7 @@ value. An em dash in the result column means no returned value.
 | `DeletePhotoIntent` | `photo: PhotoEntity` | — | Confirm + write |
 | `DeleteTagIntent` | `tag: TagEntity` | — | Confirm + write |
 | `EditItemIntent` | `item: ItemEntity`, `name: String?`, `note: String?`, `link: String?` | ItemEntity | Write |
-| `EditPhotoCaptionIntent` | `photo: PhotoEntity`, `caption: String = ""` | — | Write |
+| `EditPhotoCaptionIntent` | `photo: PhotoEntity`, `caption: String?`, `clearCaption: Bool = false` | — | Write |
 | `EndPeriodIntent` | `period: PeriodEntity`, `end: String?` | — | Write |
 | `ExportLibraryIntent` | `includingImages: Bool = true` | IntentFile | Read |
 | `ExportRecordsIntent` | — | IntentFile | Read |
@@ -101,7 +95,9 @@ value. An em dash in the result column means no returned value.
   recording no period. Resuming creates a new identity. Get Time Together
   returns localized text explaining current and cumulative time, precision,
   and applicable subtotal or overlap qualifications. It has no numeric result
-  contract. Correct and End require the changes above.
+  contract. PeriodContinuationChange has the serialized values `unchanged`,
+  `ongoing` and `ended`. Reopening a period with a known end requires an
+  explicit end clear along with the ongoing state.
 - Open Item resolves an existing Item and opens its canonical HTTPS address.
   Open Item Link opens its representative URL. Neither changes a record.
 - Export Library returns a native package and includes saved photo bytes by

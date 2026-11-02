@@ -1246,6 +1246,22 @@
         }
       }
     },
+    "Choose either a replacement value or Clear.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose either a replacement value or Clear."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しい値を入力するか、消去を選んでください。両方は指定できません。"
+          }
+        }
+      }
+    },
     "Choose the tags for this Item. Names alone never combine tags.": {
       "localizations": {
         "en": {
@@ -1295,6 +1311,38 @@
         }
       }
     },
+    "Clear Caption": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear Caption"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "説明を消去"
+          }
+        }
+      }
+    },
+    "Clear End Date": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear End Date"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終了日を不明に戻す"
+          }
+        }
+      }
+    },
     "Clear Invalid Start": {
       "extractionState": "stale",
       "localizations": {
@@ -1308,6 +1356,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "無効な開始時期をクリア"
+          }
+        }
+      }
+    },
+    "Clear Start Date": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear Start Date"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開始日を不明に戻す"
           }
         }
       }
@@ -1473,6 +1537,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "これらのTagを統合しますか？"
+          }
+        }
+      }
+    },
+    "Continuation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continuation"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "継続状態"
           }
         }
       }
@@ -2710,6 +2790,22 @@
         }
       }
     },
+    "End (YYYY, YYYY-MM, or YYYY-MM-DD)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "End (YYYY, YYYY-MM, or YYYY-MM-DD)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終了日（YYYY、YYYY-MM、またはYYYY-MM-DD）"
+          }
+        }
+      }
+    },
     "End Period": {
       "localizations": {
         "en": {
@@ -3522,6 +3618,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "JSONにはすべての記録と写真のキャプションが含まれます。画像ファイルは含まれません。"
+          }
+        }
+      }
+    },
+    "Keep Current State": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep Current State"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在の状態を維持"
           }
         }
       }

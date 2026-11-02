@@ -68,13 +68,7 @@ public struct ItemDraft: Sendable {
         note = item.note
         representativeURL = item.representativeURL ?? ""
         tagIDs = Set((item.tags ?? []).map(\.uuid))
-        photos = (item.photos ?? []).sorted { first, second in
-            if first.sortOrder != second.sortOrder {
-                return first.sortOrder < second.sortOrder
-            }
-            return first.uuid.uuidString < second.uuid.uuidString
-        }
-        .map(Photo.init)
+        photos = ItemOperations.orderedPhotos(for: item).map(Photo.init)
         original = .init(
             id: item.uuid,
             name: name,
