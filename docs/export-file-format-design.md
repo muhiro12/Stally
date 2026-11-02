@@ -57,8 +57,8 @@ ordinary export choices use the same physical container and document type:
 
 | Choice | Delivery | Intended use |
 | --- | --- | --- |
-| Records | `Stally Records.stally` document package | Contains records.json alone, including photo captions and identities but not image bytes |
-| Records and photos | `Stally Export.stally` document package | Carry records and available authoritative attachment images together, including for recovery |
+| Records | `Stally-Export-<timestamp>.stally` document package | Contains manifest.json alone, including photo captions and identities but not image bytes |
+| Records and photos | `Stally-Export-<timestamp>.stally` document package | Carry records and available authoritative attachment images together, including for recovery |
 
 Both use the same JSON schema and UUID-based import pipeline. The difference is
 the image availability declaration. Neither is a database copy, deletion log,
@@ -75,16 +75,18 @@ example, not a frozen fixture for a published format.
 The package layout is:
 
 ```text
-Stally Export.stally/
-  records.json
-  media/
+Stally-Export-<timestamp>.stally/
+  manifest.json
+  photos/
     <photo-uuid>.jpg
     <photo-uuid>.heic
     <photo-uuid>.heif
     <photo-uuid>.png
 ```
 
-Only actual images are present; an empty media directory may be omitted. Names
+The app suggests the same UTC-dated stem for package and standalone JSON exports.
+The JSON encoder indents and sorts keys; the reader does not depend on whitespace
+or the suggested filename. Only actual images are present; an empty media directory may be omitted. Names
 use lowercase UUID strings, never Item names, captions, or source file paths.
 Each included photo references its own file even when another photo happens to
 have identical bytes. No content-addressed blob registry or deduplication store
@@ -97,8 +99,8 @@ writer when the measured workload requires incremental resource processing.
 Do not convert the main application into a DocumentGroup app; these are portable
 snapshots around the existing Operations boundary and SwiftData store.
 
-Recommend the new package UTI `com.muhiro12.stally.export`, conforming to
-`com.apple.package`, with extension `stally`. Do not also emit a regular JSON
+The registered package UTI is `com.muhiro12.Stally.data`, conforming to
+`com.apple.package` and `public.content`, with extension `stally`. Do not also emit a regular JSON
 file with that extension or declare the package itself as public.json/public.data.
 An application can branch on physical file kind, but that leaves external type
 inference, provider behavior, and document handling with two different container
@@ -107,13 +109,12 @@ packaged directories; using one kind avoids this unnecessary ambiguity.
 
 Preserve the external-use purpose through an auxiliary "Share JSON" operation
 that supplies records-only JSON as `.json`/public.json or text. It uses the same
-schema and omitted-media rules, not a second backup format. Its precise UI can
-follow later; it must not replace the ordinary `.stally` export or quietly give
+schema and omitted-media rules, not a second backup format. The app and the Export Records as JSON action offer this output; it does not replace the ordinary `.stally` export or quietly give
 a package a `.json` extension. A standalone records-only JSON remains readable
 by the common import reader after header validation. Its content header
 establishes that it is Stally data.
-Do not claim ownership of every `.json` file or change the old flat-file UTI's
-conformance into a directory. Verify declarations through the installed app.
+Stally does not claim every `.json` file. The old flat development declaration
+has no compatibility commitment; installed provider behavior still needs qualification.
 
 ### Alternatives
 
@@ -121,7 +122,7 @@ conformance into a directory. Verify declarations through the installed app.
 | --- | --- |
 | One JSON file with Base64 photos | Foundation supports it, but binary data grows by about one third before JSON overhead, obscures readable records, and couples text decoding to media volume |
 | ZIP containing JSON and photos | Widely portable; Foundation can create an upload ZIP snapshot, but that does not provide a matching general ZIP import reader. A native package avoids adding that archive-reading layer |
-| Native package for every ordinary export | Recommended: consistent `.stally` document handling, with optional media; external tools may need records.json separately |
+| Native package for every ordinary export | Recommended: consistent `.stally` document handling, with optional media; external tools may need manifest.json separately |
 | JSON and package both called `.stally` | Avoid: an app can inspect the physical kind, but the same extension has inconsistent container semantics for other consumers |
 | Separate `.json` and `.stally` ordinary exports | Previous proposal; technically coherent, superseded by the owner's preference for a consistent `.stally` export |
 
@@ -142,8 +143,8 @@ All files contain these required fields:
 
 | Key | Value |
 | --- | --- |
-| `format` | Literal string `stally` |
-| `formatVersion` | Positive integer; proposed first revision `1` |
+| `format` | Literal string `com.muhiro12.Stally.data` |
+| `formatVersion` | Positive integer; first revision `1` |
 | `schemaVersion` | Three-component string from the actual VersionedSchema version, such as `1.0.0` |
 | `exportedAt` | UTC registration-style timestamp described below |
 | `items`, `itemMarks`, `itemPeriods`, `itemPhotos`, `tags` | Arrays, including empty arrays |
@@ -260,7 +261,7 @@ Every ItemPhoto has one of these image objects:
 ```json
 {
   "state": "included",
-  "path": "media/20000000-0000-4000-8000-000000000001.jpg",
+  "path": "photos/20000000-0000-4000-8000-000000000001.jpg",
   "byteCount": 123456,
   "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
 }
@@ -285,7 +286,7 @@ placeholders, not a valid image fixture.
 
 Only included has a path, byteCount, and sha256; all three are required for that
 state and forbidden for omitted/unavailable. Only packages can contain included entries; importing
-an extracted records.json with included references must request the package,
+an extracted manifest.json with included references must request the package,
 not reinterpret missing files as deliberate omissions or search neighboring
 arbitrary folders. A records-only package or auxiliary JSON share writes omitted
 for available images and unavailable for genuinely missing images.
@@ -334,7 +335,7 @@ the proposed import before any database writes.
 ## Reading and Resource Boundaries
 
 Resolve media through package child entries with the exact grammar
-`media/<photo-uuid>.<supported-extension>`. Reject symbolic links, directories
+`photos/<photo-uuid>.<supported-extension>`. Reject symbolic links, directories
 where regular files are expected, duplicate/ambiguous record UUIDs, invalid
 parent references, and path escapes. Never fetch URLs declared in a file.
 The writer emits no extra entries; the reader does not traverse or import

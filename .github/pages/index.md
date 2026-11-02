@@ -19,7 +19,7 @@ simply look back on your time together.
 - Move items to Archive to hide them from Library. Their information is kept
   and elapsed time continues.
 
-Stally is designed for iPhone and iPad running iOS 27 or later, with English
+Stally is designed for iPhone and iPad running iOS 27.2 or later, with English
 and Japanese app interfaces.
 
 ## Support
@@ -41,20 +41,21 @@ to describe the same item.
 
 ### Can I stop recording Marks?
 
-An item with no Mark history can switch off Mark recording. Items with existing
-Marks keep recording enabled so that their history is preserved.
+Yes. Pausing prevents new Marks while preserving history. You can still
+correct or delete existing Marks and resume recording later.
 
 ### Do I need a subscription for iCloud?
 
-No. The iCloud setting is independent of subscription status. If you enable it,
-Stally synchronizes your collection through your private iCloud database.
+No. Private iCloud sync is independent of subscription status. When iCloud
+is available, Stally can synchronize your collection through your account.
 
 ### How should I keep a backup?
 
 Export your data from Import & Export and keep the saved file in a location you
-trust. Backups include your photos and collection information. Keep an
-independent copy before replacing your Library; replacement uses the selected
-backup's contents. Archive is not a backup or deletion operation.
+trust. Use a package with photos if you want to keep available image files;
+they can contain embedded location information. Standalone JSON contains
+records and captions only. During import you review changes before saving.
+Records missing from a file are kept.
 
 ## Legal
 

@@ -14,14 +14,15 @@ struct DeleteItemIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Item")
     var item: ItemEntity
 
     @MainActor
     func perform() async throws -> some IntentResult {
+        let session = librarySession.writer
         try await requestConfirmation(dialog: "Delete this Item and its Marks, periods, and photos?")
-        try await IntentAccess.write(container: container, updates: updates) { context in
+        try await IntentAccess.write(container: container, session: session) { context in
             let record = try ItemOperations.item(context: context, uuid: item.id)
             try ItemOperations.delete(record, context: context)
         }

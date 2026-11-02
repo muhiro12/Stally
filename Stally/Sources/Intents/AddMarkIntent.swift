@@ -15,7 +15,7 @@ struct AddMarkIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Item")
     var item: ItemEntity
     @Parameter(title: "Date (YYYY-MM-DD or YYYY-MM-DDTHH:mm)")
@@ -23,7 +23,8 @@ struct AddMarkIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ReturnsValue<MarkEntity> {
-        let value = try await IntentAccess.write(container: container, updates: updates) { context in
+        let session = librarySession.writer
+        let value = try await IntentAccess.write(container: container, session: session) { context in
             let record = try ItemOperations.item(context: context, uuid: item.id)
             return MarkEntity(try MarkOperations.add(to: record, localDateTime: localDateTime, context: context))
         }

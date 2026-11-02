@@ -8,8 +8,8 @@ struct TagEditor: View {
     private var dismiss
     @Environment(\.modelContext)
     private var context
-    @Environment(RemoteUpdateOperations.self)
-    private var updates
+    @Environment(RecordWriteSession.self)
+    private var writeSession
     @Query(sort: \Tag.name)
     private var tags: [Tag]
     let tag: Tag?
@@ -45,6 +45,7 @@ struct TagEditor: View {
                     }
                 }
         }
+        .modifier(StallyUpdateRequiredModifier())
     }
 
     private var tagForm: some View {
@@ -98,7 +99,7 @@ struct TagEditor: View {
                 saving = false
             }
             do {
-                try await updates.performMutation(operation)
+                try await writeSession.performMutation(operation)
                 dismiss()
             } catch {
                 errorMessage = error.localizedDescription

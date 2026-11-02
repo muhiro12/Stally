@@ -7,29 +7,46 @@ import SwiftUI
 
 @main
 struct StallyApp: App {
+    private static var usesCloudStore: Bool {
+        #if DEBUG
+        UserDefaults.standard.bool(forKey: StallyDevelopmentPreferences.useSharedStoreKey)
+        #else
+        true
+        #endif
+    }
+
+    @Environment(\.scenePhase)
+    private var scenePhase
     @State private var showingDiagnostics = false
 
-    private let transferPresentation: TransferPresentation
+    private let librarySession: StallyLibrarySession
     private let container: ModelContainer?
     private let startupError: String?
     private let runtimeBootstrap: MHAppRuntimeBootstrap
+    private let logging: MHLoggingBootstrap
     private let updates: RemoteUpdateOperations
 
     var body: some Scene {
         WindowGroup {
             if let container {
                 LibraryView()
+                    .modifier(StallyUpdateRequiredModifier())
+                    .environment(librarySession.writer)
+                    .id(ObjectIdentifier(librarySession.writer))
                     .modelContainer(container)
+                    .environment(logging)
                     .environment(updates)
-                    .environment(transferPresentation)
+                    .environment(librarySession)
                     .mhTheme(.standard)
                     .mhAppRuntimeEnvironment(runtimeBootstrap)
                     .mhAppRuntimeLifecycle(
                         runtime: runtimeBootstrap.runtime,
                         plan: runtimeBootstrap.lifecyclePlan
                     )
-                    .task {
-                        _ = try? await updates.prepare()
+                    .task(id: scenePhase) {
+                        if scenePhase == .active {
+                            await StallyRemoteUpdateConfiguration.prepare(updates, logging: logging)
+                        }
                     }
             } else {
                 startupFailure
@@ -57,15 +74,15 @@ struct StallyApp: App {
     }
 
     init() {
-        let presentation = TransferPresentation()
-        transferPresentation = presentation
         #if os(iOS)
         MHTheme.standard.configureNativeAppearance()
         #endif
-        let logging = StallyLogging.makeBootstrap()
+        logging = StallyLogging.makeBootstrap()
         let logger = StallyLogging.logger(logging: logging, category: "Persistence", source: #fileID)
-        let updateOperations = StallyRemoteUpdateConfiguration.makeOperations()
+        let updateOperations = StallyRemoteUpdateConfiguration.makeOperations(isIsolated: !Self.usesCloudStore)
         updates = updateOperations
+        let session = StallyLibrarySession(updates: updateOperations, observesAccount: Self.usesCloudStore)
+        librarySession = session
         runtimeBootstrap = .init(
             configuration: .init(
                 subscriptionProductIDs: [StallyMonetizationConfiguration.subscriptionProductID],
@@ -80,7 +97,7 @@ struct StallyApp: App {
             container = modelContainer
             startupError = nil
             AppDependencyManager.shared.add { modelContainer }
-            AppDependencyManager.shared.add { presentation }
+            AppDependencyManager.shared.add { session }
             AppDependencyManager.shared.add { updateOperations }
             logger.notice("model_container.opened")
         } catch {

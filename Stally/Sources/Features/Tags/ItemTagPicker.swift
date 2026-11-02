@@ -8,8 +8,8 @@ struct ItemTagPicker: View {
     private var dismiss
     @Environment(\.modelContext)
     private var context
-    @Environment(RemoteUpdateOperations.self)
-    private var updates
+    @Environment(RecordWriteSession.self)
+    private var writeSession
     @Query(sort: \Tag.name)
     private var tags: [Tag]
     let item: Item
@@ -38,6 +38,7 @@ struct ItemTagPicker: View {
                     TagEditor(tag: nil)
                 }
         }
+        .modifier(StallyUpdateRequiredModifier())
     }
 
     private var tagList: some View {
@@ -89,7 +90,7 @@ struct ItemTagPicker: View {
                 saving = false
             }
             do {
-                try await updates.performMutation {
+                try await writeSession.performMutation {
                     try TagOperations.assign(
                         tags.filter { tag in
                             selectedIDs.contains(tag.persistentModelID)

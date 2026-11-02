@@ -15,7 +15,7 @@ struct SetItemFavoriteIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Item")
     var item: ItemEntity
     @Parameter(title: "Favorite")
@@ -23,7 +23,8 @@ struct SetItemFavoriteIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        try await IntentAccess.write(container: container, updates: updates) { context in
+        let session = librarySession.writer
+        try await IntentAccess.write(container: container, session: session) { context in
             let record = try ItemOperations.item(context: context, uuid: item.id)
             try ItemOperations.setFavorite(record, to: favorite, context: context)
         }

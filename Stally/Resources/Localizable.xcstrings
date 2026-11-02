@@ -2858,6 +2858,22 @@
         }
       }
     },
+    "Export Records as JSON": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Export Records as JSON"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録をJSONで書き出す"
+          }
+        }
+      }
+    },
     "Export Stally Library": {
       "localizations": {
         "en": {
@@ -2870,6 +2886,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Stallyライブラリを書き出す"
+          }
+        }
+      }
+    },
+    "Exported photos retain embedded metadata, including location when present.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exported photos retain embedded metadata, including location when present."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "書き出した写真には、位置情報など、元の写真に含まれるメタデータが残ります。"
           }
         }
       }
@@ -3474,6 +3506,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "マークを記録しないアイテムもコレクションに残り、見直しや選択回数の集計から除外されます。"
+          }
+        }
+      }
+    },
+    "JSON includes all records and photo captions, but no image files.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "JSON includes all records and photo captions, but no image files."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "JSONにはすべての記録と写真のキャプションが含まれます。画像ファイルは含まれません。"
           }
         }
       }
@@ -6281,7 +6329,6 @@
       }
     },
     "Share Item Link": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {

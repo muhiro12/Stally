@@ -6,8 +6,8 @@ import SwiftUI
 struct ImportReviewView: View {
     @Environment(\.modelContext)
     private var context
-    @Environment(RemoteUpdateOperations.self)
-    private var updates
+    @Environment(RecordWriteSession.self)
+    private var writeSession
     @Environment(\.dismiss)
     private var dismiss
     let review: TransferReview
@@ -42,6 +42,7 @@ struct ImportReviewView: View {
             }
         }
         .interactiveDismissDisabled(saving)
+        .modifier(StallyUpdateRequiredModifier())
     }
 
     init(review: TransferReview, completed: @escaping (Int) -> Void) {
@@ -64,7 +65,7 @@ struct ImportReviewView: View {
         Task {
             defer { saving = false }
             do {
-                let count = try await updates.performMutation {
+                let count = try await writeSession.performMutation {
                     try TransferOperations.apply(
                         review,
                         selection: selection,

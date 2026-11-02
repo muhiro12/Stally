@@ -15,7 +15,7 @@ struct EndPeriodIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Period")
     var period: PeriodEntity
     @Parameter(title: "End (Unknown If Empty)")
@@ -23,7 +23,8 @@ struct EndPeriodIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        try await IntentAccess.write(container: container, updates: updates) { context in
+        let session = librarySession.writer
+        try await IntentAccess.write(container: container, session: session) { context in
             let record = try IntentRecordLookup.record(ItemPeriod.self, uuid: period.id, context: context) { $0.uuid }
             try PeriodOperations.end(
                 record,

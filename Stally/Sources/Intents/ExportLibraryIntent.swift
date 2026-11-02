@@ -14,8 +14,11 @@ struct ExportLibraryIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
-    @Parameter(title: "Include Photos", default: true)
+    @Parameter(
+        title: "Include Photos",
+        description: "Exported photos retain embedded metadata, including location when present.",
+        default: true
+    )
     var includingImages: Bool
 
     @MainActor
@@ -24,7 +27,11 @@ struct ExportLibraryIntent: AppIntent {
             try TransferOperations.export(context: context, includingImages: includingImages)
         }
         let url = try await TransferFileOperations.writeTemporary(archive)
-        var file = IntentFile(fileURL: url, filename: "Stally.stally", type: StallyExportDocument.contentType)
+        var file = IntentFile(
+            fileURL: url,
+            filename: StallyExportDocument.filename() + ".stally",
+            type: StallyExportDocument.contentType
+        )
         file.removedOnCompletion = true
         return .result(value: file)
     }

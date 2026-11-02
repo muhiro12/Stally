@@ -12,11 +12,11 @@ enum IntentAccess {
 
     static func write<Value>(
         container: ModelContainer,
-        updates: RemoteUpdateOperations,
+        session: RecordWriteSession,
         operation: (ModelContext) throws -> Value
     ) async throws -> Value {
         do {
-            return try await updates.performMutation { try read(container: container, operation: operation) }
+            return try await session.performMutation { try read(container: container, operation: operation) }
         } catch { throw StallyIntentError(message: error.localizedDescription) }
     }
 }

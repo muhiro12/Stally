@@ -35,6 +35,6 @@ public struct TransferReview: Sendable, Identifiable {
         guard let path = archive.manifest.itemPhotos.first(where: { $0.uuid == uuid })?.image.path else {
             return nil
         }
-        return archive.media[String(path.dropFirst("media/".count))]
+        return archive.media[String(path.dropFirst(StallyDataContract.photoPathPrefix.count))]
     }
 }

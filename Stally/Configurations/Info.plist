@@ -13,7 +13,7 @@
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>com.muhiro12.stally.export</string>
+				<string>com.muhiro12.Stally.data</string>
 			</array>
 		</dict>
 	</array>
@@ -247,11 +247,12 @@
 			<key>UTTypeConformsTo</key>
 			<array>
 				<string>com.apple.package</string>
+				<string>public.content</string>
 			</array>
 			<key>UTTypeDescription</key>
 			<string>Stally Export</string>
 			<key>UTTypeIdentifier</key>
-			<string>com.muhiro12.stally.export</string>
+			<string>com.muhiro12.Stally.data</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.filename-extension</key>

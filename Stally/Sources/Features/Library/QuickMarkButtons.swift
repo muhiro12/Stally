@@ -5,8 +5,8 @@ import SwiftUI
 struct QuickMarkButtons: View {
     @Environment(\.modelContext)
     private var context
-    @Environment(RemoteUpdateOperations.self)
-    private var updates
+    @Environment(RecordWriteSession.self)
+    private var writeSession
     let item: Item
     @State private var lastAddedID: UUID?
     @State private var saving = false
@@ -42,7 +42,7 @@ struct QuickMarkButtons: View {
         Task {
             defer { saving = false }
             do {
-                try await updates.performMutation(operation)
+                try await writeSession.performMutation(operation)
                 errorMessage = nil
             } catch { errorMessage = error.localizedDescription }
         }

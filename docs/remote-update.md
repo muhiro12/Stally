@@ -27,7 +27,7 @@ Startup and foreground hooks restore and refresh policy through MHPlatform.
 The package owns revision checks, publication lookup, cache coordination, and
 evidence lifetimes. Stally logs preparation failures and evaluation reasons.
 
-Every UI mutation of collection records and the five writing App Intents
+Every UI mutation of collection records and all writing App Intents
 check the same service before mutating data or reporting success. The controller
 merges retained evidence and reevaluates timed requirements at each check.
 Stally explicitly uses

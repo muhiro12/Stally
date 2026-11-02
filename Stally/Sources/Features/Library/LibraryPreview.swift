@@ -9,6 +9,7 @@ import SwiftUI
 }
 
 private struct LibraryPreview: View {
+    private let librarySession = StallyLibrarySession(updates: .init(), observesAccount: false)
     @State private var result: Result<ModelContainer, Error> = .init {
         try StallyDevelopmentStore.preview()
     }
@@ -19,7 +20,8 @@ private struct LibraryPreview: View {
             LibraryView()
                 .modelContainer(container)
                 .environment(RemoteUpdateOperations())
-                .environment(TransferPresentation())
+                .environment(librarySession)
+                .environment(librarySession.writer)
                 .mhTheme(.standard)
         case .failure(let error):
             Text(verbatim: error.localizedDescription)

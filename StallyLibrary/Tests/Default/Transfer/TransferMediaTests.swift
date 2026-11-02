@@ -26,7 +26,13 @@ struct TransferMediaTests {
         var edited = ItemOperations.draft(for: item)
         edited.photos[0].caption = "File Caption"
         try ItemOperations.save(edited, context: source)
-        let recordsOnly = try TransferOperations.export(context: source, includingImages: false)
+        let data = try TransferOperations.exportRecords(context: source)
+        let recordsOnly = try await TransferFileOperations.readRecords(data)
+        let object = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        #expect(object["format"] as? String == "com.muhiro12.Stally.data")
+        #expect(recordsOnly.media.isEmpty)
+        #expect(recordsOnly.manifest.itemPhotos.first?.image.state == .omitted)
+        #expect(recordsOnly.manifest.itemPhotos.first?.image.path == nil)
         let changes = try TransferOperations.review(recordsOnly, context: target)
         #expect(changes.defaultSelection.isEmpty)
         try TransferOperations.apply(changes, selection: [photo.uuid], today: "2026-10-31", context: target)
@@ -54,9 +60,10 @@ struct TransferMediaTests {
         let url = try await TransferFileOperations.writeTemporary(archive)
         defer { try? FileManager.default.removeItem(at: url) }
         let path = try #require(archive.manifest.itemPhotos.first?.image.path)
+        #expect(path.hasPrefix("photos/"))
         try Data("corrupt".utf8).write(to: url.appendingPathComponent(path))
         await #expect(throws: (any Error).self) { try await TransferFileOperations.read(url) }
-        let records = url.appendingPathComponent("records.json")
+        let records = url.appendingPathComponent("manifest.json")
         let elsewhere = url.appendingPathComponent("original.json")
         try FileManager.default.moveItem(at: records, to: elsewhere)
         try FileManager.default.createSymbolicLink(at: records, withDestinationURL: elsewhere)

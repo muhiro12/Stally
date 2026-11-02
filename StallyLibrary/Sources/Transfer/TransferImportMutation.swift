@@ -100,7 +100,8 @@ enum TransferImportMutation {
             photo.sortOrder = row.sortOrder
             photo.createdAt = row.createdAt
             if let path = row.image.path {
-                guard let data = media[String(path.dropFirst("media/".count))] else { throw TransferError.invalidFile }
+                let filename = String(path.dropFirst(StallyDataContract.photoPathPrefix.count))
+                guard let data = media[filename] else { throw TransferError.invalidFile }
                 photo.imageData = data
                 photo.thumbnailData = nil
             }

@@ -35,7 +35,7 @@ registered identifier can acquire restrictions before public release, so
 | CloudKit container ID | `iCloud.com.muhiro12.Stally` | Keep it aligned with entitlements and model configuration; do not replace it merely for naming cleanup |
 | App Store app ID | `6760996986` | Keep the configured product destination; verify the account record before release |
 | Monthly product ID | `com.muhiro12.Stally.subscriptions.monthly` | Keep this identity if the monthly product remains; do not reinterpret it as an unrelated purchase |
-| Native portable document | `.stally`, selected package UTI `com.muhiro12.stally.export` | Retain the accepted distinct package identity and physical format |
+| Native portable document | `.stally`, selected package UTI `com.muhiro12.Stally.data` | Retain the accepted package identity and physical format |
 | Product links and Item target | Existing `stally://item/<UUID>` plus first-release Universal Links | Keep UUID addressing; adopt the sibling associated-domain pattern and finalize/verify the Stally HTTPS paths during integration |
 | Remote-update configuration | `https://raw.githubusercontent.com/muhiro12/MHAppConfig/main/stally/app.json` | Retain the installed-client endpoint and package policy semantics |
 
@@ -48,18 +48,11 @@ In-App Purchase product ID to be edited or reused for another purchase after
 creation. The App Store app ID is assigned by Apple. These restrictions are
 not postponed until the first customer installs the app.
 
-The package UTI above was already selected in the
-[export design](export-file-format-design.md). The current code instead declares
-`com.muhiro12.Stally.data`, `.stallybackup`, `public.json`, and
-`application/json`. Do not change that flat-file type into a package or keep
-claiming that the new package is JSON. Register the package with
-`com.apple.package` and appropriate content conformance; auxiliary JSON sharing
-continues to use `.json`/`public.json`. Installed declaration/provider behavior
-requires verification during implementation.
-
-Do not mechanically normalize the capitalization of unrelated identifiers.
-The existing bundle/container and the selected lowercase package UTI have
-separate identities. Their spelling does not need to be made uniform.
+The current package UTI and JSON format discriminator share the sibling naming
+pattern, `com.muhiro12.Stally.data`. Before release, this replaced the flat
+development declaration with `.stally` conforming to `com.apple.package` and
+`public.content`. Development files have no compatibility contract.
+Standalone records use `.json`/`public.json`; Stally does not claim generic JSON.
 
 ## Preference Rules to Establish Now
 
@@ -319,9 +312,8 @@ it changed neither reference repository.
   `.incomes` type. Current Cookle already declares `.cookle` as a package with
   `com.apple.package`/`public.content`; do not describe Cookle as necessarily a
   flat JSON/Base64 design. Stally's package direction is therefore similar to
-  current Cookle. Stally's separate new UTI distinguishes it from its old flat
-  development format. Lowercasing the product component and using `export`
-  rather than `data` are naming choices, not technical requirements.
+  current Cookle. Package filenames identify Stally photos by stable UUID;
+  this matters for re-import and does not require copying Cookle's numbering.
 
 Primary local references: each sibling's `*UserDefaultsKeys.swift`,
 `MHPreferenceDescriptors+*.swift`, architecture guide, app entitlements and

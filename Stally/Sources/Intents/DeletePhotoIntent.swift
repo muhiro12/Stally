@@ -14,14 +14,15 @@ struct DeletePhotoIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Photo")
     var photo: PhotoEntity
 
     @MainActor
     func perform() async throws -> some IntentResult {
+        let session = librarySession.writer
         try await requestConfirmation(dialog: "Delete this photo?")
-        try await IntentAccess.write(container: container, updates: updates) { context in
+        try await IntentAccess.write(container: container, session: session) { context in
             let record = try IntentRecordLookup.record(ItemPhoto.self, uuid: photo.id, context: context) { $0.uuid }
             guard let owner = record.item else { throw RecordError.missingRecord }
             var draft = ItemOperations.draft(for: owner)

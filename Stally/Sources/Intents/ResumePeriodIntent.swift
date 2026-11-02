@@ -15,7 +15,7 @@ struct ResumePeriodIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Period")
     var period: PeriodEntity
     @Parameter(title: "Start (Unknown If Empty)")
@@ -23,7 +23,8 @@ struct ResumePeriodIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ReturnsValue<PeriodEntity> {
-        let value = try await IntentAccess.write(container: container, updates: updates) { context in
+        let session = librarySession.writer
+        let value = try await IntentAccess.write(container: container, session: session) { context in
             let record = try IntentRecordLookup.record(ItemPeriod.self, uuid: period.id, context: context) { $0.uuid }
             return PeriodEntity(
                 try PeriodOperations.resume(

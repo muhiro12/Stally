@@ -15,7 +15,7 @@ struct CorrectMarkIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Mark")
     var mark: MarkEntity
     @Parameter(title: "Correct Date")
@@ -23,7 +23,8 @@ struct CorrectMarkIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        try await IntentAccess.write(container: container, updates: updates) { context in
+        let session = librarySession.writer
+        try await IntentAccess.write(container: container, session: session) { context in
             let record = try IntentRecordLookup.record(ItemMark.self, uuid: mark.id, context: context) { $0.uuid }
             try MarkOperations.correct(record, localDateTime: localDateTime, context: context)
         }

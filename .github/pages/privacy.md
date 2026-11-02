@@ -4,7 +4,7 @@ title: Stally Privacy Policy
 
 # Stally Privacy Policy
 
-Last updated: September 14, 2026
+Last updated: November 2, 2026
 
 Stally keeps a collection of the things you choose, care for, and spend time
 with. This policy explains what data Stally handles, why it is handled, and the
@@ -12,24 +12,22 @@ choices available to you.
 
 ## Data Stally Handles
 
-Stally stores the information you enter, including item names, categories,
-notes, item photos, optional start dates and their precision, Mark-recording
-settings, archive status, and choice history. Preferences such as whether
-iCloud sync is enabled are also stored.
+Stally stores the information you enter, including item names, notes, links,
+tags, photos and captions, recording preferences, archive and favorite status,
+Marks, and periods with the dates or date precision you supply.
 
-Item photos selected through the system photo picker are copied into Stally
-only after you choose them. Before storage, Stally resizes the selected image,
-removes source metadata such as location information, and saves a normalized
-copy.
+Photos you select are copied into Stally. A saved attachment can retain
+embedded information, including shooting dates and location when present.
+Stally may resize or convert a photo to meet its storage limits. Editing or
+deleting the attachment does not edit the source photo in your photo library.
 
 ## On-Device Storage and iCloud
 
-By default, Stally stores your library and preferences on your device. If you
-enable iCloud Sync, Stally sends your library, including any attached photos,
-to your private iCloud database so it can be available on your devices. Apple
-stores and processes that synced data under its terms and privacy policy.
-Stally's developer does not operate a separate account or content server for
-your library.
+Stally stores your collection on your device. When private iCloud sync is
+available, CloudKit can synchronize that library, including attached photos,
+through your iCloud account. Apple stores and processes synced data under its
+terms and privacy policy. Stally's developer does not operate a separate
+account or content server for your library.
 
 Stally uses the synced content only to provide app functionality. It does not
 provide your collection content to advertising SDKs or a developer-operated
@@ -39,7 +37,9 @@ analytics service. iCloud sync is independent of subscription status.
 
 When you export a backup, Stally creates a file containing your library. You
 choose where that file is saved or shared, and you are responsible for copies
-outside the app.
+outside the app. A package can contain saved photos with their embedded
+metadata. Standalone records JSON includes captions and other records but
+does not contain image files.
 
 Shared links identify a Stally destination or item identifier. They do not
 upload the item name, note, photo, or history to a Stally-operated server.
@@ -63,10 +63,9 @@ Google's privacy information is available at
 
 ## Retention and Deletion
 
-Your local library remains on your device until you delete items, reset the
-library, or remove the app and its data. If iCloud Sync is enabled, deletions
-are synchronized through CloudKit. You can turn off iCloud Sync in Stally's
-settings. You can also manage Stally's iCloud data through Apple's iCloud
+Your local library remains on your device until you delete items or remove the app
+and its data. When iCloud sync is available, deletions
+can synchronize through CloudKit. You can manage Stally's iCloud data through Apple's iCloud
 settings. Exported backup files remain wherever you chose to save them until
 you delete them there.
 
@@ -87,17 +86,15 @@ or other personal information in an issue.
 
 You can:
 
-- use Stally without iCloud Sync;
 - add, change, or remove item photos;
 - delete individual items and their history;
-- reset the library from Import & Export;
 - export a copy of your library; and
-- disable iCloud Sync from Settings.
+- review a file before importing selected records.
 
 ## Security
 
 Stally uses Apple's platform storage and CloudKit technologies and limits
-stored photos to bounded, metadata-free copies. No method of electronic
+the size of saved photos. Saved photos can contain embedded metadata. No method of electronic
 storage is guaranteed to be completely secure, so keep exported backup files
 in a location you trust.
 

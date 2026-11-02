@@ -15,7 +15,7 @@ struct RenameTagIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Tag")
     var tag: TagEntity
     @Parameter(title: "Name")
@@ -23,7 +23,8 @@ struct RenameTagIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        try await IntentAccess.write(container: container, updates: updates) { context in
+        let session = librarySession.writer
+        try await IntentAccess.write(container: container, session: session) { context in
             let record = try IntentRecordLookup.record(
                 StallyLibrary.Tag.self,
                 uuid: tag.id,

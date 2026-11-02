@@ -16,7 +16,7 @@ struct AttachPhotoIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Item")
     var item: ItemEntity
     @Parameter(title: "Image")
@@ -26,8 +26,9 @@ struct AttachPhotoIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
+        let session = librarySession.writer
         let prepared = try await IntentPhotoInput.prepare(file)
-        try await IntentAccess.write(container: container, updates: updates) { context in
+        try await IntentAccess.write(container: container, session: session) { context in
             let record = try ItemOperations.item(context: context, uuid: item.id)
             var draft = ItemOperations.draft(for: record)
             draft.photos.append(.init(prepared: prepared, caption: caption))

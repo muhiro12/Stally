@@ -17,7 +17,7 @@ struct CorrectPeriodIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Period")
     var period: PeriodEntity
     @Parameter(title: "Start (YYYY, YYYY-MM, or YYYY-MM-DD)")
@@ -29,7 +29,8 @@ struct CorrectPeriodIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        try await IntentAccess.write(container: container, updates: updates) { context in
+        let session = librarySession.writer
+        try await IntentAccess.write(container: container, session: session) { context in
             let record = try IntentRecordLookup.record(ItemPeriod.self, uuid: period.id, context: context) { $0.uuid }
             try PeriodOperations.correct(
                 record,

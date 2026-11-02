@@ -15,7 +15,7 @@ struct MovePhotoIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Photo")
     var photo: PhotoEntity
     @Parameter(title: "Position (Starting at 1)")
@@ -23,7 +23,8 @@ struct MovePhotoIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        try await IntentAccess.write(container: container, updates: updates) { context in
+        let session = librarySession.writer
+        try await IntentAccess.write(container: container, session: session) { context in
             let record = try IntentRecordLookup.record(ItemPhoto.self, uuid: photo.id, context: context) { $0.uuid }
             guard let owner = record.item else { throw RecordError.missingRecord }
             var draft = ItemOperations.draft(for: owner)

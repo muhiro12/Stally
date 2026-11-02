@@ -8,8 +8,8 @@ struct ItemEditor: View {
     private var context
     @Environment(\.dismiss)
     private var dismiss
-    @Environment(RemoteUpdateOperations.self)
-    private var updates
+    @Environment(RecordWriteSession.self)
+    private var writeSession
     let item: Item?
     let onSave: ((Item) -> Void)?
     @State private var draft: ItemDraft
@@ -44,6 +44,7 @@ struct ItemEditor: View {
                     Text(errorMessage ?? "")
                 }
         }
+        .modifier(StallyUpdateRequiredModifier())
     }
 
     private var cannotSave: Bool {
@@ -105,7 +106,7 @@ struct ItemEditor: View {
                 saving = false
             }
             do {
-                try await updates.performMutation {
+                try await writeSession.performMutation {
                     let saved = try ItemOperations.save(draft, context: context)
                     onSave?(saved)
                 }

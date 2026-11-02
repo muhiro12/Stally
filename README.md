@@ -35,7 +35,7 @@ Start with the documentation relevant to the changed boundary:
 | Live SwiftData read ownership and value lifetimes | [App data flow](docs/swiftdata-app-data-flow.md) |
 | Durable writes and cross-surface use cases | [Domain Operations](docs/domain-operations.md) |
 | Shared update policy, offline behavior, and protected writes | [Remote update control](docs/remote-update.md) |
-| Resume implementation after the October 31 contract review | [Open decisions, remaining work, and completion checks](docs/remaining-capabilities-implementation.md#remaining-contract-work) |
+| First-release contract implementation and remaining qualification | [Implementation status and remaining checks](docs/remaining-capabilities-implementation.md#remaining-contract-work) |
 | Current persistence baseline before the redesign | [First release data model](docs/first-release-data-model.md) |
 | Publication identities, stored preferences, and support lifetimes | [Publication contracts](docs/publication-contracts.md), [saved-key and identifier review](docs/saved-key-and-identifier-design.md) |
 | Accepted export/import direction and current implementation | [File design](docs/export-file-format-design.md), [import identity](docs/import-identity-design.md), [older portable baseline](docs/portable-data-contract.md) |
@@ -101,10 +101,10 @@ The old category/single-start/day-toggle adapters, flat backup codec, Review,
 Insights, search projections, sample profiles, and old Intent adapters have been
 retired. Their redesigned features remain first-release work as applicable.
 The [remaining capabilities implementation](docs/remaining-capabilities-implementation.md)
-adds reviewed package import/export, 37 App Intent adapters, period readings,
+adds reviewed package import/export, standalone records JSON, 38 App Intent adapters, period readings,
 quick Marks with identity-based undo, Tag consolidation, and shared search scope.
-Universal Link routing and entitlement are present locally; the site's association
-entry and installed handoff remain external deployment qualification. Photo ingestion, captions, ordering, deletion,
+Universal Link routing and entitlement are present locally; the association entry is live on the
+site and Apple's CDN. Signed installed handoff is a separate qualification. Photo ingestion, captions, ordering, deletion,
 and viewing now use the accepted preservation policy. DEBUG launches use isolated local
 development records; see [development setup](docs/fixture-architecture.md#current-development-setup)
 for initial seeding, empty-store opt-out, and explicit shared-store verification.

@@ -10,7 +10,7 @@ enum TransferCodec {
     static func decode(_ data: Data) throws -> TransferManifest {
         guard data.count <= maximumJSONBytes else { throw TransferError.limitExceeded }
         guard let object = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-              object["format"] as? String == "stally"
+              object["format"] as? String == StallyDataContract.fileTypeIdentifier
         else { throw TransferError.invalidFile }
         guard object["formatVersion"] as? Int == 1, object["schemaVersion"] as? String == "1.0.0" else {
             throw TransferError.unsupportedVersion
@@ -62,7 +62,10 @@ enum TransferCodec {
             }
             object[key] = rows
         }
-        let data = try JSONSerialization.data(withJSONObject: lowercaseUUIDs(object), options: [.sortedKeys])
+        let data = try JSONSerialization.data(
+            withJSONObject: lowercaseUUIDs(object),
+            options: [.sortedKeys, .prettyPrinted, .withoutEscapingSlashes]
+        )
         guard data.count <= maximumJSONBytes else { throw TransferError.limitExceeded }
         return data
     }

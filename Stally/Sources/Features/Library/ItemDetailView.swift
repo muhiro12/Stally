@@ -6,8 +6,8 @@ import SwiftUI
 struct ItemDetailView: View {
     @Environment(\.modelContext)
     private var context
-    @Environment(RemoteUpdateOperations.self)
-    private var updates
+    @Environment(RecordWriteSession.self)
+    private var writeSession
     let item: Item
     let onDelete: () -> Void
     @State private var editingItem = false
@@ -100,6 +100,9 @@ struct ItemDetailView: View {
                 Button("Choose Tags", systemImage: "tag") {
                     choosingTags = true
                 }
+                ShareLink(item: StallyLinkOperations.url(for: .item(item.uuid))) {
+                    Label("Share Item Link", systemImage: "square.and.arrow.up")
+                }
                 Divider()
                 Button("Delete Item", systemImage: "trash", role: .destructive) {
                     confirmingDelete = true
@@ -142,7 +145,7 @@ struct ItemDetailView: View {
                 saving = false
             }
             do {
-                try await updates.performMutation(operation)
+                try await writeSession.performMutation(operation)
             } catch {
                 errorMessage = error.localizedDescription
             }

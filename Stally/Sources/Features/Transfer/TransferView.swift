@@ -13,6 +13,7 @@ struct TransferView: View {
     @State private var importing = false
     @State private var exporting = false
     @State private var includingImages = true
+    @State private var exportType = StallyExportDocument.contentType
     @State private var document: StallyExportDocument?
     @State private var archive: TransferArchive?
     @State private var review: TransferReview?
@@ -24,11 +25,7 @@ struct TransferView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Export") {
-                    Toggle("Include Photos", isOn: $includingImages)
-                    Button("Export Library", systemImage: "square.and.arrow.up", action: prepareExport)
-                    Text("Exports all Items, including archived records and unused Tags.").mhRowSupporting()
-                }
+                exportSection
                 Section("Import") {
                     Button("Choose Stally File", systemImage: "square.and.arrow.down") { importing = true }
                     Text(
@@ -57,8 +54,8 @@ struct TransferView: View {
         .fileExporter(
             isPresented: $exporting,
             document: document,
-            contentType: StallyExportDocument.contentType,
-            defaultFilename: "Stally"
+            contentType: exportType,
+            defaultFilename: StallyExportDocument.filename()
         ) { result in
             document = nil
             switch result {
@@ -79,13 +76,38 @@ struct TransferView: View {
             if let initialURL { load(initialURL) }
         }
         .onDisappear { task?.cancel() }
+        .modifier(StallyUpdateRequiredModifier())
+    }
+
+    private var exportSection: some View {
+        Section("Export") {
+            Toggle("Include Photos", isOn: $includingImages)
+            if includingImages {
+                Text("Exported photos retain embedded metadata, including location when present.")
+                    .mhRowSupporting()
+            }
+            Button("Export Library", systemImage: "square.and.arrow.up", action: prepareExport)
+            Button("Export Records as JSON", systemImage: "doc.text", action: prepareRecords)
+            Text("JSON includes all records and photo captions, but no image files.").mhRowSupporting()
+            Text("Exports all Items, including archived records and unused Tags.").mhRowSupporting()
+        }
     }
 
     private var importTypes: [UTType] { [StallyExportDocument.contentType, .json] }
 
     private func prepareExport() {
         do {
+            exportType = StallyExportDocument.contentType
             document = try .init(archive: TransferOperations.export(context: context, includingImages: includingImages))
+            exporting = true
+            errorMessage = nil
+        } catch { errorMessage = error.localizedDescription }
+    }
+
+    private func prepareRecords() {
+        do {
+            exportType = .json
+            document = try .init(records: TransferOperations.exportRecords(context: context))
             exporting = true
             errorMessage = nil
         } catch { errorMessage = error.localizedDescription }

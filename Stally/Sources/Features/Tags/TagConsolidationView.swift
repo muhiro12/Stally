@@ -7,8 +7,8 @@ struct TagConsolidationView: View {
     private var context
     @Environment(\.dismiss)
     private var dismiss
-    @Environment(RemoteUpdateOperations.self)
-    private var updates
+    @Environment(RecordWriteSession.self)
+    private var writeSession
     @Query(sort: \Tag.name)
     private var tags: [Tag]
     @State private var sourceID: UUID?
@@ -44,6 +44,7 @@ struct TagConsolidationView: View {
             }
         }
         .interactiveDismissDisabled(saving)
+        .modifier(StallyUpdateRequiredModifier())
     }
 
     private func tagPicker(_ title: LocalizedStringKey, selection: Binding<UUID?>) -> some View {
@@ -80,7 +81,7 @@ struct TagConsolidationView: View {
         Task {
             defer { saving = false }
             do {
-                try await updates.performMutation { try TagOperations.consolidate(review, context: context) }
+                try await writeSession.performMutation { try TagOperations.consolidate(review, context: context) }
                 dismiss()
             } catch { errorMessage = error.localizedDescription }
         }

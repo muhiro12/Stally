@@ -14,14 +14,15 @@ struct DeletePeriodIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Period")
     var period: PeriodEntity
 
     @MainActor
     func perform() async throws -> some IntentResult {
+        let session = librarySession.writer
         try await requestConfirmation(dialog: "Delete this period?")
-        try await IntentAccess.write(container: container, updates: updates) { context in
+        try await IntentAccess.write(container: container, session: session) { context in
             let record = try IntentRecordLookup.record(ItemPeriod.self, uuid: period.id, context: context) { $0.uuid }
             try PeriodOperations.delete(record, context: context)
         }

@@ -33,6 +33,7 @@ struct TagManagerView: View {
                     TagEditor(tag: tag)
                 }
         }
+        .modifier(StallyUpdateRequiredModifier())
     }
     private var tagList: some View {
         List {

@@ -2547,6 +2547,22 @@
           }
         }
       }
+    },
+    "The iCloud account changed. Reopen the record or review before saving.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The iCloud account changed. Reopen the record or review before saving."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloudアカウントが変更されました。保存する前に、記録または読み込み内容の確認画面を開き直してください。"
+          }
+        }
+      }
     }
   },
   "version": "1.3"

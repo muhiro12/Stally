@@ -51,8 +51,8 @@ struct RecordEditor: View {
     private var context
     @Environment(\.dismiss)
     private var dismiss
-    @Environment(RemoteUpdateOperations.self)
-    private var updates
+    @Environment(RecordWriteSession.self)
+    private var writeSession
     let item: Item
     let selection: Selection
     @State private var start: RecordDateDraft
@@ -86,6 +86,7 @@ struct RecordEditor: View {
                     Button("Delete Record", role: .destructive, action: deleteRecord)
                 }
         }
+        .modifier(StallyUpdateRequiredModifier())
     }
 
     @ViewBuilder private var recordFields: some View {
@@ -216,7 +217,7 @@ struct RecordEditor: View {
                 saving = false
             }
             do {
-                try await updates.performMutation(operation)
+                try await writeSession.performMutation(operation)
                 dismiss()
             } catch {
                 errorMessage = error.localizedDescription

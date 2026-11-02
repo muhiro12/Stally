@@ -11,6 +11,11 @@ public enum TransferOperations {
         return try snapshot(context: context, includingImages: includingImages)
     }
 
+    /// Encodes all records without image bytes or external file references.
+    public static func exportRecords(context: ModelContext) throws -> Data {
+        try TransferCodec.encode(export(context: context, includingImages: false).manifest)
+    }
+
     static func snapshot(context: ModelContext, includingImages: Bool) throws -> TransferArchive {
         let items = try context.fetch(FetchDescriptor<Item>()).sorted { $0.uuid.uuidString < $1.uuid.uuidString }
         let tags = try context.fetch(FetchDescriptor<Tag>()).sorted { $0.uuid.uuidString < $1.uuid.uuidString }
@@ -21,7 +26,7 @@ public enum TransferOperations {
         let photos = try context.fetch(FetchDescriptor<ItemPhoto>()).sorted { $0.uuid.uuidString < $1.uuid.uuidString }
         let (photoRows, media) = try photoRows(photos, includingImages: includingImages)
         let manifest = try TransferManifest(
-            format: "stally",
+            format: StallyDataContract.fileTypeIdentifier,
             formatVersion: StallyDataContract.formatVersion,
             schemaVersion: StallyDataContract.schemaVersion,
             exportedAt: .now,
@@ -78,7 +83,7 @@ public enum TransferOperations {
                     throw TransferError.limitExceeded
                 }
                 byteCount += data.count
-                media[String(path.dropFirst("media/".count))] = data
+                media[String(path.dropFirst(StallyDataContract.photoPathPrefix.count))] = data
             }
             return .init(
                 uuid: photo.uuid,
@@ -102,7 +107,7 @@ public enum TransferOperations {
         let fileExtension = try TransferMedia.fileExtension(data)
         return .init(
             state: .included,
-            path: "media/\(photo.uuid.uuidString.lowercased()).\(fileExtension)",
+            path: StallyDataContract.photoPathPrefix + "\(photo.uuid.uuidString.lowercased()).\(fileExtension)",
             byteCount: data.count,
             sha256: TransferMedia.digest(data)
         )

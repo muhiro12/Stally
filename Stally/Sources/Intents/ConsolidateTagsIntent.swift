@@ -15,7 +15,7 @@ struct ConsolidateTagsIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Source")
     var source: TagEntity
     @Parameter(title: "Survivor")
@@ -23,6 +23,7 @@ struct ConsolidateTagsIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
+        let session = librarySession.writer
         let review = try IntentAccess.read(container: container) { context in
             let sourceTag = try IntentRecordLookup.record(
                 StallyLibrary.Tag.self,
@@ -41,7 +42,7 @@ struct ConsolidateTagsIntent: AppIntent {
         try await requestConfirmation(
             dialog: "Consolidate \(review.sourceName) into \(review.survivorName)? \(count) Items."
         )
-        try await IntentAccess.write(container: container, updates: updates) { context in
+        try await IntentAccess.write(container: container, session: session) { context in
             try TagOperations.consolidate(review, context: context)
         }
         return .result()

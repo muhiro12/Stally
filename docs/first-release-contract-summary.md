@@ -126,7 +126,7 @@ retroactively delete/rewrite existing photos or misrepresent lost original data.
 ## Accepted Export and Import Contract
 
 Use one `.stally` document package, identified by
-`com.muhiro12.stally.export`, with JSON records and optional separate image files.
+`com.muhiro12.Stally.data`, with JSON records and optional separate image files.
 Records-only and records-with-images use that same physical container. Auxiliary
 JSON sharing serves external tools without making `.stally` sometimes a plain
 JSON file. See the [file specification](export-file-format-design.md).

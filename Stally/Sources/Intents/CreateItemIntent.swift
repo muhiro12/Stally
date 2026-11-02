@@ -16,7 +16,7 @@ struct CreateItemIntent: AppIntent {
     }
 
     @Dependency private var container: ModelContainer
-    @Dependency private var updates: RemoteUpdateOperations
+    @Dependency private var librarySession: StallyLibrarySession
     @Parameter(title: "Name")
     var name: String
     @Parameter(title: "Note", default: "")
@@ -26,7 +26,8 @@ struct CreateItemIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ReturnsValue<ItemEntity> {
-        let value = try await IntentAccess.write(container: container, updates: updates) { context in
+        let session = librarySession.writer
+        let value = try await IntentAccess.write(container: container, session: session) { context in
             var draft = ItemDraft()
             draft.name = name
             draft.note = note

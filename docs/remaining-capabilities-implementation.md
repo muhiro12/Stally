@@ -49,9 +49,9 @@ non-overlap. Exact same-day periods can contribute zero days.
 
 The implemented version pair is `(1, "1.0.0")`, backed by `StallySchema` and
 `StallyDataContract`. Unsupported pairs and old development files are rejected.
-One native `.stally` directory package contains `records.json` and optional
-`media/<lowercase-photo-uuid>.<extension>` entries. The app exports
-`com.muhiro12.stally.export`, conforming to `com.apple.package`, and registers
+One native `.stally` directory package contains `manifest.json` and optional
+`photos/<lowercase-photo-uuid>.<extension>` entries. The app exports
+`com.muhiro12.Stally.data`, conforming to `com.apple.package`, and registers
 that document type without taking ownership of generic JSON.
 
 Exports include archived Items, all owned records, and unused Tags. Required
@@ -96,7 +96,7 @@ not a cross-device transaction or deduplication engine.
 
 ## App Intent Coverage
 
-The app contains 37 Operations-backed actions and five UUID-backed entities.
+The app contains 38 Operations-backed actions and five UUID-backed entities.
 Entity queries resolve batches, explicitly filter string searches, and reject
 ambiguous identities. Initial pickers suggest up to 20 current records; searches
 remain available beyond those suggestions. Missing UUIDs are never replaced.
@@ -109,7 +109,7 @@ remain available beyond those suggestions. Missing UUIDs are never replaced.
 | Period history and readings | Get Item Periods; Add/Correct/End/Resume/Delete Period; Get Time Together |
 | Shared Tags | Get Item Tags; Create/Rename/Delete/Consolidate Tags; Set Item Tags |
 | Owned media | Get Item Photos; Attach Photo; Edit Caption; Move/Delete Photo; Get Photo File |
-| Portability | Export Stally Library; Review Stally Import |
+| Portability | Export Stally Library; Export Records as JSON; Review Stally Import |
 
 These actions read or change personal records, so each requires native
 `requiresAuthentication`. Deletion and consolidation also request confirmation
@@ -143,52 +143,29 @@ with a matching Associated Domains entitlement. Custom-scheme links remain the
 currently emitted transport. The scoped association-file entry is prepared at
 [stally-applinks-entry.json](deployment/stally-applinks-entry.json).
 
-Read-back of the public association file on October 31 found Incomes and Cookle
-entries, but no Stally entry. This change does not publish that file, change the
-website, or claim installed Universal Link activation. Merge the prepared entry
-into the owned site's association document, configure the signing capability,
-and verify installed HTTPS handoff before publishing this surface.
+On November 2 the [published association entry](https://github.com/muhiro12/muhiro12.github.io/commit/3f3439065ddf835c88d8edd49c52fe88af64cf54)
+was verified at both the site and Apple's CDN. The five Stally routes leave
+the Incomes and Cookle entries unchanged. A Release build for generic iOS,
+signed for development, contains the matching app ID and associated-domain
+entitlement. The Simulator app also embeds that entitlement. Opening an Item
+HTTPS URL via the OS and tapping it from a different web origin both stayed
+in Safari (404); neither opened the Item. Keep the Item share action and Open
+Item Intent on the custom scheme until an installed HTTPS handoff succeeds.
+A physical device has not been tested.
 
 ## Remaining Contract Work
 
-Resume from the published October 31, 2026 baseline `a498f55`. Recheck HEAD
-and the paths below before starting. This baseline includes strict URL
-validation shared by import and editing (`1064ca8`) and the persistent test
-fixture lifetime fix (`a498f55`). Publication checks passed for 72 library tests
-in 18 suites, the Simulator app build, lint and repository rules. The earlier
-interaction evidence below applies only to the flows actually exercised.
+The November 2 implementation supersedes the October 31 gap inventory.
+The previous published baseline was `a498f55`.
 
-### Decide the portable names before wiring new output
-
-The [file design](export-file-format-design.md) and current reader/writer use
-`.stally`, UTI `com.muhiro12.stally.export`, JSON `"format": "stally"`,
-`records.json` and optional `media/`. The subsequent comparison proposed
-`com.muhiro12.Stally.data` for both the UTI and the JSON format value, and
-Cookle's `manifest.json` and `photos/` names. These are proposals awaiting an
-owner decision. A dated suggested filename and indented JSON can be decided
-separately; neither determines which files the reader accepts.
-
-If the names change, update Info.plist, StallyDataContract, TransferCodec,
-package paths and validation, app/Intent output, fixtures, tests, example
-and active format documentation together. Keep UUID identity, time precision,
-image availability states and the format/schema version distinction. Old
-development stores and files have no compatibility commitment.
-
-### Resume the accepted implementation
-
-| Work | Current entry point | Completion evidence |
-| --- | --- | --- |
-| Share records as standalone JSON | [Package operations](../StallyLibrary/Sources/Transfer/TransferFileOperations.swift), [app export](../Stally/Sources/Features/Transfer/TransferView.swift), [Intent export](../Stally/Sources/Intents/ExportLibraryIntent.swift) | An external tool receives a standalone JSON file through the app and an Intent. It reimports without package media; the ordinary export still produces a package. |
-| Invalidate drafts and import reviews on iCloud account transition | [Sync contract](sync-lifecycle-design.md), [Item editor](../Stally/Sources/Features/Library/ItemEditor.swift), [import apply](../StallyLibrary/Sources/Transfer/TransferOperations+Import.swift) | A draft or review opened in the prior account cannot write even when the new account has equivalent records. Reopening starts a fresh edit or review. Existing data-change checks still apply. |
-| Explain photo metadata at export | [Photo export contract](export-file-format-design.md#attachment-availability), app and Intent export above | Before choosing image-inclusive output, a person can tell that the saved bytes may contain embedded information such as location. Records-only output omits the bytes. |
-| Complete Universal Links | [Routing](../StallyLibrary/Sources/Link/StallyLinkOperations.swift), [association entry](deployment/stally-applinks-entry.json) | Verify the deployed association and signed entitlement, exercise installed HTTPS handoff to the intended Item, and switch shared link generation to the qualified HTTPS route. |
-| Reconcile remote update lifecycle and presentation | [Update contract](remote-update.md), [app startup](../Stally/Sources/App/StallyApp.swift), [write guard](../StallyLibrary/Sources/RemoteUpdate/RemoteUpdateOperations.swift) | The October 31 comparison found startup preparation and write checks, but no foreground refresh or dedicated update/retry UI. Exercise foreground refresh and a confirmed requirement using isolated evidence, preserving drafts and the offline policy. |
-
-The first three rows and the link integration came from the original gap
-review; the last row came from the later cross-app comparison. Account
-invalidation and remote update wiring can proceed independently of the naming
-decision. Verify current site state and deployment ownership before external
-work. The existing MHAppConfig endpoint already uses the shared policy format.
+| Contract | Implementation and resumption point |
+| --- | --- |
+| Portable identity | The package UTI and JSON format are `com.muhiro12.Stally.data`. The package contains `manifest.json` and optional `photos/<lowercase-uuid>.<ext>`. Suggested filenames use a UTC timestamp. Old development packages have no fallback. |
+| Records-only JSON | [Export operations](../StallyLibrary/Sources/Transfer/TransferOperations.swift), the app file exporter and [Export Records as JSON](../Stally/Sources/Intents/ExportRecordsIntent.swift) share one media-free snapshot. Reimport preserves local photo bytes. |
+| Photo privacy | The app explains that included images retain embedded metadata such as location; the package Intent explains it in the photo parameter. Standalone JSON never carries image bytes. |
+| iCloud account transitions | [Write session](../StallyLibrary/Sources/Persistence/RecordWriteSession.swift) binds outstanding drafts and confirmations to the observed account session. The app replaces editor state and clears pending import review when CloudKit signals a change. The last check runs after the asynchronous update check, immediately before mutation. Exercise real account changes separately. |
+| Remote update | Startup and foreground entry refresh evidence. A confirmed requirement disables editing, retains the presented draft, and offers Store and retry actions. Unavailable evidence permits offline edits. |
+| Universal Links | The entitlement and scoped HTTPS parser are present; the app receives browsing activities. The association file includes Stally at the origin and Apple CDN. Verify signed installed handoff before switching generated links to HTTPS. |
 
 ### Keep implementation and release qualification separate
 
@@ -200,7 +177,21 @@ Record exactly which environment and entry point passed. Promoted Shortcuts,
 Widget/Watch delivery and earlier Review/Insights screens are separate product
 choices and are outside this resumption list.
 
-## Verification
+## November 2 verification
+
+The Simulator app built and all 73 library tests in 19 suites passed. The suite
+checks standalone JSON reimport with omitted media, byte preservation,
+stale-session rejection and fresh-session writes. Repository lint and boundary
+checks passed. On the dedicated Simulator, exporting from the app with
+Include Photos enabled still produced a standalone, readable JSON file with
+the expected format, version pair and five development Items. The metadata
+notice was visible for package export. In Shortcuts, executing Export Records
+as JSON returned the expected discriminator, schema version and Mark records.
+With a synthetic confirmed requirement,
+the Store link and retry appeared; retry and a foreground return each
+reevaluated the requirement. These checks did not use a live iCloud account.
+
+## October 31 verification
 
 All 71 library tests in 18 suites pass on the assigned iOS 27.2 Simulator.
 Coverage includes the complete imported graph and replay, failed-save rollback

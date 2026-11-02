@@ -3,8 +3,8 @@ import SwiftData
 import SwiftUI
 
 struct LibraryView: View {
-    @Environment(TransferPresentation.self)
-    private var transferPresentation
+    @Environment(StallyLibrarySession.self)
+    private var librarySession
     @Query(sort: \Item.createdAt, order: .reverse)
     private var items: [Item]
     @Query(sort: \Tag.name)
@@ -37,7 +37,7 @@ struct LibraryView: View {
     }
 
     var body: some View {
-        @Bindable var presentation = transferPresentation
+        @Bindable var session = librarySession
         NavigationSplitView(
             columnVisibility: $columnVisibility,
             preferredCompactColumn: $compactColumn
@@ -84,8 +84,8 @@ struct LibraryView: View {
             }
         }
         .navigationSplitViewStyle(.balanced)
-        .sheet(item: $presentation.review) { review in
-            ImportReviewView(review: review) { _ in transferPresentation.review = nil }
+        .sheet(item: $session.importReview) { review in
+            ImportReviewView(review: review) { _ in librarySession.importReview = nil }
         }
         .sheet(isPresented: $transferring) {
             TransferView(initialURL: importURL)
@@ -112,6 +112,9 @@ struct LibraryView: View {
             }
         }
         .onOpenURL(perform: openLink)
+        .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+            if let url = activity.webpageURL { openLink(url) }
+        }
         .alert("Could not open link", isPresented: showingRouteError) {
             Button("OK") {
                 routeError = nil
