@@ -45,7 +45,8 @@ correct or delete existing Marks and resume recording later.
 
 ### Do I need a subscription for iCloud?
 
-No. Private iCloud sync is independent of subscription status. When iCloud
+Yes. A subscription enables optional private iCloud sync. Turn on Use iCloud
+in Settings, then relaunch Stally to apply the change. When iCloud
 is available, Stally can synchronize your collection through your account.
 
 ### How should I keep a backup?

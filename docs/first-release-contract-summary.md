@@ -104,7 +104,8 @@ and, when it carries image bytes, `assets/<lowercase-photo-uuid>.<extension>`.
 
 ## Accepted Platform and Interface Direction
 
-- **Native synchronization:** iCloud is included from the first release. Follow
+- **Native synchronization:** optional iCloud sync is a subscription benefit
+  from the first release under the November 8 policy. Follow
   native account/mirroring behavior and proportional recovery. No custom shadow
   library, account-independent retention guarantee, or distributed exactly-once
   engine is selected. Do not erase records or silently switch stores when

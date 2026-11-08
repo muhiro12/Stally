@@ -1,4 +1,4 @@
-import MHPlatform
+import MHPlatformCore
 import MHUI
 import StallyLibrary
 import SwiftUI

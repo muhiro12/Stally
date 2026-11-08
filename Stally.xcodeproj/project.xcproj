@@ -77,7 +77,23 @@
           "build-phase": { "build-phase": "frameworks" },
         }, {
           "package": "MHPlatform",
-          "product-name": "MHPlatform",
+          "product-name": "MHAppRuntime",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "MHPlatform",
+          "product-name": "MHAppRuntimeDefaults",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "MHPlatform",
+          "product-name": "MHAppRuntimeLicenses",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "MHPlatform",
+          "product-name": "MHPlatformCore",
+          "build-phase": { "build-phase": "frameworks" },
+        }, {
+          "package": "MHPlatform",
+          "product-name": "MHPreferencesUI",
           "build-phase": { "build-phase": "frameworks" },
         }, {
           "package": "MHUI",

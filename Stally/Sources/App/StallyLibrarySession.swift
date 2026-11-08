@@ -6,6 +6,7 @@ import StallyLibrary
 @MainActor
 @Observable
 final class StallyLibrarySession {
+    let isCloudSyncEnabled: Bool
     var importReview: TransferReview?
     private(set) var writer: RecordWriteSession
     private let updates: RemoteUpdateOperations
@@ -13,6 +14,7 @@ final class StallyLibrarySession {
 
     init(updates: RemoteUpdateOperations, observesAccount: Bool) {
         self.updates = updates
+        isCloudSyncEnabled = observesAccount
         writer = .init(updates: updates)
         if observesAccount {
             accountChanges = NotificationCenter.default.publisher(for: .CKAccountChanged)

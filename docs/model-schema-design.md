@@ -222,8 +222,8 @@ The [native sync lifecycle review](sync-lifecycle-design.md) follows native
 account lifecycle and proposes explicit handling of concurrent Period states,
 without adding domain attributes. The earlier separate local/cloud library
 recommendation is withdrawn; account-independent retention was not a product
-requirement. Real CloudKit qualification and final reading/presentation behavior
-remain to be settled.
+requirement. Real CloudKit qualification remains separate from the implemented
+[period readings](period-readings-design.md).
 Follow the [contract summary and handoff](first-release-contract-summary.md)
 for the next development phase. Physical schema/shared-container integration
 and release qualification remain pending; derived readings and presentation

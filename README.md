@@ -22,10 +22,12 @@ and the app and system interfaces that call them.
 `Stally/` contains the SwiftUI app and App Intent adapters. `StallyLibrary/`
 owns the SwiftData schema and shared Operations. MHPlatform 1.21.0 supplies
 strict HTTPS routing, bounded package I/O and guarded writes. MHUI supplies
-shared native List and Form presentation.
+shared native List and Form presentation. The app composes MHAppRuntime,
+MHAppRuntimeDefaults and MHAppRuntimeLicenses without the advertising bundle.
 
-Production opens the App Group store with native CloudKit mirroring. A failed
-open surfaces the error. DEBUG can select an isolated local store with sample
+Production opens the same App Group store with optional native CloudKit
+mirroring, selected at launch from the subscription state and sync preference.
+A failed open surfaces the error. DEBUG can select an isolated local store with sample
 records before opening a container. Incompatible prerelease test installations
 can be reinstalled. The first-release schema and portable format define the
 compatibility baseline for future published versions.

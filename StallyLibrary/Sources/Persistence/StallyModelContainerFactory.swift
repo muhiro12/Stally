@@ -11,8 +11,8 @@ public enum StallyModelContainerFactory {
     /// The complete five-model schema used by every new container.
     public static var schema: Schema { .init(versionedSchema: StallySchema.self) }
 
-    /// Opens the shared store with native iCloud mirroring; errors never select another store.
-    public static func persistent() throws -> ModelContainer {
+    /// Opens the same shared store with the selected mirroring policy; errors never select another store.
+    public static func persistent(isCloudSyncEnabled: Bool) throws -> ModelContainer {
         guard
             let groupURL = FileManager.default.containerURL(
                 forSecurityApplicationGroupIdentifier: appGroupIdentifier
@@ -25,7 +25,10 @@ public enum StallyModelContainerFactory {
             at: storeURL.deletingLastPathComponent(),
             withIntermediateDirectories: true
         )
-        return try disk(at: storeURL, cloudKitDatabase: .private(cloudKitContainerIdentifier))
+        return try disk(
+            at: storeURL,
+            cloudKitDatabase: isCloudSyncEnabled ? .private(cloudKitContainerIdentifier) : .none
+        )
     }
 
     /// Explicit disk entry point for isolated verification. CloudKit is off unless requested.

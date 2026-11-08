@@ -248,9 +248,9 @@ period with an unknown start. Do not infer one from the other or from Item
 registration, Mark additions, or Archive changes.
 
 The history behavior above supplies the facts for the accepted readings below.
-Exact screen wording, entry controls, and remaining calculation policies are
-deferred design work. The historical October 25 reading proposal is not the
-selected policy; unknown boundaries must not become exact totals.
+The [current readings](period-readings-design.md) implement the initial calculation
+and presentation choices. Screen wording, controls and rounding may evolve with
+product feedback; unknown boundaries must not become exact totals.
 
 ### Organize and Find Records
 

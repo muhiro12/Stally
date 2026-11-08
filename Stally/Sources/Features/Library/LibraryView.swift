@@ -14,6 +14,7 @@ struct LibraryView: View {
     @State private var columnVisibility = NavigationSplitViewVisibility.all
     @State private var compactColumn = NavigationSplitViewColumn.content
     @State private var searchText = ""
+    @State private var archiveScope = ItemQuery.ArchiveScope.library
     @State private var addingItem = false
     @State private var managingTags = false
     @State private var transferring = false
@@ -60,7 +61,8 @@ struct LibraryView: View {
                 title: title,
                 initialScope: destination == .archive ? .archived : .library,
                 selection: $selectedItemID,
-                searchText: $searchText
+                searchText: $searchText,
+                archiveScope: $archiveScope
             ) {
                 addingItem = true
             }
@@ -93,6 +95,7 @@ struct LibraryView: View {
         .sheet(isPresented: $addingItem) {
             ItemEditor(item: nil) { item in
                 destination = .library
+                archiveScope = .library
                 searchText = ""
                 selectedItemID = item.persistentModelID
                 compactColumn = .detail
@@ -102,7 +105,11 @@ struct LibraryView: View {
             TagManagerView()
         }
         .onChange(of: destination) { _, _ in
-            if let selectedItem, !(destination ?? .library).includes(selectedItem) {
+            archiveScope = destination == .archive ? .archived : .library
+            searchText = ""
+            if let selectedItem,
+               !(destination ?? .library).includes(selectedItem)
+                    || selectedItem.isArchived != (destination == .archive) {
                 selectedItemID = nil
             }
         }
@@ -147,8 +154,14 @@ struct LibraryView: View {
             switch target {
             case .library:
                 destination = .library
+                archiveScope = .library
+                searchText = ""
+                compactColumn = .content
             case .archive:
                 destination = .archive
+                archiveScope = .archived
+                searchText = ""
+                compactColumn = .content
             case .importExport:
                 importURL = nil
                 transferring = true
@@ -169,6 +182,7 @@ struct LibraryView: View {
             return
         }
         destination = item.isArchived ? .archive : .library
+        archiveScope = item.isArchived ? .archived : .library
         searchText = ""
         selectedItemID = item.persistentModelID
         compactColumn = .detail

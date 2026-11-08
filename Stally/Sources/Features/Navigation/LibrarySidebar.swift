@@ -7,6 +7,7 @@ struct LibrarySidebar: View {
     @Environment(\.modelContext)
     private var context
     @State private var showingDiagnostics = false
+    @State private var showingSettings = false
 
     let items: [Item]
     let tags: [Tag]
@@ -20,6 +21,9 @@ struct LibrarySidebar: View {
             tagSection
             Section {
                 Button("Import & Export", systemImage: "arrow.up.arrow.down.square", action: transfer)
+                Button("Settings", systemImage: "gearshape") {
+                    showingSettings = true
+                }
                 Button("Debug", systemImage: "ladybug") {
                     showingDiagnostics = true
                 }
@@ -33,6 +37,9 @@ struct LibrarySidebar: View {
             ideal: LibraryLayout.sidebarIdeal,
             max: LibraryLayout.sidebarMaximum
         )
+        .sheet(isPresented: $showingSettings) {
+            StallySettingsView()
+        }
         .sheet(isPresented: $showingDiagnostics) {
             DiagnosticsView(container: context.container, startupError: nil)
         }

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import MHPlatform
+import MHPlatformCore
 
 enum StallyLogging {
     enum Category {

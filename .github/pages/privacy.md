@@ -4,7 +4,7 @@ title: Stally Privacy Policy
 
 # Stally Privacy Policy
 
-Last updated: November 2, 2026
+Last updated: November 8, 2026
 
 Stally keeps a collection of the things you choose, care for, and spend time
 with. This policy explains what data Stally handles, why it is handled, and the
@@ -23,15 +23,16 @@ deleting the attachment does not edit the source photo in your photo library.
 
 ## On-Device Storage and iCloud
 
-Stally stores your collection on your device. When private iCloud sync is
-available, CloudKit can synchronize that library, including attached photos,
+Stally stores your collection on your device. When you enable private iCloud sync with a subscription, CloudKit can synchronize that library, including attached photos,
 through your iCloud account. Apple stores and processes synced data under its
 terms and privacy policy. Stally's developer does not operate a separate
 account or content server for your library.
 
 Stally uses the synced content only to provide app functionality. It does not
 provide your collection content to advertising SDKs or a developer-operated
-analytics service. iCloud sync is independent of subscription status.
+analytics service. The app stores your sync selection and the last resolved
+subscription state on this device. Sync changes apply on the next app launch;
+changing these settings does not issue deletion requests for your collection.
 
 ## Backups and Shared Links
 
@@ -52,14 +53,10 @@ store your payment card details.
 
 ## Advertising Components
 
-The app bundle includes Google Mobile Ads and Google's User Messaging Platform
-components. Stally currently does not start production advertising or ask
-for permission to track you across other companies' apps and websites. If
+This release does not include advertising SDKs, display ads or ask for
+permission to track you across other companies' apps and websites. If
 production advertising is enabled in a future release, this policy and the
 App Store privacy disclosures will be updated before that release.
-
-Google's privacy information is available at
-[Google's Privacy & Terms](https://policies.google.com/privacy).
 
 ## Retention and Deletion
 

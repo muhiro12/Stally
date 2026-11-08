@@ -19,6 +19,11 @@ struct ItemMarksSection: View {
 
     var body: some View {
         Section {
+            QuickMarkButtons(item: item)
+            Button("Add Mark", systemImage: "plus") {
+                edit(.newMark)
+            }
+            .disabled(!item.isMarkRecordingEnabled)
             if marks.isEmpty {
                 Label {
                     VStack(alignment: .leading, spacing: theme.spacing.inline) {
@@ -33,11 +38,6 @@ struct ItemMarksSection: View {
             ForEach(marks) { mark in
                 markButton(mark)
             }
-            QuickMarkButtons(item: item)
-            Button("Add Mark", systemImage: "plus") {
-                edit(.newMark)
-            }
-            .disabled(!item.isMarkRecordingEnabled)
         } header: {
             MHSectionHeader("Marks")
         } footer: {

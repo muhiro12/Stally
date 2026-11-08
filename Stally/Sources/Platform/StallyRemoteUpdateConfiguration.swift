@@ -1,5 +1,5 @@
 import Foundation
-import MHPlatform
+import MHPlatformCore
 import StallyLibrary
 
 enum StallyRemoteUpdateConfiguration {

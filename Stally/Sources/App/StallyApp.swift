@@ -1,5 +1,6 @@
 import AppIntents
-import MHPlatform
+import MHAppRuntime
+import MHPlatformCore
 import MHUI
 import StallyLibrary
 import SwiftData
@@ -7,7 +8,7 @@ import SwiftUI
 
 @main
 struct StallyApp: App {
-    private static var usesCloudStore: Bool {
+    private static var usesSharedStore: Bool {
         #if DEBUG
         UserDefaults.standard.bool(forKey: StallyDevelopmentPreferences.useSharedStoreKey)
         #else
@@ -79,18 +80,12 @@ struct StallyApp: App {
         #endif
         logging = StallyLogging.makeBootstrap()
         let logger = StallyLogging.logger(logging: logging, category: "Persistence", source: #fileID)
-        let updateOperations = StallyRemoteUpdateConfiguration.makeOperations(isIsolated: !Self.usesCloudStore)
+        let updateOperations = StallyRemoteUpdateConfiguration.makeOperations(isIsolated: !Self.usesSharedStore)
         updates = updateOperations
-        let session = StallyLibrarySession(updates: updateOperations, observesAccount: Self.usesCloudStore)
+        let syncEnabled = Self.usesSharedStore && StallySyncPreferences.isEnabled
+        let session = StallyLibrarySession(updates: updateOperations, observesAccount: syncEnabled)
         librarySession = session
-        runtimeBootstrap = .init(
-            configuration: .init(
-                subscriptionProductIDs: [StallyMonetizationConfiguration.subscriptionProductID],
-                nativeAdUnitID: StallyMonetizationConfiguration.nativeAdUnitID(for: .production),
-                showsLicenses: true,
-                adsConsent: .init()
-            )
-        )
+        runtimeBootstrap = StallyMonetizationConfiguration.makeBootstrap()
         do {
             let modelContainer = try Self.makeContainer()
             modelContainer.mainContext.autosaveEnabled = false
@@ -104,6 +99,8 @@ struct StallyApp: App {
             startupError = error.localizedDescription
             logger.error("model_container.open_failed", metadata: StallyLogging.errorMetadata(error))
         }
+        StallySyncPreferences.observe(runtimeBootstrap.runtime)
+        runtimeBootstrap.runtime.startIfNeeded()
     }
 
     private static func makeContainer() throws -> ModelContainer {
@@ -116,6 +113,6 @@ struct StallyApp: App {
             )
         }
         #endif
-        return try StallyModelContainerFactory.persistent()
+        return try StallyModelContainerFactory.persistent(isCloudSyncEnabled: StallySyncPreferences.isEnabled)
     }
 }

@@ -1,4 +1,5 @@
 #if DEBUG
+import MHAppRuntime
 import MHUI
 import StallyLibrary
 import SwiftData
@@ -22,6 +23,7 @@ private struct LibraryPreview: View {
                 .environment(RemoteUpdateOperations())
                 .environment(librarySession)
                 .environment(librarySession.writer)
+                .environment(MHAppRuntime(runtimeOnly: .init()))
                 .mhTheme(.standard)
         case .failure(let error):
             Text(verbatim: error.localizedDescription)

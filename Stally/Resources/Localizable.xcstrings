@@ -250,6 +250,22 @@
         }
       }
     },
+    "About Stally": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About Stally"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stallyについて"
+          }
+        }
+      }
+    },
     "Add Development Samples": {
       "extractionState": "manual",
       "localizations": {
@@ -1976,6 +1992,22 @@
         }
       }
     },
+    "Filter and Sort": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filter and Sort"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "絞り込みと並べ替え"
+          }
+        }
+      }
+    },
     "Find Items": {
       "localizations": {
         "en": {
@@ -2442,6 +2474,22 @@
         }
       }
     },
+    "Licenses": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Licenses"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ライセンス"
+          }
+        }
+      }
+    },
     "Link": {
       "localizations": {
         "en": {
@@ -2711,6 +2759,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "マークはまだありません"
+          }
+        }
+      }
+    },
+    "No Matching Items": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Matching Items"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一致するItemがありません"
           }
         }
       }
@@ -3073,6 +3137,22 @@
         }
       }
     },
+    "Privacy Policy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Privacy Policy"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プライバシーポリシー"
+          }
+        }
+      }
+    },
     "Record Counts": {
       "extractionState": "manual",
       "localizations": {
@@ -3360,6 +3440,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "代表URL"
+          }
+        }
+      }
+    },
+    "Reset Filters": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset Filters"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "絞り込みをリセット"
           }
         }
       }
@@ -3685,6 +3781,22 @@
         }
       }
     },
+    "Settings": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定"
+          }
+        }
+      }
+    },
     "Share Item Link": {
       "localizations": {
         "en": {
@@ -3863,6 +3975,38 @@
         }
       }
     },
+    "Subscription": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Subscription"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サブスクリプション"
+          }
+        }
+      }
+    },
+    "Support": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Support"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サポート"
+          }
+        }
+      }
+    },
     "Survivor": {
       "localizations": {
         "en": {
@@ -3875,6 +4019,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "残すTag"
+          }
+        }
+      }
+    },
+    "Sync your Stally library across your devices with iCloud.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync your Stally library across your devices with iCloud."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloudでStallyのライブラリをお使いのデバイス間で同期します。"
           }
         }
       }
@@ -3923,6 +4083,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "同じ名前でも別のタグとして残ります。使いたいタグを選んでください。"
+          }
+        }
+      }
+    },
+    "Terms of Use": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terms of Use"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "利用規約"
           }
         }
       }
@@ -4024,6 +4200,38 @@
         }
       }
     },
+    "This session saves on this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This session saves on this device."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在はこのデバイスに保存しています。"
+          }
+        }
+      }
+    },
+    "This session uses iCloud sync.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This session uses iCloud sync."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在はiCloud同期を使用しています。"
+          }
+        }
+      }
+    },
     "This shows the open store's configuration, not iCloud sync progress.": {
       "extractionState": "manual",
       "localizations": {
@@ -4069,6 +4277,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "一緒に過ごした時間"
+          }
+        }
+      }
+    },
+    "Try another search or reset the filters for this collection.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try another search or reset the filters for this collection."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "検索内容を変えるか、このコレクションの絞り込みをリセットしてください。"
           }
         }
       }
@@ -4184,6 +4408,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "共有ストアを使う"
+          }
+        }
+      }
+    },
+    "Use iCloud": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use iCloud"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloudを使用"
           }
         }
       }
@@ -4331,6 +4571,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "マーク・期間・メモをここに表示します。"
+          }
+        }
+      }
+    },
+    "iCloud Sync": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud Sync"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud同期"
+          }
+        }
+      }
+    },
+    "iCloud sync requires a subscription. Changes take effect the next time Stally launches. Changing this setting does not delete your records.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud sync requires a subscription. Changes take effect the next time Stally launches. Changing this setting does not delete your records."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud同期にはサブスクリプションが必要です。変更はStallyの次回起動時に反映されます。この設定を変更しても記録は削除されません。"
           }
         }
       }

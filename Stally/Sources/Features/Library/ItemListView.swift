@@ -29,9 +29,9 @@ struct ItemListView: View {
     let initialScope: ItemQuery.ArchiveScope
     @Binding var selection: PersistentIdentifier?
     @Binding var searchText: String
+    @Binding var archiveScope: ItemQuery.ArchiveScope
     let addItem: () -> Void
     @State private var sortOrder = SortOrder.newest
-    @State private var archiveScope = ItemQuery.ArchiveScope.library
 
     private var visibleItems: [Item] {
         var query = ItemQuery()
@@ -53,18 +53,25 @@ struct ItemListView: View {
             }
         }
         .mhListChrome(.content)
-        .onAppear { archiveScope = initialScope }
-        .onChange(of: initialScope) { _, scope in archiveScope = scope }
         .overlay {
             if displayedItems.isEmpty {
                 if !searchText.isEmpty {
-                    ContentUnavailableView.search(text: searchText)
+                    ContentUnavailableView {
+                        Label("No Matching Items", systemImage: "magnifyingglass")
+                    } description: {
+                        Text("Try another search or reset the filters for this collection.")
+                    } actions: {
+                        Button("Reset Filters", action: resetFilters)
+                    }
                 } else {
                     ContentUnavailableView {
                         Label("No Items Here", systemImage: "square.stack")
                     } description: {
                         Text("Keep a record of something that matters to you.")
                     } actions: {
+                        if archiveScope != initialScope {
+                            Button("Reset Filters", action: resetFilters)
+                        }
                         Button("Add Item", systemImage: "plus", action: addItem)
                     }
                 }
@@ -88,7 +95,7 @@ struct ItemListView: View {
                     .keyboardShortcut("n", modifiers: .command)
             }
             ToolbarItem(placement: .primaryAction) {
-                Menu("Sort Items", systemImage: "arrow.up.arrow.down") {
+                Menu("Filter and Sort", systemImage: "line.3.horizontal.decrease") {
                     Picker("Include", selection: $archiveScope) {
                         Text("Library").tag(ItemQuery.ArchiveScope.library)
                         Text("Archive").tag(ItemQuery.ArchiveScope.archived)
@@ -105,5 +112,10 @@ struct ItemListView: View {
                 Text("\(displayedItems.count) Items").mhForegroundStyle(.secondaryText)
             }
         }
+    }
+
+    private func resetFilters() {
+        searchText = ""
+        archiveScope = initialScope
     }
 }

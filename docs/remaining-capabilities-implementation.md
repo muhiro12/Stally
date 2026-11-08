@@ -160,10 +160,10 @@ Release build passed signature verification and contains the matching app ID
 and associated domain. Installed
 HTTPS handoff on a physical device is a separate release check.
 
-## Remaining Contract Work
+## Implemented Contracts and Release Checks
 
-The November 2 implementation supersedes the October 31 gap inventory.
-The previous published baseline was `a498f55`.
+These capabilities are implemented. Device and distribution qualification
+remain separate from source completion; see the November 8 policy update below.
 
 | Contract | Implementation and resumption point |
 | --- | --- |
@@ -183,6 +183,34 @@ authentication, and previously saved Shortcuts need their own evidence.
 Record exactly which environment and entry point passed. Promoted Shortcuts,
 Widget/Watch delivery and earlier Review/Insights screens are separate product
 choices and are outside this resumption list.
+
+## November 8 Product Preparation
+
+The app now keeps list filters in the navigation owner, resets them when
+changing collections or opening/creating an Item, and preserves them when
+returning from detail. Empty search results offer a reset. Mark recording
+controls precede history. Package and standalone JSON exports have separate
+sections so the photo toggle cannot imply that JSON includes image files.
+
+Settings provides subscription purchase/restore through MHPlatform, optional
+iCloud sync, support, privacy, terms and licenses. The owner changed the initial
+product policy to no advertising with paid iCloud sync. The same subscription
+is intended to gain ad removal when advertising is introduced in a subsequent
+minor release. The [sync contract](sync-lifecycle-design.md) defines opt-in,
+last-resolved entitlement startup and next-launch application of changes.
+The app uses the same store URL in both modes; no store fallback or deletion
+was added. StoreKit observation also starts in a headless App Intent process.
+
+The unused local `SubscriptionStateOperations` snapshot and its obsolete tests
+were removed; MHPlatform owns the current entitlement result. The target now
+composes MHPlatform runtime, defaults and licenses without the ads bundle. Removing the sample ad ID while retaining the ads SDK caused a
+Preview initialization exception; removing SDK linkage resolved it. New
+preferences and their meanings are in the [identifier inventory](saved-key-and-identifier-design.md).
+
+The implementation has app-build, repository-rule, localization and English/
+Japanese Settings Preview evidence. Unit tests, purchase/restore, full UI flows,
+physical sync transitions and distribution qualification are deferred. Earlier
+test results below predate this policy and do not verify its implementation.
 
 ## November 2 verification
 

@@ -26,6 +26,13 @@ struct TransferView: View {
         NavigationStack {
             Form {
                 exportSection
+                Section {
+                    Button("Export Records as JSON", systemImage: "doc.text", action: prepareRecords)
+                } header: {
+                    Text("Export Records as JSON")
+                } footer: {
+                    Text("JSON includes all records and photo captions, but no image files.")
+                }
                 Section("Import") {
                     Button("Choose Stally File", systemImage: "square.and.arrow.down") { importing = true }
                     Text(
@@ -87,8 +94,6 @@ struct TransferView: View {
                     .mhRowSupporting()
             }
             Button("Export Library", systemImage: "square.and.arrow.up", action: prepareExport)
-            Button("Export Records as JSON", systemImage: "doc.text", action: prepareRecords)
-            Text("JSON includes all records and photo captions, but no image files.").mhRowSupporting()
             Text("Exports all Items, including archived records and unused Tags.").mhRowSupporting()
         }
     }
@@ -96,6 +101,7 @@ struct TransferView: View {
     private var importTypes: [UTType] { [StallyExportDocument.contentType, .json] }
 
     private func prepareExport() {
+        completionMessage = nil
         do {
             exportType = StallyExportDocument.contentType
             document = try .init(archive: TransferOperations.export(context: context, includingImages: includingImages))
@@ -105,6 +111,7 @@ struct TransferView: View {
     }
 
     private func prepareRecords() {
+        completionMessage = nil
         do {
             exportType = .json
             document = try .init(records: TransferOperations.exportRecords(context: context))
@@ -117,6 +124,8 @@ struct TransferView: View {
         task?.cancel()
         busy = true
         errorMessage = nil
+        completionMessage = nil
+        archive = nil
         task = Task {
             defer { busy = false }
             do {

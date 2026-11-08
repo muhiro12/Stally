@@ -1,6 +1,6 @@
 #if DEBUG
 import Foundation
-import MHPlatform
+import MHPlatformCore
 import StallyLibrary
 
 enum StallyRemoteUpdatePreview {

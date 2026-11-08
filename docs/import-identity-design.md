@@ -165,7 +165,9 @@ SchemaMigrationPlan execution. The previous recommendation for a wholly
 independent single portable revision conflated two choices: version alignment
 and implementation reuse. External usability does not itself require separate
 data-schema numbering. The owner accepted this revised policy on October 24,
-2026; the concrete wire format and its implementation remain pending.
+2026. The implemented first-release pair is `(1, "1.0.0")`; see the
+[file format](export-file-format-design.md) and
+[import implementation](remaining-capabilities-implementation.md#portable-file-and-import-boundary).
 
 | Version | Responsibility |
 | --- | --- |

@@ -53,9 +53,18 @@ and [published Intent identifiers](app-intents-publication-review.md).
   subscription cache is not purchase authority. A sync preference is not a
   claim that the system has completed synchronization.
 
-
 The [DEBUG store controls](fixture-architecture.md#developer-controls) apply
 only to local development. The shared store lives at
 `Library/Application Support/Stally.store` inside the App Group. The
 [container factory](../StallyLibrary/Sources/Persistence/StallyModelContainerFactory.swift)
 owns this location and the CloudKit container selection.
+
+## Initial shipped preferences
+
+| Raw key | Type/default | Owner and meaning | Retirement |
+| --- | --- | --- | --- |
+| `stally.sync.iCloudEnabled` | Bool / false | App Group suite; the person's requested sync selection, applied on next launch; cleared after a resolved inactive subscription | Never reuse for another meaning; an absent value leaves mirroring off |
+| `stally.subscription.isActive` | Bool / false | App Group suite; last resolved MHPlatform/StoreKit entitlement for startup, retained while status is unknown; not purchase authority | Refresh from StoreKit; never use removal to erase library data |
+
+Both preferences are device-local and excluded from exported records. The same
+store URL is used in either sync mode. See [sync lifecycle](sync-lifecycle-design.md).
