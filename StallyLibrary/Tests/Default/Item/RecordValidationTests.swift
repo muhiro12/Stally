@@ -95,8 +95,10 @@ struct RecordValidationTests {
         #expect(period.startLocalDate == "2024-05-01")
         #expect(period.endLocalDate == "2024-05-10" && !period.isOngoing)
         try PeriodOperations.correct(
-            period, input: .init(start: "2024-05-01", end: "2024-05-20", isOngoing: false),
-            today: "2026-11-08", context: context
+            period,
+            input: .init(start: "2024-05-01", end: "2024-05-20", isOngoing: false),
+            today: "2026-11-08",
+            context: context
         )
         #expect(period.uuid == identity && period.endLocalDate == "2024-05-20")
     }
