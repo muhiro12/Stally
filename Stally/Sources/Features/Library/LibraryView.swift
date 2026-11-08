@@ -109,7 +109,7 @@ struct LibraryView: View {
             searchText = ""
             if let selectedItem,
                !(destination ?? .library).includes(selectedItem)
-                    || selectedItem.isArchived != (destination == .archive) {
+                || selectedItem.isArchived != (destination == .archive) {
                 selectedItemID = nil
             }
         }

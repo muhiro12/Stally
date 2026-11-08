@@ -47,6 +47,32 @@ struct ItemDraftTests {
     }
 
     @Test
+    func photoOrderSurvivesReopenWithConcurrentPositions() throws {
+        let directory = PersistentTestDirectory.makeURL()
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let url = directory.appending(path: "photo-order.store")
+        let identity = try autoreleasepool {
+            let container = try StallyModelContainerFactory.disk(at: url)
+            let context = ModelContext(container)
+            let item = try ItemOperations.create(context: context, name: "Photos")
+            for (suffix, caption, position) in [(3, "Third", 1), (2, "Second", 0), (1, "First", 0)] {
+                let photo = ItemPhoto(
+                    item: item, imageData: nil, thumbnailData: nil, caption: caption, sortOrder: position
+                )
+                photo.uuid = try #require(UUID(uuidString: "00000000-0000-4000-8000-00000000000\(suffix)"))
+                context.insert(photo)
+            }
+            try context.save()
+            return item.uuid
+        }
+        let container = try StallyModelContainerFactory.disk(at: url)
+        let context = ModelContext(container)
+        let item = try ItemOperations.item(context: context, uuid: identity)
+        #expect(ItemOperations.orderedPhotos(for: item).map(\.caption) == ["First", "Second", "Third"])
+        #expect(ItemOperations.draft(for: item).photos.map(\.caption) == ["First", "Second", "Third"])
+    }
+
+    @Test
     func repeatedCreationMakesDistinctItemsAndAttachments() async throws {
         let container = try StallyModelContainerFactory.inMemory()
         let context = ModelContext(container)

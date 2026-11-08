@@ -67,6 +67,41 @@ struct RecordValidationTests {
     }
 
     @Test
+    func endingAnEndedPeriodPreservesItsRecordedEndAfterReopen() throws {
+        let directory = PersistentTestDirectory.makeURL()
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let url = directory.appending(path: "period.store")
+        let identity = try autoreleasepool {
+            let container = try StallyModelContainerFactory.disk(at: url)
+            let context = ModelContext(container)
+            let item = try ItemOperations.create(context: context, name: "History")
+            let period = try PeriodOperations.add(
+                to: item, input: .init(start: "2024-05-01"), today: "2026-11-08", context: context
+            )
+            try PeriodOperations.end(period, on: "2024-05-10", today: "2026-11-08", context: context)
+            for date: String? in [nil, "2024-05-20"] {
+                #expect(throws: RecordError.periodAlreadyEnded) {
+                    try PeriodOperations.end(period, on: date, today: "2026-11-08", context: context)
+                }
+                #expect(period.endLocalDate == "2024-05-10")
+                #expect(!context.hasChanges)
+            }
+            return period.uuid
+        }
+        let container = try StallyModelContainerFactory.disk(at: url)
+        let context = ModelContext(container)
+        let period = try #require(context.fetch(FetchDescriptor<ItemPeriod>()).first)
+        #expect(period.uuid == identity)
+        #expect(period.startLocalDate == "2024-05-01")
+        #expect(period.endLocalDate == "2024-05-10" && !period.isOngoing)
+        try PeriodOperations.correct(
+            period, input: .init(start: "2024-05-01", end: "2024-05-20", isOngoing: false),
+            today: "2026-11-08", context: context
+        )
+        #expect(period.uuid == identity && period.endLocalDate == "2024-05-20")
+    }
+
+    @Test
     func incomingConflictsAndOrphansAreNotRepaired() throws {
         let container = try StallyModelContainerFactory.inMemory()
         let context = ModelContext(container)
