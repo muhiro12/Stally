@@ -4,6 +4,19 @@ Stally is a pre-release iPhone and iPad app for keeping a quiet record of the
 things and places that matter to you. Record everyday choices with Marks,
 look back on time together, or keep both kinds of knowledge for the same Item.
 
+## Branches and release review
+
+Use `develop` for daily development. Keep agent review and the documented
+verification checks in the daily workflow. `main` tracks the released baseline.
+Before shipping, review `main...develop` and record the exact candidate commit.
+After publication, merge that released commit into `main`; do not include later
+work added to `develop`. Preserve commit ancestry so the next release comparison
+starts from the previous released candidate.
+
+There is no released baseline before the first release. Until then, `main` is
+only a provisional snapshot, and the first release requires review of the full
+candidate rather than only the difference from that snapshot.
+
 ## Development
 
 Start with the [first-release contracts](docs/first-release-contract-summary.md).
