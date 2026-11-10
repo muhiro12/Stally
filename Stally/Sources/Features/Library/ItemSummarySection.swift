@@ -12,9 +12,7 @@ struct ItemSummarySection: View {
     @State private var linkFailed = false
 
     private var tags: [Tag] {
-        (item.tags ?? []).sorted { first, second in
-            first.name.localizedStandardCompare(second.name) == .orderedAscending
-        }
+        TagOperations.orderedTags(for: item)
     }
 
     var body: some View {

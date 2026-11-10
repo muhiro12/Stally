@@ -9,12 +9,7 @@ struct ItemMarksSection: View {
     let edit: (RecordEditor.Selection) -> Void
 
     private var marks: [ItemMark] {
-        (item.marks ?? []).sorted { first, second in
-            if first.localDateTime == second.localDateTime {
-                return first.createdAt > second.createdAt
-            }
-            return first.localDateTime > second.localDateTime
-        }
+        MarkOperations.orderedMarks(for: item)
     }
 
     var body: some View {

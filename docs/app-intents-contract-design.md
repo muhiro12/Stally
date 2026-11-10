@@ -56,6 +56,15 @@ Similarly, a duration returned to another action needs a defined meaning and
 unit before it is published. This does not require excluding a time-reading
 intent from the architecture or settling all its details in this session.
 
+Expose record facts through entity properties and compose display text
+separately. Temporal precision, unknown values, and ongoing state must be usable
+without parsing a subtitle. The publication inventory lists the selected fields.
+
+Decide retrieval and sorting needs at the Operations/query boundary first.
+Adapters reuse that behavior. An array result alone is not a reason to invent
+sorting options; existing app behavior supplies the item-scoped collection
+orders recorded in the publication inventory.
+
 ## Native Controls and Their Limits
 
 - Use `isDiscoverable` for system discovery. Apple documents that false still

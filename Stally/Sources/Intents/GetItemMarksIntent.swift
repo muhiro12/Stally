@@ -21,7 +21,7 @@ struct GetItemMarksIntent: AppIntent {
     func perform() throws -> some IntentResult & ReturnsValue<[MarkEntity]> {
         let value = try IntentAccess.read(container: container) { context in
             let record = try ItemOperations.item(context: context, uuid: item.id)
-            return (record.marks ?? []).map(MarkEntity.init)
+            return MarkOperations.orderedMarks(for: record).map(MarkEntity.init)
         }
         return .result(value: value)
     }

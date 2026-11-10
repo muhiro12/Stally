@@ -8,8 +8,8 @@ struct ItemEntity: AppEntity {
     let id: UUID
     @Property(title: "Name")
     var name: String
-    @Property(title: "Details")
-    var details: String
+    @Property(title: "Note")
+    var note: String
 
     @Property(title: "Representative URL")
     var link: String?
@@ -20,13 +20,13 @@ struct ItemEntity: AppEntity {
     @Property(title: "Recording Enabled")
     var recordingEnabled: Bool
 
-    var displayRepresentation: DisplayRepresentation { .init(title: "\(name)", subtitle: "\(details)") }
+    var displayRepresentation: DisplayRepresentation { .init(title: "\(name)", subtitle: "\(note)") }
 
     @MainActor
     init(_ record: Item) {
         id = record.uuid
         name = record.name
-        details = record.note
+        note = record.note
         link = record.representativeURL
         archived = record.isArchived
         favorite = record.isFavorite

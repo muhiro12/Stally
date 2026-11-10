@@ -6,17 +6,19 @@ struct PhotoEntity: AppEntity {
     static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Photo")
     static let defaultQuery = PhotoEntityQuery()
     let id: UUID
-    @Property(title: "Name")
-    var name: String
-    @Property(title: "Details")
-    var details: String
+    @Property(title: "Item")
+    var item: ItemEntity?
+    @Property(title: "Caption")
+    var caption: String
 
-    var displayRepresentation: DisplayRepresentation { .init(title: "\(name)", subtitle: "\(details)") }
+    var displayRepresentation: DisplayRepresentation {
+        .init(title: "\(item?.name ?? "")", subtitle: "\(caption)")
+    }
 
     @MainActor
     init(_ record: ItemPhoto) {
         id = record.uuid
-        name = record.item?.name ?? ""
-        details = record.caption
+        item = record.item.map(ItemEntity.init)
+        caption = record.caption
     }
 }

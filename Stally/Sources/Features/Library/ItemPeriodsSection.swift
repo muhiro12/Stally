@@ -9,9 +9,7 @@ struct ItemPeriodsSection: View {
     let edit: (RecordEditor.Selection) -> Void
 
     private var periods: [ItemPeriod] {
-        (item.periods ?? []).sorted { first, second in
-            first.createdAt > second.createdAt
-        }
+        PeriodOperations.orderedPeriods(for: item)
     }
 
     private var hasOngoingPeriod: Bool {

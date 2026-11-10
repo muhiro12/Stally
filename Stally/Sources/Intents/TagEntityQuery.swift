@@ -38,7 +38,6 @@ struct TagEntityQuery: EntityStringQuery {
             guard Set(records.map(\.uuid)).count == records.count else { throw RecordError.ambiguousIdentity }
             return records.map(TagEntity.init).filter { entity in
                 string.isEmpty || entity.name.localizedStandardContains(string)
-                    || entity.details.localizedStandardContains(string)
             }
         }
     }

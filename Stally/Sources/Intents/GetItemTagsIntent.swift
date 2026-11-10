@@ -21,7 +21,7 @@ struct GetItemTagsIntent: AppIntent {
     func perform() throws -> some IntentResult & ReturnsValue<[TagEntity]> {
         let value = try IntentAccess.read(container: container) { context in
             let record = try ItemOperations.item(context: context, uuid: item.id)
-            return (record.tags ?? []).map(TagEntity.init)
+            return TagOperations.orderedTags(for: record).map(TagEntity.init)
         }
         return .result(value: value)
     }

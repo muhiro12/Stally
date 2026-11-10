@@ -6,17 +6,19 @@ struct MarkEntity: AppEntity {
     static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Mark")
     static let defaultQuery = MarkEntityQuery()
     let id: UUID
-    @Property(title: "Name")
-    var name: String
-    @Property(title: "Details")
-    var details: String
+    @Property(title: "Item")
+    var item: ItemEntity?
+    @Property(title: "Date (YYYY-MM-DD or YYYY-MM-DDTHH:mm)")
+    var localDateTime: String
 
-    var displayRepresentation: DisplayRepresentation { .init(title: "\(name)", subtitle: "\(details)") }
+    var displayRepresentation: DisplayRepresentation {
+        .init(title: "\(item?.name ?? "")", subtitle: "\(localDateTime)")
+    }
 
     @MainActor
     init(_ record: ItemMark) {
         id = record.uuid
-        name = record.item?.name ?? ""
-        details = record.localDateTime
+        item = record.item.map(ItemEntity.init)
+        localDateTime = record.localDateTime
     }
 }

@@ -8,15 +8,12 @@ struct TagEntity: AppEntity {
     let id: UUID
     @Property(title: "Name")
     var name: String
-    @Property(title: "Details")
-    var details: String
 
-    var displayRepresentation: DisplayRepresentation { .init(title: "\(name)", subtitle: "\(details)") }
+    var displayRepresentation: DisplayRepresentation { .init(title: "\(name)") }
 
     @MainActor
     init(_ record: StallyLibrary.Tag) {
         id = record.uuid
         name = record.name
-        details = ""
     }
 }

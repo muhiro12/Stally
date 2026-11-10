@@ -3,6 +3,19 @@ import SwiftData
 
 /// Occurrence writes address individual records, including several on the same day.
 public enum MarkOperations {
+    /// Returns occurrence date/minute descending, then registration time descending and UUID ascending.
+    public static func orderedMarks(for item: Item) -> [ItemMark] {
+        (item.marks ?? []).sorted { first, second in
+            if first.localDateTime != second.localDateTime {
+                return first.localDateTime > second.localDateTime
+            }
+            if first.createdAt != second.createdAt {
+                return first.createdAt > second.createdAt
+            }
+            return first.uuid.uuidString < second.uuid.uuidString
+        }
+    }
+
     /// Captures the caller's local Gregorian day or minute; no absolute timestamp is inferred.
     public static func localDateTime(at date: Date, includesTime: Bool) -> String {
         let formatter = DateFormatter()

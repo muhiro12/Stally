@@ -3,6 +3,16 @@ import SwiftData
 
 /// Partial-date history with conservative local validation, without repairing incoming conflicts.
 public enum PeriodOperations {
+    /// Returns registration time descending, without inferring chronology from partial or unknown dates.
+    public static func orderedPeriods(for item: Item) -> [ItemPeriod] {
+        (item.periods ?? []).sorted { first, second in
+            if first.createdAt != second.createdAt {
+                return first.createdAt > second.createdAt
+            }
+            return first.uuid.uuidString < second.uuid.uuidString
+        }
+    }
+
     /// Adds period knowledge without inferring missing date components.
     @discardableResult
     public static func add(to item: Item, input: PeriodInput, today: String, context: ModelContext) throws

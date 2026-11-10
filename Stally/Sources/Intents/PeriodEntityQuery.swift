@@ -33,8 +33,8 @@ struct PeriodEntityQuery: EntityStringQuery {
             let records = try context.fetch(FetchDescriptor<ItemPeriod>())
             guard Set(records.map(\.uuid)).count == records.count else { throw RecordError.ambiguousIdentity }
             return records.map(PeriodEntity.init).filter { entity in
-                string.isEmpty || entity.name.localizedStandardContains(string)
-                    || entity.details.localizedStandardContains(string)
+                string.isEmpty || (entity.item?.name.localizedStandardContains(string) ?? false)
+                    || entity.summary.localizedStandardContains(string)
             }
         }
     }

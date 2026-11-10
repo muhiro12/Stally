@@ -34,7 +34,7 @@ struct ItemEntityQuery: EntityStringQuery {
             guard Set(records.map(\.uuid)).count == records.count else { throw RecordError.ambiguousIdentity }
             return records.map(ItemEntity.init).filter { entity in
                 string.isEmpty || entity.name.localizedStandardContains(string)
-                    || entity.details.localizedStandardContains(string)
+                    || entity.note.localizedStandardContains(string)
             }
         }
     }

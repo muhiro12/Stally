@@ -1,7 +1,19 @@
+import Foundation
 import SwiftData
 
 /// Explicit shared identities and assignments; names are never merge keys.
 public enum TagOperations {
+    /// Returns localized name order, retaining distinct same-name Tags in UUID order.
+    public static func orderedTags(for item: Item) -> [Tag] {
+        (item.tags ?? []).sorted { first, second in
+            let comparison = first.name.localizedStandardCompare(second.name)
+            if comparison != .orderedSame {
+                return comparison == .orderedAscending
+            }
+            return first.uuid.uuidString < second.uuid.uuidString
+        }
+    }
+
     /// Creates a distinct Tag, retaining exact confirmed spelling.
     @discardableResult
     public static func create(name: String, context: ModelContext) throws -> Tag {

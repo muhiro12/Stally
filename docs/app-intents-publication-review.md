@@ -2,9 +2,12 @@
 
 ## Release decision
 
-The first-publication inventory incorporates the four corrections identified in
-the November 2 review. Saved workflow replay and locked-device authentication
-remain release checks.
+The first-publication inventory incorporates the November 2 input corrections
+and the November 10 separation of entity data from presentation. Item-scoped
+collection reads share the app's Operations ordering. Saved workflow replay
+and locked-device authentication remain release checks. Text normalization and
+import support lifetime remain separate open decisions; this review does not
+change their current behavior.
 
 | Action | First-release behavior |
 | --- | --- |
@@ -15,9 +18,9 @@ remain release checks.
 
 ## Inventory
 
-The November 2 iOS Release build extracted the corrected input definitions in
-`Metadata.appintents/extract.actionsdata` (SHA-256
-`5703bc41459328a9cb9d012f19a202af3877d9a98780ef995240c9da407e0610`).
+The November 10 iOS Simulator Debug build extracted the entity properties below
+in `Metadata.appintents/extract.actionsdata`. This supersedes the November 2
+property inventory; it is not distribution or saved-workflow runtime evidence.
 All 38 Stally actions are discoverable and explicitly require authentication.
 Review Import runs in the foreground. The other 37 declare background execution,
 including the two Open actions that return an instruction to open a URL.
@@ -74,9 +77,8 @@ value. An em dash in the result column means no returned value.
 
 - Entity identifiers are the app-owned record UUID. A missing or ambiguous
   identity cannot be replaced by a different record with the same display name.
-  The published properties of ItemEntity are name, details (the note), link,
-  archived, favorite and recordingEnabled. MarkEntity, PeriodEntity, TagEntity
-  and PhotoEntity expose name and details. Entity queries resolve requested
+  Entity properties expose data separately from display text, as listed below.
+  Entity queries resolve requested
   IDs in caller order, omitting missing records. Changes to labels need not
   change these identifiers.
 - ItemArchiveScope has three serialized values, `library`, `archived` and
@@ -109,6 +111,54 @@ value. An em dash in the result column means no returned value.
   result types and omission semantics when changing implementation. If a
   future operation needs incompatible meaning, provide a distinct action or
   a verified compatibility path for saved workflows.
+
+## Entity properties
+
+Only the following properties are exposed through `@Property`. Titles and
+subtitles remain presentation; a workflow does not need to parse punctuation,
+unknown-date placeholders, or an ongoing indicator to retrieve recorded facts.
+
+| Entity | Properties |
+| --- | --- |
+| `ItemEntity` | `name: String`, `note: String`, `link: String?`, `archived: Bool`, `favorite: Bool`, `recordingEnabled: Bool` |
+| `MarkEntity` | `item: ItemEntity?`, `localDateTime: String` |
+| `PeriodEntity` | `item: ItemEntity?`, `startLocalDate: String?`, `endLocalDate: String?`, `isOngoing: Bool` |
+| `PhotoEntity` | `item: ItemEntity?`, `caption: String` |
+| `TagEntity` | `name: String` |
+
+Child entities carry their owning Item identity, rather than only its name.
+The relationship is optional because an incoming synchronized graph can be
+incomplete; absence must not fabricate another Item. These are read snapshots,
+not a guarantee of live updates after a later mutation. Record UUIDs remain
+the target for every action.
+
+Mark values retain `YYYY-MM-DD` or `YYYY-MM-DDTHH:mm`. Period boundaries retain
+unknown, year, month, or day precision; they are not converted into absolute
+timestamps or filled with inferred components. `isOngoing` remains independent
+of an unknown end date. Tag has no synthetic empty details property.
+
+## Item-scoped collection ordering
+
+The app already presents these collections in the following orders. Shared
+Operations own that behavior, and Get Item actions return it unchanged.
+
+| Collection | Operation | Order |
+| --- | --- | --- |
+| Marks | `MarkOperations.orderedMarks(for:)` | Civil date/minute text descending, registration time descending, UUID ascending |
+| Periods | `PeriodOperations.orderedPeriods(for:)` | Registration time descending, UUID ascending |
+| Photos | `ItemOperations.orderedPhotos(for:)` | Saved position ascending, UUID ascending |
+| Tags | `TagOperations.orderedTags(for:)` | Localized standard name order, UUID ascending for equivalent names |
+
+At equal civil dates, minute-specific Marks precede day-only Marks by canonical
+text order; this does not assign a time to a day-only Mark. Period ordering does
+not infer chronological boundaries from partial or unknown dates. Tag order is
+locale-sensitive and is not promised to be identical across locales. Equal
+names remain separate identities. UUID comparison uses its canonical string.
+
+Underlying relationship-array order has no meaning and is not mutated by these
+reads. No new sorting parameter is introduced solely for an Intent. Picker
+suggestions and identifier resolution have different purposes; resolving saved
+identifiers retains caller order rather than applying collection ordering.
 
 See the [implementation and release checks](remaining-capabilities-implementation.md)
 and [product behavior](product-behavior-design.md) for the source of these rules.

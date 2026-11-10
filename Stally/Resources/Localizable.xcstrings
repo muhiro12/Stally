@@ -1509,22 +1509,6 @@
         }
       }
     },
-    "Details": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Details"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "詳細"
-          }
-        }
-      }
-    },
     "Developer Tools": {
       "extractionState": "manual",
       "localizations": {

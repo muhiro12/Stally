@@ -21,7 +21,7 @@ struct GetItemPeriodsIntent: AppIntent {
     func perform() throws -> some IntentResult & ReturnsValue<[PeriodEntity]> {
         let value = try IntentAccess.read(container: container) { context in
             let record = try ItemOperations.item(context: context, uuid: item.id)
-            return (record.periods ?? []).map(PeriodEntity.init)
+            return PeriodOperations.orderedPeriods(for: record).map(PeriodEntity.init)
         }
         return .result(value: value)
     }
