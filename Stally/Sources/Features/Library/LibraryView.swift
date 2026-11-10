@@ -3,6 +3,11 @@ import SwiftData
 import SwiftUI
 
 struct LibraryView: View {
+    private struct TransferPresentation: Identifiable {
+        let id = UUID()
+        let url: URL?
+    }
+
     @Environment(StallyLibrarySession.self)
     private var librarySession
     @Query(sort: \Item.createdAt, order: .reverse)
@@ -17,8 +22,7 @@ struct LibraryView: View {
     @State private var archiveScope = ItemQuery.ArchiveScope.library
     @State private var addingItem = false
     @State private var managingTags = false
-    @State private var transferring = false
-    @State private var importURL: URL?
+    @State private var transferPresentation: TransferPresentation?
     @State private var routeError: String?
 
     private var selectedItem: Item? {
@@ -49,8 +53,7 @@ struct LibraryView: View {
                 selection: $destination,
                 manageTags: { managingTags = true },
                 transfer: {
-                    importURL = nil
-                    transferring = true
+                    transferPresentation = .init(url: nil)
                 }
             )
         } content: {
@@ -89,8 +92,8 @@ struct LibraryView: View {
         .sheet(item: $session.importReview) { review in
             ImportReviewView(review: review) { _ in librarySession.importReview = nil }
         }
-        .sheet(isPresented: $transferring) {
-            TransferView(initialURL: importURL)
+        .sheet(item: $transferPresentation) { presentation in
+            TransferView(initialURL: presentation.url)
         }
         .sheet(isPresented: $addingItem) {
             ItemEditor(item: nil) { item in
@@ -146,8 +149,7 @@ struct LibraryView: View {
 
     private func openLink(_ url: URL) {
         if url.isFileURL {
-            importURL = url
-            transferring = true
+            transferPresentation = .init(url: url)
             return
         }
         if case .supported(.destination(let target)) = StallyLinkOperations.parse(url) {
@@ -163,8 +165,7 @@ struct LibraryView: View {
                 searchText = ""
                 compactColumn = .content
             case .importExport:
-                importURL = nil
-                transferring = true
+                transferPresentation = .init(url: nil)
             case .createItem:
                 addingItem = true
             }
