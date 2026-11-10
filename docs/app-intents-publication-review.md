@@ -9,6 +9,19 @@ and locked-device authentication remain release checks. Optional stored text
 uses nil for both absent and empty input. Import support lifetime remains a
 separate open decision.
 
+### Remaining identity decision
+
+Explicit `persistentIdentifier` declarations for action, entity and enum types
+were raised as a candidate for separating published identity from Swift naming.
+This proposal has not been adopted or implemented. Before first publication,
+decide whether to introduce explicit identifiers or deliberately retain the
+current type-based identities. Review the extracted metadata and saved-workflow
+behavior for the selected policy; do not assume that declaring an identifier
+also preserves renamed parameters or entity properties. This remains separate
+from the completed entity-property, ordering and optional-text changes below.
+
+### Selected behavior
+
 | Action | First-release behavior |
 | --- | --- |
 | Correct Period | Omitting a boundary preserves it. An explicit empty value or a clear switch makes that boundary unknown. Continuation defaults to unchanged. The resulting combination must be valid before saving. Correcting only the start of an ended 2018–2020 period preserves 2020 and its ended state. |
