@@ -90,7 +90,7 @@ struct ItemListView: View {
         )
         .searchPresentationToolbarBehavior(.avoidHidingContent)
         .toolbar {
-            ToolbarItem(placement: .primaryAction) {
+            ToolbarItem(placement: LibraryLayout.primaryActionPlacement) {
                 Button("Add Item", systemImage: "plus", action: addItem)
                     .keyboardShortcut("n", modifiers: .command)
             }
