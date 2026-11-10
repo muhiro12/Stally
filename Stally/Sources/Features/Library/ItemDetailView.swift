@@ -13,6 +13,7 @@ struct ItemDetailView: View {
     @State private var editingItem = false
     @State private var choosingTags = false
     @State private var editingRecord: RecordEditor.Selection?
+    @State private var selectedPhoto: ItemDraft.Photo?
     @State private var confirmingDelete = false
     @State private var errorMessage: String?
     @State private var saving = false
@@ -23,7 +24,9 @@ struct ItemDetailView: View {
                 ItemSummarySection(item: item) {
                     choosingTags = true
                 }
-                ItemPhotosSection(item: item)
+                ItemPhotosSection(item: item) { photo in
+                    selectedPhoto = photo
+                }
                 PeriodReadingsSection(item: item)
                 ItemMarksSection(item: item) { selection in
                     editingRecord = selection
@@ -50,6 +53,9 @@ struct ItemDetailView: View {
         }
         .sheet(item: $editingRecord) { selection in
             RecordEditor(item: item, selection: selection)
+        }
+        .sheet(item: $selectedPhoto) { photo in
+            PhotoDetailView(photo: photo)
         }
         .confirmationDialog(
             "Delete this Item and its Marks, periods, and photos?",

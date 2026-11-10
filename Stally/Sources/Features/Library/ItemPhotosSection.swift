@@ -4,7 +4,7 @@ import SwiftUI
 
 struct ItemPhotosSection: View {
     let item: Item
-    @State private var selected: ItemDraft.Photo?
+    let onSelect: (ItemDraft.Photo) -> Void
 
     private var photos: [ItemDraft.Photo] {
         ItemOperations.draft(for: item).photos
@@ -15,7 +15,7 @@ struct ItemPhotosSection: View {
             Section {
                 ForEach(photos) { photo in
                     Button {
-                        selected = photo
+                        onSelect(photo)
                     } label: {
                         VStack(alignment: .leading) {
                             PhotoPreview(data: photo.thumbnailData ?? photo.imageData)
@@ -30,9 +30,6 @@ struct ItemPhotosSection: View {
                 }
             } header: {
                 MHSectionHeader("Photos")
-            }
-            .sheet(item: $selected) { photo in
-                PhotoDetailView(photo: photo)
             }
         }
     }
