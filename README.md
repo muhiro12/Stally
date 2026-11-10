@@ -22,6 +22,8 @@ candidate rather than only the difference from that snapshot.
 Start with the [first-release contracts](docs/first-release-contract-summary.md).
 Use the [product behavior](docs/product-behavior-design.md) to derive Operations
 and the app and system interfaces that call them.
+Apply the [data portability policy](docs/data-portability-policy.md) when deciding
+export/import scope, user explanations, or historical compatibility costs.
 
 | Work | Entry point |
 | --- | --- |

@@ -90,6 +90,11 @@ retroactively delete/rewrite existing photos or misrepresent lost original data.
 
 ## Accepted Export and Import Contract
 
+Export primarily supports external use; import supplements it for timely device
+transfer. The [data portability policy](data-portability-policy.md) defines
+support boundaries, user explanations, and the separate DB maintenance stance.
+There is no per-file expiry or promise to retain every historical reader forever.
+
 Use one `.stally` document package, identified by
 `com.muhiro12.Stally.data`, with JSON records and optional separate image files.
 Records-only and records-with-images use that same physical container. Auxiliary
@@ -115,7 +120,8 @@ The export's `schemaVersion` aligns with the actual SwiftData schema version;
 `formatVersion` versions its container/envelope/encoding separately. App release
 numbers are not decoder selectors. Store migration and historical import share
 preservation semantics, without requiring the same execution path or code.
-Support published formats according to an explicit compatibility policy. The first pair is `(1, "1.0.0")`. Each package contains `manifest.json`
+Support the declared published pairs under the data portability policy. The
+first pair is `(1, "1.0.0")`. Each package contains `manifest.json`
 and, when it carries image bytes, `assets/<lowercase-photo-uuid>.<extension>`.
 
 ## Accepted Platform and Interface Direction

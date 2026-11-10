@@ -33,7 +33,7 @@ merges retained evidence and reevaluates timed requirements at each check.
 Stally explicitly uses
 `allowWhenUnavailable` so ordinary local records remain usable offline without
 adding networking to every edit. A confirmed required update always blocks.
-Read-only queries and backup export do not require mutation permission.
+Read-only queries and data export do not require mutation permission.
 
 The required-update screen covers navigation and write-capable sheets while
 preserving their existing view state and unsaved input. Its actions open the

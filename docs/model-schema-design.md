@@ -4,6 +4,10 @@ The implemented schema is `StallySchema` 1.0.0. The [model sources](../StallyLib
 define stored fields and relationships. The [Mark comparison](mark-temporal-schema-comparison.md)
 and [period lifecycle](period-schema-validation.md) explain the chosen time representations.
 
+Use the [internal database maintenance stance](data-portability-policy.md#internal-database-maintenance)
+when weighing historical migration costs. It defines a design perspective,
+not a scheduled retirement or an automatic cutoff for existing stores.
+
 ## Item context
 
 The owner accepted one optional representative URL per Item and reaffirmed

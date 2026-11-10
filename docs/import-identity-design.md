@@ -159,6 +159,10 @@ This is not a migration-free promise or an implemented feature.
 
 ## Public File Evolution and Older Exports
 
+The [data portability policy](data-portability-policy.md) defines the purpose
+and lifetime of import support. Recent-file transfer across app updates matters;
+indefinite support for every historical writer is not the product promise.
+
 The accepted policy aligns the file's data schemaVersion with the
 SwiftData version that wrote it, while keeping file decoding independent of
 SchemaMigrationPlan execution. The previous recommendation for a wholly
@@ -201,11 +205,12 @@ The two file fields distinguish different changes:
 - A change to stored data meaning and file representation may change both.
   Never alter a published version pair's interpretation in place.
 
-Read support is defined for actually published (formatVersion, schemaVersion)
-pairs, not every possible Cartesian combination. Every exported model version
-must have an explicit file reader and coverage of the schema transitions to the
-current import candidate. This detects a missing file adapter when store schemas
-evolve; it does not promise support for schemas that never exported a file.
+Read support is defined for an explicit set of actually published
+(formatVersion, schemaVersion) pairs, not every possible Cartesian combination.
+Each supported pair must have an explicit file reader and coverage of its
+conversion to the current import candidate. Register each new writer's pair;
+retirement of an older pair requires a separate compatibility decision under
+the data portability policy. File age alone does not remove support.
 The first supported pair is `(1, "1.0.0")`. See the [file format](export-file-format-design.md).
 
 ### Old Missing Fields Are Not New Empty Values
@@ -272,11 +277,15 @@ are app-specific history, not precedent to break Stally's future public files.
 
 Retain synthetic fixtures produced by each actual public writer and do not
 regenerate old fixtures with the newest encoder. Before a new release, verify
-all published format/schema pairs against the new app, not only the newest
+all supported published format/schema pairs against the new app, not only the newest
 file version. Include UUID continuity, explicit/absent values, old files applied to
 already-edited current records, repeated import, relationships, media omission,
 and unsupported-version rejection without mutation. Keep actual historical
 store migration tests separate; passing one path does not prove the other.
+
+For any proposed reader retirement, review the intended transfer window and
+old-writer behavior, document the support change, and verify rejection before
+mutation. A new app release alone is not a retirement decision.
 
 A small Foundation-only experiment compared illustrative F1/F2 payloads, including
 a hypothetical newly introduced nullable rating. Fifteen assertions passed on

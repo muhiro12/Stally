@@ -4,6 +4,8 @@ The first-release file format pairs envelope version 1 with `StallySchema`
 1.0.0. The [Operations record](remaining-capabilities-implementation.md#portable-file-and-import-boundary)
 describes the implemented limits and the [import contract](import-identity-design.md)
 explains UUID matching and preservation.
+The [data portability policy](data-portability-policy.md) defines external use
+as the primary purpose and timely re-import as a supplementary capability.
 
 ## One Native Package, Optional Photos
 
@@ -13,7 +15,7 @@ ordinary export choices use the same physical container and document type:
 | Choice | Delivery | Intended use |
 | --- | --- | --- |
 | Records | `Stally-Export-<timestamp>.stally` document package | Contains manifest.json alone, including photo captions and identities but not image bytes |
-| Records and photos | `Stally-Export-<timestamp>.stally` document package | Carry records and available authoritative attachment images together, including for recovery |
+| Records and photos | `Stally-Export-<timestamp>.stally` document package | Carry records and available authoritative attachment images together for external use or device transfer |
 
 Both use the same JSON schema and UUID-based import pipeline. The difference is
 the image availability declaration. Neither is a database copy, deletion log,
@@ -112,7 +114,8 @@ provide its version directly; do not maintain an independent export constant.
 
 Only registered format/schema pairs are readable. Reject future, unsupported,
 or malformed versions before changes. Preserve historical readers and semantic
-adapters after public release, as specified by the import identity policy.
+adapters for the supported pairs under the data portability policy and import
+identity contract; support does not depend solely on the file's age.
 Do not infer a file version from its filename or parse it as today's DTO merely
 because its keys look familiar.
 
