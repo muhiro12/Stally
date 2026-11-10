@@ -22,6 +22,11 @@ The other destination paths are `library`, `archive`, `import-export` and
 [link and deployment contract](remaining-capabilities-implementation.md#links-and-external-deployment)
 and [published Intent identifiers](app-intents-publication-review.md).
 
+App Intents types initially use framework-provided identifiers. Preserve the
+published identifier explicitly when renaming a shipped action, entity or enum
+type, and verify extracted metadata and saved-workflow replay. See the
+[type identity policy](app-intents-publication-review.md#type-identity-policy).
+
 ## Preference ownership
 
 - Use App Group-first storage from the first release. Put the shared SwiftData

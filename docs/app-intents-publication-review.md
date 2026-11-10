@@ -9,16 +9,28 @@ and locked-device authentication remain release checks. Optional stored text
 uses nil for both absent and empty input. Import support lifetime remains a
 separate open decision.
 
-### Remaining identity decision
+### Type identity policy
 
-Explicit `persistentIdentifier` declarations for action, entity and enum types
-were raised as a candidate for separating published identity from Swift naming.
-This proposal has not been adopted or implemented. Before first publication,
-decide whether to introduce explicit identifiers or deliberately retain the
-current type-based identities. Review the extracted metadata and saved-workflow
-behavior for the selected policy; do not assume that declaring an identifier
-also preserves renamed parameters or entity properties. This remains separate
-from the completed entity-property, ordering and optional-text changes below.
+Use the framework's default `persistentIdentifier` for new action, entity and
+enum types. Do not add explicit declarations solely to repeat their initial
+Swift names. Before first publication, confirm and retain the identifiers
+extracted from the release candidate; the inventory below records the current
+prerelease values, not evidence of a shipped baseline.
+
+When renaming a published type, explicitly declare its previously published
+identifier as a fixed string on the renamed type. For example, renaming
+`CreateItemIntent` to `AddItemIntent` would retain
+`static let persistentIdentifier = "CreateItemIntent"`. Use the recorded
+identifier rather than guessing it from the old Swift name, and do not derive
+the fixed value from the new type name.
+
+Compare extracted metadata against the published inventory and verify replay
+of workflows saved with the preceding version when making such a change.
+Preserving type identity does not preserve renamed parameters or entity
+properties, changed enum raw values, record UUIDs, or incompatible behavior;
+review those contracts separately. The identity policy is decided; release
+metadata qualification and saved-workflow runtime checks remain verification
+work.
 
 ### Selected behavior
 
