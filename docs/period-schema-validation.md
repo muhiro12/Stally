@@ -66,7 +66,8 @@ not names prescribed by Apple.
 ## States and Precision
 
 Both boundaries independently support nil, `YYYY`, `YYYY-MM`, or `YYYY-MM-DD`.
-The calendar is Gregorian. Nil means unknown; an empty string is invalid.
+The calendar is Gregorian. Nil means unknown. Empty input is normalized to nil before validation and
+persistence; an empty string is never a stored date.
 Initial period boundaries do not include times or zones. Precision is encoded
 by the canonical spelling and does not require a second stored attribute.
 

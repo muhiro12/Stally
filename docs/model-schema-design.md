@@ -22,6 +22,13 @@ before insertion or mutation and own persistence. Stored relationships remain
 optional to accommodate the native synchronization model. Requiring an Item
 in a child initializer does not make its stored relationship nonoptional.
 
+Optional text has one absence representation: nil. `TextInput` normalizes empty
+input before storage; note and caption now have optional nil defaults in the
+unreleased 1.0.0 baseline. Nonempty free text is preserved exactly. Required
+names and Mark dates retain nonoptional storage with framework-compatible
+defaults, but Operations reject empty values before saving. Their schema
+defaults are not permission to create an unnamed Item, Tag, or undated Mark.
+
 ```swift
 import Foundation
 import SwiftData
@@ -30,7 +37,7 @@ import SwiftData
 final class Item {
     var uuid: UUID = UUID()
     var name: String = ""
-    var note: String = ""
+    var note: String? = nil
     var representativeURL: String?
     var createdAt: Date = Date()
 
@@ -50,9 +57,9 @@ final class Item {
     @Relationship(deleteRule: .nullify, inverse: \Tag.items)
     var tags: [Tag]? = []
 
-    init(name: String, note: String = "") {
+    init(name: String, note: String? = nil) {
         self.name = name
-        self.note = note
+        self.note = TextInput.optional(note)
     }
 }
 
@@ -85,8 +92,8 @@ final class ItemPeriod {
         isOngoing: Bool = true
     ) {
         self.item = item
-        self.startLocalDate = startLocalDate
-        self.endLocalDate = endLocalDate
+        self.startLocalDate = TextInput.optional(startLocalDate)
+        self.endLocalDate = TextInput.optional(endLocalDate)
         self.isOngoing = isOngoing
     }
 }
@@ -99,7 +106,7 @@ final class ItemPhoto {
     var imageData: Data?
 
     var thumbnailData: Data?
-    var caption: String = ""
+    var caption: String? = nil
     var sortOrder: Int = 0
     var createdAt: Date = Date()
     var item: Item?
@@ -108,13 +115,13 @@ final class ItemPhoto {
         item: Item,
         imageData: Data,
         thumbnailData: Data? = nil,
-        caption: String = "",
+        caption: String? = nil,
         sortOrder: Int = 0
     ) {
         self.item = item
         self.imageData = imageData
         self.thumbnailData = thumbnailData
-        self.caption = caption
+        self.caption = TextInput.optional(caption)
         self.sortOrder = sortOrder
     }
 }

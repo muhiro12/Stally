@@ -34,7 +34,7 @@ struct PhotoEntityQuery: EntityStringQuery {
             guard Set(records.map(\.uuid)).count == records.count else { throw RecordError.ambiguousIdentity }
             return records.map(PhotoEntity.init).filter { entity in
                 string.isEmpty || (entity.item?.name.localizedStandardContains(string) ?? false)
-                    || entity.caption.localizedStandardContains(string)
+                    || (entity.caption?.localizedStandardContains(string) ?? false)
             }
         }
     }

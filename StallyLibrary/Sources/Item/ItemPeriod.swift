@@ -25,8 +25,8 @@ extension StallySchema {
 
         init(item: Item, startLocalDate: String?, endLocalDate: String?, isOngoing: Bool) {
             self.item = item
-            self.startLocalDate = startLocalDate
-            self.endLocalDate = endLocalDate
+            self.startLocalDate = TextInput.optional(startLocalDate)
+            self.endLocalDate = TextInput.optional(endLocalDate)
             self.isOngoing = isOngoing
         }
     }

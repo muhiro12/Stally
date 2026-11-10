@@ -35,7 +35,7 @@ struct SaveFailureTests {
             #expect(throws: (any Error).self) {
                 try ItemOperations.update(item, name: "Rejected", note: "Rejected", context: context)
             }
-            #expect(item.name == "Original" && item.note.isEmpty)
+            #expect(item.name == "Original" && item.note == nil)
             #expect(!context.hasChanges)
         }
         let reopened = try StallyModelContainerFactory.disk(at: url)

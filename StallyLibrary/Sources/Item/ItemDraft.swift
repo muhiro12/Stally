@@ -1,6 +1,7 @@
 import Foundation
 
-/// Unsaved editing values. Discarding a draft never changes the stored graph.
+/// Unsaved editing values. Empty form text becomes nil only at the save boundary.
+/// Discarding a draft never changes the stored graph.
 public struct ItemDraft: Sendable {
     /// A distinct new Tag, even when another Tag has the same name.
     public struct NewTag: Identifiable, Sendable {
@@ -20,9 +21,9 @@ public struct ItemDraft: Sendable {
         public let thumbnailData: Data?
         let isNew: Bool
 
-        public init(prepared: PreparedPhoto, caption: String = "") {
+        public init(prepared: PreparedPhoto, caption: String? = nil) {
             id = UUID()
-            self.caption = caption
+            self.caption = caption ?? ""
             imageData = prepared.imageData
             thumbnailData = prepared.thumbnailData
             isNew = true
@@ -30,7 +31,7 @@ public struct ItemDraft: Sendable {
 
         init(photo: ItemPhoto) {
             id = photo.uuid
-            caption = photo.caption
+            caption = photo.caption ?? ""
             imageData = photo.imageData
             thumbnailData = photo.thumbnailData
             isNew = false
@@ -55,9 +56,9 @@ public struct ItemDraft: Sendable {
 
     let original: Original?
 
-    public init(name: String = "", note: String = "") {
+    public init(name: String = "", note: String? = nil) {
         self.name = name
-        self.note = note
+        self.note = note ?? ""
         representativeURL = ""
         tagIDs = []
         original = nil
@@ -65,7 +66,7 @@ public struct ItemDraft: Sendable {
 
     init(item: Item) {
         name = item.name
-        note = item.note
+        note = item.note ?? ""
         representativeURL = item.representativeURL ?? ""
         tagIDs = Set((item.tags ?? []).map(\.uuid))
         photos = ItemOperations.orderedPhotos(for: item).map(Photo.init)

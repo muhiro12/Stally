@@ -6,6 +6,20 @@ import Testing
 
 struct CloudSchemaRequirementsTests {
     @Test
+    func optionalTextHasNoEmptyStringSchemaDefault() throws {
+        let model = try #require(NSManagedObjectModel.makeManagedObjectModel(for: StallySchema.models))
+        let fields = ["Item": ["note", "representativeURL"], "ItemPhoto": ["caption"],
+                      "ItemPeriod": ["startLocalDate", "endLocalDate"]]
+        for (name, properties) in fields {
+            let entity = try #require(model.entities.first { $0.name == name })
+            for property in properties {
+                let attribute = try #require(entity.attributesByName[property])
+                #expect(attribute.isOptional && attribute.defaultValue == nil)
+            }
+        }
+    }
+
+    @Test
     func generatedSchemaHasCloudCompatibleDefaultsAndRelationships() throws {
         let model = try #require(NSManagedObjectModel.makeManagedObjectModel(for: StallySchema.models))
         for entity in model.entities {

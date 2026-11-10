@@ -15,7 +15,7 @@ extension StallySchema {
         /// The exact user-confirmed name; equality does not establish identity.
         public internal(set) var name: String = ""
         /// User-authored context.
-        public internal(set) var note: String = ""
+        public internal(set) var note: String?
         /// One user-selected external destination; absence does not infer a link from the note.
         public internal(set) var representativeURL: String?
         /// Registration time, never an occurrence date or conflict ordering signal.
@@ -40,9 +40,9 @@ extension StallySchema {
         @Relationship(deleteRule: .nullify, inverse: \Tag.items)
         public internal(set) var tags: [Tag]? = []  // swiftlint:disable:this discouraged_optional_collection
 
-        init(name: String, note: String) {
+        init(name: String, note: String?) {
             self.name = name
-            self.note = note
+            self.note = TextInput.optional(note)
         }
     }
 }

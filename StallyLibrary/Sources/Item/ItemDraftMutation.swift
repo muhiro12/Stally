@@ -36,7 +36,7 @@ enum ItemDraftMutation {
             item.name = draft.name
         }
         if draft.original?.note != draft.note {
-            item.note = draft.note
+            item.note = TextInput.optional(draft.note)
         }
         if draft.original?.representativeURL != draft.representativeURL {
             item.representativeURL = link
@@ -123,7 +123,7 @@ enum ItemDraftMutation {
                 context.insert(photo)
             } else if let photo = current.first(where: { $0.uuid == input.id }) {
                 if original.first(where: { $0.id == input.id })?.caption != input.caption {
-                    photo.caption = input.caption
+                    photo.caption = TextInput.optional(input.caption)
                 }
                 if orderChanged {
                     photo.sortOrder = index

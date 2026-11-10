@@ -9,10 +9,10 @@ struct PhotoEntity: AppEntity {
     @Property(title: "Item")
     var item: ItemEntity?
     @Property(title: "Caption")
-    var caption: String
+    var caption: String?
 
     var displayRepresentation: DisplayRepresentation {
-        .init(title: "\(item?.name ?? "")", subtitle: "\(caption)")
+        .init(title: "\(item?.name ?? "")", subtitle: "\(caption ?? "")")
     }
 
     @MainActor

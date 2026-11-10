@@ -39,6 +39,7 @@ enum TransferCodec {
             try TransferTimestamp.date(decoder.singleValueContainer().decode(String.self))
         }
         var manifest = try decoder.decode(TransferManifest.self, from: data)
+        manifest.normalizeText()
         try TransferValidation.validate(manifest)
         for index in manifest.items.indices {
             manifest.items[index].tagUUIDs.sort { $0.uuidString < $1.uuidString }
@@ -47,6 +48,8 @@ enum TransferCodec {
     }
 
     static func encode(_ manifest: TransferManifest) throws -> Data {
+        var manifest = manifest
+        manifest.normalizeText()
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .custom { date, encoder in
             var container = encoder.singleValueContainer()
@@ -55,7 +58,12 @@ enum TransferCodec {
         guard var object = try JSONSerialization.jsonObject(with: encoder.encode(manifest)) as? [String: Any] else {
             throw TransferError.invalidFile
         }
-        for (key, nullable) in ["items": ["representativeURL"], "itemPeriods": ["startLocalDate", "endLocalDate"]] {
+        let nullableFields = [
+            "items": ["note", "representativeURL"],
+            "itemPhotos": ["caption"],
+            "itemPeriods": ["startLocalDate", "endLocalDate"]
+        ]
+        for (key, nullable) in nullableFields {
             guard var rows = object[key] as? [[String: Any]] else { throw TransferError.invalidFile }
             for index in rows.indices {
                 for field in nullable where rows[index][field] == nil { rows[index][field] = NSNull() }

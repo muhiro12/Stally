@@ -36,8 +36,8 @@ struct AddPeriodIntent: AppIntent {
                 try PeriodOperations.add(
                     to: record,
                     input: .init(
-                        start: IntentDateInput.optional(start),
-                        end: IntentDateInput.optional(end),
+                        start: start,
+                        end: end,
                         isOngoing: ongoing
                     ),
                     today: MarkOperations.localDateTime(at: .now, includesTime: false),

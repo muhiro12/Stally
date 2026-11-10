@@ -25,7 +25,7 @@ public enum TransferOperations {
         }
         let photos = try context.fetch(FetchDescriptor<ItemPhoto>()).sorted { $0.uuid.uuidString < $1.uuid.uuidString }
         let (photoRows, media) = try photoRows(photos, includingImages: includingImages)
-        let manifest = try TransferManifest(
+        var manifest = try TransferManifest(
             format: StallyDataContract.fileTypeIdentifier,
             formatVersion: StallyDataContract.formatVersion,
             schemaVersion: StallyDataContract.schemaVersion,
@@ -48,6 +48,7 @@ public enum TransferOperations {
             itemPhotos: photoRows,
             tags: tags.map { .init(uuid: $0.uuid, name: $0.name) }
         )
+        manifest.normalizeText()
         try TransferValidation.validate(manifest)
         // Canonical timestamps make a replay equal without mutating local submillisecond Dates.
         return try .init(manifest: TransferCodec.decode(TransferCodec.encode(manifest)), media: media)

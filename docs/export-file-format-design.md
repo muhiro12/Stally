@@ -119,8 +119,9 @@ because its keys look familiar.
 ## Record Fields and Relationships
 
 The October 28 [representative-link decision](product-behavior-design.md#accepted-context-and-favorite-decisions)
-is included in the first public schema and codec. `representativeURL` is a
-required nullable key: null explicitly clears the selected record's link.
+is included in the first public schema and codec. `note`, `representativeURL`,
+`caption`, `startLocalDate` and `endLocalDate` are required nullable keys:
+null explicitly clears that selected field.
 There are no supported development-file readers in this prerelease baseline.
 
 | Record | Required fields |
@@ -137,7 +138,7 @@ Item tag membership is an explicit complete set, encoded as an array without
 duplicates. Every referenced Tag and parent Item must exist in this export.
 This makes both deliveries self-contained for record interpretation.
 
-User text is retained exactly, including whitespace, newlines, and spelling.
+Nonempty user text is retained exactly, including whitespace, newlines, and spelling.
 Apply the existing domain validation rules, not new filename or tag-normalizing
 rules. Export booleans as JSON booleans and sortOrder as a nonnegative integer.
 Records sort by UUID for reproducible output; tagUUIDs sort by UUID. Array order
@@ -159,19 +160,22 @@ review/correction policy before approving a resulting graph.
 - All schema-1 fields listed above must be present. Missing is invalid, even if
   a Swift initializer has a default. Historical absence is handled by the
   explicitly selected older schema reader.
-- Period start/end accept explicit `null` for an unknown date. Unknown is not
-  an empty string, January 1, or the registration date.
-- Empty notes/captions and empty tag sets are actual supplied values. Applying
-  an empty tag set after conflict review clears assignments; it does not delete
-  the Tags themselves.
+- Optional note, caption, representative URL and Period boundaries export as
+  `null` when absent. On import, an explicit empty string is normalized to nil
+  before validation and conflict review, exactly like explicit `null`. Applying
+  that selected row clears the field; an empty string is never stored.
+- Unknown Period dates do not infer January 1 or the registration date.
+  Required names and Mark dates reject empty or null values.
+- Empty tag sets are actual supplied values. Applying an empty tag set after
+  conflict review clears assignments; it does not delete the Tags themselves.
 - Omitted rows are never deletion instructions. There are no merge redirects,
   tombstones, or automatic name-based lookup instructions in the file.
 - Unknown extra keys may be ignored within a supported version pair, but are
   not preserved on re-export. Unknown versions and unknown image states are
   rejected; ignoring extra keys is not future-schema support.
 
-Synthesized Swift Codable omits nil optionals by default. A Period writer must
-encode the nullable keys explicitly; a reader must check key presence separately
+Synthesized Swift Codable omits nil optionals by default. A writer must
+encode every nullable key explicitly; a reader must check key presence separately
 from decodeIfPresent. This distinction belongs to the codec, not the model.
 
 ## Dates and Precision

@@ -30,7 +30,7 @@ public struct ItemQuery: Sendable {
                 && (!favoritesOnly || item.isFavorite)
                 && (tagID == nil || (item.tags ?? []).contains { $0.uuid == tagID })
                 && (text.isEmpty || item.name.localizedStandardContains(text)
-                        || item.note.localizedStandardContains(text)
+                        || (item.note?.localizedStandardContains(text) ?? false)
                         || (item.tags ?? []).contains { $0.name.localizedStandardContains(text) })
         }
         .sorted { first, second in

@@ -18,7 +18,7 @@ extension StallySchema {
         /// Optional persisted derivative that can be rebuilt from imageData.
         public internal(set) var thumbnailData: Data?
         /// User-authored description of this attachment.
-        public internal(set) var caption: String = ""
+        public internal(set) var caption: String?
         /// Explicit photo position; UUID breaks ties after concurrent edits.
         public internal(set) var sortOrder: Int = 0
         /// Registration time, never an occurrence date or conflict ordering signal.
@@ -30,13 +30,13 @@ extension StallySchema {
             item: Item,
             imageData: Data?,
             thumbnailData: Data?,
-            caption: String,
+            caption: String?,
             sortOrder: Int
         ) {
             self.item = item
             self.imageData = imageData
             self.thumbnailData = thumbnailData
-            self.caption = caption
+            self.caption = TextInput.optional(caption)
             self.sortOrder = sortOrder
         }
     }

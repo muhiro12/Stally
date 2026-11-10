@@ -30,7 +30,7 @@ struct EditPhotoCaptionIntent: AppIntent {
         try await IntentAccess.write(container: container, session: session) { context in
             let record = try IntentRecordLookup.record(ItemPhoto.self, uuid: photo.id, context: context) { $0.uuid }
             guard let owner = record.item else { throw RecordError.missingRecord }
-            let value = try IntentTextEdit.value(caption, clearing: clearCaption, current: record.caption) ?? ""
+            let value = try TextInput.edited(caption, clearing: clearCaption, current: record.caption)
             guard record.caption != value else {
                 return
             }
@@ -38,7 +38,7 @@ struct EditPhotoCaptionIntent: AppIntent {
             guard let index = draft.photos.firstIndex(where: { $0.id == photo.id }) else {
                 throw RecordError.missingRecord
             }
-            draft.photos[index].caption = value
+            draft.photos[index].caption = value ?? ""
             _ = try ItemOperations.save(draft, context: context)
         }
         return .result()

@@ -59,8 +59,8 @@ struct ItemSummarySection: View {
                 }
                 .labelStyle(.titleAndIcon)
             }
-            if !item.note.isEmpty {
-                Text(item.note).mhTextStyle(.body).textSelection(.enabled)
+            if let note = item.note {
+                Text(note).mhTextStyle(.body).textSelection(.enabled)
             } else {
                 Text("A place for the things you want to remember.").mhRowSupporting()
             }

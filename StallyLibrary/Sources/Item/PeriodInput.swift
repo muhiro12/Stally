@@ -9,8 +9,8 @@ public struct PeriodInput: Sendable {
 
     /// Missing boundaries stay unknown; an ongoing period must not have an end.
     public init(start: String? = nil, end: String? = nil, isOngoing: Bool = true) {
-        self.start = start
-        self.end = end
+        self.start = TextInput.optional(start)
+        self.end = TextInput.optional(end)
         self.isOngoing = isOngoing
     }
 }

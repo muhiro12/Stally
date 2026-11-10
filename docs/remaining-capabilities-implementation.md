@@ -124,10 +124,11 @@ reviewed selection can call apply. Export returns a native package `IntentFile`
 whose temporary file is removed when the Shortcut finishes. Photo handoff
 identifies the native format and preserves saved bytes.
 
-Optional Edit Item fields leave the current value unchanged; an explicit empty
+Omitted Edit Item fields leave the current value unchanged; an explicit empty
 note or link clears that field. Empty boundaries on new periods mean unknown. Correct Period preserves omitted
-boundaries and continuation state. Explicit clear switches remove known dates or a
-photo caption. Supplied dates must follow the canonical Gregorian forms. Get Time Together
+boundaries and continuation state. Explicit empty input or clear switches remove known dates or a
+photo caption. Edit Item also exposes Clear Note and Clear Link. Optional
+text is stored as nil, and nonempty replacement plus Clear is rejected. Supplied dates must follow the canonical Gregorian forms. Get Time Together
 returns localized explanatory text, not a scalar claiming exact cumulative time.
 Typed entities and date strings retain their underlying identity/precision.
 The [first-publication review](app-intents-publication-review.md) records the

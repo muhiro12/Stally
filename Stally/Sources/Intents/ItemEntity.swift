@@ -9,7 +9,7 @@ struct ItemEntity: AppEntity {
     @Property(title: "Name")
     var name: String
     @Property(title: "Note")
-    var note: String
+    var note: String?
 
     @Property(title: "Representative URL")
     var link: String?
@@ -20,7 +20,7 @@ struct ItemEntity: AppEntity {
     @Property(title: "Recording Enabled")
     var recordingEnabled: Bool
 
-    var displayRepresentation: DisplayRepresentation { .init(title: "\(name)", subtitle: "\(note)") }
+    var displayRepresentation: DisplayRepresentation { .init(title: "\(name)", subtitle: "\(note ?? "")") }
 
     @MainActor
     init(_ record: Item) {

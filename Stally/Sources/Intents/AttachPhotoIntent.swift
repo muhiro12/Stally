@@ -21,8 +21,8 @@ struct AttachPhotoIntent: AppIntent {
     var item: ItemEntity
     @Parameter(title: "Image")
     var file: IntentFile
-    @Parameter(title: "Caption", default: "")
-    var caption: String
+    @Parameter(title: "Caption")
+    var caption: String?
 
     @MainActor
     func perform() async throws -> some IntentResult {

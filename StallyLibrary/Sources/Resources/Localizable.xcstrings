@@ -33,6 +33,22 @@
         }
       }
     },
+    "Choose either a replacement value or Clear.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose either a replacement value or Clear."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新しい値を入力するか、消去を選んでください。両方は指定できません。"
+          }
+        }
+      }
+    },
     "Create Item": {
       "localizations": {
         "en": {

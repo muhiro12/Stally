@@ -38,8 +38,8 @@ struct CorrectPeriodIntent: AppIntent {
         let session = librarySession.writer
         try await IntentAccess.write(container: container, session: session) { context in
             let record = try IntentRecordLookup.record(ItemPeriod.self, uuid: period.id, context: context) { $0.uuid }
-            let revisedStart = try IntentTextEdit.value(start, clearing: clearStart, current: record.startLocalDate)
-            let revisedEnd = try IntentTextEdit.value(end, clearing: clearEnd, current: record.endLocalDate)
+            let revisedStart = try TextInput.edited(start, clearing: clearStart, current: record.startLocalDate)
+            let revisedEnd = try TextInput.edited(end, clearing: clearEnd, current: record.endLocalDate)
             let isOngoing = continuation.applying(to: record.isOngoing)
             guard revisedStart != record.startLocalDate || revisedEnd != record.endLocalDate
                     || isOngoing != record.isOngoing else {

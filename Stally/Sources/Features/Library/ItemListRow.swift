@@ -18,8 +18,8 @@ struct ItemListRow: View {
                         .accessibilityLabel("Favorite")
                 }
             }
-            if !item.note.isEmpty {
-                Text(item.note).mhRowSupporting().lineLimit(LibraryLayout.previewLines)
+            if let note = item.note {
+                Text(note).mhRowSupporting().lineLimit(LibraryLayout.previewLines)
             }
             HStack(spacing: theme.spacing.control) {
                 Label("\((item.marks ?? []).count)", systemImage: "checkmark.circle")

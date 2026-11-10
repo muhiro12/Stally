@@ -29,7 +29,7 @@ struct ResumePeriodIntent: AppIntent {
             return PeriodEntity(
                 try PeriodOperations.resume(
                     record,
-                    on: IntentDateInput.optional(start),
+                    on: start,
                     today: MarkOperations.localDateTime(at: .now, includesTime: false),
                     context: context
                 )

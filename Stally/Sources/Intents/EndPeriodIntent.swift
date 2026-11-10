@@ -28,7 +28,7 @@ struct EndPeriodIntent: AppIntent {
             let record = try IntentRecordLookup.record(ItemPeriod.self, uuid: period.id, context: context) { $0.uuid }
             try PeriodOperations.end(
                 record,
-                on: IntentDateInput.optional(end),
+                on: end,
                 today: MarkOperations.localDateTime(at: .now, includesTime: false),
                 context: context
             )

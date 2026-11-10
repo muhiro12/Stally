@@ -16,9 +16,12 @@ public enum RecordError: LocalizedError, Equatable {
     case invalidPhoto
     case invalidURL
     case staleReview
+    case conflictingTextEdit
 
     public var errorDescription: String? {
         switch self {
+        case .conflictingTextEdit:
+            String(localized: "Choose either a replacement value or Clear.", bundle: .module)
         case .nameRequired:
             String(localized: "Enter a name.", bundle: .module)
         case .invalidDate:

@@ -33,7 +33,7 @@ public enum ItemOperations {
 
     /// Creates an Item without implicitly recording a Mark or period.
     @discardableResult
-    public static func create(context: ModelContext, name: String, note: String = "") throws -> Item {
+    public static func create(context: ModelContext, name: String, note: String? = nil) throws -> Item {
         try RecordMutation.validate(context, models: [])
         try RecordMutation.validateName(name)
         let item = Item(name: name, note: note)
@@ -43,11 +43,11 @@ public enum ItemOperations {
     }
 
     /// Corrects metadata without changing identity, history, or state.
-    public static func update(_ item: Item, name: String, note: String, context: ModelContext) throws {
+    public static func update(_ item: Item, name: String, note: String?, context: ModelContext) throws {
         try RecordMutation.validate(context, models: [item])
         try RecordMutation.validateName(name)
         item.name = name
-        item.note = note
+        item.note = TextInput.optional(note)
         try RecordMutation.save(context)
     }
 

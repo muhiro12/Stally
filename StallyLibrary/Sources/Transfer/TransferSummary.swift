@@ -17,7 +17,7 @@ enum TransferSummary {
             ? String(localized: "Recording Enabled", bundle: .module)
             : String(localized: "Recording Paused", bundle: .module)
         return [
-            item.name, item.note, item.representativeURL ?? "—", tagNames, placement, favorite, recording,
+            item.name, item.note ?? "—", item.representativeURL ?? "—", tagNames, placement, favorite, recording,
             registered(item.createdAt)
         ].joined(separator: "\n")
     }
@@ -38,7 +38,7 @@ enum TransferSummary {
             ? String(localized: "Image Included", bundle: .module)
             : String(localized: "No Image Supplied; Keep Any Local Image", bundle: .module)
         return [
-            photo.caption, String(localized: "Position: \(UInt(photo.sortOrder) + 1)", bundle: .module),
+            photo.caption ?? "—", String(localized: "Position: \(UInt(photo.sortOrder) + 1)", bundle: .module),
             availability, registered(photo.createdAt)
         ].joined(separator: "\n")
     }

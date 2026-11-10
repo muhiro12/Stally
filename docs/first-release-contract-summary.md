@@ -36,6 +36,21 @@ are derived rather than separately stored assertions.
 The exact Swift schema remains in one linked document instead of copying a
 second implementation-shaped declaration into this summary.
 
+### Text values
+
+Required Item/Tag names and Mark dates cannot be empty when saved. Optional
+note, caption, representative URL and period boundaries use nil for absence;
+empty input is normalized to nil before persistence. No stored Stally field
+assigns separate meaning to empty text. Nonempty free text retains whitespace
+and newlines; required names and structured URL/date input keep their validation.
+
+Forms may hold empty Strings while editing. Partial updates distinguish an
+omitted field (keep) from supplied empty input or an explicit clear (remove).
+Export writes explicit null for absent optional fields; import normalizes empty
+strings before review and still rejects missing required keys. This revises the
+unreleased schema-1 baseline, not a supported historical schema. No prerelease
+store migration or production CloudKit compatibility is claimed by this change.
+
 ### Item context
 
 The owner subsequently accepted one optional, user-chosen representative URL
@@ -90,8 +105,9 @@ mean local deletion, and omitted images do not erase stored attachments.
 
 No whole-library replacement or Import as Copy is selected for 1.0. Restoration
 into an empty collection uses ordinary import. Absent historical fields and
-explicit empty/null values retain their distinct meanings. Invalid/unsupported
-files must not become partial success or silent data loss. The
+explicit clearing retain their distinct meanings. For optional text, supplied
+empty strings and null both mean absence; neither is an omitted field.
+Invalid/unsupported files must not become partial success or silent data loss. The
 [import design](import-identity-design.md) records detailed reconciliation and
 review recommendations that implementation must qualify.
 

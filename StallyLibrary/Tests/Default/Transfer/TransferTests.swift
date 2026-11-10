@@ -102,7 +102,7 @@ struct TransferTests {
         try ItemOperations.create(context: source, name: "Linked")
         let archive = try TransferOperations.export(context: source, includingImages: false)
         var manifest = archive.manifest
-        for invalid in ["https://example.com/a b", "https://example.com/%GG", " https://example.com", ""] {
+        for invalid in ["https://example.com/a b", "https://example.com/%GG", " https://example.com"] {
             manifest.items[0].representativeURL = invalid
             let data = try TransferCodec.encode(manifest)
             await #expect(throws: RecordError.invalidURL) {

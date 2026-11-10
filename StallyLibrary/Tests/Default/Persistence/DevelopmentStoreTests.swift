@@ -10,18 +10,18 @@ struct DevelopmentStoreTests {
     @Test(arguments: ["en", "ja"])
     func localizedRecordsSurviveReopening(_ language: String) throws {
         let directory = newDirectory()
-        let expected: [String: String] = language == "ja" ? [
+        let expected: [String: String?] = language == "ja" ? [
             "いつものリュック": "散歩やちょっとした旅に持っていく、軽いリュック。",
             "川沿いのカフェ": "窓際の席で、本を読むひととき。",
             "以前のアトリエ": "離れてからも、覚えておきたい場所。",
             "読書用メガネ": "いつから使っているか、はっきりとは覚えていない。",
-            "旅のノート": ""
+            "旅のノート": nil
         ] : [
             "Everyday backpack": "A light bag for walks and small journeys.",
             "Riverside café": "A window seat and time to read.",
             "Old studio": "A place worth remembering after moving on.",
             "Reading glasses": "No exact start date remembered.",
-            "Travel journal": ""
+            "Travel journal": nil
         ]
         let expectedTags = language == "ja" ? ["日常", "日常", "場所"] : ["Everyday", "Everyday", "Places"]
         let identities = try autoreleasepool {
