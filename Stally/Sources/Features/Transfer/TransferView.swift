@@ -49,11 +49,7 @@ struct TransferView: View {
             }
             .disabled(busy)
             .navigationTitle("Import & Export")
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Done") { dismiss() }
-                }
-            }
+            .toolbar { transferToolbar }
         }
         .fileImporter(isPresented: $importing, allowedContentTypes: importTypes) { result in
             do { load(try result.get()) } catch { errorMessage = error.localizedDescription }
@@ -84,6 +80,14 @@ struct TransferView: View {
         }
         .onDisappear { task?.cancel() }
         .modifier(StallyUpdateRequiredModifier())
+    }
+
+    private var transferToolbar: some ToolbarContent {
+        ToolbarItem(placement: .confirmationAction) {
+            Button("Done", systemImage: "checkmark") {
+                dismiss()
+            }
+        }
     }
 
     private var exportSection: some View {

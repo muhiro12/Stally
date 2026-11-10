@@ -31,7 +31,12 @@ struct TagConsolidationView: View {
             .disabled(saving)
             .navigationTitle("Consolidate Tags")
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.disabled(saving) }
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel", systemImage: "xmark") {
+                        dismiss()
+                    }
+                    .disabled(saving)
+                }
             }
             .confirmationDialog("Consolidate these Tags?", isPresented: $confirming, titleVisibility: .visible) {
                 Button("Consolidate", role: .destructive, action: save)

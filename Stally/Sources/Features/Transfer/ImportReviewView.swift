@@ -34,10 +34,14 @@ struct ImportReviewView: View {
             .navigationTitle("Review Import")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }.disabled(saving)
+                    Button("Cancel", systemImage: "xmark") {
+                        dismiss()
+                    }
+                    .disabled(saving)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Import Selected", action: save).disabled(saving || selection.isEmpty)
+                    Button("Import Selected", systemImage: "square.and.arrow.down", action: save)
+                        .disabled(saving || selection.isEmpty)
                 }
             }
         }
