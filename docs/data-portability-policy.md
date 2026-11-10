@@ -1,8 +1,7 @@
 # Data Portability and Compatibility Policy
 
 Accepted development direction, November 10, 2026. This document defines product
-intent and maintenance judgment; it does not claim that the illustrative copy
-below is already displayed in the app.
+intent, maintenance judgment, and the corresponding user guidance.
 
 ## Export purpose and supplementary import
 
@@ -53,11 +52,16 @@ re-import. Avoid schema numbers, implementation explanations, and defensive
 where someone chooses to export or import, without implying that the exported
 information itself becomes unusable outside Stally.
 
-Illustrative copy, to adapt to the actual surface and localize before release:
+Keep the tone concise and moderately formal. The export screen and export
+App Intent descriptions communicate the following in English and Japanese:
 
-> Use your records in other apps or transfer them to another device.
-> If you plan to import the file into Stally, do so soon after exporting.
-> Older files may not be supported by future versions of Stally.
+> Export records for use in other apps or transfer to another device.
+> For import into Stally, use the file promptly after export.
+> Future versions may not support older files.
+
+The JSON action also states that image files are excluded. The unsupported-file
+error identifies the current app version as unable to import the file, without
+requiring the person to understand schema numbers.
 
 If import rejects a file, explain that the file is unsupported. Suggest a new
 export only when the original records remain available; do not imply that

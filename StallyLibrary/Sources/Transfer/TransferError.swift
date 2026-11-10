@@ -14,7 +14,7 @@ public enum TransferError: LocalizedError {
         case .invalidFile:
             String(localized: "The file is incomplete, damaged, or is not a Stally export.", bundle: .module)
         case .unsupportedVersion:
-            String(localized: "This export version is not supported by this app.", bundle: .module)
+            String(localized: "This file cannot be imported by this version of Stally.", bundle: .module)
         case .limitExceeded:
             String(localized: "This transfer exceeds the supported size limits.", bundle: .module)
         case .incompleteGraph:

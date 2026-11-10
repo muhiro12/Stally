@@ -91,7 +91,7 @@ struct TransferView: View {
     }
 
     private var exportSection: some View {
-        Section("Export") {
+        Section {
             Toggle("Include Photos", isOn: $includingImages)
             if includingImages {
                 Text("Exported photos retain embedded metadata, including location when present.")
@@ -99,6 +99,18 @@ struct TransferView: View {
             }
             Button("Export Library", systemImage: "square.and.arrow.up", action: prepareExport)
             Text("Exports all Items, including archived records and unused Tags.").mhRowSupporting()
+        } header: {
+            Text("Export")
+        } footer: {
+            VStack(alignment: .leading) {
+                Text("Export records for use in other apps or transfer to another device.")
+                Text(
+                    """
+                    For import into Stally, use the file promptly after export. \
+                    Future versions may not support older files.
+                    """
+                )
+            }
         }
     }
 

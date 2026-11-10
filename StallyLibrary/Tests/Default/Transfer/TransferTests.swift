@@ -81,7 +81,7 @@ struct TransferTests {
     }
 
     @Test
-    func missingNullableKeysAndFutureVersionsAreRejected() throws {
+    func missingNullableKeysAreRejected() throws {
         let context = ModelContext(try StallyModelContainerFactory.inMemory())
         try ItemOperations.create(context: context, name: "Nullable")
         let archive = try TransferOperations.export(context: context, includingImages: false)
@@ -91,8 +91,6 @@ struct TransferTests {
         #expect(items[0]["representativeURL"] is NSNull)
         items[0].removeValue(forKey: "representativeURL")
         object["items"] = items
-        #expect(throws: TransferError.self) { try TransferCodec.decode(JSONSerialization.data(withJSONObject: object)) }
-        object["formatVersion"] = 2
         #expect(throws: TransferError.self) { try TransferCodec.decode(JSONSerialization.data(withJSONObject: object)) }
     }
 

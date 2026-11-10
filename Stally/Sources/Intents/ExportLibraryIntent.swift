@@ -5,6 +5,13 @@ import SwiftData
 
 struct ExportLibraryIntent: AppIntent {
     static let title: LocalizedStringResource = "Export Stally Library"
+    static let description = IntentDescription(
+        """
+        Export records for use in other apps or device transfer. \
+        For import into Stally, use the file promptly after export. \
+        Future versions may not support older files.
+        """
+    )
     static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
     static var supportedModes: IntentModes { .background }
     static var parameterSummary: some ParameterSummary {

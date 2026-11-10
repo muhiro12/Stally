@@ -547,18 +547,18 @@
         }
       }
     },
-    "This export version is not supported by this app.": {
+    "This file cannot be imported by this version of Stally.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "This export version is not supported by this app."
+            "value": "This file cannot be imported by this version of Stally."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "この書き出し形式のバージョンには対応していません。"
+            "value": "このファイルは、お使いのバージョンのStallyでは取り込めません。"
           }
         }
       }

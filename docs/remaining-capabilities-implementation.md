@@ -49,6 +49,9 @@ non-overlap. Exact same-day periods can contribute zero days.
 
 The implemented version pair is `(1, "1.0.0")`, backed by `StallySchema` and
 `StallyDataContract`. Unsupported pairs and old development files are rejected.
+There is no export-age cutoff. The transfer screen and export App Intent
+descriptions explain external use, timely re-import, and possible future
+compatibility limits under the [data portability policy](data-portability-policy.md).
 One native `.stally` directory package contains `manifest.json` and optional
 `assets/<lowercase-photo-uuid>.<extension>` entries. The app exports
 `com.muhiro12.Stally.data`, conforming to `com.apple.package`, and registers

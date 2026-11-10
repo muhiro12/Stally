@@ -5,6 +5,13 @@ import UniformTypeIdentifiers
 
 struct ExportRecordsIntent: AppIntent {
     static let title: LocalizedStringResource = "Export Records as JSON"
+    static let description = IntentDescription(
+        """
+        Export records as JSON for use in other apps. Image files are not included. \
+        For import into Stally, use the file promptly after export. \
+        Future versions may not support older files.
+        """
+    )
     static let authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
     static var supportedModes: IntentModes { .background }
 
