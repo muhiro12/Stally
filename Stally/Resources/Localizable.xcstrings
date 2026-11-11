@@ -1971,7 +1971,7 @@
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "アーカイブ済みの記録や未使用のTagを含め、すべてのItemを書き出します。"
+            "value": "すべてのアイテムを書き出します。アーカイブ済みのアイテムや未使用のタグも含まれます。"
           }
         }
       }
@@ -2283,9 +2283,21 @@
     "Imported %lld records.": {
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Imported %lld records."
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Imported %lld record."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Imported %lld records."
+                }
+              }
+            }
           }
         },
         "ja": {

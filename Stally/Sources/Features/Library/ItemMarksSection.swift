@@ -12,6 +12,12 @@ struct ItemMarksSection: View {
         MarkOperations.orderedMarks(for: item)
     }
 
+    private var actionTheme: MHTheme {
+        var markTheme = theme
+        markTheme.colors.accent = .asset(.markActionAccent)
+        return markTheme
+    }
+
     var body: some View {
         Section {
             QuickMarkButtons(item: item)
@@ -40,6 +46,7 @@ struct ItemMarksSection: View {
                 MHSectionFooter("Recording is paused. You can still edit existing Marks.")
             }
         }
+        .mhTheme(actionTheme)
     }
 
     private func markButton(_ mark: ItemMark) -> some View {
