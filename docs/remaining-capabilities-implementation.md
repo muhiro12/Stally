@@ -171,7 +171,7 @@ remain separate from source completion; see the November 8 policy update below.
 
 | Contract | Implementation and resumption point |
 | --- | --- |
-| Portable identity | The package UTI and JSON format are `com.muhiro12.Stally.data`. The package contains `manifest.json` and optional `assets/<lowercase-uuid>.<ext>`. Suggested filenames use a UTC timestamp. Old development packages have no fallback. |
+| Portable identity | The package UTI and JSON format are `com.muhiro12.Stally.data`. The package contains `manifest.json` and optional `assets/<lowercase-uuid>.<ext>`. Suggested filenames use `Stally-Export-YYYY-MM-DD_HH-mm-ss+HHMM` with local time and its numeric UTC offset; manifest timestamps remain UTC. Old development packages have no fallback. |
 | Records-only JSON | [Export operations](../StallyLibrary/Sources/Transfer/TransferOperations.swift), the app file exporter and [Export Records as JSON](../Stally/Sources/Intents/ExportRecordsIntent.swift) share one media-free snapshot. Reimport preserves local photo bytes. |
 | Photo privacy | The app explains that included images retain embedded metadata such as location; the package Intent explains it in the photo parameter. Standalone JSON never carries image bytes. |
 | iCloud account transitions | [Write session](../StallyLibrary/Sources/Persistence/RecordWriteSession.swift) binds outstanding drafts and confirmations to the observed account session. The app replaces editor state and clears pending import review when CloudKit signals a change. The last check runs after the asynchronous update check, immediately before mutation. Exercise real account changes separately. |

@@ -41,7 +41,13 @@ The optional `assets/` directory holds the files those records reference. These
 names describe roles reusable across package formats. Stally currently writes
 only photo files, named for their attachment UUIDs.
 
-The app suggests the same UTC-dated stem for package and standalone JSON exports.
+The app and export App Intents suggest the same local-time stem for package and
+standalone JSON exports: `Stally-Export-YYYY-MM-DD_HH-mm-ss+HHMM`, for example
+`Stally-Export-2026-11-11_20-15-30+0900.stally`. Use Gregorian date components,
+24-hour time and the signed numeric UTC offset at the export instant, including
+daylight-saving changes. The filename is user-renamable display metadata;
+timestamps inside the manifest remain UTC. Second precision does not guarantee
+unique names, and names with different offsets need not sort chronologically.
 The JSON encoder indents and sorts keys; the reader does not depend on whitespace
 or the suggested filename. The writer omits `assets/` when there are no image files. Names
 use lowercase UUID strings, never Item names, captions, or source file paths.

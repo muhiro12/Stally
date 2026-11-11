@@ -22,7 +22,16 @@ final class StallyExportDocument: WritableDocument {
     }
 
     static func filename() -> String {
-        "Stally-Export-" + Date.now.formatted(.iso8601).replacingOccurrences(of: ":", with: "-")
+        filename(date: .now, timeZone: .current)
+    }
+
+    static func filename(date: Date, timeZone: TimeZone) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.timeZone = timeZone
+        formatter.dateFormat = "yyyy-MM-dd_HH-mm-ssZ"
+        return "Stally-Export-" + formatter.string(from: date)
     }
 
     nonisolated func writer(configuration: sending WriteConfiguration)
