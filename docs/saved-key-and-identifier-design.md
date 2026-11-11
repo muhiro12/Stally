@@ -8,6 +8,7 @@
 | App Group ID | Selected `group.com.muhiro12.Stally` | Use shared storage from the first release for the planned app/extension family; confirm registration during integration |
 | CloudKit container ID | `iCloud.com.muhiro12.Stally` | Keep it aligned with entitlements and model configuration; do not replace it merely for naming cleanup |
 | App Store app ID | `6760996986` | Keep the configured product destination; verify the account record before release |
+| App Store SKU | `com.muhiro12.Stally` | Preserve the existing Store record identity |
 | Monthly product ID | `com.muhiro12.Stally.subscriptions.monthly` | Keep this identity if the monthly product remains; do not reinterpret it as an unrelated purchase |
 | Native portable document | `.stally`, selected package UTI `com.muhiro12.Stally.data` | Retain the accepted package identity and physical format |
 | Product links and Item target | `https://muhiro12.github.io/Stally/item/<UUID>` | Address the Item itself across UI changes and restore; use query parameters for optional views or filters |

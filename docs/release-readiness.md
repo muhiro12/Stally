@@ -5,6 +5,41 @@ and the [App Intents inventory](app-intents-publication-review.md) for the relea
 candidate. [Issue #8](https://github.com/muhiro12/Stally/issues/8) tracks distribution
 setup. Record the candidate, environment and result for each check.
 
+Store text and the monthly offer are maintained in
+[Store resources](../AppStore/README.md). The identifiers include the Store SKU.
+
+## November 11 Store configuration
+
+App Store Connect read-back confirmed app ID `6760996986`, bundle ID and SKU
+`com.muhiro12.Stally`. Active Apple-issued App Store provisioning profiles contain
+`group.com.muhiro12.Stally` and `iCloud.com.muhiro12.Stally`, matching the source
+entitlements and model-container configuration. This confirms registration and
+profile alignment, not the signature of a future release archive or production
+CloudKit synchronization.
+
+The monthly product `com.muhiro12.Stally.subscriptions.monthly` is registered
+with a one-month period. Its English and Japanese names and descriptions, and
+the app's version 1.0 descriptions, were applied and read back exactly. A fresh
+Apogee metadata plan reported both descriptions unchanged.
+
+Japan is JPY 300 per month and the United States is USD 2.99. The other 173
+territories use Apple's equalized prices from the USA USD 2.99 price point;
+Japan overrides the equalized JPY 500 price. All 175 price points and
+subscription availability entries were read back and matched. The app download
+price is free in all 175 price territories. New subscription territories are
+enabled automatically, matching the intended broad distribution policy.
+
+Store descriptions do not promote the absence of advertising because ads are
+planned soon after the first release. The current paid benefit remains optional
+iCloud synchronization.
+
+The subscription remains `MISSING_METADATA`; its review screenshot is absent.
+App distribution availability is also not yet configured. Review screenshots,
+remaining Store submission fields, purchase/restore tests and production sync
+qualification remain release work. No review submission or release was performed.
+
+## Remaining release checks
+
 - Confirm the signed app, App Group, CloudKit container, associated domain
   and Store record use the intended [identifiers](saved-key-and-identifier-design.md).
   Verify the production schema and device-to-device synchronization, offline
