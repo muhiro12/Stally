@@ -18,6 +18,18 @@ public enum PeriodReadingOperations {
         )
     }
 
+    /// A dated, immutable report of the recorded periods, without other Item content or identity.
+    public static func shareText(for item: Item, today: String) throws -> String {
+        let readings = try readings(for: item, today: today)
+        return [
+            item.name,
+            String(localized: "Time Together", bundle: .module),
+            String(localized: "As of \(today)", bundle: .module),
+            PeriodReadingText.describe(readings),
+            String(localized: "Only recorded periods are added. Gaps are excluded.", bundle: .module)
+        ].joined(separator: "\n\n")
+    }
+
     private static func reading(_ periods: [ItemPeriod], today: String) throws -> PeriodReading? {
         let todayDate = try CivilDate.parse(today, formats: [CivilDate.dayLength: "yyyy-MM-dd"])
         guard !periods.isEmpty else {

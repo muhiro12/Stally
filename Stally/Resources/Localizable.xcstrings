@@ -121,70 +121,6 @@
         }
       }
     },
-    "%lld exact days": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld exact days"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "正確にわかる日数：%lld日"
-          }
-        }
-      }
-    },
-    "; about %lld years + %lld months (partial dates)": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "; about %1$lld years + %2$lld months (partial dates)"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "、部分的な日付からの概算：%1$lld年 ＋ %2$lldか月"
-          }
-        }
-      }
-    },
-    "; assumes partial-date periods do not overlap": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "; assumes partial-date periods do not overlap"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "、部分的な日付の期間は重複しないと仮定"
-          }
-        }
-      }
-    },
-    "; calculable subtotal, excluding %lld periods": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "; calculable subtotal, excluding %lld periods"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "、%lld件の期間を除く計算可能な小計"
-          }
-        }
-      }
-    },
     "A launch argument overrides the disabled setting for this run.": {
       "extractionState": "manual",
       "localizations": {
@@ -1199,22 +1135,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "現在の値"
-          }
-        }
-      }
-    },
-    "Current: %@\nCumulative: %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Current: %1$@\nCumulative: %2$@"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "現在の期間：%1$@\n記録された期間の合計：%2$@"
           }
         }
       }
@@ -5015,6 +4935,86 @@
           "stringUnit": {
             "state": "translated",
             "value": "端末内のApple Intelligenceでアイテムの名前・メモ・リンクを文章から抽出します。アイテム・記録・期間は保存しません。"
+          }
+        }
+      }
+    },
+    "Share Time Together": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share Time Together"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一緒に過ごした時間を共有"
+          }
+        }
+      }
+    },
+    "Copy Report": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy Report"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "レポートをコピー"
+          }
+        }
+      }
+    },
+    "Includes the Item name, calculation date, and time together. Notes, links, photos, tags, and Marks are not included.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Includes the Item name, calculation date, and time together. Notes, links, photos, tags, and Marks are not included."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテム名、計算日、一緒に過ごした時間を共有します。メモ、リンク、写真、タグ、マークは含まれません。"
+          }
+        }
+      }
+    },
+    "Drop one Stally or JSON file here": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drop one Stally or JSON file here"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "StallyファイルまたはJSONファイルを1つドロップ"
+          }
+        }
+      }
+    },
+    "Could Not Complete Transfer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could Not Complete Transfer"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "読み込み・書き出しを完了できませんでした"
           }
         }
       }

@@ -25,7 +25,7 @@ struct GetPeriodReadingsIntent: AppIntent {
                 for: record,
                 today: MarkOperations.localDateTime(at: .now, includesTime: false)
             )
-            return IntentReadingText.describe(readings)
+            return PeriodReadingText.describe(readings)
         }
         return .result(value: value)
     }

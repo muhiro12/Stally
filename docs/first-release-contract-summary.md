@@ -138,6 +138,11 @@ It creates no Marks or periods. Photo recognition and OCR remain separate future
 work. See the [input-assistance boundary](item-input-assistance.md) and the
 [selected input and sharing behavior](product-behavior-design.md#copy-and-share-one-item).
 
+The [native transfer journeys](product-behavior-design.md#native-transfer-journeys)
+add Item-link and readable-text dragging, dated Time Together reports, and
+single-file drops into the existing import review. URL, String, and the supported
+portable files remain independent representations; no new Item format is added.
+
 - **Native synchronization:** optional iCloud sync is a subscription benefit
   from the first release under the November 8 policy. Follow
   native account/mirroring behavior and proportional recovery. No custom shadow
@@ -153,7 +158,7 @@ work. See the [input-assistance boundary](item-input-assistance.md) and the
   record is not replaced by a same-name record. Share `https://muhiro12.github.io/Stally/item/<UUID>`;
   installed-device handoff is a release check.
 - **App Intents:** UI and Shortcuts call the same Operations. The
-  [publication inventory](app-intents-publication-review.md) records the 39
+  [publication inventory](app-intents-publication-review.md) records the 40
   actions, their inputs and results, required authentication and destructive
   confirmations. Saved workflows depend on those identifiers and meanings.
 - **App Shortcuts:** promotion, phrases, and composed workflows are later

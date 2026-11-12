@@ -29,7 +29,9 @@ struct ItemDetailView: View {
                 ItemPhotosSection { photo in
                     selectedPhoto = photo
                 }
-                PeriodReadingsSection()
+                PeriodReadingsSection { text in
+                    sharedContent = .init(isTimeTogether: true, text: text)
+                }
                 ItemMarksSection { selection in
                     editingRecord = selection
                 }

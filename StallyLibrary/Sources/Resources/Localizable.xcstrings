@@ -834,6 +834,150 @@
           }
         }
       }
+    },
+    "%lld exact days": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld exact days"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正確にわかる日数：%lld日"
+          }
+        }
+      }
+    },
+    "; about %lld years + %lld months (partial dates)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "; about %1$lld years + %2$lld months (partial dates)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "、部分的な日付からの概算：%1$lld年 ＋ %2$lldか月"
+          }
+        }
+      }
+    },
+    "; assumes partial-date periods do not overlap": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "; assumes partial-date periods do not overlap"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "、部分的な日付の期間は重複しないと仮定"
+          }
+        }
+      }
+    },
+    "; calculable subtotal, excluding %lld periods": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "; calculable subtotal, excluding %lld periods"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "、%lld件の期間を除く計算可能な小計"
+          }
+        }
+      }
+    },
+    "Current: %@\nCumulative: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current: %1$@\nCumulative: %2$@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在の期間：%1$@\n記録された期間の合計：%2$@"
+          }
+        }
+      }
+    },
+    "Not enough recorded dates": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not enough recorded dates"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計算に必要な日付がありません"
+          }
+        }
+      }
+    },
+    "Time Together": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time Together"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一緒に過ごした時間"
+          }
+        }
+      }
+    },
+    "Only recorded periods are added. Gaps are excluded.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only recorded periods are added. Gaps are excluded."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録された期間だけを足し合わせます。期間の間の空白は含みません。"
+          }
+        }
+      }
+    },
+    "As of %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "As of %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@時点"
+          }
+        }
+      }
     }
   },
   "version": "1.3"

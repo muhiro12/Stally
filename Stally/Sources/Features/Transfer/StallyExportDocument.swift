@@ -8,7 +8,10 @@ final class StallyExportDocument: WritableDocument {
         case records(Data)
     }
 
-    static let contentType = UTType(exportedAs: StallyDataContract.fileTypeIdentifier, conformingTo: .package)
+    nonisolated static let contentType = UTType(
+        exportedAs: StallyDataContract.fileTypeIdentifier,
+        conformingTo: .package
+    )
     static var writableContentTypes: [UTType] { [contentType, .json] }
 
     let contents: Contents

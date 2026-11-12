@@ -5,8 +5,10 @@ import SwiftUI
 struct PeriodReadingsSection: View {
     @Environment(Item.self)
     private var item
+    let shareReport: (String) -> Void
 
     private let refreshInterval = 60.0
+    @State private var errorMessage: String?
 
     var body: some View {
         Section {
@@ -24,6 +26,19 @@ struct PeriodReadingsSection: View {
                 } else {
                     Text("Review conflicting periods before calculating time together.")
                 }
+            }
+            StallyActionButton(.shareTimeTogether) {
+                do {
+                    let today = MarkOperations.localDateTime(at: .now, includesTime: false)
+                    let text = try PeriodReadingOperations.shareText(for: item, today: today)
+                    shareReport(text)
+                    errorMessage = nil
+                } catch {
+                    errorMessage = error.localizedDescription
+                }
+            }
+            if let errorMessage {
+                Text(errorMessage).foregroundStyle(.red)
             }
         } header: {
             MHSectionHeader("Time Together")

@@ -21,6 +21,7 @@ struct TransferView: View {
     @State private var busy = false
     @State private var errorMessage: String?
     @State private var completionMessage: String?
+    @State private var dropTargeted = false
 
     var body: some View {
         NavigationStack {
@@ -33,18 +34,8 @@ struct TransferView: View {
                 } footer: {
                     Text("JSON includes all records and photo captions, but no image files.")
                 }
-                Section("Import") {
-                    StallyActionButton(.chooseImportFile) { importing = true }
-                    Text(
-                        "Review before saving. Current records are kept unless you choose otherwise."
-                    )
-                    .mhRowSupporting()
-                    if let archive {
-                        Button("Review Again") { prepareReview(archive) }
-                    }
-                }
+                importSection
                 if busy { ProgressView("Preparing File") }
-                if let errorMessage { Text(errorMessage).foregroundStyle(.red) }
                 if let completionMessage { Text(completionMessage) }
             }
             .disabled(busy)
@@ -79,7 +70,69 @@ struct TransferView: View {
             if let initialURL { load(initialURL) }
         }
         .onDisappear { task?.cancel() }
+        .alert("Could Not Complete Transfer", isPresented: showingError) {
+            Button("OK") {
+                errorMessage = nil
+            }
+        } message: {
+            Text(errorMessage ?? "")
+        }
         .modifier(StallyUpdateRequiredModifier())
+    }
+
+    private var showingError: Binding<Bool> {
+        .init(
+            get: { errorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    errorMessage = nil
+                }
+            }
+        )
+    }
+
+    private var importSection: some View {
+        Section("Import") {
+            StallyActionButton(.chooseImportFile) { importing = true }
+            Text("Review before saving. Current records are kept unless you choose otherwise.")
+                .mhRowSupporting()
+            if let archive {
+                Button("Review Again") { prepareReview(archive) }
+            }
+            dropTarget
+        }
+    }
+
+    private var acceptsDrop: Bool {
+        !busy && review == nil && !importing && !exporting
+    }
+
+    private var dropTarget: some View {
+        let minimumHeight = 60.0
+        let highlightOpacity = 0.15
+        return Label("Drop one Stally or JSON file here", systemImage: "square.and.arrow.down")
+            .frame(maxWidth: .infinity, minHeight: minimumHeight, alignment: .leading)
+            .contentShape(Rectangle())
+            .listRowBackground(dropTargeted ? Color.accentColor.opacity(highlightOpacity) : nil)
+            .dropDestination(for: ImportedStallyFile.self, isEnabled: acceptsDrop) { files, session in
+                guard acceptsDrop, session.itemsCount == 1, files.count == 1, let file = files.first else {
+                    return
+                }
+                completionMessage = nil
+                switch file.contents {
+                case .archive(let loaded):
+                    archive = loaded
+                    prepareReview(loaded)
+                case .failure(let message):
+                    errorMessage = message
+                }
+            }
+            .dropConfiguration { session in
+                .init(operation: session.itemsCount == 1 && acceptsDrop ? .copy : .forbidden)
+            }
+            .onDropSessionUpdated { session in
+                dropTargeted = session.phase == .entering || session.phase == .active
+            }
     }
 
     private var transferToolbar: some ToolbarContent {

@@ -370,9 +370,46 @@ read-only App Intent; it does not write the clipboard or send anything. Portable
 library export/import retains its independent versioned, reviewed contract.
 
 Readable text has no format/schema header, mandatory headings, or supported
-re-import grammar. Native String sharing is sufficient for this journey; custom
-Transferable types, drag/drop, and report sharing are deferred until a separate
-use case warrants them. Buttons and selectable text provide non-drag alternatives.
+re-import grammar. Native String sharing is sufficient for this journey.
+The preview's text can also be dragged; Copy Item Content and Share Item Content
+remain its visible, non-drag alternatives.
+
+### Native Transfer Journeys
+
+The selected [#19](https://github.com/muhiro12/Stally/issues/19) scope reuses the
+existing link, content, period-reading, and portable-file contracts:
+
+| Journey | Selected behavior |
+| --- | --- |
+| Item reference | Drag a Library or Archive row as its stable HTTPS Item URL. Share Item Link remains available in Item actions. The drag does not include notes, history, or photos. |
+| Readable content | Drag, copy, or share the exact text shown in the Item content preview, using the native String representation. |
+| Time Together | Preview, copy, share, or drag a dated report of one Item's current and cumulative recorded time. Preserve exact units, approximate units, excluded periods, unknown results, and possible-overlap explanations. |
+| Portable export | Save the existing package or records-only JSON through the system file exporter. Files supplies subsequent sharing and dragging; no second export format or parallel exporter is added. |
+| Incoming file | Drop one Stally package or JSON file on the Import & Export drop area, or use Choose Stally File. Packages also support Open in Stally. All paths use the same bounded validation and explicit import review. |
+
+The Time Together report includes the Item name and calculation date but omits
+notes, representative links, photos, Tags, Marks, and internal identifiers.
+Opening its preview takes an immutable snapshot, so later edits or a date change
+do not alter what is copied/shared. Reopen to recalculate. Invalid histories fail
+visibly; missing dates never become zero days. This is readable text, not a new
+import format. The existing Get Time Together Intent keeps its result contract
+and shares the same reading formatter.
+
+For these journeys, only incoming portable files need a custom Transferable
+adapter. It declares
+the existing package and JSON content types and finishes reading inside the
+provider's [file-access lifetime](https://developer.apple.com/documentation/coretransferable/filerepresentation).
+Review retains a validated in-memory snapshot,
+not a temporary provider URL. Validation errors are shown without saving.
+Multiple-file drops and drops while loading or reviewing are rejected. Dropping
+copies input for review; it never moves/deletes the source or silently applies it.
+
+Collection reordering and drag-to-archive/tag/record are not adopted: collection
+order is derived, and these mutations already have explicit actions. Custom
+Item serialization is not adopted because URL and String cover the selected
+journeys. A new Insights report is outside this scope: the current app has no
+selected Insights aggregation/report to share. This decision does not postpone
+the retired template workflow or introduce an incoming text parser.
 
 ### Input and Template Retirement
 

@@ -17,6 +17,7 @@ struct TransferMediaTests {
         let url = try await TransferFileOperations.writeTemporary(archive)
         defer { try? FileManager.default.removeItem(at: url) }
         let loaded = try await TransferFileOperations.read(url)
+        try FileManager.default.removeItem(at: url)
         let target = ModelContext(try StallyModelContainerFactory.inMemory())
         let review = try TransferOperations.review(loaded, context: target)
         try TransferOperations.apply(review, selection: review.defaultSelection, today: "2026-10-31", context: target)

@@ -19,9 +19,13 @@ struct TransferTests {
         defer { try? FileManager.default.removeItem(at: url) }
         try archive.fileWrapper().write(to: url, options: .atomic, originalContentsURL: nil)
         let loaded = try await TransferFileOperations.read(url)
+        // Provider files may disappear as soon as a drop's FileRepresentation callback returns.
+        try FileManager.default.removeItem(at: url)
         let target = ModelContext(try StallyModelContainerFactory.inMemory())
         let review = try TransferOperations.review(loaded, context: target)
         #expect(review.defaultSelection.count == 4)
+        #expect(try target.fetchCount(FetchDescriptor<Item>()) == 0)
+        #expect(!target.hasChanges)
         #expect(
             try TransferOperations.apply(
                 review,

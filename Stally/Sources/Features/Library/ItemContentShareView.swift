@@ -10,8 +10,13 @@ import AppKit
 struct ItemContentShareView: View {
     struct Content: Identifiable {
         let id = UUID()
+        var isTimeTogether = false
         // Share exactly the preview the person opened, even if the underlying Item changes.
         let text: String
+
+        var title: LocalizedStringResource {
+            isTimeTogether ? "Time Together" : "Item Content"
+        }
     }
 
     @Environment(\.dismiss)
@@ -23,18 +28,17 @@ struct ItemContentShareView: View {
         NavigationStack {
             Form {
                 MHContainerContent {
+                    previewSection
                     Section {
-                        Text(verbatim: content.text)
-                            .textSelection(.enabled)
-                    } footer: {
-                        Text("Includes name, note, and link. Photos, tags, Marks, and periods are not included.")
-                    }
-                    Section {
-                        StallyActionButton(.copyItemContent) {
+                        StallyActionButton(content.isTimeTogether ? .copyReport : .copyItemContent) {
                             copy()
                         }
                         ShareLink(item: content.text) {
-                            StallyActionLabel.shareItemContent
+                            if content.isTimeTogether {
+                                StallyActionLabel.shareTimeTogether
+                            } else {
+                                StallyActionLabel.shareItemContent
+                            }
                         }
                         if copied {
                             Label("Copied", systemImage: "checkmark")
@@ -43,13 +47,32 @@ struct ItemContentShareView: View {
                 }
             }
             .mhFormChrome(.content)
-            .navigationTitle("Item Content")
+            .navigationTitle(Text(content.title))
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     StallyActionButton(.done) {
                         dismiss()
                     }
                 }
+            }
+        }
+    }
+
+    private var previewSection: some View {
+        Section {
+            Text(verbatim: content.text)
+                .textSelection(.enabled)
+                .draggable(content.text)
+        } footer: {
+            if content.isTimeTogether {
+                Text(
+                    """
+                    Includes the Item name, calculation date, and time together. \
+                    Notes, links, photos, tags, and Marks are not included.
+                    """
+                )
+            } else {
+                Text("Includes name, note, and link. Photos, tags, Marks, and periods are not included.")
             }
         }
     }

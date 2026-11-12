@@ -109,6 +109,7 @@ remain available beyond those suggestions. Missing UUIDs are never replaced.
 | Item creation, details, independent state, deletion | Create/Edit/Get Item Details; Set Archive/Favorite/Recording; Delete Item |
 | Library search and opening | Find Items; Open Item; Open Item Link |
 | Readable Item sharing | Get Item Content; the app previews, copies, and shares the same `ItemOperations.shareText` output |
+| Time Together reports | The app previews, copies, and shares `PeriodReadingOperations.shareText`; Get Time Together retains its qualified String result through the shared `PeriodReadingText` formatter |
 | Text input assistance | Prepare Item from Text; the app reviews the same source-backed `ItemInputOperations` result before filling empty draft fields |
 | Mark history | Get Item Marks; Record Today/Now; Add Mark on Date; Correct/Delete Mark |
 | Period history and readings | Get Item Periods; Add/Correct/End/Resume/Delete Period; Get Time Together |
@@ -217,6 +218,39 @@ The implementation has app-build, repository-rule, localization and English/
 Japanese Settings Preview evidence. Unit tests, purchase/restore, full UI flows,
 physical sync transitions and distribution qualification are deferred. Earlier
 test results below predate this policy and do not verify its implementation.
+
+## November 12 native transfer verification
+
+The selected [native transfer journeys](product-behavior-design.md#native-transfer-journeys)
+have passing repository rules and 100 library tests in 25 suites. The new report
+checks cover dated output, omitted private context, partial-date qualifications,
+unknown history, invalid periods, and unchanged records. Package/media tests also
+remove the source file before reviewing and applying its retained snapshot.
+The app builds for iPadOS 27.2; its extracted inventory still contains 40 Intents.
+English/Japanese catalogs have no incomplete or stale entries.
+
+A native app-context `NSItemProvider` probe loaded the production
+`ImportedStallyFile` adapter for both package and JSON representations. After
+removing each source file, review still contained the expected new Item while
+the target store contained zero Items and no pending changes. An unsupported
+format version returned the localized validation failure.
+
+On an iPad Pro 11-inch Simulator, English/Japanese report previews and copied
+text matched, and native sharing could be cancelled. An Item row was dragged
+into Stally's search field, which received its HTTPS reference. Choosing a valid
+JSON file opened review; cancelling preserved existing records. An unsupported
+version was rejected. This pass found and fixed duplicate report-sheet
+presentation caused by attaching a sheet to a Section; the final presentation
+is owned by Item detail. Transfer failures now use an alert so their explanation
+does not remain below the visible portion of the form. A final Japanese run
+confirmed that the unsupported-version alert appears immediately after selection.
+
+Cross-app Files-to-Stally drop delivery remains unverified. The scripted gestures
+lifted a file but did not complete the Dock/app-switch sequence; this is incomplete
+interaction evidence, not a diagnosed app or platform defect. Live multi-file and
+unsupported-type drop rejection, outgoing text drops into other apps, physical
+pointer interaction, and VoiceOver remain qualification work. Provider-probe and
+file-picker results do not substitute for those checks.
 
 ## November 2 verification
 

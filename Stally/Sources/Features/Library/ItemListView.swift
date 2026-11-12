@@ -50,6 +50,7 @@ struct ItemListView: View {
                         ItemListRow()
                             .environment(item)
                     }
+                    .draggable(StallyLinkOperations.url(for: .item(item.uuid)))
                 }
             }
         }
