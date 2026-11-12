@@ -4,9 +4,6 @@ import SwiftData
 import SwiftUI
 
 struct DiagnosticsView: View {
-    @Environment(\.dismiss)
-    private var dismiss
-
     #if DEBUG
     @AppStorage(StallyDevelopmentPreferences.automaticallySeedRecordsKey)
     private var automaticallySeedRecords = true
@@ -24,28 +21,19 @@ struct DiagnosticsView: View {
     let startupError: String?
 
     var body: some View {
-        NavigationStack {
-            diagnosticsForm
-                .navigationTitle("Debug")
-                .toolbar {
-                    ToolbarItem(placement: .confirmationAction) {
-                        Button("Done", systemImage: "checkmark") {
-                            dismiss()
-                        }
-                    }
+        diagnosticsForm
+            .navigationTitle("Debug")
+            .task { refresh() }
+            #if DEBUG
+            .confirmationDialog("Use the shared store on next launch?", isPresented: $confirmingSharedStore) {
+                Button("Use Shared Store") {
+                    useSharedStore = true
                 }
-                .task { refresh() }
-                #if DEBUG
-                .confirmationDialog("Use the shared store on next launch?", isPresented: $confirmingSharedStore) {
-                    Button("Use Shared Store") {
-                        useSharedStore = true
-                    }
-                } message: {
-                    Text("Writes in the shared store may sync with iCloud. Development records will not be copied.")
-                }
+            } message: {
+                Text("Writes in the shared store may sync with iCloud. Development records will not be copied.")
+            }
             #endif
-        }
-        .mhTheme(.standard)
+            .mhTheme(.standard)
     }
 
     private var diagnosticsForm: some View {

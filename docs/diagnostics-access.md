@@ -2,9 +2,11 @@
 
 ## Entry and Availability
 
-The Library sidebar has a visible **Debug** action in every build. It opens
-one MHUI-backed sheet without replacing the app's sidebar/list/detail navigation.
-The startup-error screen provides the same action when no store is available.
+The Library sidebar has a visible **Settings** action in every build. Open
+**Settings > Advanced > Debug** for inspection without changing Library selection
+or Item-detail navigation. Advanced and Debug use the Settings navigation stack,
+so Back returns to Advanced and then Settings. The startup-error screen retains
+a direct Debug action in its own sheet when no store is available.
 No repeated taps, hidden gesture, saved unlock flag, account role, or TestFlight
 receipt check is required.
 
@@ -12,15 +14,16 @@ The owner's [Issue #34 clarification](https://github.com/muhiro12/Stally/issues/
 explicitly accepts this access direction. The former secret-command model was
 considered and deliberately retired: discoverable access is preferable to hidden
 functionality, and obscurity cannot protect privileged tools. Do not restore an
-`enable debug` command or saved unlock mode during a later refactor. The secondary
-sidebar placement remains unchanged. The owner subsequently
-selected **Debug** (Japanese: **デバッグ**) as the visible name because the screen
+`enable debug` command or saved unlock mode during a later refactor. The owner
+subsequently selected **Debug** (Japanese: **デバッグ**) as the visible name because the screen
 also contains development tools in DEBUG builds. Its refresh action is labeled
-**Refresh Information**, and both entry points use the `ladybug` symbol.
+**Refresh Information**, and both Debug entry points use the `ladybug` symbol.
 
-Stally does not yet have a full Settings surface. The sidebar is the current
-entry; moving this internal navigation action into Settings later does not create
-an external URL or persistent identity contract. TestFlight and App Store builds
+Following the [November 10 proposal](https://github.com/muhiro12/Stally/issues/34#issuecomment-6766000707),
+the existing Settings surface now groups this low-frequency tool in a separate
+Advanced destination (Japanese: **詳細**). Subscription, sync, support and legal
+settings retain their ordinary placement. This internal navigation change adds
+no external URL or persistent identity contract. TestFlight and App Store builds
 use the same Release diagnostics capability. This change must be included in a
 new binary before already-installed distribution builds can expose the action.
 
@@ -113,3 +116,27 @@ footer captures. Both entry points use the new label in source; the startup-erro
 entry was not runtime-exercised. Formatting, repository rules, and catalog
 validation passed. This wording-only follow-up did not rerun Library tests or
 Release distribution verification.
+
+### Settings Navigation Follow-up
+
+Verified on November 12, 2026, on an iPhone 18 Pro Simulator with iOS 27.2:
+
+- Native Debug and Release app builds passed with no warnings or errors.
+- Japanese and English Debug runs reached Settings > Advanced > Debug and
+  returned through both Back steps, then closed Settings to the Library.
+  Refresh preserved displayed counts; the nonempty development store kept
+  manual sample insertion disabled.
+- Japanese Release exposed the same route and read-only information, without
+  sample insertion, next-launch controls, or full store paths. Refresh preserved
+  the displayed counts, and Back returned through Advanced to Settings.
+  Release executable symbols excluded the development
+  sample operations, preferences, seed factory, and store types.
+- Swift formatting, retained repository rules, whitespace checks and the
+  English/Japanese catalog audit passed. Shared Operations were unchanged;
+  their unit tests were not rerun for this navigation-only change.
+- Verification runs and interaction sessions were stopped. The temporary Release
+  launch configuration was restored byte-for-byte, and Xcode returned to its
+  original Stally / My Mac selection.
+
+Startup-error presentation, iPad, physical devices, VoiceOver and installed
+TestFlight/App Store builds were not exercised in this follow-up.

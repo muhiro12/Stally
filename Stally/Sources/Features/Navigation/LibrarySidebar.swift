@@ -4,9 +4,6 @@ import SwiftData
 import SwiftUI
 
 struct LibrarySidebar: View {
-    @Environment(\.modelContext)
-    private var context
-    @State private var showingDiagnostics = false
     @State private var showingSettings = false
 
     let items: [Item]
@@ -24,9 +21,6 @@ struct LibrarySidebar: View {
                 Button("Settings", systemImage: "gearshape") {
                     showingSettings = true
                 }
-                Button("Debug", systemImage: "ladybug") {
-                    showingDiagnostics = true
-                }
             }
         }
         .mhListChrome(.native)
@@ -39,9 +33,6 @@ struct LibrarySidebar: View {
         )
         .sheet(isPresented: $showingSettings) {
             StallySettingsView()
-        }
-        .sheet(isPresented: $showingDiagnostics) {
-            DiagnosticsView(container: context.container, startupError: nil)
         }
     }
 

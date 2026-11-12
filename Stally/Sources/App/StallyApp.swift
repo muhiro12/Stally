@@ -70,7 +70,16 @@ struct StallyApp: App {
             }
         }
         .sheet(isPresented: $showingDiagnostics) {
-            DiagnosticsView(container: nil, startupError: startupError)
+            NavigationStack {
+                DiagnosticsView(container: nil, startupError: startupError)
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("Done", systemImage: "checkmark") {
+                                showingDiagnostics = false
+                            }
+                        }
+                    }
+            }
         }
     }
 

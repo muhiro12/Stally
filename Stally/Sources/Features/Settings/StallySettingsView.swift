@@ -85,6 +85,11 @@ struct StallySettingsView: View {
                 syncSection
                 subscriptionSection
                 aboutSection
+                Section {
+                    NavigationLink("Advanced") {
+                        StallyAdvancedSettingsView()
+                    }
+                }
             }
             .mhListChrome(.native)
             .navigationTitle("Settings")

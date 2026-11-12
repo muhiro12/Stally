@@ -24,8 +24,8 @@ not recovery from an error or a migration of earlier records.
 
 ### Developer Controls
 
-Open **Debug** from the Library sidebar in any build. DEBUG adds the
-development controls described below. See [diagnostics access](diagnostics-access.md)
+Open **Settings > Advanced > Debug** from the Library sidebar in any build.
+DEBUG adds the development controls described below. See [diagnostics access](diagnostics-access.md)
 for the distributed read-only surface. The same
 screen is available from the startup-error screen so a failed shared-store open
 does not prevent changing the next-launch choice. It uses native Form controls

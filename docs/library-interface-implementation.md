@@ -36,8 +36,11 @@ Compact layouts collapse the same hierarchy into native navigation.
   to package export. A new transfer clears previous completion feedback.
 - Settings: optional paid iCloud sync, MHPlatform purchase/restore UI, support,
   privacy, terms and licenses. Sync changes apply on the next app launch.
-- Diagnostics: the visible Debug entry opens inspection; development-store and
-  sample controls remain DEBUG-only.
+  A separate Advanced destination contains the visible Debug entry, with Back
+  navigation through Advanced to Settings.
+- Diagnostics: Settings > Advanced > Debug opens inspection in every build;
+  development-store and sample controls remain DEBUG-only. Startup failures
+  retain a direct Debug sheet when no store is open.
 
 Selection uses store-local identity for live rows; external links use UUID and
 reject ambiguity. No saved navigation preference or public route is added.
