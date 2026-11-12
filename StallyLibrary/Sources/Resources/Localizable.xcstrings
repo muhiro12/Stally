@@ -674,6 +674,166 @@
           }
         }
       }
+    },
+    "Apple Intelligence does not support this language for input assistance.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence does not support this language for input assistance."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この言語ではApple Intelligenceの入力補助を利用できません。"
+          }
+        }
+      }
+    },
+    "Apple Intelligence is still preparing. Try again later.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence is still preparing. Try again later."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligenceは準備中です。しばらくしてから再度お試しください。"
+          }
+        }
+      }
+    },
+    "Could not prepare a suggestion. Try again or enter the Item manually.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not prepare a suggestion. Try again or enter the Item manually."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "入力案を作成できませんでした。再度お試しいただくか、手入力してください。"
+          }
+        }
+      }
+    },
+    "Enter a description of one Item.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a description of one Item."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1つのアイテムについて説明を入力してください。"
+          }
+        }
+      }
+    },
+    "Input assistance is currently unavailable. You can enter the Item manually.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input assistance is currently unavailable. You can enter the Item manually."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在、入力補助は利用できません。アイテムは手入力できます。"
+          }
+        }
+      }
+    },
+    "Input assistance requires a device that supports Apple Intelligence.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input assistance requires a device that supports Apple Intelligence."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "入力補助にはApple Intelligence対応の端末が必要です。"
+          }
+        }
+      }
+    },
+    "No reliable Item suggestion was found. Describe one Item more clearly and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No reliable Item suggestion was found. Describe one Item more clearly and try again."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "元の文章に沿った入力案を作成できませんでした。1つのアイテムについて、より具体的に説明して再度お試しください。"
+          }
+        }
+      }
+    },
+    "This description could not be processed. Try different wording or enter the Item manually.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This description could not be processed. Try different wording or enter the Item manually."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この説明は処理できませんでした。表現を変えてお試しいただくか、手入力してください。"
+          }
+        }
+      }
+    },
+    "Turn on Apple Intelligence in Settings to use input assistance.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn on Apple Intelligence in Settings to use input assistance."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "入力補助を使うには、設定でApple Intelligenceをオンにしてください。"
+          }
+        }
+      }
+    },
+    "Use a shorter description, up to 4,000 characters.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use a shorter description, up to 4,000 characters."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "説明を4,000文字以内に短くしてください。"
+          }
+        }
+      }
     }
   },
   "version": "1.3"
