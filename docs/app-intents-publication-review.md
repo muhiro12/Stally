@@ -50,9 +50,13 @@ The November 12 iOS Simulator Debug build also extracted `GetItemContentIntent`,
 returning only the Item's readable name, note, and representative URL as a String.
 It does not write the clipboard, send content, expose history, or import text.
 This is an additive first-release action, not a rename of Get Item Details.
+The input-assistance build on the same date also extracted `InferItemIntent`
+with required `text: String` and a String result. Prepare Item from Text uses
+on-device extraction without saving or looking up the library. Its output is
+readable text, not a structured import contract.
 
-All 39 Stally actions are discoverable and explicitly require authentication.
-Review Import runs in the foreground. The other 38 declare background execution,
+All 40 Stally actions are discoverable and explicitly require authentication.
+Review Import runs in the foreground. The other 39 declare background execution,
 including the two Open actions that return an instruction to open a URL.
 The app has no promoted App Shortcuts. Five delete actions and tag
 consolidation request confirmation before mutation. All writes go through
@@ -86,6 +90,7 @@ value. An em dash in the result column means no returned value.
 | `FindItemsIntent` | `text: String = ""`, `scope: ItemArchiveScope = .library`, `favoritesOnly: Bool = false`, `tag: TagEntity?` | [ItemEntity] | Read |
 | `GetItemDetailsIntent` | `item: ItemEntity` | ItemEntity | Read |
 | `GetItemContentIntent` | `item: ItemEntity` | String | Read |
+| `InferItemIntent` | `text: String` | String | Unsaved on-device extraction; no library access |
 | `GetItemMarksIntent` | `item: ItemEntity` | [MarkEntity] | Read |
 | `GetItemPeriodsIntent` | `item: ItemEntity` | [PeriodEntity] | Read |
 | `GetItemPhotosIntent` | `item: ItemEntity` | [PhotoEntity] | Read |

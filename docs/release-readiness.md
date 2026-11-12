@@ -47,6 +47,11 @@ qualification remain release work. No review submission or release was performed
 - Open a shared HTTPS Item link from outside an installed app. Check locked-device
   authentication and replay of saved Shortcuts. Verify photo and file-provider
   access on devices with a representative workload.
+- Qualify [text input assistance](item-input-assistance.md) on eligible hardware:
+  Japanese/English prose, missing or ambiguous details, unsupported language,
+  Intelligence disabled or preparing, cancellation/retry, and VoiceOver review.
+  Manual editing must remain usable; suggestions must not silently save or
+  replace existing draft text. Verify Prepare Item from Text through Shortcuts.
 - Qualify the configured StoreKit purchase, restore and expiration behavior.
   Release 1.0 has no advertising and offers optional iCloud sync as the paid
   benefit. Sample ad IDs and advertising SDK linkage have been removed. Verify subscription

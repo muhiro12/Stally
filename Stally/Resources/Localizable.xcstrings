@@ -4810,6 +4810,214 @@
           }
         }
       }
+    },
+    "Apple Intelligence uses this text on your device to suggest a name, note, and link. Review the result before using it. You can also enter fields manually.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence uses this text on your device to suggest a name, note, and link. Review the result before using it. You can also enter fields manually."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligenceが端末内でこの文章から名前・メモ・リンクを提案します。内容を確認してから反映してください。手入力もできます。"
+          }
+        }
+      }
+    },
+    "Describe one thing or place, or paste its details.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Describe one thing or place, or paste its details."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1つのものや場所について説明するか、詳細を貼り付けてください。"
+          }
+        }
+      }
+    },
+    "Description": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Description"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "説明"
+          }
+        }
+      }
+    },
+    "Fill Empty Fields": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fill Empty Fields"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空欄に反映"
+          }
+        }
+      }
+    },
+    "Input Assistance": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input Assistance"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "入力補助"
+          }
+        }
+      }
+    },
+    "Only empty fields will be filled. You can edit them before saving the Item. Marks and periods are not added.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only empty fields will be filled. You can edit them before saving the Item. Marks and periods are not added."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空欄だけに反映します。アイテムを保存する前に編集できます。記録や期間は追加しません。"
+          }
+        }
+      }
+    },
+    "Prepare Item from ${text}": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prepare Item from ${text}"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "${text}からアイテム案を作成"
+          }
+        }
+      }
+    },
+    "Prepare Item from Text": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prepare Item from Text"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文章からアイテム案を作成"
+          }
+        }
+      }
+    },
+    "Prepare Suggestion": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prepare Suggestion"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "入力案を作成"
+          }
+        }
+      }
+    },
+    "Preparing Suggestion…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preparing Suggestion…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "入力案を作成中…"
+          }
+        }
+      }
+    },
+    "Stop": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "中止"
+          }
+        }
+      }
+    },
+    "Suggestion": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suggestion"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "入力案"
+          }
+        }
+      }
+    },
+    "Use on-device Apple Intelligence to extract an Item name, note, and link as readable text. No Item, Mark, or period is saved.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use on-device Apple Intelligence to extract an Item name, note, and link as readable text. No Item, Mark, or period is saved."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "端末内のApple Intelligenceでアイテムの名前・メモ・リンクを文章から抽出します。アイテム・記録・期間は保存しません。"
+          }
+        }
+      }
     }
   },
   "version": "1.3"

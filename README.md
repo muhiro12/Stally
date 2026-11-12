@@ -29,6 +29,7 @@ export/import scope, user explanations, or historical compatibility costs.
 | --- | --- |
 | Persistence and record ownership | [Five-model schema](docs/model-schema-design.md), [native sync](docs/sync-lifecycle-design.md) |
 | Editing, photos and time together | [Item editing](docs/item-context-implementation.md), [period readings](docs/period-readings-design.md) |
+| Optional text input assistance | [On-device extraction and draft review](docs/item-input-assistance.md) |
 | Import, export and conflicts | [File format](docs/export-file-format-design.md), [identity and review](docs/import-identity-design.md) |
 | Published interfaces | [Identifiers](docs/saved-key-and-identifier-design.md), [App Intent inventory](docs/app-intents-publication-review.md) |
 | Implementation and release work | [Operations and remaining checks](docs/remaining-capabilities-implementation.md), [distribution readiness](docs/release-readiness.md) |

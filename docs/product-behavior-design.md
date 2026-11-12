@@ -384,18 +384,19 @@ are not retained as future release work. The earlier proposal never established
 a released Stally compatibility baseline, and the current source contains no
 template reader requiring a migration.
 
-Manual Item editing and the existing reviewed portable-file import are the
-first-release input paths. Stally currently has no text/photo input-assistance
-path to retain or consolidate. Foundation Models and OCR-based assistance are
-not required for the first release; their adoption depends on a useful input
-journey and actual device/model availability.
-
-If input assistance is introduced, ordinary prose, OCR text, and external-tool
-output use the same editable draft flow without an app-specific template or
-external-AI mode. Preserve source input, unsaved edits, failure/cancellation
-recovery, stale-result protection, and explicit canonical saving. Manual entry
-remains usable when assistance is unavailable. Extraction must not infer
-relationship-start precision, create Marks/history, or silently save records.
+The November 12 scope update adds optional Foundation Models text input assistance
+to first-release Item editing. Ordinary prose and pasted text use one reviewable
+draft flow without an app-specific template or external-AI mode. A fresh on-device
+session extracts a source-backed name, note, and representative URL. The person
+reviews the suggestion and fills only empty fields in the current editor, then
+edits and saves normally. Existing fields, photos, Tags, and Item identity remain
+intact. Source input survives generation errors and stopping an active request;
+dismissing the assistance sheet discards its temporary source and suggestion.
+Late or cancelled results cannot apply. Manual entry remains usable when the
+model is unavailable. Extraction does not infer relationship-start precision,
+create Marks/history, or silently save records. Photo recognition and OCR capture
+are not included in this first text-assistance implementation. See the
+[implementation and evaluation boundary](item-input-assistance.md).
 
 Readable content sharing remains useful independently of input assistance.
 Portable-file export/import keeps its existing versioned contract. A new

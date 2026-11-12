@@ -128,11 +128,14 @@ and, when it carries image bytes, `assets/<lowercase-photo-uuid>.<extension>`.
 
 Readable Item content can be copied/shared separately from Item links and
 portable files. It includes name, note, and representative URL without version
-metadata or an import grammar. Manual creation and reviewed file import remain
-the first-release input paths. The dedicated Markdown template workflow is
-retired, including prompt copying, blank templates, and template parsing/review.
-Foundation Models input assistance is optional future work and is not required
-for the first release. See the
+metadata or an import grammar. Manual creation, optional on-device text input
+assistance, and reviewed file import are the first-release input paths. The
+dedicated Markdown template workflow is retired, including prompt copying,
+blank templates, and template parsing/review.
+Foundation Models assistance prepares a reviewable name, note, and link from one
+description, fills only empty draft fields, and uses the ordinary explicit save.
+It creates no Marks or periods. Photo recognition and OCR remain separate future
+work. See the [input-assistance boundary](item-input-assistance.md) and the
 [selected input and sharing behavior](product-behavior-design.md#copy-and-share-one-item).
 
 - **Native synchronization:** optional iCloud sync is a subscription benefit

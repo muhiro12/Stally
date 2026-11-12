@@ -16,6 +16,7 @@ struct ItemEditor: View {
     @State private var loadingPhotos = false
     @State private var errorMessage: String?
     @State private var saving = false
+    @State private var showingInputAssistance = false
 
     var body: some View {
         NavigationStack {
@@ -45,6 +46,11 @@ struct ItemEditor: View {
                 }
         }
         .modifier(StallyUpdateRequiredModifier())
+        .sheet(isPresented: $showingInputAssistance) {
+            ItemInputAssistView { suggestion in
+                draft = ItemInputOperations.fillingEmptyFields(of: draft, with: suggestion)
+            }
+        }
     }
 
     private var cannotSave: Bool {
@@ -65,6 +71,11 @@ struct ItemEditor: View {
     private var itemForm: some View {
         Form {
             MHContainerContent {
+                Section {
+                    Button("Input Assistance", systemImage: "sparkles") {
+                        showingInputAssistance = true
+                    }
+                }
                 Section {
                     TextField("Name", text: $draft.name)
                 } header: {
