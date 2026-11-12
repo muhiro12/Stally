@@ -13,12 +13,12 @@ struct QuickMarkButtons: View {
     @State private var errorMessage: String?
 
     var body: some View {
-        Button("Record Today", systemImage: "checkmark.circle") { add(includesTime: false) }
+        StallyActionButton(.recordToday) { add(includesTime: false) }
             .disabled(saving || !item.isMarkRecordingEnabled)
-        Button("Record Now with Time", systemImage: "clock") { add(includesTime: true) }
+        StallyActionButton(.recordNow) { add(includesTime: true) }
             .disabled(saving || !item.isMarkRecordingEnabled)
         if let lastAddedID {
-            Button("Undo Last Addition", systemImage: "arrow.uturn.backward") {
+            StallyActionButton(.undoAddition) {
                 mutate {
                     try MarkOperations.undoAddition(uuid: lastAddedID, context: context)
                     self.lastAddedID = nil

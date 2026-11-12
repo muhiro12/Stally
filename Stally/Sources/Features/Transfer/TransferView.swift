@@ -27,14 +27,14 @@ struct TransferView: View {
             Form {
                 exportSection
                 Section {
-                    Button("Export Records as JSON", systemImage: "doc.text", action: prepareRecords)
+                    StallyActionButton(.exportRecords, action: prepareRecords)
                 } header: {
                     Text("Export Records as JSON")
                 } footer: {
                     Text("JSON includes all records and photo captions, but no image files.")
                 }
                 Section("Import") {
-                    Button("Choose Stally File", systemImage: "square.and.arrow.down") { importing = true }
+                    StallyActionButton(.chooseImportFile) { importing = true }
                     Text(
                         "Review before saving. Current records are kept unless you choose otherwise."
                     )
@@ -84,7 +84,7 @@ struct TransferView: View {
 
     private var transferToolbar: some ToolbarContent {
         ToolbarItem(placement: .confirmationAction) {
-            Button("Done", systemImage: "checkmark") {
+            StallyActionButton(.done) {
                 dismiss()
             }
         }
@@ -97,7 +97,7 @@ struct TransferView: View {
                 Text("Exported photos retain embedded metadata, including location when present.")
                     .mhRowSupporting()
             }
-            Button("Export Library", systemImage: "square.and.arrow.up", action: prepareExport)
+            StallyActionButton(.exportLibrary, action: prepareExport)
             Text("Exports all Items, including archived records and unused Tags.").mhRowSupporting()
         } header: {
             Text("Export")

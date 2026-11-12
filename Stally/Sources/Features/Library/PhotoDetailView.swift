@@ -32,7 +32,7 @@ struct PhotoDetailView: View {
                 .navigationTitle("Photo")
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Done", systemImage: "checkmark") {
+                        StallyActionButton(.done) {
                             dismiss()
                         }
                     }

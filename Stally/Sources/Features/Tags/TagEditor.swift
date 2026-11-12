@@ -25,18 +25,18 @@ struct TagEditor: View {
                 .navigationTitle(tag == nil ? "Add Tag" : "Edit Tag")
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel", systemImage: "xmark") {
+                        StallyActionButton(.cancel) {
                             dismiss()
                         }.disabled(saving)
                     }
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Save", systemImage: "checkmark", action: save)
+                        StallyActionButton(.save, action: save)
                             .disabled(saving || name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
                 }
                 .interactiveDismissDisabled(saving)
                 .confirmationDialog("Delete this tag and its assignments?", isPresented: $confirmingDelete) {
-                    Button("Delete Tag", role: .destructive) {
+                    StallyActionButton(.deleteTag, role: .destructive) {
                         if let tag {
                             mutate {
                                 try TagOperations.delete(tag, context: context)
@@ -62,7 +62,7 @@ struct TagEditor: View {
                 }
                 if tag != nil {
                     Section {
-                        Button("Delete Tag", role: .destructive) {
+                        StallyActionButton(.deleteTag, role: .destructive) {
                             confirmingDelete = true
                         }
                     } footer: {

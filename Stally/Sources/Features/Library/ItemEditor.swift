@@ -25,12 +25,12 @@ struct ItemEditor: View {
                 .navigationTitle(item == nil ? "Add Item" : "Edit Item")
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel", systemImage: "xmark") {
+                        StallyActionButton(.cancel) {
                             dismiss()
                         }.disabled(saving)
                     }
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Save", systemImage: "checkmark") {
+                        StallyActionButton(.save) {
                             save()
                         }
                         .disabled(cannotSave)

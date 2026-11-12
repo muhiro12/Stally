@@ -25,12 +25,12 @@ struct ItemTagPicker: View {
                 .navigationTitle("Choose Tags")
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel", systemImage: "xmark") {
+                        StallyActionButton(.cancel) {
                             dismiss()
                         }.disabled(saving)
                     }
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Save", systemImage: "checkmark", action: save).disabled(saving)
+                        StallyActionButton(.save, action: save).disabled(saving)
                     }
                 }
                 .interactiveDismissDisabled(saving)
@@ -50,7 +50,7 @@ struct ItemTagPicker: View {
                             TagNameView(tag: tag, tags: tags)
                         }
                     }
-                    Button("Add Tag", systemImage: "plus") {
+                    StallyActionButton(.addTag) {
                         addingTag = true
                     }
                 } footer: {

@@ -23,7 +23,7 @@ struct ItemDraftTagsSection: View {
                     Button(role: .destructive) {
                         draft.newTags.removeAll { $0.id == tag.id }
                     } label: {
-                        actionLabel("Remove Tag", systemImage: "minus.circle")
+                        actionLabel(.removeTag)
                     }
                     .buttonStyle(.borderless)
                 }
@@ -34,7 +34,7 @@ struct ItemDraftTagsSection: View {
                     draft.newTags.append(.init(name: newTagName))
                     newTagName = ""
                 } label: {
-                    actionLabel("Add Tag", systemImage: "plus")
+                    actionLabel(.addTag)
                 }
                 .buttonStyle(.borderless)
                 .disabled(newTagName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
@@ -44,8 +44,8 @@ struct ItemDraftTagsSection: View {
         }
     }
 
-    private func actionLabel(_ title: LocalizedStringKey, systemImage: String) -> some View {
-        Label(title, systemImage: systemImage)
+    private func actionLabel(_ label: StallyActionLabel) -> some View {
+        label
             .labelStyle(.iconOnly)
             .frame(minWidth: LibraryLayout.minimumControlSize, minHeight: LibraryLayout.minimumControlSize)
             .contentShape(.rect)

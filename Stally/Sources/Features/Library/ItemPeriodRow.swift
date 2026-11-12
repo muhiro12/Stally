@@ -19,11 +19,11 @@ struct ItemPeriodRow: View {
             }
             .buttonStyle(.plain)
             if period.isOngoing {
-                Button("End Period") {
+                StallyActionButton(.endPeriod) {
                     edit(.end(period))
                 }.buttonStyle(.borderless)
             } else if canResume {
-                Button("Resume with a new period") {
+                StallyActionButton(.resumePeriod) {
                     edit(.resume(period))
                 }.buttonStyle(.borderless)
             }

@@ -32,7 +32,7 @@ struct ItemPeriodsSection: View {
             ForEach(periods) { period in
                 ItemPeriodRow(period: period, canResume: !hasOngoingPeriod, edit: edit)
             }
-            Button("Add Period", systemImage: "plus") {
+            StallyActionButton(.addPeriod) {
                 edit(.newPeriod)
             }
         } header: {

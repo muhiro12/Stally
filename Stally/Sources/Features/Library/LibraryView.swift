@@ -82,7 +82,7 @@ struct LibraryView: View {
                 } description: {
                     Text("Your Marks, periods, and notes will appear here.")
                 } actions: {
-                    Button("Add Item", systemImage: "plus") {
+                    StallyActionButton(.addItem) {
                         addingItem = true
                     }
                 }

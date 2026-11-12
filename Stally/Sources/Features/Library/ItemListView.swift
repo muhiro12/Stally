@@ -72,7 +72,7 @@ struct ItemListView: View {
                         if archiveScope != initialScope {
                             Button("Reset Filters", action: resetFilters)
                         }
-                        Button("Add Item", systemImage: "plus", action: addItem)
+                        StallyActionButton(.addItem, action: addItem)
                     }
                 }
             }
@@ -91,7 +91,7 @@ struct ItemListView: View {
         .searchPresentationToolbarBehavior(.avoidHidingContent)
         .toolbar {
             ToolbarItem(placement: LibraryLayout.primaryActionPlacement) {
-                Button("Add Item", systemImage: "plus", action: addItem)
+                StallyActionButton(.addItem, action: addItem)
                     .keyboardShortcut("n", modifiers: .command)
             }
             ToolbarItem(placement: .primaryAction) {

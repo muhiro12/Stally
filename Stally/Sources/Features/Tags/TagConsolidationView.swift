@@ -32,7 +32,7 @@ struct TagConsolidationView: View {
             .navigationTitle("Consolidate Tags")
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel", systemImage: "xmark") {
+                    StallyActionButton(.cancel) {
                         dismiss()
                     }
                     .disabled(saving)

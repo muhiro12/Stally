@@ -71,19 +71,19 @@ struct RecordEditor: View {
                 .navigationTitle(Text(selection.title))
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel", systemImage: "xmark") {
+                        StallyActionButton(.cancel) {
                             dismiss()
                         }.disabled(saving)
                     }
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Save", systemImage: "checkmark", action: save).disabled(saving)
+                        StallyActionButton(.save, action: save).disabled(saving)
                     }
                 }
                 .interactiveDismissDisabled(saving)
                 .confirmationDialog(
                     "Delete this record?", isPresented: $confirmingDelete, titleVisibility: .visible
                 ) {
-                    Button("Delete Record", role: .destructive, action: deleteRecord)
+                    StallyActionButton(.deleteRecord, role: .destructive, action: deleteRecord)
                 }
         }
         .modifier(StallyUpdateRequiredModifier())
@@ -137,7 +137,7 @@ struct RecordEditor: View {
                 switch selection {
                 case .mark, .period:
                     Section {
-                        Button("Delete Record", role: .destructive) {
+                        StallyActionButton(.deleteRecord, role: .destructive) {
                             confirmingDelete = true
                         }
                     }

@@ -20,7 +20,7 @@ struct TagManagerView: View {
                 .navigationTitle("Tags")
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Done", systemImage: "checkmark") {
+                        StallyActionButton(.done) {
                             dismiss()
                         }
                     }
@@ -52,8 +52,11 @@ struct TagManagerView: View {
                             .mhForegroundStyle(.primaryText)
                         }
                     }
-                    Button("Consolidate Tags") { consolidating = true }.disabled(tags.count < minimumConsolidationCount)
-                    Button("Add Tag", systemImage: "plus") {
+                    StallyActionButton(.consolidateTags) {
+                        consolidating = true
+                    }
+                    .disabled(tags.count < minimumConsolidationCount)
+                    StallyActionButton(.addTag) {
                         addingTag = true
                     }
                 } footer: {

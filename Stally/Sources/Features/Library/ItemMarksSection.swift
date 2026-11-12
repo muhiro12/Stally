@@ -21,7 +21,7 @@ struct ItemMarksSection: View {
     var body: some View {
         Section {
             QuickMarkButtons(item: item)
-            Button("Add Mark", systemImage: "plus") {
+            StallyActionButton(.addMark) {
                 edit(.newMark)
             }
             .disabled(!item.isMarkRecordingEnabled)

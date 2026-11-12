@@ -95,7 +95,7 @@ struct StallySettingsView: View {
             .navigationTitle("Settings")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done", systemImage: "checkmark") {
+                    StallyActionButton(.done) {
                         dismiss()
                     }
                 }

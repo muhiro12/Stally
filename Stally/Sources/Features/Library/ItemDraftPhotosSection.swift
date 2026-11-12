@@ -25,7 +25,7 @@ struct ItemDraftPhotosSection: View {
                 matching: .images,
                 preferredItemEncoding: .current
             ) {
-                Label("Add Photos", systemImage: "photo.badge.plus")
+                StallyActionLabel.addPhotos
             }
             .disabled(loading)
             if loading {
@@ -44,28 +44,28 @@ struct ItemDraftPhotosSection: View {
             Button {
                 move(id, offset: -1)
             } label: {
-                actionLabel("Move Photo Up", systemImage: "arrow.up")
+                actionLabel(.movePhotoUp)
             }
             .disabled(draft.photos.first?.id == id)
             Button {
                 move(id, offset: 1)
             } label: {
-                actionLabel("Move Photo Down", systemImage: "arrow.down")
+                actionLabel(.movePhotoDown)
             }
             .disabled(draft.photos.last?.id == id)
             Spacer()
             Button(role: .destructive) {
                 draft.photos.removeAll { $0.id == id }
             } label: {
-                actionLabel("Remove Photo", systemImage: "trash")
+                actionLabel(.removePhoto)
             }
         }
         .buttonStyle(.borderless)
         .labelStyle(.iconOnly)
     }
 
-    private func actionLabel(_ title: LocalizedStringKey, systemImage: String) -> some View {
-        Label(title, systemImage: systemImage)
+    private func actionLabel(_ label: StallyActionLabel) -> some View {
+        label
             .frame(minWidth: LibraryLayout.minimumControlSize, minHeight: LibraryLayout.minimumControlSize)
             .contentShape(.rect)
     }

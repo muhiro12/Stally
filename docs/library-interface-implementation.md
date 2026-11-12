@@ -46,6 +46,10 @@ Selection uses store-local identity for live rows; external links use UUID and
 reject ambiguity. No saved navigation preference or public route is added.
 Draft dates use Gregorian civil components without inventing missing parts.
 
+Shared action titles, symbols, placement exceptions, and availability are recorded
+in the [action label review](action-label-review.md). Screens retain ownership
+of callbacks, drafts, confirmation, and disabled states.
+
 ## MHUI Presentation Ownership
 
 MHUI owns shared typography, semantic colors, row insets, section hierarchy and

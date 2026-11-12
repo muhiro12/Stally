@@ -62,7 +62,7 @@ struct ItemDetailView: View {
             isPresented: $confirmingDelete,
             titleVisibility: .visible
         ) {
-            Button("Delete Item", role: .destructive) {
+            StallyActionButton(.deleteItem, role: .destructive) {
                 mutate {
                     try ItemOperations.delete(item, context: context)
                     onDelete()
@@ -80,7 +80,7 @@ struct ItemDetailView: View {
 
     @ToolbarContentBuilder private var itemToolbar: some ToolbarContent {
         ToolbarItem(placement: LibraryLayout.primaryActionPlacement) {
-            Button("Edit Item", systemImage: "square.and.pencil") {
+            StallyActionButton(.editItem) {
                 editingItem = true
             }
             .disabled(saving)
@@ -101,30 +101,24 @@ struct ItemDetailView: View {
 
     private var itemActions: some View {
         Group {
-            Button(
-                item.isFavorite ? "Remove Favorite" : "Add to Favorites",
-                systemImage: item.isFavorite ? "star.slash" : "star"
-            ) {
+            StallyActionButton(item.isFavorite ? .removeFavorite : .addFavorite) {
                 mutate {
                     try ItemOperations.setFavorite(item, to: !item.isFavorite, context: context)
                 }
             }
-            Button(
-                item.isArchived ? "Move to Library" : "Archive Item",
-                systemImage: item.isArchived ? "tray.and.arrow.up" : "archivebox"
-            ) {
+            StallyActionButton(item.isArchived ? .restoreItem : .archiveItem) {
                 mutate {
                     try ItemOperations.setArchived(item, to: !item.isArchived, context: context)
                 }
             }
-            Button("Choose Tags", systemImage: "tag") {
+            StallyActionButton(.chooseTags) {
                 choosingTags = true
             }
             ShareLink(item: StallyLinkOperations.url(for: .item(item.uuid))) {
-                Label("Share Item Link", systemImage: "square.and.arrow.up")
+                StallyActionLabel.shareItemLink
             }
             Divider()
-            Button("Delete Item", systemImage: "trash", role: .destructive) {
+            StallyActionButton(.deleteItem, role: .destructive) {
                 confirmingDelete = true
             }
         }
