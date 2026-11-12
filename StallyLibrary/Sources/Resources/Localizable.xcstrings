@@ -838,9 +838,21 @@
     "%lld exact days": {
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld exact days"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld exact day"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld exact days"
+                }
+              }
+            }
           }
         },
         "ja": {
@@ -856,7 +868,49 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "; about %1$lld years + %2$lld months (partial dates)"
+            "value": "; about %#@years@ + %#@months@ (partial dates)"
+          },
+          "substitutions": {
+            "years": {
+              "argNum": 1,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%lld year"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%lld years"
+                    }
+                  }
+                }
+              }
+            },
+            "months": {
+              "argNum": 2,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%lld month"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%lld months"
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "ja": {
@@ -886,9 +940,21 @@
     "; calculable subtotal, excluding %lld periods": {
       "localizations": {
         "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "; calculable subtotal, excluding %lld periods"
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "; calculable subtotal, excluding %lld period"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "; calculable subtotal, excluding %lld periods"
+                }
+              }
+            }
           }
         },
         "ja": {

@@ -58,9 +58,32 @@ struct PeriodReportTests {
         let text = try PeriodReadingOperations.shareText(for: item, today: "2026-11-12")
         #expect(text.contains("Current: Not enough recorded dates") || text.contains("現在の期間：計算に必要な日付がありません"))
         #expect(text.contains("about 2 years + 0 months (partial dates)") || text.contains("部分的な日付からの概算：2年 ＋ 0か月"))
-        #expect(text.contains("calculable subtotal, excluding 1 periods") || text.contains("1件の期間を除く計算可能な小計"))
+        #expect(text.contains("calculable subtotal, excluding 1 period;") || text.contains("1件の期間を除く計算可能な小計"))
         #expect(text.contains("assumes partial-date periods do not overlap") || text.contains("部分的な日付の期間は重複しないと仮定"))
         #expect(!context.hasChanges)
+    }
+
+    @Test(arguments: [0, 1, 2], [0, 1, 2])
+    func reportUnitsUseIndependentPluralForms(_ count: Int, _ months: Int) {
+        let reading = PeriodReading(
+            exactDays: count, approximateMonths: months, approximateYears: count,
+            includedCount: 1, excludedCount: count, hasApproximation: true, mayOverlap: false
+        )
+        let text = PeriodReadingText.describe(.init(current: reading, cumulative: reading))
+        let days = count == 1 ? "1 exact day;" : "\(count) exact days;"
+        let years = count == 1 ? "1 year" : "\(count) years"
+        let monthText = months == 1 ? "1 month" : "\(months) months"
+        #expect(text.contains(days) || text.contains("正確にわかる日数：\(count)日"))
+        #expect(
+            text.contains("about \(years) + \(monthText) (partial dates)")
+                || text.contains("部分的な日付からの概算：\(count)年 ＋ \(months)か月")
+        )
+        if count > 0 {
+            let periods = count == 1 ? "1 period" : "\(count) periods"
+            #expect(text.hasSuffix("excluding \(periods)") || text.hasSuffix("\(count)件の期間を除く計算可能な小計"))
+        } else {
+            #expect(!text.contains("excluding") && !text.contains("計算可能な小計"))
+        }
     }
 
     @Test
