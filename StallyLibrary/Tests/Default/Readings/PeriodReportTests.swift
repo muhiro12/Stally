@@ -66,8 +66,13 @@ struct PeriodReportTests {
     @Test(arguments: [0, 1, 2], [0, 1, 2])
     func reportUnitsUseIndependentPluralForms(_ count: Int, _ months: Int) {
         let reading = PeriodReading(
-            exactDays: count, approximateMonths: months, approximateYears: count,
-            includedCount: 1, excludedCount: count, hasApproximation: true, mayOverlap: false
+            exactDays: count,
+            approximateMonths: months,
+            approximateYears: count,
+            includedCount: 1,
+            excludedCount: count,
+            hasApproximation: true,
+            mayOverlap: false
         )
         let text = PeriodReadingText.describe(.init(current: reading, cumulative: reading))
         let days = count == 1 ? "1 exact day;" : "\(count) exact days;"
