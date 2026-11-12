@@ -23,13 +23,13 @@ and Japanese app interfaces.
 
 ## Support
 
-For help, questions, or feedback, open an issue in the
-[Stally repository](https://github.com/muhiro12/Stally/issues).
+For help, questions, or feedback, contact
+[@muhiro_12 on X](https://x.com/muhiro_12).
 
 Include your Stally version, iOS version, what you expected, and the steps that
-led to the issue. GitHub Issues are public and require a GitHub account to post.
-Do not attach collection backups, private photos, account details, or other
-personal information. A short example using made-up items is usually enough.
+led to the issue. Do not include exported collection files, private photos,
+account details, or other personal information in a public post. A short example
+using made-up items is usually enough.
 
 ## Common Questions
 
@@ -49,13 +49,26 @@ Yes. A subscription enables optional private iCloud sync. Turn on Use iCloud
 in Settings, then relaunch Stally to apply the change. When iCloud
 is available, Stally can synchronize your collection through your account.
 
-### How should I keep a backup?
+### How does Input Assistance use my text?
 
-Export your data from Import & Export and keep the saved file in a location you
-trust. Use a package with photos if you want to keep available image files;
-they can contain embedded location information. Standalone JSON contains
-records and captions only. During import you review changes before saving.
-Records missing from a file are kept.
+On supported devices with Apple Intelligence enabled, Input Assistance uses
+Apple's on-device language model to suggest an Item name, note, and link from
+text you type or paste. Review the suggestions before filling empty fields,
+then edit and save the Item as usual. Generating or applying a suggestion does
+not save it. You can always enter details manually.
+
+### How can I use my records elsewhere or transfer them to another device?
+
+Export your records from Import & Export for use in other apps, including AI
+tools you choose, or for transfer to another device. Choose a destination you
+trust and review what you share. Use a package with photos to include available
+image files; they can contain embedded location information. Standalone JSON
+contains records and captions only.
+
+For import into Stally, use the file promptly after export. Future versions may
+not support older files. During import you review changes before saving.
+Records missing from a file are kept. Changes to Stally's import support do not
+change the contents of files you have already exported.
 
 ## Legal
 
