@@ -28,6 +28,7 @@ export/import scope, user explanations, or historical compatibility costs.
 | Work | Entry point |
 | --- | --- |
 | Persistence and record ownership | [Five-model schema](docs/model-schema-design.md), [native sync](docs/sync-lifecycle-design.md) |
+| Live app reads and model propagation | [SwiftData app data flow](docs/swiftdata-app-data-flow.md) |
 | Editing, photos and time together | [Item editing](docs/item-context-implementation.md), [period readings](docs/period-readings-design.md) |
 | Optional text input assistance | [On-device extraction and draft review](docs/item-input-assistance.md) |
 | Import, export and conflicts | [File format](docs/export-file-format-design.md), [identity and review](docs/import-identity-design.md) |

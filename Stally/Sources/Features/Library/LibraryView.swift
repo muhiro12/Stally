@@ -71,10 +71,11 @@ struct LibraryView: View {
             }
         } detail: {
             if let selectedItem {
-                ItemDetailView(item: selectedItem) {
+                ItemDetailView {
                     selectedItemID = nil
                     compactColumn = .content
                 }
+                .environment(selectedItem)
                 .id(selectedItem.persistentModelID)
             } else {
                 ContentUnavailableView {
@@ -96,7 +97,7 @@ struct LibraryView: View {
             TransferView(initialURL: presentation.url)
         }
         .sheet(isPresented: $addingItem) {
-            ItemEditor(item: nil) { item in
+            ItemEditor(draft: .init(), title: "Add Item") { item in
                 destination = .library
                 archiveScope = .library
                 searchText = ""

@@ -10,7 +10,7 @@ struct ItemEditor: View {
     private var dismiss
     @Environment(RecordWriteSession.self)
     private var writeSession
-    let item: Item?
+    let title: LocalizedStringKey
     let onSave: ((Item) -> Void)?
     @State private var draft: ItemDraft
     @State private var loadingPhotos = false
@@ -23,7 +23,7 @@ struct ItemEditor: View {
             itemForm
                 .disabled(saving || loadingPhotos)
                 .interactiveDismissDisabled(saving || loadingPhotos)
-                .navigationTitle(item == nil ? "Add Item" : "Edit Item")
+                .navigationTitle(title)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         StallyActionButton(.cancel) {
@@ -104,10 +104,14 @@ struct ItemEditor: View {
         .mhFormChrome(.content)
     }
 
-    init(item: Item?, onSave: ((Item) -> Void)?) {
+    init(
+        draft: ItemDraft,
+        title: LocalizedStringKey,
+        onSave: ((Item) -> Void)?
+    ) {
         self.onSave = onSave
-        self.item = item
-        _draft = State(initialValue: item.map(ItemOperations.draft) ?? .init())
+        self.title = title
+        _draft = State(initialValue: draft)
     }
 
     private func save() {

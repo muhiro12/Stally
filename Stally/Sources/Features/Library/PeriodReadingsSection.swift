@@ -3,7 +3,8 @@ import StallyLibrary
 import SwiftUI
 
 struct PeriodReadingsSection: View {
-    let item: Item
+    @Environment(Item.self)
+    private var item
 
     private let refreshInterval = 60.0
 

@@ -3,7 +3,8 @@ import StallyLibrary
 import SwiftUI
 
 struct ItemPhotosSection: View {
-    let item: Item
+    @Environment(Item.self)
+    private var item
     let onSelect: (ItemDraft.Photo) -> Void
 
     private var photos: [ItemDraft.Photo] {

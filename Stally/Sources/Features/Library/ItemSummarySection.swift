@@ -7,7 +7,8 @@ struct ItemSummarySection: View {
     private var openURL
     @Environment(\.mhTheme)
     private var theme
-    let item: Item
+    @Environment(Item.self)
+    private var item
     let chooseTags: () -> Void
     @State private var linkFailed = false
 

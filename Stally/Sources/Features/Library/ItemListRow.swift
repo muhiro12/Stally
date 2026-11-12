@@ -5,7 +5,8 @@ import SwiftUI
 struct ItemListRow: View {
     @Environment(\.mhTheme)
     private var theme
-    let item: Item
+    @Environment(Item.self)
+    private var item
 
     var body: some View {
         VStack(alignment: .leading, spacing: theme.spacing.inline) {

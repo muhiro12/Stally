@@ -5,7 +5,8 @@ import SwiftUI
 struct ItemMarksSection: View {
     @Environment(\.mhTheme)
     private var theme
-    let item: Item
+    @Environment(Item.self)
+    private var item
     let edit: (RecordEditor.Selection) -> Void
 
     private var marks: [ItemMark] {
@@ -20,7 +21,7 @@ struct ItemMarksSection: View {
 
     var body: some View {
         Section {
-            QuickMarkButtons(item: item)
+            QuickMarkButtons()
             StallyActionButton(.addMark) {
                 edit(.newMark)
             }

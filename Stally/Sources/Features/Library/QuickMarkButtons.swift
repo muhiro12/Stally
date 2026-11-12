@@ -7,7 +7,8 @@ struct QuickMarkButtons: View {
     private var context
     @Environment(RecordWriteSession.self)
     private var writeSession
-    let item: Item
+    @Environment(Item.self)
+    private var item
     @State private var lastAddedID: UUID?
     @State private var saving = false
     @State private var errorMessage: String?

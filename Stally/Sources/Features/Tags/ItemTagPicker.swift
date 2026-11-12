@@ -12,7 +12,8 @@ struct ItemTagPicker: View {
     private var writeSession
     @Query(sort: \Tag.name)
     private var tags: [Tag]
-    let item: Item
+    @Environment(Item.self)
+    private var item
     @State private var selectedIDs: Set<PersistentIdentifier>
     @State private var addingTag = false
     @State private var saving = false
@@ -64,9 +65,8 @@ struct ItemTagPicker: View {
         .mhListChrome(.content)
     }
 
-    init(item: Item) {
-        self.item = item
-        _selectedIDs = State(initialValue: Set((item.tags ?? []).map(\.persistentModelID)))
+    init(selectedIDs: Set<PersistentIdentifier>) {
+        _selectedIDs = State(initialValue: selectedIDs)
     }
 
     private func binding(for tag: Tag) -> Binding<Bool> {

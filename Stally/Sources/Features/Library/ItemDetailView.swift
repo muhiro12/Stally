@@ -8,7 +8,8 @@ struct ItemDetailView: View {
     private var context
     @Environment(RecordWriteSession.self)
     private var writeSession
-    let item: Item
+    @Environment(Item.self)
+    private var item
     let onDelete: () -> Void
     @State private var editingItem = false
     @State private var choosingTags = false
@@ -22,17 +23,17 @@ struct ItemDetailView: View {
     var body: some View {
         List {
             MHContainerContent {
-                ItemSummarySection(item: item) {
+                ItemSummarySection {
                     choosingTags = true
                 }
-                ItemPhotosSection(item: item) { photo in
+                ItemPhotosSection { photo in
                     selectedPhoto = photo
                 }
-                PeriodReadingsSection(item: item)
-                ItemMarksSection(item: item) { selection in
+                PeriodReadingsSection()
+                ItemMarksSection { selection in
                     editingRecord = selection
                 }
-                ItemPeriodsSection(item: item) { selection in
+                ItemPeriodsSection { selection in
                     editingRecord = selection
                 }
                 Section {
@@ -47,13 +48,13 @@ struct ItemDetailView: View {
         .navigationTitle(item.name)
         .toolbar { itemToolbar }
         .sheet(isPresented: $editingItem) {
-            ItemEditor(item: item, onSave: nil)
+            ItemEditor(draft: ItemOperations.draft(for: item), title: "Edit Item", onSave: nil)
         }
         .sheet(isPresented: $choosingTags) {
-            ItemTagPicker(item: item)
+            ItemTagPicker(selectedIDs: Set((item.tags ?? []).map(\.persistentModelID)))
         }
         .sheet(item: $editingRecord) { selection in
-            RecordEditor(item: item, selection: selection)
+            RecordEditor(selection: selection)
         }
         .sheet(item: $selectedPhoto) { photo in
             PhotoDetailView(photo: photo)

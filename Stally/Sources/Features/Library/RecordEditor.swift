@@ -53,7 +53,8 @@ struct RecordEditor: View {
     private var dismiss
     @Environment(RecordWriteSession.self)
     private var writeSession
-    let item: Item
+    @Environment(Item.self)
+    private var item
     let selection: Selection
     @State private var start: RecordDateDraft
     @State private var end: RecordDateDraft
@@ -152,8 +153,7 @@ struct RecordEditor: View {
         .mhFormChrome(.content)
     }
 
-    init(item: Item, selection: Selection) {
-        self.item = item
+    init(selection: Selection) {
         self.selection = selection
         var startValue: String?
         var endValue: String?

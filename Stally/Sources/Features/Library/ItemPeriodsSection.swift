@@ -5,7 +5,8 @@ import SwiftUI
 struct ItemPeriodsSection: View {
     @Environment(\.mhTheme)
     private var theme
-    let item: Item
+    @Environment(Item.self)
+    private var item
     let edit: (RecordEditor.Selection) -> Void
 
     private var periods: [ItemPeriod] {

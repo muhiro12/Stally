@@ -3,6 +3,8 @@
 ## Scope
 
 Shared Item Operations implement the [accepted product behavior](product-behavior-design.md).
+The [app data flow](swiftdata-app-data-flow.md) defines live query ownership,
+selected Item propagation, and the boundary between models and editor drafts.
 
 ## Current Baseline
 

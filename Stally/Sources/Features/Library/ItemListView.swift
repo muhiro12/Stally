@@ -47,7 +47,8 @@ struct ItemListView: View {
             MHContainerContent {
                 ForEach(displayedItems) { item in
                     NavigationLink(value: item.persistentModelID) {
-                        ItemListRow(item: item)
+                        ItemListRow()
+                            .environment(item)
                     }
                 }
             }
