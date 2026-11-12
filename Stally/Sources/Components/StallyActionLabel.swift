@@ -22,6 +22,8 @@ enum StallyActionLabel: View {
     case deleteItem
     case deleteRecord
     case shareItemLink
+    case shareItemContent
+    case copyItemContent
     case addPhotos
     case movePhotoUp
     case movePhotoDown
@@ -78,6 +80,10 @@ enum StallyActionLabel: View {
             Label("Delete Record", systemImage: "trash")
         case .shareItemLink:
             Label("Share Item Link", systemImage: "square.and.arrow.up")
+        case .shareItemContent:
+            Label("Share Item Content", systemImage: "square.and.arrow.up")
+        case .copyItemContent:
+            Label("Copy Item Content", systemImage: "doc.on.doc")
         case .addPhotos:
             Label("Add Photos", systemImage: "photo.badge.plus")
         case .movePhotoUp:

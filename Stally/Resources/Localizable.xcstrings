@@ -4698,6 +4698,118 @@
           }
         }
       }
+    },
+    "Share Item Content": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share Item Content"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテムの内容を共有"
+          }
+        }
+      }
+    },
+    "Copy Item Content": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy Item Content"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテムの内容をコピー"
+          }
+        }
+      }
+    },
+    "Item Content": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Item Content"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテムの内容"
+          }
+        }
+      }
+    },
+    "Copied": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copied"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コピーしました"
+          }
+        }
+      }
+    },
+    "Includes name, note, and link. Photos, tags, Marks, and periods are not included.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Includes name, note, and link. Photos, tags, Marks, and periods are not included."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "名前、メモ、リンクを共有します。写真、タグ、マーク、期間は含まれません。"
+          }
+        }
+      }
+    },
+    "Get Item Content": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Get Item Content"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテムの内容を取得"
+          }
+        }
+      }
+    },
+    "Return the Item's name, note, and link as readable text. Photos, tags, Marks, and periods are not included.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Return the Item's name, note, and link as readable text. Photos, tags, Marks, and periods are not included."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイテムの名前、メモ、リンクを読みやすいテキストで返します。写真、タグ、マーク、期間は含まれません。"
+          }
+        }
+      }
     }
   },
   "version": "1.3"

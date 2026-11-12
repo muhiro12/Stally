@@ -5,6 +5,14 @@ import SwiftData
 public enum ItemOperations {
     private static let ambiguousIdentityLimit = 2
 
+    /// Readable name, note, and representative URL for external use, without identity or history.
+    /// This plain text is not a portable file or a supported import grammar.
+    public static func shareText(for item: Item) -> String {
+        [item.name, item.note, item.representativeURL]
+            .compactMap { TextInput.optional($0) }
+            .joined(separator: "\n\n")
+    }
+
     /// Returns the saved photo sequence, resolving equal positions by attachment identity.
     public static func orderedPhotos(for item: Item) -> [ItemPhoto] {
         (item.photos ?? []).sorted { first, second in

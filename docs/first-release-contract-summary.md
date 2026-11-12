@@ -126,6 +126,15 @@ and, when it carries image bytes, `assets/<lowercase-photo-uuid>.<extension>`.
 
 ## Accepted Platform and Interface Direction
 
+Readable Item content can be copied/shared separately from Item links and
+portable files. It includes name, note, and representative URL without version
+metadata or an import grammar. Manual creation and reviewed file import remain
+the first-release input paths. The dedicated Markdown template workflow is
+retired, including prompt copying, blank templates, and template parsing/review.
+Foundation Models input assistance is optional future work and is not required
+for the first release. See the
+[selected input and sharing behavior](product-behavior-design.md#copy-and-share-one-item).
+
 - **Native synchronization:** optional iCloud sync is a subscription benefit
   from the first release under the November 8 policy. Follow
   native account/mirroring behavior and proportional recovery. No custom shadow
@@ -141,7 +150,7 @@ and, when it carries image bytes, `assets/<lowercase-photo-uuid>.<extension>`.
   record is not replaced by a same-name record. Share `https://muhiro12.github.io/Stally/item/<UUID>`;
   installed-device handoff is a release check.
 - **App Intents:** UI and Shortcuts call the same Operations. The
-  [publication inventory](app-intents-publication-review.md) records the 38
+  [publication inventory](app-intents-publication-review.md) records the 39
   actions, their inputs and results, required authentication and destructive
   confirmations. Saved workflows depend on those identifiers and meanings.
 - **App Shortcuts:** promotion, phrases, and composed workflows are later

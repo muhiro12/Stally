@@ -346,6 +346,63 @@ and fixed 30/90/365-day windows are candidates to reassess, not a required
 dashboard. This does not reject the value of reflection or decide its release
 scope by omission.
 
+### Copy and Share One Item
+
+The November 12 direction separates readable content from identity links and
+portable files ([#19](https://github.com/muhiro12/Stally/issues/19),
+[#32](https://github.com/muhiro12/Stally/issues/32)).
+
+Share Item Content opens a selectable plain-text preview of the Item's name,
+nonempty note, and representative URL, separated by blank lines. Copy Item
+Content and the native share sheet use that same snapshot. Changes arriving
+after the preview opens do not silently change what will be copied or shared;
+reopening takes a new snapshot. Text retains its original spelling, whitespace,
+newlines, and literal markup. Empty optional fields add no placeholder sections.
+
+This small outward-facing representation omits photos, tags, Marks, periods,
+preferences, registration metadata, and internal identifiers. The preview
+explains its included fields and omitted relationships. No date or relationship
+start is inferred. Sharing never creates, edits, or records a fact.
+
+Share Item Link remains a separate action for the existing UUID-based reference.
+Get Item Content returns the same readable text through an authenticated,
+read-only App Intent; it does not write the clipboard or send anything. Portable
+library export/import retains its independent versioned, reviewed contract.
+
+Readable text has no format/schema header, mandatory headings, or supported
+re-import grammar. Native String sharing is sufficient for this journey; custom
+Transferable types, drag/drop, and report sharing are deferred until a separate
+use case warrants them. Buttons and selectable text provide non-drag alternatives.
+
+### Input and Template Retirement
+
+Following [Incomes #426](https://github.com/muhiro12/Incomes/issues/426) and the
+updated [#32](https://github.com/muhiro12/Stally/issues/32), the dedicated Item
+Markdown template workflow is retired. Prompt copying, blank-template copying,
+a separate external-AI import mode, and deterministic template parsing/review
+are not retained as future release work. The earlier proposal never established
+a released Stally compatibility baseline, and the current source contains no
+template reader requiring a migration.
+
+Manual Item editing and the existing reviewed portable-file import are the
+first-release input paths. Stally currently has no text/photo input-assistance
+path to retain or consolidate. Foundation Models and OCR-based assistance are
+not required for the first release; their adoption depends on a useful input
+journey and actual device/model availability.
+
+If input assistance is introduced, ordinary prose, OCR text, and external-tool
+output use the same editable draft flow without an app-specific template or
+external-AI mode. Preserve source input, unsaved edits, failure/cancellation
+recovery, stale-result protection, and explicit canonical saving. Manual entry
+remains usable when assistance is unavailable. Extraction must not infer
+relationship-start precision, create Marks/history, or silently save records.
+
+Readable content sharing remains useful independently of input assistance.
+Portable-file export/import keeps its existing versioned contract. A new
+structured import requires an independently justified exact-transfer or
+machine-to-machine use case and an explicit contract decision; readable shared
+text does not establish a re-import grammar.
+
 ### Use the Record Outside Stally and Bring It Back
 
 Contract consequences:

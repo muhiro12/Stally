@@ -14,6 +14,7 @@ struct ItemDetailView: View {
     @State private var choosingTags = false
     @State private var editingRecord: RecordEditor.Selection?
     @State private var selectedPhoto: ItemDraft.Photo?
+    @State private var sharedContent: ItemContentShareView.Content?
     @State private var confirmingDelete = false
     @State private var errorMessage: String?
     @State private var saving = false
@@ -56,6 +57,9 @@ struct ItemDetailView: View {
         }
         .sheet(item: $selectedPhoto) { photo in
             PhotoDetailView(photo: photo)
+        }
+        .sheet(item: $sharedContent) { content in
+            ItemContentShareView(content: content)
         }
         .confirmationDialog(
             "Delete this Item and its Marks, periods, and photos?",
@@ -113,6 +117,9 @@ struct ItemDetailView: View {
             }
             StallyActionButton(.chooseTags) {
                 choosingTags = true
+            }
+            StallyActionButton(.shareItemContent) {
+                sharedContent = .init(text: ItemOperations.shareText(for: item))
             }
             ShareLink(item: StallyLinkOperations.url(for: .item(item.uuid))) {
                 StallyActionLabel.shareItemLink

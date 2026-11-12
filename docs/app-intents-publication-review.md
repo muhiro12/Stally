@@ -46,8 +46,13 @@ work.
 The November 10 iOS Simulator Debug build extracted the entity properties below
 in `Metadata.appintents/extract.actionsdata`. This supersedes the November 2
 property inventory; it is not distribution or saved-workflow runtime evidence.
-All 38 Stally actions are discoverable and explicitly require authentication.
-Review Import runs in the foreground. The other 37 declare background execution,
+The November 12 iOS Simulator Debug build also extracted `GetItemContentIntent`,
+returning only the Item's readable name, note, and representative URL as a String.
+It does not write the clipboard, send content, expose history, or import text.
+This is an additive first-release action, not a rename of Get Item Details.
+
+All 39 Stally actions are discoverable and explicitly require authentication.
+Review Import runs in the foreground. The other 38 declare background execution,
 including the two Open actions that return an instruction to open a URL.
 The app has no promoted App Shortcuts. Five delete actions and tag
 consolidation request confirmation before mutation. All writes go through
@@ -80,6 +85,7 @@ value. An em dash in the result column means no returned value.
 | `ExportRecordsIntent` | — | IntentFile | Read |
 | `FindItemsIntent` | `text: String = ""`, `scope: ItemArchiveScope = .library`, `favoritesOnly: Bool = false`, `tag: TagEntity?` | [ItemEntity] | Read |
 | `GetItemDetailsIntent` | `item: ItemEntity` | ItemEntity | Read |
+| `GetItemContentIntent` | `item: ItemEntity` | String | Read |
 | `GetItemMarksIntent` | `item: ItemEntity` | [MarkEntity] | Read |
 | `GetItemPeriodsIntent` | `item: ItemEntity` | [PeriodEntity] | Read |
 | `GetItemPhotosIntent` | `item: ItemEntity` | [PhotoEntity] | Read |

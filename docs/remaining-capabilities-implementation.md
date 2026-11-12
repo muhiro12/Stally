@@ -99,7 +99,7 @@ not a cross-device transaction or deduplication engine.
 
 ## App Intent Coverage
 
-The app contains 38 Operations-backed actions and five UUID-backed entities.
+The app contains 39 Operations-backed actions and five UUID-backed entities.
 Entity queries resolve batches, explicitly filter string searches, and reject
 ambiguous identities. Initial pickers suggest up to 20 current records; searches
 remain available beyond those suggestions. Missing UUIDs are never replaced.
@@ -108,6 +108,7 @@ remain available beyond those suggestions. Missing UUIDs are never replaced.
 | --- | --- |
 | Item creation, details, independent state, deletion | Create/Edit/Get Item Details; Set Archive/Favorite/Recording; Delete Item |
 | Library search and opening | Find Items; Open Item; Open Item Link |
+| Readable Item sharing | Get Item Content; the app previews, copies, and shares the same `ItemOperations.shareText` output |
 | Mark history | Get Item Marks; Record Today/Now; Add Mark on Date; Correct/Delete Mark |
 | Period history and readings | Get Item Periods; Add/Correct/End/Resume/Delete Period; Get Time Together |
 | Shared Tags | Get Item Tags; Create/Rename/Delete/Consolidate Tags; Set Item Tags |
@@ -135,7 +136,7 @@ text is stored as nil, and nonempty replacement plus Clear is rejected. Supplied
 returns localized explanatory text, not a scalar claiming exact cumulative time.
 Typed entities and date strings retain their underlying identity/precision.
 The [first-publication review](app-intents-publication-review.md) records the
-extracted identifiers, defaults, results and policies for all 38 actions.
+extracted identifiers, defaults, results and policies for all 39 actions.
 It records the corrections to period edits, repeated endings, caption clearing
 and ordered photo reads. Replay
 of saved workflows and locked-device authentication remain release checks.
