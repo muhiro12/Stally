@@ -9,6 +9,10 @@ enum TransferReviewRows {
 
     private static func itemRows(_ incoming: TransferManifest, local: TransferManifest) -> [TransferReview.Row] {
         let indexed = Dictionary(uniqueKeysWithValues: local.items.map { ($0.uuid, $0) })
+        let tagsByName = Dictionary(grouping: incoming.tags + local.tags, by: \.name)
+        let ambiguousNames = Set(tagsByName.filter { _, tags in
+            Set(tags.map(\.uuid)).count > 1
+        }.keys)
         var rows: [TransferReview.Row] = []
         for item in incoming.items {
             let current = indexed[item.uuid]
@@ -17,8 +21,10 @@ enum TransferReviewRows {
                     id: item.uuid,
                     kind: .item,
                     title: item.name,
-                    current: current.map { TransferSummary.item($0, tags: local.tags) },
-                    proposed: TransferSummary.item(item, tags: incoming.tags),
+                    current: current.map { item in
+                        TransferSummary.item(item, tags: local.tags, disambiguating: ambiguousNames)
+                    },
+                    proposed: TransferSummary.item(item, tags: incoming.tags, disambiguating: ambiguousNames),
                     isUnchanged: current == item,
                     affectedItemCount: 1
                 )

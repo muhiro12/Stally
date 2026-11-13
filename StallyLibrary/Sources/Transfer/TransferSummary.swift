@@ -2,8 +2,15 @@ import Foundation
 
 /// Localized values for a review; registration metadata is visible but never selects a winner.
 enum TransferSummary {
-    static func item(_ item: TransferItem, tags: [TransferTag]) -> String {
-        let tagNames = tags.filter { item.tagUUIDs.contains($0.uuid) }.map(\.name).joined(separator: ", ")
+    static func item(_ item: TransferItem, tags: [TransferTag], disambiguating names: Set<String>) -> String {
+        let tagNames = tags
+            .filter { tag in
+                item.tagUUIDs.contains(tag.uuid)
+            }
+            .map { tag in
+                names.contains(tag.name) ? "\(tag.name) (\(tag.uuid.uuidString))" : tag.name
+            }
+            .joined(separator: "\n")
         let placement =
             item.isArchived
             ? String(localized: "Archived", bundle: .module)

@@ -86,6 +86,9 @@ values, actual photo previews, registration metadata, Tag rename impact, and
 possible restoration of previously deleted identities. Children cannot be
 reparented by an ordinary import. Skipped dependencies and incompatible selected
 period histories are rejected without modifying the library.
+Item assignment summaries include Tag UUIDs when different identities share a
+name across either snapshot, including when each snapshot contains only one of
+those Tags. A matching identity in both snapshots does not need disambiguation.
 
 `apply` uses a fresh write context with autosave disabled, rechecks the reviewed
 snapshot, preflights available disk capacity where the system supplies it,
