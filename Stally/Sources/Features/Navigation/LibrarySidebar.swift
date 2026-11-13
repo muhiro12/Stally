@@ -23,14 +23,9 @@ struct LibrarySidebar: View {
                 }
             }
         }
-        .mhListChrome(.native)
+        .mhListChrome(.native, background: .native)
         .listStyle(.sidebar)
         .navigationTitle("Stally")
-        .navigationSplitViewColumnWidth(
-            min: LibraryLayout.sidebarMinimum,
-            ideal: LibraryLayout.sidebarIdeal,
-            max: LibraryLayout.sidebarMaximum
-        )
         .sheet(isPresented: $showingSettings) {
             StallySettingsView()
         }

@@ -55,8 +55,12 @@ of callbacks, drafts, confirmation, and disabled states.
 MHUI owns shared typography, semantic colors, row insets, section hierarchy and
 spacing. Stally owns record meaning, navigation, drafts and Operations.
 Native sidebar chrome, content List/Form chrome and `MHContainerContent` keep
-platform containers responsible for navigation and interaction. `LibraryLayout`
-contains app-specific column allocation and text-preview limits.
+platform containers responsible for navigation and interaction. The sidebar uses
+the native background. Column widths, split-view style, expanded column visibility
+and search presentation use system defaults. Search remains scoped to the Item
+list. Compact navigation initially opens that list and retains explicit transitions
+for links, creation and deletion. `LibraryLayout` contains app-specific control,
+photo and text-preview limits.
 
 ## Verification Boundary
 

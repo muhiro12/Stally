@@ -16,7 +16,6 @@ struct LibraryView: View {
     private var tags: [Tag]
     @State private var destination: LibraryDestination? = .library
     @State private var selectedItemID: PersistentIdentifier?
-    @State private var columnVisibility = NavigationSplitViewVisibility.all
     @State private var compactColumn = NavigationSplitViewColumn.content
     @State private var searchText = ""
     @State private var archiveScope = ItemQuery.ArchiveScope.library
@@ -44,7 +43,6 @@ struct LibraryView: View {
     var body: some View {
         @Bindable var session = librarySession
         NavigationSplitView(
-            columnVisibility: $columnVisibility,
             preferredCompactColumn: $compactColumn
         ) {
             LibrarySidebar(
@@ -89,7 +87,6 @@ struct LibraryView: View {
                 }
             }
         }
-        .navigationSplitViewStyle(.balanced)
         .sheet(item: $session.importReview) { review in
             ImportReviewView(review: review) { _ in librarySession.importReview = nil }
         }

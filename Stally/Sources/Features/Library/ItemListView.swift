@@ -80,17 +80,10 @@ struct ItemListView: View {
             }
         }
         .navigationTitle(title)
-        .navigationSplitViewColumnWidth(
-            min: LibraryLayout.listMinimum,
-            ideal: LibraryLayout.listIdeal,
-            max: LibraryLayout.listMaximum
-        )
         .searchable(
             text: $searchText,
-            placement: .navigationBarDrawer(displayMode: .always),
             prompt: "Search names, notes, and tags"
         )
-        .searchPresentationToolbarBehavior(.avoidHidingContent)
         .toolbar {
             ToolbarItem(placement: LibraryLayout.primaryActionPlacement) {
                 StallyActionButton(.addItem, action: addItem)
