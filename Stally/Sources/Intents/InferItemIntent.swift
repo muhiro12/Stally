@@ -5,7 +5,7 @@ struct InferItemIntent: AppIntent {
     static let title: LocalizedStringResource = "Prepare Item from Text"
     static let description = IntentDescription(
         """
-        Use on-device Apple Intelligence to extract an Item name, note, and link as readable text. \
+        Use on-device intelligence to extract an Item name, note, and link as readable text. \
         No Item, Mark, or period is saved.
         """
     )

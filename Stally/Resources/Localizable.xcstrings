@@ -4923,18 +4923,18 @@
         }
       }
     },
-    "Use on-device Apple Intelligence to extract an Item name, note, and link as readable text. No Item, Mark, or period is saved.": {
+    "Use on-device intelligence to extract an Item name, note, and link as readable text. No Item, Mark, or period is saved.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Use on-device Apple Intelligence to extract an Item name, note, and link as readable text. No Item, Mark, or period is saved."
+            "value": "Use on-device intelligence to extract an Item name, note, and link as readable text. No Item, Mark, or period is saved."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "端末内のApple Intelligenceでアイテムの名前・メモ・リンクを文章から抽出します。アイテム・記録・期間は保存しません。"
+            "value": "端末内のモデルでアイテムの名前・メモ・リンクを文章から抽出します。アイテム・記録・期間は保存しません。"
           }
         }
       }
