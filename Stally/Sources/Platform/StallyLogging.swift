@@ -18,10 +18,7 @@ enum StallyLogging {
         #if DEBUG
         .debugDefault
         #else
-        .init(
-            minimumLevel: .warning,
-            maximumInMemoryEvents: MHLogPolicy.releaseDefault.maximumInMemoryEvents
-        )
+        .releaseDefault
         #endif
     }
 
