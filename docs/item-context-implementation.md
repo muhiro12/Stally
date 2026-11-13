@@ -40,6 +40,13 @@ Existing attachments retain identity when reordered or captioned. Explicit
 photo removal deletes only that attachment; newly arriving unrelated photos
 are not interpreted as removals.
 
+Period editors retain their original boundaries and continuation state for the
+editing session. If any of those facts changed before saving, the shared
+correction operation refuses the stale submission before mutation. The editor
+keeps its input and displays the existing review-again error; dismiss and reopen
+it to review current facts. Unrelated Item or Mark writes do not invalidate the
+period edit. This is a local stale-edit guard, not a cross-device transaction.
+
 An empty link clears it. A nonempty link must be an absolute website or app URL;
 relative input and file/data/script URLs are rejected before mutation. Opening
 uses SwiftUI's native URL action, with visible failure when the system declines.

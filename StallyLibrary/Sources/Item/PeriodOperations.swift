@@ -61,9 +61,23 @@ public enum PeriodOperations {
     }
 
     /// Revises the selected period while retaining its UUID and registration time.
-    public static func correct(_ period: ItemPeriod, input: PeriodInput, today: String, context: ModelContext)
-    throws {
+    /// Delayed editors supply their original values to reject intervening changes before saving.
+    public static func correct(
+        _ period: ItemPeriod,
+        input: PeriodInput,
+        today: String,
+        context: ModelContext,
+        original: PeriodInput? = nil
+    ) throws {
         try RecordMutation.validate(context, models: [period])
+        if let original {
+            let current = PeriodInput(
+                start: period.startLocalDate, end: period.endLocalDate, isOngoing: period.isOngoing
+            )
+            guard current == original else {
+                throw RecordError.staleReview
+            }
+        }
         guard let item = period.item else {
             throw RecordError.missingRecord
         }

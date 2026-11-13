@@ -1,5 +1,5 @@
 /// The user's boundary knowledge, separate from registration metadata and identity.
-public struct PeriodInput: Sendable {
+public struct PeriodInput: Equatable, Sendable {
     /// Unknown or canonical year, month, or day knowledge.
     public let start: String?
     /// Unknown or canonical boundary; nil for ongoing periods.
