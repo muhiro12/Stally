@@ -69,7 +69,7 @@ owns this location and the CloudKit container selection.
 
 | Raw key | Type/default | Owner and meaning | Retirement |
 | --- | --- | --- | --- |
-| `stally.sync.iCloudEnabled` | Bool / false | App Group suite; the person's requested sync selection, applied on next launch; cleared after a resolved inactive subscription | Never reuse for another meaning; an absent value leaves mirroring off |
+| `stally.sync.iCloudEnabled` | Bool / false | App Group suite; the person's requested sync selection, retained across subscription lapses; applied with resolved entitlement on next launch | Never reuse for another meaning; an absent value leaves mirroring off |
 | `stally.subscription.isActive` | Bool / false | App Group suite; last resolved MHPlatform/StoreKit entitlement for startup, retained while status is unknown; not purchase authority | Refresh from StoreKit; never use removal to erase library data |
 
 Both preferences are device-local and excluded from exported records. The same

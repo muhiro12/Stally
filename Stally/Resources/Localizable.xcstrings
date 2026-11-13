@@ -4212,38 +4212,6 @@
         }
       }
     },
-    "This session saves on this device.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This session saves on this device."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "現在はこのデバイスに保存しています。"
-          }
-        }
-      }
-    },
-    "This session uses iCloud sync.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This session uses iCloud sync."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "現在はiCloud同期を使用しています。"
-          }
-        }
-      }
-    },
     "This shows the open store's configuration, not iCloud sync progress.": {
       "extractionState": "manual",
       "localizations": {
@@ -4599,22 +4567,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "iCloud同期"
-          }
-        }
-      }
-    },
-    "iCloud sync requires a subscription. Changes take effect the next time Stally launches. Changing this setting does not delete your records.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iCloud sync requires a subscription. Changes take effect the next time Stally launches. Changing this setting does not delete your records."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "iCloud同期にはサブスクリプションが必要です。変更はStallyの次回起動時に反映されます。この設定を変更しても記録は削除されません。"
           }
         }
       }
@@ -5015,6 +4967,118 @@
           "stringUnit": {
             "state": "translated",
             "value": "読み込み・書き出しを完了できませんでした"
+          }
+        }
+      }
+    },
+    "iCloud sync is enabled for this session.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud sync is enabled for this session."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今回の起動中はiCloud同期が有効です。"
+          }
+        }
+      }
+    },
+    "iCloud sync is disabled for this session.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud sync is disabled for this session."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今回の起動中はiCloud同期が無効です。"
+          }
+        }
+      }
+    },
+    "iCloud sync requires a subscription. Your choice is saved even when your subscription ends. Changes apply after you quit and reopen Stally.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud sync requires a subscription. Your choice is saved even when your subscription ends. Changes apply after you quit and reopen Stally."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud同期にはサブスクリプションが必要です。購読が終了しても同期の設定は保持されます。変更はStallyを終了して開き直した後に反映されます。"
+          }
+        }
+      }
+    },
+    "Your choice is on, but a subscription is required to enable iCloud sync at the next launch.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your choice is on, but a subscription is required to enable iCloud sync at the next launch."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定はオンですが、次回起動時にiCloud同期を有効にするにはサブスクリプションが必要です。"
+          }
+        }
+      }
+    },
+    "Restart Stally to turn off iCloud sync. It remains enabled for this session until then.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart Stally to turn off iCloud sync. It remains enabled for this session until then."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud同期を無効にするにはStallyを終了して開き直してください。それまでは同期が有効なままです。"
+          }
+        }
+      }
+    },
+    "Restart Stally to turn on iCloud sync. It remains disabled for this session until then.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart Stally to turn on iCloud sync. It remains disabled for this session until then."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iCloud同期を有効にするにはStallyを終了して開き直してください。それまでは同期が無効なままです。"
+          }
+        }
+      }
+    },
+    "Resuming Stally from the background does not apply this change.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resuming Stally from the background does not apply this change."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バックグラウンドからStallyに戻るだけでは、この変更は反映されません。"
           }
         }
       }

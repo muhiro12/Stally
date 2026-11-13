@@ -21,9 +21,13 @@ without a subscription.
   the last resolved state; the mirror is startup evidence, not purchase authority.
 - The separate Use iCloud preference defaults to off. A recognized subscription
   permits enabling it. Purchase or restore does not silently enable upload.
-- A resolved inactive subscription clears both the entitlement mirror and sync
-  selection. Renewal permits choosing sync again; it does not silently restore
-  a previously disabled selection.
+- A resolved inactive subscription clears the entitlement mirror but preserves
+  the person's sync selection. The next process disables mirroring while access
+  is inactive. After renewal is resolved as active, the next process resumes
+  mirroring only if the saved selection is on. A first purchase does not opt in.
+- The person can turn a retained selection off even while access is inactive;
+  enabling sync requires recognized subscription access. Explicit off remains
+  off after renewal. No additional preference or library migration is required.
 - The app opens the store synchronously for UI and App Intent dependencies using
   the last resolved entitlement and saved selection. Native StoreKit observation
   also starts for a process launched by an App Intent without a scene.
@@ -33,15 +37,37 @@ without a subscription.
   background alone does not reopen the store. Settings distinguishes the current
   session's configuration from the requested selection.
 - Consequently, a session already mirroring can continue until it ends even
-  after an inactive entitlement is observed. The next process uses the cleared
-  selection. Offline/unknown evidence does not erase data or force a store reset.
+  after an inactive entitlement is observed. The next process uses the retained
+  selection together with the last resolved entitlement. Offline/unknown
+  evidence does not erase either preference, erase data, or force a store reset.
   This is a bounded session policy, not instantaneous revocation.
+
+Settings describes the saved choice separately from the current session's
+enabled/disabled configuration. When the next-launch decision differs, it gives
+direction-specific guidance and explains that background resume does not apply
+the change. A retained ON without access has its own subscription explanation,
+even when the current session is already local and no configuration change is
+pending. These messages do not claim synchronization has completed or guarantee
+data retention under native account changes.
+
+A new entitlement result received after startup changes only a subsequent
+launch's decision. Purchase, restore, or expiry recognition can therefore require
+a further launch after that result is saved. Opening existing records does not
+wait for a network subscription check.
 
 The fixed-per-process configuration deliberately avoids two simultaneous
 mirroring containers and scene-dependent App Intent initialization. Immediate
 switching would need a separately qualified context/draft handoff; it is not a
 prerequisite for this first implementation. No billing state is stored on Items
 or included in portable files.
+
+The November 14 review adopts the saved-choice, access, and session distinction
+from [Incomes' assessment][incomes-assessment]. No live replacement, manual
+Apply now action, or process-termination action is selected. Reconsidering live
+switching requires an app-wide operation drain and a supported old-sync-stack
+handoff, including failure recovery; waiting for a form or saving a context alone
+does not establish those prerequisites. Account-transition invalidation remains
+independent of subscription and preference changes.
 
 ## Native Account Lifetime
 
@@ -91,9 +117,13 @@ selected. Independent same-day Marks remain valid distinct occurrences.
 
 ## Release Qualification
 
-The setting and entitlement wiring is implemented; changing `cloudKitDatabase`
-alone is not proof of safe device/account transitions. Tests were deferred for
-this change. Before distribution, qualify local-to-cloud enablement on the same
+The setting and entitlement wiring is implemented. Library tests cover saved
+ON/OFF across lapse and renewal, preference reload, unresolved access, explicit
+OFF during a lapse, and first purchase without opt-in. Local integration tests
+keep a pending draft and import review valid through access and preference
+changes, while account invalidation still rejects stale writers. Changing
+`cloudKitDatabase` alone is not proof of safe device/account transitions.
+Before distribution, qualify local-to-cloud enablement on the same
 store, cloud-to-local disablement, renewal, expired/revoked purchases, offline
 startup, StoreKit restore and background Intent startup. Include photo bytes,
 existing records and pending drafts, then verify independent device convergence.
@@ -112,3 +142,4 @@ and submitted distribution artifact. See [release readiness](release-readiness.m
 [account-status]: https://developer.apple.com/documentation/cloudkit/ckcontainer/accountstatus(completionhandler:)
 [configuration]: https://developer.apple.com/documentation/swiftdata/modelconfiguration
 [sample]: https://developer.apple.com/documentation/coredata/sharing-core-data-objects-between-icloud-users
+[incomes-assessment]: https://github.com/muhiro12/Incomes/blob/cc822199caf391f02e33525d23b36e1d8508fb99/Designs/Architecture/subscription-and-icloud.md

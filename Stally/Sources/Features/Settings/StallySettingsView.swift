@@ -31,27 +31,6 @@ struct StallySettingsView: View {
         }
     }
 
-    private var syncSection: some View {
-        Section {
-            Toggle("Use iCloud", isOn: $iCloudEnabled)
-                .disabled(!canEnableSync)
-            if librarySession.isCloudSyncEnabled {
-                Text("This session uses iCloud sync.")
-            } else {
-                Text("This session saves on this device.")
-            }
-        } header: {
-            Text("iCloud Sync")
-        } footer: {
-            Text(
-                """
-                iCloud sync requires a subscription. Changes take effect the next time Stally launches. \
-                Changing this setting does not delete your records.
-                """
-            )
-        }
-    }
-
     private var subscriptionSection: some View {
         Section("Subscription") {
             Text("Sync your Stally library across your devices with iCloud.")
@@ -82,7 +61,11 @@ struct StallySettingsView: View {
     var body: some View {
         NavigationStack {
             List {
-                syncSection
+                StallyICloudSettingsSection(
+                    hasSubscriptionAccess: canEnableSync,
+                    isICloudOn: $iCloudEnabled,
+                    isICloudConfigured: librarySession.isCloudSyncEnabled
+                )
                 subscriptionSection
                 aboutSection
                 Section {

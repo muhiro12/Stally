@@ -148,7 +148,9 @@ portable files remain independent representations; no new Item format is added.
   native account/mirroring behavior and proportional recovery. No custom shadow
   library, account-independent retention guarantee, or distributed exactly-once
   engine is selected. Do not erase records or silently switch stores when
-  entitlement state changes. See [sync lifecycle](sync-lifecycle-design.md).
+  entitlement state changes. Preserve the person's sync choice through a
+  subscription lapse; apply it together with subscription access at next launch.
+  See [sync lifecycle](sync-lifecycle-design.md).
 - **Shared local storage:** begin with App Group-first storage, using the
   selected `group.com.muhiro12.Stally`, for the planned app/extension family.
   Widget/Watch support is anticipated; App Groups themselves are device-local,
