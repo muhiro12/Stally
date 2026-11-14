@@ -18,11 +18,14 @@ public enum PeriodOperations {
     public static func add(to item: Item, input: PeriodInput, today: String, context: ModelContext) throws
     -> ItemPeriod {
         try RecordMutation.validate(context, models: [item])
+        let reader = ModelContext(context.container)
+        reader.autosaveEnabled = false
+        let savedItem = try ItemOperations.item(context: reader, uuid: item.uuid)
         try validate(
             start: input.start,
             end: input.end,
             isOngoing: input.isOngoing,
-            siblings: item.periods ?? [],
+            siblings: savedItem.periods ?? [],
             today: today
         )
         let period = ItemPeriod(
@@ -58,9 +61,13 @@ public enum PeriodOperations {
     public static func resume(_ period: ItemPeriod, on start: String?, today: String, context: ModelContext)
     throws -> ItemPeriod {
         try RecordMutation.validate(context, models: [period])
-        guard !period.isOngoing, let item = period.item else {
+        let reader = ModelContext(context.container)
+        reader.autosaveEnabled = false
+        let savedPeriod = try self.period(uuid: period.uuid, context: reader)
+        guard !savedPeriod.isOngoing, let savedItem = savedPeriod.item else {
             throw RecordError.invalidPeriod
         }
+        let item = try ItemOperations.item(context: context, uuid: savedItem.uuid)
         return try add(to: item, input: .init(start: start), today: today, context: context)
     }
 
@@ -112,16 +119,7 @@ private extension PeriodOperations {
         // A retained editor model may not reflect another context's completed save.
         let reader = ModelContext(container)
         reader.autosaveEnabled = false
-        var descriptor = FetchDescriptor<ItemPeriod>(predicate: #Predicate { $0.uuid == uuid })
-        let ambiguousIdentityLimit = 2
-        descriptor.fetchLimit = ambiguousIdentityLimit
-        let matches = try reader.fetch(descriptor)
-        guard matches.count < ambiguousIdentityLimit else {
-            throw RecordError.ambiguousIdentity
-        }
-        guard let period = matches.first else {
-            throw RecordError.missingRecord
-        }
+        let period = try period(uuid: uuid, context: reader)
         let current = PeriodInput(
             start: period.startLocalDate, end: period.endLocalDate, isOngoing: period.isOngoing
         )
@@ -129,6 +127,20 @@ private extension PeriodOperations {
             throw RecordError.staleReview
         }
         try validateCorrection(period, input: input, today: today)
+    }
+
+    static func period(uuid: UUID, context: ModelContext) throws -> ItemPeriod {
+        var descriptor = FetchDescriptor<ItemPeriod>(predicate: #Predicate { $0.uuid == uuid })
+        let ambiguousIdentityLimit = 2
+        descriptor.fetchLimit = ambiguousIdentityLimit
+        let matches = try context.fetch(descriptor)
+        guard matches.count < ambiguousIdentityLimit else {
+            throw RecordError.ambiguousIdentity
+        }
+        guard let period = matches.first else {
+            throw RecordError.missingRecord
+        }
+        return period
     }
 
     static func validateCorrection(_ period: ItemPeriod, input: PeriodInput, today: String) throws {

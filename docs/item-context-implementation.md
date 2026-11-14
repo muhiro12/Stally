@@ -57,6 +57,14 @@ An intervening correction, ending, deletion, or ambiguous UUID rejects the
 operation without overwriting history. Reopening the record permits a new
 ending against its current start; unrelated writes do not invalidate it.
 
+Adding or resuming also validates the saved Item and its period history in a
+fresh context. Resumption first resolves the selected period uniquely and
+requires that it is still ended. Missing or ambiguous identities and newly
+saved sibling conflicts reject the operation before insertion. Successful
+insertion still uses the caller's context and observed Item, while the previous
+period retains its identity and ending. These checks do not serialize CloudKit
+delivery or writes from other processes with the local save.
+
 An empty link clears it. A nonempty link must be an absolute website or app URL;
 relative input and file/data/script URLs are rejected before mutation. Opening
 uses SwiftUI's native URL action, with visible failure when the system declines.
