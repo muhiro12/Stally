@@ -324,6 +324,10 @@ The in-memory-only MHFilePackage snapshot API cannot provide this staging
 lifetime; Stally keeps its narrower format-specific reader with the same
 openat/O_NOFOLLOW resolution boundary.
 
+iOS and visionOS declare copy-based document opening. macOS requires opening
+original documents; its platform-specific declaration permits that access, while
+the reader still stages a private copy and never edits the source document.
+
 Images use private copy-on-write mappings whose Data deallocator retains the staging
 owner. A failed mmap throws instead of silently allocating all pending images.
 This keeps the saved SwiftData model and single-save contract unchanged. The

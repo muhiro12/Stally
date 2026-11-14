@@ -63,7 +63,9 @@ struct TagConsolidationView: View {
                 .tag(Optional(tag.uuid))
             }
         }
+        #if !os(macOS)
         .pickerStyle(.navigationLink)
+        #endif
     }
 
     private func prepareReview() {
