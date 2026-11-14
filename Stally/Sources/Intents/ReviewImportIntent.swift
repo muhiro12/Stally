@@ -32,9 +32,18 @@ struct ReviewImportIntent: AppIntent {
         guard librarySession.importReview == nil else {
             throw StallyIntentError(message: String(localized: "Finish the current import review first."))
         }
-        librarySession.importReview = try IntentAccess.read(container: container) { context in
-            try TransferOperations.review(archive, context: context)
+        let review: TransferReview
+        do {
+            review = try await TransferOperations.prepareReview(archive, context: ModelContext(container))
+        } catch {
+            throw StallyIntentError(message: error.localizedDescription)
         }
+        try Task.checkCancellation()
+        try session.checkCurrent()
+        guard librarySession.importReview == nil else {
+            throw StallyIntentError(message: String(localized: "Finish the current import review first."))
+        }
+        librarySession.importReview = review
         return .result(dialog: "Review the file in Stally. Nothing has been imported yet.")
     }
 }
