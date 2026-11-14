@@ -140,6 +140,16 @@ justify inventing dates or silently rejecting valid uncertain history.
 For ongoing periods, the comparison uses the current local Gregorian day,
 converted to the common reference calendar for comparison only.
 
+Explicit corrections and ending may repair existing ongoing or overlap conflicts
+one step at a time. When ordinary validation still fails, the correction must
+remove an ongoing conflict or remove or narrow a definite overlap involving the
+edited period. It must not introduce a conflict with another sibling, exchange
+one conflict type for another, or expand a remaining overlap. Unchanged conflicts
+between other periods remain recorded for later review. Dates and continuation
+state must still be valid; an edit that makes no progress is rejected. Adding or
+resuming a period and applying an import retain their ordinary validation rules.
+No automatic winner, deletion, or date inference is introduced.
+
 Ending and resuming on the same calendar date is permitted. With day-only
 boundaries, Stally cannot infer within-day ordering or invent an unused day
 between the periods. A shared boundary date is not automatically an error;

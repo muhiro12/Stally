@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-/// Partial-date history with conservative local validation, without repairing incoming conflicts.
+/// Partial-date history with conservative local validation and explicit, gradual conflict repair.
 public enum PeriodOperations {
     /// Returns registration time descending, without inferring chronology from partial or unknown dates.
     public static func orderedPeriods(for item: Item) -> [ItemPeriod] {
@@ -62,6 +62,7 @@ public enum PeriodOperations {
 
     /// Revises the selected period while retaining its UUID and registration time.
     /// Delayed editors supply their original values; a fresh context rechecks saved facts before saving.
+    /// Existing conflicts may be reduced without introducing or expanding another conflict.
     public static func correct(
         _ period: ItemPeriod,
         input: PeriodInput,
@@ -131,13 +132,24 @@ private extension PeriodOperations {
             throw RecordError.missingRecord
         }
         let siblings = (item.periods ?? []).filter { $0 !== period }
-        try validate(
-            start: input.start,
-            end: input.end,
-            isOngoing: input.isOngoing,
-            siblings: siblings,
-            today: today
-        )
+        do {
+            try validate(
+                start: input.start,
+                end: input.end,
+                isOngoing: input.isOngoing,
+                siblings: siblings,
+                today: today
+            )
+        } catch let error as RecordError where error == .ongoingPeriodExists || error == .overlappingPeriods {
+            let original = PeriodInput(
+                start: period.startLocalDate, end: period.endLocalDate, isOngoing: period.isOngoing
+            )
+            let before = try PeriodCorrectionConflicts(input: original, siblings: siblings, today: today)
+            let after = try PeriodCorrectionConflicts(input: input, siblings: siblings, today: today)
+            guard after.isImprovement(over: before) else {
+                throw error
+            }
+        }
     }
 }
 
