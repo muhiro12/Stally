@@ -40,12 +40,12 @@ struct RecordWriteSessionTests {
         #expect(!context.hasChanges)
         #expect(item.name == "Before" && draft.name == "After")
 
-        try await session.performMutation {
+        _ = try await session.performMutation {
             try TransferOperations.apply(
                 review, selection: review.defaultSelection, today: "2026-11-14", context: context
             )
         }
-        try await session.performMutation {
+        _ = try await session.performMutation {
             try ItemOperations.save(draft, context: context)
         }
         let saved = try ModelContext(container).fetch(FetchDescriptor<Item>())
