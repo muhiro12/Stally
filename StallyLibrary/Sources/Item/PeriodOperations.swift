@@ -18,9 +18,9 @@ public enum PeriodOperations {
     public static func add(to item: Item, input: PeriodInput, today: String, context: ModelContext) throws
     -> ItemPeriod {
         try RecordMutation.validate(context, models: [item])
-        let reader = ModelContext(context.container)
-        reader.autosaveEnabled = false
-        let savedItem = try ItemOperations.item(context: reader, uuid: item.uuid)
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let savedItem = try ItemOperations.item(context: writer, uuid: item.uuid)
         try validate(
             start: input.start,
             end: input.end,
@@ -29,14 +29,15 @@ public enum PeriodOperations {
             today: today
         )
         let period = ItemPeriod(
-            item: item,
+            item: savedItem,
             startLocalDate: input.start,
             endLocalDate: input.end,
             isOngoing: input.isOngoing
         )
-        context.insert(period)
-        try RecordMutation.save(context)
-        return period
+        writer.insert(period)
+        try RecordMutation.save(writer)
+        _ = try ItemOperations.item(context: context, uuid: item.uuid)
+        return try self.period(uuid: period.uuid, context: context)
     }
 
     /// Ending preserves identity and start. Pass nil when the end date is unknown.
@@ -82,53 +83,41 @@ public enum PeriodOperations {
         original: PeriodInput? = nil
     ) throws {
         try RecordMutation.validate(context, models: [period])
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let saved = try self.period(uuid: period.uuid, context: writer)
         if let original {
-            try validateSavedCorrection(
-                uuid: period.uuid,
-                input: input,
-                original: original,
-                today: today,
-                container: context.container
+            let current = PeriodInput(
+                start: saved.startLocalDate, end: saved.endLocalDate, isOngoing: saved.isOngoing
             )
-        } else {
-            try validateCorrection(period, input: input, today: today)
+            guard current == original else {
+                throw RecordError.staleReview
+            }
         }
-        // Keep the caller's observed model current without waiting for a cross-context merge.
-        period.startLocalDate = input.start
-        period.endLocalDate = input.end
-        period.isOngoing = input.isOngoing
-        try RecordMutation.save(context)
+        try validateCorrection(saved, input: input, today: today)
+        saved.startLocalDate = input.start
+        saved.endLocalDate = input.end
+        saved.isOngoing = input.isOngoing
+        try RecordMutation.save(writer)
+        _ = try self.period(uuid: period.uuid, context: context)
     }
 
     /// Removes this period only; Marks and other periods remain independent.
     public static func delete(_ period: ItemPeriod, context: ModelContext) throws {
         try RecordMutation.validate(context, models: [period])
-        context.delete(period)
-        try RecordMutation.save(context)
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let saved = try self.period(uuid: period.uuid, context: writer)
+        let itemID = saved.item?.uuid
+        writer.delete(saved)
+        try RecordMutation.save(writer)
+        if let itemID {
+            _ = try ItemOperations.item(context: context, uuid: itemID)
+        }
     }
 }
 
 private extension PeriodOperations {
-    static func validateSavedCorrection(
-        uuid: UUID,
-        input: PeriodInput,
-        original: PeriodInput,
-        today: String,
-        container: ModelContainer
-    ) throws {
-        // A retained editor model may not reflect another context's completed save.
-        let reader = ModelContext(container)
-        reader.autosaveEnabled = false
-        let period = try period(uuid: uuid, context: reader)
-        let current = PeriodInput(
-            start: period.startLocalDate, end: period.endLocalDate, isOngoing: period.isOngoing
-        )
-        guard current == original else {
-            throw RecordError.staleReview
-        }
-        try validateCorrection(period, input: input, today: today)
-    }
-
     static func period(uuid: UUID, context: ModelContext) throws -> ItemPeriod {
         var descriptor = FetchDescriptor<ItemPeriod>(predicate: #Predicate { $0.uuid == uuid })
         let ambiguousIdentityLimit = 2

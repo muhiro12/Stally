@@ -36,9 +36,18 @@ public enum TagOperations {
     /// Replaces this Item’s explicit assignments using live identities from the same context.
     public static func assign(_ tags: [Tag], to item: Item, context: ModelContext) throws {
         try RecordMutation.validate(context, models: [item] + tags)
-        var identifiers = Set<PersistentIdentifier>()
-        item.tags = tags.filter { identifiers.insert($0.persistentModelID).inserted }
-        try RecordMutation.save(context)
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let savedItem = try ItemOperations.item(context: writer, uuid: item.uuid)
+        let savedTags = try Set(tags.map(\.uuid)).map { uuid in
+            try tag(uuid: uuid, context: writer)
+        }
+        savedItem.tags = savedTags
+        try RecordMutation.save(writer)
+        _ = try ItemOperations.item(context: context, uuid: item.uuid)
+        for selected in tags {
+            _ = try tag(uuid: selected.uuid, context: context)
+        }
     }
 
     /// Applies a delayed selection only while this Item's saved assignments still match its original set.
@@ -58,14 +67,23 @@ public enum TagOperations {
         let tags = try uuids.map { uuid in
             try tag(uuid: uuid, context: writer)
         }
-        try assign(tags, to: savedItem, context: writer)
+        savedItem.tags = tags
+        try RecordMutation.save(writer)
+        _ = try ItemOperations.item(context: context, uuid: item.uuid)
     }
 
     /// Removes this Tag and its assignments, preserving all Items.
     public static func delete(_ tag: Tag, context: ModelContext) throws {
         try RecordMutation.validate(context, models: [tag])
-        context.delete(tag)
-        try RecordMutation.save(context)
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let saved = try self.tag(uuid: tag.uuid, context: writer)
+        let itemIDs = (saved.items ?? []).map(\.uuid)
+        writer.delete(saved)
+        try RecordMutation.save(writer)
+        for itemID in itemIDs {
+            _ = try ItemOperations.item(context: context, uuid: itemID)
+        }
     }
 }
 

@@ -54,37 +54,41 @@ public enum ItemOperations {
     public static func update(_ item: Item, name: String, note: String?, context: ModelContext) throws {
         try RecordMutation.validate(context, models: [item])
         try RecordMutation.validateName(name)
-        item.name = name
-        item.note = TextInput.optional(note)
-        try RecordMutation.save(context)
+        try mutate(item, context: context) { saved in
+            saved.name = name
+            saved.note = TextInput.optional(note)
+        }
     }
 
     /// Changes Library placement without ending periods or altering history.
     public static func setArchived(_ item: Item, to value: Bool, context: ModelContext) throws {
-        try RecordMutation.validate(context, models: [item])
-        item.isArchived = value
-        try RecordMutation.save(context)
+        try mutate(item, context: context) { saved in
+            saved.isArchived = value
+        }
     }
 
     /// Changes only the favorite preference.
     public static func setFavorite(_ item: Item, to value: Bool, context: ModelContext) throws {
-        try RecordMutation.validate(context, models: [item])
-        item.isFavorite = value
-        try RecordMutation.save(context)
+        try mutate(item, context: context) { saved in
+            saved.isFavorite = value
+        }
     }
 
     /// Pausing preserves history and permits correction of existing occurrences.
     public static func setMarkRecordingEnabled(_ item: Item, to value: Bool, context: ModelContext) throws {
-        try RecordMutation.validate(context, models: [item])
-        item.isMarkRecordingEnabled = value
-        try RecordMutation.save(context)
+        try mutate(item, context: context) { saved in
+            saved.isMarkRecordingEnabled = value
+        }
     }
 
     /// Deletes this Item and its owned children; shared Tags and unrelated records survive.
     public static func delete(_ item: Item, context: ModelContext) throws {
         try RecordMutation.validate(context, models: [item])
-        context.delete(item)
-        try RecordMutation.save(context)
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let saved = try self.item(context: writer, uuid: item.uuid)
+        writer.delete(saved)
+        try RecordMutation.save(writer)
     }
 
     /// Reads Items in registration order, without grouping equal names.
@@ -104,5 +108,15 @@ public enum ItemOperations {
             throw RecordError.missingRecord
         }
         return item
+    }
+
+    private static func mutate(_ item: Item, context: ModelContext, change: (Item) throws -> Void) throws {
+        try RecordMutation.validate(context, models: [item])
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let saved = try self.item(context: writer, uuid: item.uuid)
+        try change(saved)
+        try RecordMutation.save(writer)
+        _ = try self.item(context: context, uuid: item.uuid)
     }
 }

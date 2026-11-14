@@ -30,14 +30,18 @@ public enum MarkOperations {
     @discardableResult
     public static func add(to item: Item, localDateTime: String, context: ModelContext) throws -> ItemMark {
         try RecordMutation.validate(context, models: [item])
-        guard item.isMarkRecordingEnabled else {
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let savedItem = try ItemOperations.item(context: writer, uuid: item.uuid)
+        guard savedItem.isMarkRecordingEnabled else {
             throw RecordError.recordingPaused
         }
         try CivilDate.validateMark(localDateTime)
-        let mark = ItemMark(item: item, localDateTime: localDateTime)
-        context.insert(mark)
-        try RecordMutation.save(context)
-        return mark
+        let mark = ItemMark(item: savedItem, localDateTime: localDateTime)
+        writer.insert(mark)
+        try RecordMutation.save(writer)
+        _ = try ItemOperations.item(context: context, uuid: item.uuid)
+        return try self.mark(uuid: mark.uuid, context: context)
     }
 
     /// Correction remains available while recording is paused and retains registration metadata.
@@ -50,40 +54,50 @@ public enum MarkOperations {
     ) throws {
         try RecordMutation.validate(context, models: [mark])
         try CivilDate.validateMark(localDateTime)
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let saved = try self.mark(uuid: mark.uuid, context: writer)
         if let original {
-            let reader = ModelContext(context.container)
-            reader.autosaveEnabled = false
-            let uuid = mark.uuid
-            var descriptor = FetchDescriptor<ItemMark>(predicate: #Predicate { $0.uuid == uuid })
-            let ambiguousIdentityLimit = 2
-            descriptor.fetchLimit = ambiguousIdentityLimit
-            let matches = try reader.fetch(descriptor)
-            guard matches.count < ambiguousIdentityLimit else {
-                throw RecordError.ambiguousIdentity
-            }
-            guard let saved = matches.first else {
-                throw RecordError.missingRecord
-            }
             guard saved.localDateTime == original else {
                 throw RecordError.staleReview
             }
         }
-        mark.localDateTime = localDateTime
-        try RecordMutation.save(context)
+        saved.localDateTime = localDateTime
+        try RecordMutation.save(writer)
+        _ = try self.mark(uuid: mark.uuid, context: context)
     }
 
     /// Undoes the acknowledged addition by identity, even if another Mark was added afterward.
     public static func undoAddition(uuid: UUID, context: ModelContext) throws {
-        let matches = try context.fetch(FetchDescriptor<ItemMark>(predicate: #Predicate { $0.uuid == uuid }))
-        guard matches.count <= 1 else { throw RecordError.ambiguousIdentity }
-        guard let mark = matches.first else { throw RecordError.missingRecord }
+        let mark = try mark(uuid: uuid, context: context)
         try delete(mark, context: context)
     }
 
     /// Deletes exactly this occurrence, preserving its Item and sibling Marks.
     public static func delete(_ mark: ItemMark, context: ModelContext) throws {
         try RecordMutation.validate(context, models: [mark])
-        context.delete(mark)
-        try RecordMutation.save(context)
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let saved = try self.mark(uuid: mark.uuid, context: writer)
+        let itemID = saved.item?.uuid
+        writer.delete(saved)
+        try RecordMutation.save(writer)
+        if let itemID {
+            _ = try ItemOperations.item(context: context, uuid: itemID)
+        }
+    }
+
+    private static func mark(uuid: UUID, context: ModelContext) throws -> ItemMark {
+        var descriptor = FetchDescriptor<ItemMark>(predicate: #Predicate { $0.uuid == uuid })
+        let ambiguousIdentityLimit = 2
+        descriptor.fetchLimit = ambiguousIdentityLimit
+        let matches = try context.fetch(descriptor)
+        guard matches.count < ambiguousIdentityLimit else {
+            throw RecordError.ambiguousIdentity
+        }
+        guard let mark = matches.first else {
+            throw RecordError.missingRecord
+        }
+        return mark
     }
 }

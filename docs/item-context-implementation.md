@@ -56,11 +56,11 @@ Operations or App Intent commands, or provide a cross-device transaction.
 
 Period editors retain their original boundaries and continuation state for the
 editing session. If any of those facts changed before saving, the shared
-correction operation resolves the UUID in a fresh read context and compares
+correction operation resolves the UUID in a fresh write context and compares
 the saved facts, rather than trusting the editor's retained model. Missing or
 ambiguous identities are rejected, and sibling-period validation uses that same
 fresh context. A stale submission is refused before mutation. After validation,
-the operation changes and saves the caller's model synchronously so observed
+the operation saves in that context and re-fetches the caller's model so observed
 values update without waiting for a cross-context merge. The editor
 keeps its input and displays the existing review-again error; dismiss and reopen
 it to review current facts. Unrelated Item or Mark writes do not invalidate the
@@ -75,9 +75,21 @@ Adding or resuming also validates the saved Item and its period history in a
 fresh context. Resumption first resolves the selected period uniquely and
 requires that it is still ended. Missing or ambiguous identities and newly
 saved sibling conflicts reject the operation before insertion. Successful
-insertion still uses the caller's context and observed Item, while the previous
-period retains its identity and ending. These checks do not serialize CloudKit
-delivery or writes from other processes with the local save.
+insertion uses that fresh context, while the previous period retains its identity
+and ending. These checks do not serialize CloudKit delivery or writes from other
+processes with the local save.
+
+Record additions, corrections, deletions, Item state changes, and Tag assignments
+or deletions save through an owned fresh context. Saving a retained model can
+write back unrelated scalar values when a relationship changes; reading fresh
+facts only for validation is insufficient. Mark additions also check the saved
+recording choice and resolve the owner uniquely before insertion. Corrections
+preserve registration metadata accepted by an intervening import. Item deletion
+cascades through the saved graph without restoring stale shared Tag names.
+After successful writes, bounded reads refresh affected caller models for
+immediate observed values. Failed saves leave the caller's graph and the saved
+store unchanged. These are implementation safeguards, not a schema change or a
+distributed transaction guarantee.
 
 An empty link clears it. A nonempty link must be an absolute website or app URL;
 relative input and file/data/script URLs are rejected before mutation. Opening
