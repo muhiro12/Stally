@@ -7,6 +7,43 @@ import Testing
 @MainActor
 struct SaveFailureTests {
     @Test
+    func failedReviewedPeriodSavePreservesTheReopenedRecord() throws {
+        let directory = PersistentTestDirectory.makeURL()
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appending(path: "period.store")
+        let original = PeriodInput(start: "2020", end: "2021", isOngoing: false)
+        let identity = try autoreleasepool {
+            let context = ModelContext(try StallyModelContainerFactory.disk(at: url))
+            let item = try ItemOperations.create(context: context, name: "History")
+            return try PeriodOperations.add(
+                to: item, input: original, today: "2026-11-14", context: context
+            ).uuid
+        }
+        try autoreleasepool {
+            let schema = StallyModelContainerFactory.schema
+            let configuration = ModelConfiguration(
+                "Read Only", schema: schema, url: url, allowsSave: false, cloudKitDatabase: .none
+            )
+            let context = ModelContext(try ModelContainer(for: schema, configurations: [configuration]))
+            let period = try #require(context.fetch(FetchDescriptor<ItemPeriod>()).first)
+            #expect(throws: (any Error).self) {
+                try PeriodOperations.correct(
+                    period, input: .init(start: "2020-02"), today: "2026-11-14", context: context, original: original
+                )
+            }
+            #expect(period.startLocalDate == original.start)
+            #expect(period.endLocalDate == original.end && !period.isOngoing)
+            #expect(!context.hasChanges)
+        }
+        let context = ModelContext(try StallyModelContainerFactory.disk(at: url))
+        let saved = try #require(context.fetch(FetchDescriptor<ItemPeriod>()).first)
+        #expect(saved.uuid == identity)
+        #expect(saved.startLocalDate == original.start)
+        #expect(saved.endLocalDate == original.end && !saved.isOngoing)
+    }
+
+    @Test
     func failedSaveRollsBackOnlyTheAttemptedOperation() throws {
         let directory = PersistentTestDirectory.makeURL()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)

@@ -42,7 +42,12 @@ are not interpreted as removals.
 
 Period editors retain their original boundaries and continuation state for the
 editing session. If any of those facts changed before saving, the shared
-correction operation refuses the stale submission before mutation. The editor
+correction operation resolves the UUID in a fresh read context and compares
+the saved facts, rather than trusting the editor's retained model. Missing or
+ambiguous identities are rejected, and sibling-period validation uses that same
+fresh context. A stale submission is refused before mutation. After validation,
+the operation changes and saves the caller's model synchronously so observed
+values update without waiting for a cross-context merge. The editor
 keeps its input and displays the existing review-again error; dismiss and reopen
 it to review current facts. Unrelated Item or Mark writes do not invalidate the
 period edit. This is a local stale-edit guard, not a cross-device transaction.

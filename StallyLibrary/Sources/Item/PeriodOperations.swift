@@ -61,7 +61,7 @@ public enum PeriodOperations {
     }
 
     /// Revises the selected period while retaining its UUID and registration time.
-    /// Delayed editors supply their original values to reject intervening changes before saving.
+    /// Delayed editors supply their original values; a fresh context rechecks saved facts before saving.
     public static func correct(
         _ period: ItemPeriod,
         input: PeriodInput,
@@ -71,24 +71,17 @@ public enum PeriodOperations {
     ) throws {
         try RecordMutation.validate(context, models: [period])
         if let original {
-            let current = PeriodInput(
-                start: period.startLocalDate, end: period.endLocalDate, isOngoing: period.isOngoing
+            try validateSavedCorrection(
+                uuid: period.uuid,
+                input: input,
+                original: original,
+                today: today,
+                container: context.container
             )
-            guard current == original else {
-                throw RecordError.staleReview
-            }
+        } else {
+            try validateCorrection(period, input: input, today: today)
         }
-        guard let item = period.item else {
-            throw RecordError.missingRecord
-        }
-        let siblings = (item.periods ?? []).filter { $0 !== period }
-        try validate(
-            start: input.start,
-            end: input.end,
-            isOngoing: input.isOngoing,
-            siblings: siblings,
-            today: today
-        )
+        // Keep the caller's observed model current without waiting for a cross-context merge.
         period.startLocalDate = input.start
         period.endLocalDate = input.end
         period.isOngoing = input.isOngoing
@@ -100,6 +93,51 @@ public enum PeriodOperations {
         try RecordMutation.validate(context, models: [period])
         context.delete(period)
         try RecordMutation.save(context)
+    }
+}
+
+private extension PeriodOperations {
+    static func validateSavedCorrection(
+        uuid: UUID,
+        input: PeriodInput,
+        original: PeriodInput,
+        today: String,
+        container: ModelContainer
+    ) throws {
+        // A retained editor model may not reflect another context's completed save.
+        let reader = ModelContext(container)
+        reader.autosaveEnabled = false
+        var descriptor = FetchDescriptor<ItemPeriod>(predicate: #Predicate { $0.uuid == uuid })
+        let ambiguousIdentityLimit = 2
+        descriptor.fetchLimit = ambiguousIdentityLimit
+        let matches = try reader.fetch(descriptor)
+        guard matches.count < ambiguousIdentityLimit else {
+            throw RecordError.ambiguousIdentity
+        }
+        guard let period = matches.first else {
+            throw RecordError.missingRecord
+        }
+        let current = PeriodInput(
+            start: period.startLocalDate, end: period.endLocalDate, isOngoing: period.isOngoing
+        )
+        guard current == original else {
+            throw RecordError.staleReview
+        }
+        try validateCorrection(period, input: input, today: today)
+    }
+
+    static func validateCorrection(_ period: ItemPeriod, input: PeriodInput, today: String) throws {
+        guard let item = period.item else {
+            throw RecordError.missingRecord
+        }
+        let siblings = (item.periods ?? []).filter { $0 !== period }
+        try validate(
+            start: input.start,
+            end: input.end,
+            isOngoing: input.isOngoing,
+            siblings: siblings,
+            today: today
+        )
     }
 }
 
