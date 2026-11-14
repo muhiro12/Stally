@@ -8,6 +8,24 @@ setup. Record the candidate, environment and result for each check.
 Store text and the monthly offer are maintained in
 [Store resources](../AppStore/README.md). The identifiers include the Store SKU.
 
+## Repository privacy declarations
+
+The app's `PrivacyInfo.xcprivacy` declares the required-reason API uses in the
+app and its statically linked StallyLibrary:
+
+- UserDefaults: `CA92.1` for app-only preferences and `1C8F.1` for the App Group
+  preferences used by the app and its system entry points.
+- File attributes: `C617.1` for operation-owned staging files and `3B52.1` for
+  user-selected import files. The transfer reader uses `fstat` to validate file
+  type and size; it does not use timestamps to order records or identify people.
+- Disk space: `E174.1` for rejecting transfer staging or import when capacity
+  is insufficient. Available capacity is not transmitted.
+
+These reasons follow [Apple's required-reason API inventory](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype).
+Validate the packaged manifest in the release artifact as part of distribution
+qualification. This declaration does not replace App Store privacy disclosures
+or the privacy manifests owned by dependencies.
+
 ## November 11 Store configuration
 
 App Store Connect read-back confirmed app ID `6760996986`, bundle ID and SKU
