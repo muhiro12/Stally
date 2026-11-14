@@ -1,0 +1,229 @@
+import Foundation
+import SwiftData
+
+/// Partial-date history with conservative local validation and explicit, gradual conflict repair.
+public enum PeriodOperations {
+    /// Returns registration time descending, without inferring chronology from partial or unknown dates.
+    public static func orderedPeriods(for item: Item) -> [ItemPeriod] {
+        (item.periods ?? []).sorted { first, second in
+            if first.createdAt != second.createdAt {
+                return first.createdAt > second.createdAt
+            }
+            return first.uuid.uuidString < second.uuid.uuidString
+        }
+    }
+
+    /// Adds period knowledge without inferring missing date components.
+    @discardableResult
+    public static func add(to item: Item, input: PeriodInput, today: String, context: ModelContext) throws
+    -> ItemPeriod {
+        try RecordMutation.validate(context, models: [item])
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let savedItem = try ItemOperations.item(context: writer, uuid: item.uuid)
+        try validate(
+            start: input.start,
+            end: input.end,
+            isOngoing: input.isOngoing,
+            siblings: savedItem.periods ?? [],
+            today: today
+        )
+        let period = ItemPeriod(
+            item: savedItem,
+            startLocalDate: input.start,
+            endLocalDate: input.end,
+            isOngoing: input.isOngoing
+        )
+        writer.insert(period)
+        try RecordMutation.save(writer)
+        _ = try ItemOperations.item(context: context, uuid: item.uuid)
+        return try self.period(uuid: period.uuid, context: context)
+    }
+
+    /// Ending preserves identity and start. Pass nil when the end date is unknown.
+    public static func end(_ period: ItemPeriod, on end: String?, today: String, context: ModelContext) throws {
+        try RecordMutation.validate(context, models: [period])
+        guard period.isOngoing else {
+            throw RecordError.periodAlreadyEnded
+        }
+        try correct(
+            period,
+            input: .init(start: period.startLocalDate, end: end, isOngoing: false),
+            today: today,
+            context: context,
+            original: .init(
+                start: period.startLocalDate, end: period.endLocalDate, isOngoing: period.isOngoing
+            )
+        )
+    }
+
+    /// Genuine resumption creates a new period; a mistaken ending is corrected in place.
+    @discardableResult
+    public static func resume(_ period: ItemPeriod, on start: String?, today: String, context: ModelContext)
+    throws -> ItemPeriod {
+        try RecordMutation.validate(context, models: [period])
+        let reader = ModelContext(context.container)
+        reader.autosaveEnabled = false
+        let savedPeriod = try self.period(uuid: period.uuid, context: reader)
+        guard !savedPeriod.isOngoing, let savedItem = savedPeriod.item else {
+            throw RecordError.invalidPeriod
+        }
+        let item = try ItemOperations.item(context: context, uuid: savedItem.uuid)
+        return try add(to: item, input: .init(start: start), today: today, context: context)
+    }
+
+    /// Revises the selected period while retaining its UUID and registration time.
+    /// Delayed editors supply their original values; a fresh context rechecks saved facts before saving.
+    /// Existing conflicts may be reduced without introducing or expanding another conflict.
+    public static func correct(
+        _ period: ItemPeriod,
+        input: PeriodInput,
+        today: String,
+        context: ModelContext,
+        original: PeriodInput? = nil
+    ) throws {
+        try RecordMutation.validate(context, models: [period])
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let saved = try self.period(uuid: period.uuid, context: writer)
+        if let original {
+            let current = PeriodInput(
+                start: saved.startLocalDate, end: saved.endLocalDate, isOngoing: saved.isOngoing
+            )
+            guard current == original else {
+                throw RecordError.staleReview
+            }
+        }
+        try validateCorrection(saved, input: input, today: today)
+        saved.startLocalDate = input.start
+        saved.endLocalDate = input.end
+        saved.isOngoing = input.isOngoing
+        try RecordMutation.save(writer)
+        _ = try self.period(uuid: period.uuid, context: context)
+    }
+
+    /// Removes this period only; Marks and other periods remain independent.
+    public static func delete(_ period: ItemPeriod, context: ModelContext) throws {
+        try RecordMutation.validate(context, models: [period])
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let saved = try self.period(uuid: period.uuid, context: writer)
+        let itemID = saved.item?.uuid
+        if let itemID {
+            _ = try ItemOperations.item(context: writer, uuid: itemID)
+        }
+        writer.delete(saved)
+        try RecordMutation.save(writer)
+        if let itemID {
+            _ = try ItemOperations.item(context: context, uuid: itemID)
+        }
+    }
+}
+
+private extension PeriodOperations {
+    static func period(uuid: UUID, context: ModelContext) throws -> ItemPeriod {
+        var descriptor = FetchDescriptor<ItemPeriod>(predicate: #Predicate { $0.uuid == uuid })
+        let ambiguousIdentityLimit = 2
+        descriptor.fetchLimit = ambiguousIdentityLimit
+        let matches = try context.fetch(descriptor)
+        guard matches.count < ambiguousIdentityLimit else {
+            throw RecordError.ambiguousIdentity
+        }
+        guard let period = matches.first else {
+            throw RecordError.missingRecord
+        }
+        return period
+    }
+
+    static func validateCorrection(_ period: ItemPeriod, input: PeriodInput, today: String) throws {
+        guard let item = period.item else {
+            throw RecordError.missingRecord
+        }
+        let siblings = (item.periods ?? []).filter { $0 !== period }
+        do {
+            try validate(
+                start: input.start,
+                end: input.end,
+                isOngoing: input.isOngoing,
+                siblings: siblings,
+                today: today
+            )
+        } catch let error as RecordError where error == .ongoingPeriodExists || error == .overlappingPeriods {
+            let original = PeriodInput(
+                start: period.startLocalDate, end: period.endLocalDate, isOngoing: period.isOngoing
+            )
+            let before = try PeriodCorrectionConflicts(input: original, siblings: siblings, today: today)
+            let after = try PeriodCorrectionConflicts(input: input, siblings: siblings, today: today)
+            guard after.isImprovement(over: before) else {
+                throw error
+            }
+        }
+    }
+}
+
+extension PeriodOperations {
+    static func validateHistory(_ periods: [ItemPeriod], today: String) throws {
+        let todayDate = try CivilDate.parse(today, formats: [CivilDate.dayLength: "yyyy-MM-dd"])
+        guard periods.filter(\.isOngoing).count <= 1 else { throw RecordError.ongoingPeriodExists }
+        var definiteIntervals: [DateInterval] = []
+        for period in periods {
+            let start = try CivilDate.range(period.startLocalDate)
+            let end = try CivilDate.range(period.endLocalDate)
+            try validateBoundaries(start: start, end: end, isOngoing: period.isOngoing)
+            if let start, let earliestEnd = period.isOngoing ? todayDate : end?.start {
+                let latestStart = CivilDate.latestDay(in: start)
+                if latestStart < earliestEnd { definiteIntervals.append(.init(start: latestStart, end: earliestEnd)) }
+            }
+        }
+        let sorted = definiteIntervals.sorted { $0.start < $1.start }
+        guard !zip(sorted, sorted.dropFirst()).contains(where: { $0.end > $1.start }) else {
+            throw RecordError.overlappingPeriods
+        }
+    }
+
+    static func validate(
+        start: String?,
+        end: String?,
+        isOngoing: Bool,
+        siblings: [ItemPeriod],
+        today: String
+    ) throws {
+        let todayDate = try CivilDate.parse(today, formats: [CivilDate.dayLength: "yyyy-MM-dd"])
+        let startRange = try CivilDate.range(start)
+        let endRange = try CivilDate.range(end)
+        try validateBoundaries(start: startRange, end: endRange, isOngoing: isOngoing)
+        var ongoingCount = isOngoing ? 1 : 0
+        for sibling in siblings {
+            let siblingStart = try CivilDate.range(sibling.startLocalDate)
+            let siblingEnd = try CivilDate.range(sibling.endLocalDate)
+            try validateBoundaries(start: siblingStart, end: siblingEnd, isOngoing: sibling.isOngoing)
+            if sibling.isOngoing {
+                ongoingCount += 1
+            }
+            guard ongoingCount <= 1 else {
+                throw RecordError.ongoingPeriodExists
+            }
+            if let startRange, let siblingStart,
+               let earliestEnd = isOngoing ? todayDate : endRange?.start,
+               let siblingEarliestEnd = sibling.isOngoing ? todayDate : siblingEnd?.start {
+                let latestStart = max(
+                    CivilDate.latestDay(in: startRange),
+                    CivilDate.latestDay(in: siblingStart)
+                )
+                if latestStart < min(earliestEnd, siblingEarliestEnd) {
+                    throw RecordError.overlappingPeriods
+                }
+            }
+        }
+    }
+
+    static func validateBoundaries(start: DateInterval?, end: DateInterval?, isOngoing: Bool)
+    throws {
+        guard !isOngoing || end == nil else {
+            throw RecordError.invalidPeriod
+        }
+        if let start, let end, start.start >= end.end {
+            throw RecordError.invalidPeriod
+        }
+    }
+}

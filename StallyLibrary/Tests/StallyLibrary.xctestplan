@@ -1,0 +1,26 @@
+{
+  "configurations" : [
+    {
+      "id" : "C1D7F5A7-43F8-4577-9813-59E9DB9566A4",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "language" : "en",
+    "performanceAntipatternCheckerEnabled" : true,
+    "region" : "US"
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "StallyLibraryTests",
+        "name" : "StallyLibraryTests"
+      }
+    }
+  ],
+  "version" : 2
+}

@@ -1,0 +1,189 @@
+import StallyLibrary
+import SwiftData
+import SwiftUI
+
+struct LibraryView: View {
+    private struct TransferPresentation: Identifiable {
+        let id = UUID()
+        let url: URL?
+    }
+
+    @Environment(StallyLibrarySession.self)
+    private var librarySession
+    @Query(sort: \Item.createdAt, order: .reverse)
+    private var items: [Item]
+    @Query(sort: \Tag.name)
+    private var tags: [Tag]
+    @State private var destination: LibraryDestination? = .library
+    @State private var selectedItemID: PersistentIdentifier?
+    @State private var compactColumn = NavigationSplitViewColumn.content
+    @State private var searchText = ""
+    @State private var archiveScope = ItemQuery.ArchiveScope.library
+    @State private var addingItem = false
+    @State private var managingTags = false
+    @State private var transferPresentation: TransferPresentation?
+    @State private var routeError: String?
+
+    private var selectedItem: Item? {
+        items.first { item in
+            item.persistentModelID == selectedItemID
+        }
+    }
+
+    private var title: String {
+        if case .tag(let identifier) = destination,
+           let tag = tags.first(where: { tag in
+            tag.persistentModelID == identifier
+           }) {
+            return tag.name
+        }
+        return String(localized: (destination ?? .library).title)
+    }
+
+    var body: some View {
+        @Bindable var session = librarySession
+        NavigationSplitView(
+            preferredCompactColumn: $compactColumn
+        ) {
+            LibrarySidebar(
+                items: items,
+                tags: tags,
+                selection: $destination,
+                manageTags: { managingTags = true },
+                transfer: {
+                    transferPresentation = .init(url: nil)
+                }
+            )
+        } content: {
+            ItemListView(
+                items: items.filter { item in
+                    (destination ?? .library).includes(item)
+                },
+                title: title,
+                initialScope: destination == .archive ? .archived : .library,
+                selection: $selectedItemID,
+                searchText: $searchText,
+                archiveScope: $archiveScope
+            ) {
+                addingItem = true
+            }
+        } detail: {
+            if let selectedItem {
+                ItemDetailView {
+                    selectedItemID = nil
+                    compactColumn = .content
+                }
+                .environment(selectedItem)
+                .id(selectedItem.persistentModelID)
+            } else {
+                ContentUnavailableView {
+                    Label("Choose an Item", systemImage: "square.stack")
+                } description: {
+                    Text("Your Marks, periods, and notes will appear here.")
+                } actions: {
+                    StallyActionButton(.addItem) {
+                        addingItem = true
+                    }
+                }
+            }
+        }
+        .sheet(item: $session.importReview) { review in
+            ImportReviewView(review: review) { _ in librarySession.importReview = nil }
+        }
+        .sheet(item: $transferPresentation) { presentation in
+            TransferView(initialURL: presentation.url)
+        }
+        .sheet(isPresented: $addingItem) {
+            ItemEditor(draft: .init(), title: "Add Item") { item in
+                destination = .library
+                archiveScope = .library
+                searchText = ""
+                selectedItemID = item.persistentModelID
+                compactColumn = .detail
+            }
+        }
+        .sheet(isPresented: $managingTags) {
+            TagManagerView()
+        }
+        .onChange(of: destination) { _, _ in
+            archiveScope = destination == .archive ? .archived : .library
+            searchText = ""
+            if let selectedItem,
+               !(destination ?? .library).includes(selectedItem)
+                || selectedItem.isArchived != (destination == .archive) {
+                selectedItemID = nil
+            }
+        }
+        .onChange(of: tags.map(\.persistentModelID)) { _, identifiers in
+            if case .tag(let identifier) = destination, !identifiers.contains(identifier) {
+                destination = .library
+            }
+        }
+        .onOpenURL(perform: openLink)
+        .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
+            if let url = activity.webpageURL { openLink(url) }
+        }
+        .alert("Could not open link", isPresented: showingRouteError) {
+            Button("OK") {
+                routeError = nil
+            }
+        } message: {
+            Text(routeError ?? "")
+        }
+    }
+
+    private var showingRouteError: Binding<Bool> {
+        .init(
+            get: {
+                routeError != nil
+            },
+            set: { isPresented in
+                if !isPresented {
+                    routeError = nil
+                }
+            }
+        )
+    }
+
+    private func openLink(_ url: URL) {
+        if url.isFileURL {
+            transferPresentation = .init(url: url)
+            return
+        }
+        if case .supported(.destination(let target)) = StallyLinkOperations.parse(url) {
+            switch target {
+            case .library:
+                destination = .library
+                archiveScope = .library
+                searchText = ""
+                compactColumn = .content
+            case .archive:
+                destination = .archive
+                archiveScope = .archived
+                searchText = ""
+                compactColumn = .content
+            case .importExport:
+                transferPresentation = .init(url: nil)
+            case .createItem:
+                addingItem = true
+            }
+            return
+        }
+        guard case .supported(.item(let uuid)) = StallyLinkOperations.parse(url) else {
+            routeError = String(localized: "This destination is not available yet.")
+            return
+        }
+        let matches = items.filter { item in
+            item.uuid == uuid
+        }
+        guard matches.count == 1, let item = matches.first else {
+            routeError = String(localized: "The linked Item is missing or has a conflicting identity.")
+            return
+        }
+        destination = item.isArchived ? .archive : .library
+        archiveScope = item.isArchived ? .archived : .library
+        searchText = ""
+        selectedItemID = item.persistentModelID
+        compactColumn = .detail
+    }
+}

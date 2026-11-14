@@ -1,0 +1,506 @@
+# Product Behavior Design
+
+## Status and Authority
+
+On October 28, 2026, the owner clarified the next design phase: build the
+product from the accepted foundational contracts, then design its capabilities
+and behavior, Operations, and app/system adapters. Existing Operations and
+temporary UI arrangements do not establish accepted product requirements.
+Implementation may inform feasibility after the intended behavior is clear.
+
+The [contract summary](first-release-contract-summary.md) and its linked
+decisions remain authoritative for identity, recorded meaning, preservation,
+ownership, and published boundaries. The explicitly accepted October 28
+representative-link addition below extends that foundation; other proposals
+do not change it.
+The [implementation record](remaining-capabilities-implementation.md) describes the
+current Operations and the app and system adapters that call them.
+
+Below, **contract consequence** means behavior already constrained by accepted
+decisions. **Proposal** means a recommended product expression for discussion,
+not owner approval, a frozen interface, or completed implementation. Existing
+product records supply intent and examples, not an obligation to restore every
+legacy feature. The database does not, by itself, decide which experiences are
+valuable or how a person should use them.
+
+## Decision Boundary for This Design Phase
+
+On October 30, the owner limited this phase to decisions whose later reversal
+would lose information, create compatibility obligations, or require material
+rework. Do not complete every Operations detail before development. Leave
+reversible experience choices open so implementation evidence and user feedback
+can shape them during development and after release.
+
+- Resolve foundational meaning, identity, retained precision, ownership, and
+  destructive or preservation semantics before dependent implementation makes
+  a change costly. Reuse the accepted contracts rather than reopening them.
+- Review stored formats, published identifiers, and externally consumed inputs,
+  outputs, units, defaults, and side effects before their first persistence or
+  publication creates continuing obligations. Exact interface details can be
+  decided during feature implementation before crossing that boundary.
+- Defer app-local search matching, multi-Tag matching, sort choices, bulk-action
+  scope, review grouping, screen composition, and derived display refinements.
+  These are not blockers to concluding this design phase. A choice exposed in
+  a saved workflow or persisted format needs a separate compatibility check.
+- Keep Operations factoring and internal types adaptable. For approximate
+  readings, preserve source facts and distinguish unknown values; defer mixed-
+  precision aggregation and presentation details until the feature is built.
+  An externally returned duration still needs defined semantics before release.
+- Do not add speculative fields or generic extension mechanisms just to keep
+  hypothetical options open. Identify a concrete irreversible effect or material
+  rework cost before bringing a deferred decision back into this phase.
+
+The remaining questions below are a deferred design backlog, not a checklist
+requiring owner approval now. Accepted behavior remains the current direction;
+it does not make every app-local interaction a permanent compatibility promise.
+
+## Product Center
+
+Stally preserves a person's record of a subject and their relationship with it.
+The subject may be a particular object, a continuing product, or a place; the
+person decides what belongs to one Item. Photos and notes supply context,
+Marks record occurrences, and periods retain relationship history.
+
+Proposal: make these equally valid ways to begin, without requiring a mode
+that permanently partitions Items:
+
+- Keep something in mind through its name, notes, and photos.
+- Record particular occasions on which it was chosen or used.
+- Keep the periods during which it was part of the person's life.
+- Combine these forms of knowledge when useful.
+
+For example, a notebook may initially have only a photo and note. A favorite
+cafe may accumulate visit Marks. A bicycle may have an ongoing period with
+only its start year known. None requires invented occurrences or dates to
+qualify as a useful record. These are usage examples, not built-in categories.
+
+## Accepted Context and Favorite Decisions
+
+On October 28, the owner accepted the following direction after discussing
+dedicated attributes, free-form context, and the value of additional choices.
+These decisions are selected product behavior, not completed implementation.
+
+- An Item can have **one optional representative URL**, chosen by the person.
+  Its purpose is a predictable, readily accessible action that opens the
+  Item's chosen destination, such as a store, product page, or another app.
+  It is separate from the link that opens this Item inside Stally.
+- Follow the platform's URL-opening behavior. An appropriate URL can open a
+  related app, but Stally does not guarantee that every destination has an
+  installed handler or remains available.
+- Do not infer the representative URL from the first URL in the note. Adding,
+  replacing, or clearing the representative link changes only that reference;
+  it does not rewrite the note or change Item identity and history.
+- Do not introduce a URL array, named-link collection, ordering, or primary-link
+  selection among several entries for this feature. Those would serve a
+  different, currently unselected reference-management capability.
+- Keep `isFavorite` as a Bool: an explicit choice to include the Item among
+  favorites. It is not a graded rating, priority, or relative ranking. Do not
+  replace it with an Int solely to reserve future values.
+- Use notes for additional context whose structured use is not yet selected.
+  Purchase dates, acquisition sources, gift givers, and rating levels do not
+  gain dedicated fields from hypothetical demand alone. Reconsider a field
+  when a concrete product behavior establishes its meaning and cardinality.
+
+The representative URL is a new retained fact and must participate in storage,
+sync, export/import, and applicable system access. Preserve existing notes and
+allow older Items to have no representative link; do not automatically extract
+one during migration. An older supported import without this field must not
+erase an existing link. Finalize its physical representation, wire key, input
+validation, and opening/failure presentation during implementation.
+
+The October 31 prerelease replacement instruction supersedes the earlier
+requirement to retain development V3 as a migration snapshot. The current
+`StallySchema` baseline includes the optional `representativeURL` string.
+No development-store migration or legacy-file compatibility is provided.
+Storage, Item editing, reviewed export/import, and system adapters now include
+this fact. See the [current implementation](remaining-capabilities-implementation.md).
+
+## Capability and Behavior Map
+
+### Keep a Subject and Its Context
+
+Contract consequences:
+
+- Creating an Item does not implicitly create a Mark or period.
+- Changing its description preserves identity and existing history.
+- Classification is optional, user-defined, and can include several Tags.
+- The person can choose one representative link and open it directly, without
+  searching the note. See the accepted October 28 decision above.
+- Photos are independently retained attachments with captions and ordering;
+  they are not references whose survival depends on the source photo library.
+- Deleting an Item also deletes its owned Marks, periods, and photos. Shared
+  Tags and unrelated Items survive.
+
+Accepted product behavior on October 30:
+
+- Create an Item with a nonblank name. Notes, photos, Tags, and the
+  representative URL are optional; they can also be added or edited later.
+- Permit distinct Items with the same name. Do not infer that the person
+  intended to reuse, replace, or combine an existing Item.
+- Edit name and note while preserving Item identity and unrelated information.
+- Add multiple photos, edit their captions and order, and delete individual
+  attachments without recreating the Item.
+- Set, replace, clear, and open the one optional representative URL.
+- Assign or remove existing Tags and allow explicit creation of a new Tag
+  when needed. Same-name identity rules continue to apply.
+- Confirm Item deletion with its owned Mark, period, and photo consequences.
+  Shared Tags and unrelated records survive.
+
+Treat the content submitted as one save action as a unit. If that submission
+includes photos, a partial save must not be presented as full completion.
+Cancellation leaves existing records unchanged. A save failure retains the
+editing input for correction and retry; this does not establish a separate
+promise of draft recovery after process termination. An edit preserves values
+the person did not change rather than resetting omitted fields.
+
+Item registration and the first Mark or period express separate intentions.
+Registration does not imply purchase, use, or relationship start. A continuous
+screen flow may offer explicit history entry, but must not create today's Mark
+or begin a period merely because an Item was added. If a future flow submits
+Item and explicit history together as one action, apply the same save-unit rule.
+
+Screen composition, the initial visibility of optional inputs, and Operations
+signatures remain implementation/design work. These accepted behaviors do not
+freeze the current editor or its existing method calls.
+
+### Record and Correct Occurrences
+
+Contract consequences:
+
+- Each Mark is one occurrence. Several Marks on the same day are valid.
+- A Mark has a known day and optionally a known minute; absence of time does
+  not mean midnight or the time the record was created.
+- Backdating and correcting occurrence knowledge are supported. Correction
+  keeps the Mark's identity and registration metadata.
+- Increasing a day's count adds records; reducing it removes identified
+  records. It does not overwrite a stored daily counter or discard arbitrary
+  timed occurrences.
+- Pausing new recording retains history and permits correction. Resuming
+  recording does not add a Mark or change a relationship period.
+
+Accepted product behavior on October 30:
+
+- The common task adds one occurrence to an Item with a known day and
+  optional minute knowledge.
+- **Record today:** use today's date without an occurrence time. This is the
+  default lightweight capture behavior, including when recording later in the
+  day; entry time must not silently become occurrence time.
+- **Record now:** explicitly record the current date and clock time to minute
+  precision. This retains the selected civil-date/time meaning, not a stored
+  time zone or an absolute occurrence instant.
+- **Record a specified date/time:** use the selected day and an optional time,
+  including for backdated entry.
+- Each deliberate addition creates another occurrence, even if another Mark
+  has the same day or minute. Do not infer identity from those values.
+- Undo of the just-added occurrence targets that particular record, leaving
+  other Marks intact. It must not resolve to whichever record is now latest
+  after another entry or synchronization.
+- Allow later date/time correction, adding a previously unknown time, and
+  removing time knowledge while retaining the known day. These changes retain
+  the same Mark identity and registration metadata.
+- While new recording is paused, reject additions but retain access to
+  correction and deletion of existing Marks.
+
+The three capture meanings do not prescribe three always-visible buttons,
+three Operations methods, or a particular App Intent inventory. Their surface
+composition remains design work. Preserve a calm experience for someone who
+records once a day; additional occurrences do not imply better participation.
+
+Still to decide: the first-release interaction for day-count correction and
+the presentation of date/time input and undo. A count editor must express the
+accepted additions/removals, with clear selection when reducing a count would
+remove distinguishable timed records. Handling accidental repeated activation
+must not silently reinstate a one-per-day rule.
+
+### Keep Relationship Periods
+
+Contract consequences:
+
+- Start and end knowledge may be unknown, a year, a month, or an exact day.
+  Ongoing and ended-with-unknown-end remain different facts.
+- Ending retains the period identity and start. Genuine resumption creates a
+  new period; correcting an accidental end edits the original period.
+- Periods belong to an Item; Marks do not belong to periods and need not be
+  constrained to their boundaries.
+- Ordinary local edits preserve the accepted single-ongoing and definite-
+  overlap rules. Incoming conflicts remain inspectable rather than silently
+  repaired. See [period rules](period-schema-validation.md).
+
+Accepted product behavior on October 30:
+
+- **Add a period:** allow both an ongoing relationship and a previously ended
+  relationship to be recorded, using only the boundary precision known.
+- **End a period:** mark that period as ended while preserving its start and
+  identity. Its end may remain unknown; use today only when explicitly chosen,
+  not merely because the end action was performed today.
+- **Resume a relationship:** retain the ended period and create a new ongoing
+  period. Do not erase the previous ending or the gap between periods.
+- **Correct a period:** edit its start, end, or continuation state while
+  retaining identity. Correcting a mistaken ending is different from recording
+  a genuine later resumption; it does not create another period.
+- **Delete a period:** remove only the selected period, preserving its Item,
+  Marks, and other periods.
+
+Year-only, month-only, and day knowledge are valid inputs. An ongoing period
+may have an unknown start, and an ended period may have an unknown end.
+Having no recorded period is different from explicitly recording an ongoing
+period with an unknown start. Do not infer one from the other or from Item
+registration, Mark additions, or Archive changes.
+
+The history behavior above supplies the facts for the accepted readings below.
+The [current readings](period-readings-design.md) implement the initial calculation
+and presentation choices. Screen wording, controls and rounding may evolve with
+product feedback; unknown boundaries must not become exact totals.
+
+### Organize and Find Records
+
+Contract consequences:
+
+- Archive changes everyday visibility; it does not end a period, remove
+  history, or assert disposal. Favorites and Mark recording remain independent.
+- Same-name Tags remain distinct identities. Renaming does not merge them.
+- Explicit Tag consolidation has the accepted bounded reassignment/deletion
+  meaning, including its limits on unseen remote assignments and old references.
+
+Accepted product behavior on October 30:
+
+- Archive and unarchive change ordinary list visibility while retaining
+  favorites, recording availability, and all history. They do not assert that
+  the person stopped using or possessing the subject.
+- Favorite and unfavorite change explicit selection as a favorite, preserving
+  Archive state, recording availability, and history. Favorite is not inferred
+  from recorded activity.
+- Pause and resume Mark recording change the ability to add occurrences,
+  preserving existing Marks, periods, and list placement.
+- Add and remove Tag assignments without changing Item identity, independent
+  state, or history.
+- Ordinary browsing starts with unarchived Items. Allow the person to choose
+  archived Items only or both archived and unarchived Items.
+- Search Item names, notes, and assigned Tag names within the selected scope.
+  Allow further filtering by favorites and selected Tags. Search, filtering,
+  and sorting do not mutate records.
+- Favorite and Tag filters respect the selected archive scope. A favorite
+  filter in ordinary browsing does not implicitly include archived Items;
+  selecting the combined scope makes them eligible without unarchiving them.
+- Provide Tag creation, renaming, assignment, removal, deletion, and explicit
+  reviewed consolidation. The person selects the surviving Tag. Equal names
+  do not trigger consolidation, and Tag deletion preserves its assigned Items.
+
+The goal is to find the same records within a useful scope and conditions.
+Independent state and classifications do not mandate dedicated screens,
+permanent switches, or the current sidebar arrangement.
+
+Still to decide: text matching details, multiple-Tag matching semantics, sort
+options and defaults, and bulk action behavior. The selected search fields and
+scope rules above do not freeze those interaction or implementation choices.
+
+### Revisit and Understand the Record
+
+Accepted period-reading scope on October 30:
+
+- Provide the length of the current ongoing period and the cumulative length
+  across recorded periods, excluding the gaps between them.
+- The owner personally values the cumulative reading slightly more. Prioritize
+  its design discussion without treating that preference as evidence that all
+  users want the same hierarchy or as a fixed screen layout.
+- The current-period reading starts at the current period's own start. It is
+  not elapsed time from the earliest historical start across intervening gaps.
+- Provide approximate readings as well as readings supported by exact dates.
+  The owner emphasized that an understandable sense of accumulated time is a
+  user goal; exact computation alone does not fulfill that goal. Estimates
+  complement rather than replace access to the recorded facts and their
+  supported precision.
+- Use the difference between recorded years for year-only estimates and the
+  difference between recorded year/month components for month-level
+  estimates. Make the calculation basis available in details. For example,
+  2020 to 2021 can read "about 1 year" without asserting an exact year of
+  elapsed time. Uncertainty ranges are optional supplements, not prerequisites
+  for an ordinary approximate reading.
+- Wholly unknown boundaries do not supply a calculation basis. Distinguish
+  the subtotal over calculable periods from a reading covering all periods.
+- Mixed precision, aggregation, units, rounding, exact-date counting, and
+  detailed incomplete/conflicting-history presentation remain to be designed.
+  The accepted approximation basis does not settle those policies. See
+  [period readings](period-readings-design.md).
+
+Contract consequences:
+
+- Occurrence count and number of days with occurrences are different readings.
+- Registration time is not relationship start or occurrence time. Missing
+  recordings are not proof that the subject was unused or unimportant.
+- Readings must retain source precision and selected scope. Derived displays
+  do not silently create new authoritative facts.
+
+Proposal:
+
+- Begin with understandable history for one Item: its recorded occurrences,
+  periods, and visual context.
+- Add collection readings only around a useful question, such as which Items
+  have recorded activity in a chosen interval or what a chosen Tag contains.
+- Consider gentle prompts to revisit records separately from factual history;
+  a prompt expresses a suggestion, not a conclusion about the person's life.
+
+To decide: which questions justify calculations or suggestions, their scope,
+and their definitions. Legacy Review lanes, streaks, rankings, health scores,
+and fixed 30/90/365-day windows are candidates to reassess, not a required
+dashboard. This does not reject the value of reflection or decide its release
+scope by omission.
+
+### Copy and Share One Item
+
+The November 12 direction separates readable content from identity links and
+portable files ([#19](https://github.com/muhiro12/Stally/issues/19),
+[#32](https://github.com/muhiro12/Stally/issues/32)).
+
+Share Item Content opens a selectable plain-text preview of the Item's name,
+nonempty note, and representative URL, separated by blank lines. Copy Item
+Content and the native share sheet use that same snapshot. Changes arriving
+after the preview opens do not silently change what will be copied or shared;
+reopening takes a new snapshot. Text retains its original spelling, whitespace,
+newlines, and literal markup. Empty optional fields add no placeholder sections.
+
+This small outward-facing representation omits photos, tags, Marks, periods,
+preferences, registration metadata, and internal identifiers. The preview
+explains its included fields and omitted relationships. No date or relationship
+start is inferred. Sharing never creates, edits, or records a fact.
+
+Share Item Link remains a separate action for the existing UUID-based reference.
+Get Item Content returns the same readable text through an authenticated,
+read-only App Intent; it does not write the clipboard or send anything. Portable
+library export/import retains its independent versioned, reviewed contract.
+
+Readable text has no format/schema header, mandatory headings, or supported
+re-import grammar. Native String sharing is sufficient for this journey.
+The preview's text can also be dragged; Copy Item Content and Share Item Content
+remain its visible, non-drag alternatives.
+
+### Native Transfer Journeys
+
+The selected [#19](https://github.com/muhiro12/Stally/issues/19) scope reuses the
+existing link, content, period-reading, and portable-file contracts:
+
+| Journey | Selected behavior |
+| --- | --- |
+| Item reference | Drag a Library or Archive row as its stable HTTPS Item URL. Share Item Link remains available in Item actions. The drag does not include notes, history, or photos. |
+| Readable content | Drag, copy, or share the exact text shown in the Item content preview, using the native String representation. |
+| Time Together | Preview, copy, share, or drag a dated report of one Item's current and cumulative recorded time. Preserve exact units, approximate units, excluded periods, unknown results, and possible-overlap explanations. |
+| Portable export | Save the existing package or records-only JSON through the system file exporter. Files supplies subsequent sharing and dragging; no second export format or parallel exporter is added. |
+| Incoming file | Drop one Stally package or JSON file on the Import & Export drop area, or use Choose Stally File. Packages also support Open in Stally. All paths use the same bounded validation and explicit import review. |
+
+The Time Together report includes the Item name and calculation date but omits
+notes, representative links, photos, Tags, Marks, and internal identifiers.
+Opening its preview takes an immutable snapshot, so later edits or a date change
+do not alter what is copied/shared. Reopen to recalculate. Invalid histories fail
+visibly; missing dates never become zero days. This is readable text, not a new
+import format. The existing Get Time Together Intent keeps its result contract
+and shares the same reading formatter.
+
+For these journeys, only incoming portable files need a custom Transferable
+adapter. It declares
+the existing package and JSON content types and finishes reading inside the
+provider's [file-access lifetime](https://developer.apple.com/documentation/coretransferable/filerepresentation).
+Review retains a validated in-memory snapshot,
+not a temporary provider URL. Validation errors are shown without saving.
+Multiple-file drops and drops while loading or reviewing are rejected. Dropping
+copies input for review; it never moves/deletes the source or silently applies it.
+
+Collection reordering and drag-to-archive/tag/record are not adopted: collection
+order is derived, and these mutations already have explicit actions. Custom
+Item serialization is not adopted because URL and String cover the selected
+journeys. A new Insights report is outside this scope: the current app has no
+selected Insights aggregation/report to share. This decision does not postpone
+the retired template workflow or introduce an incoming text parser.
+
+### Input and Template Retirement
+
+Following [Incomes #426](https://github.com/muhiro12/Incomes/issues/426) and the
+updated [#32](https://github.com/muhiro12/Stally/issues/32), the dedicated Item
+Markdown template workflow is retired. Prompt copying, blank-template copying,
+a separate external-AI import mode, and deterministic template parsing/review
+are not retained as future release work. The earlier proposal never established
+a released Stally compatibility baseline, and the current source contains no
+template reader requiring a migration.
+
+The November 12 scope update adds optional Foundation Models text input assistance
+to first-release Item editing. Ordinary prose and pasted text use one reviewable
+draft flow without an app-specific template or external-AI mode. A fresh on-device
+session extracts a source-backed name, note, and representative URL. The person
+reviews the suggestion and fills only empty fields in the current editor, then
+edits and saves normally. Existing fields, photos, Tags, and Item identity remain
+intact. Source input survives generation errors and stopping an active request;
+dismissing the assistance sheet discards its temporary source and suggestion.
+Late or cancelled results cannot apply. Manual entry remains usable when the
+model is unavailable. Extraction does not infer relationship-start precision,
+create Marks/history, or silently save records. Photo recognition and OCR capture
+are not included in this first text-assistance implementation. See the
+[implementation and evaluation boundary](item-input-assistance.md).
+
+Readable content sharing remains useful independently of input assistance.
+Portable-file export/import keeps its existing versioned contract. A new
+structured import requires an independently justified exact-transfer or
+machine-to-machine use case and an explicit contract decision; readable shared
+text does not establish a re-import grammar.
+
+### Use the Record Outside Stally and Bring It Back
+
+Contract consequences:
+
+- Ordinary export uses the selected `.stally` package, with or without images.
+  Auxiliary JSON sharing supports external tools, including analysis.
+- Import preserves identity, reviews differences, and does not infer local
+  deletion from absence or erase photos because a file omits image bytes.
+- Same identity and contents do not create another occurrence. Conflicting
+  contents require an explicit choice; timestamps do not establish a winner.
+- Whole-library replacement and Import as Copy are not selected for 1.0.
+
+Proposal:
+
+- Present export as taking the record elsewhere, with retaining a backup as
+  one useful purpose. No AI tutorial or destructive restore center is required.
+- Explain what is included before export and what would change before import.
+- Restore into an empty collection through the same ordinary import behavior.
+
+To decide: export/share entry points, review grouping, cancellation, and
+concrete resource limits. Follow the existing file and import designs rather
+than inheriting the old merge/replace/reset workflow.
+
+## Consistent Behavior Across Entry Points
+
+The chosen product capabilities will be represented by shared Operations.
+Screens, App Intents, and future system surfaces adapt those capabilities;
+they must not invent different meanings for the same task. A compound user
+task may need a deliberate operation rather than a series of unrelated saves.
+
+Native synchronization, shared storage, links, localization, and platform
+integration support the experience. Their accepted scope remains in force,
+but they do not supply the missing feature design. A local saved result must
+not be described as proof that every device has received it.
+
+For every proposed user action, establish these before naming methods or
+Intent types:
+
+1. The person's purpose and the facts they supply.
+2. Omitted, unknown, and explicitly cleared values; any suggested defaults.
+3. The facts changed and the facts preserved.
+4. The result the person can observe or reuse.
+5. Repeated execution, invalid input, cancellation, conflicts, and save failure.
+6. Any consequential choice or confirmation required to perform that task.
+
+App Intent identities, parameter representations, discovery, and system
+authentication are then adapter/publication decisions. The feature inventory
+must cover all selected application capabilities, including those whose
+adapters should not be discoverable. This is not one Intent per helper method.
+
+## Discussion Order
+
+The earlier capability-by-capability discussion established the accepted
+behavior above. Do not continue that sequence merely to exhaust all remaining
+questions. Close this phase when concrete irreversible or materially costly
+decisions are covered by the accepted foundation or assigned to a specific
+implementation/publication boundary.
+
+During implementation, shape Operations and adapters from those contracts and
+the accepted behavior, and resolve reversible choices with usable product
+evidence. Validate failure and cancellation behavior as the actions become
+concrete. Revisit existing implementation only to identify what can serve the
+chosen behavior and what needs replacement.

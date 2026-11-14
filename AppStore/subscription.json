@@ -1,0 +1,33 @@
+{
+  "productID": "com.muhiro12.Stally.subscriptions.monthly",
+  "referenceName": "Stally iCloud Sync Monthly",
+  "groupReferenceName": "Stally iCloud Sync",
+  "subscriptionPeriod": "ONE_MONTH",
+  "groupLevel": 1,
+  "pricing": {
+    "baseTerritory": "USA",
+    "currency": "USD",
+    "customerPrice": "2.99",
+    "territoryOverrides": {
+      "JPN": {
+        "currency": "JPY",
+        "customerPrice": "300"
+      }
+    },
+    "planType": "UPFRONT",
+    "otherTerritories": "Apple equalizations from USA USD 2.99",
+    "availableInNewTerritories": true
+  },
+  "localizations": {
+    "en-US": {
+      "groupName": "Stally iCloud Sync",
+      "name": "iCloud Sync Monthly",
+      "description": "Sync your Stally library across devices with iCloud."
+    },
+    "ja": {
+      "groupName": "Stally iCloud同期",
+      "name": "iCloud同期（月額）",
+      "description": "iCloudで、ご自身の複数の端末間でStallyのライブラリを同期できます。"
+    }
+  }
+}

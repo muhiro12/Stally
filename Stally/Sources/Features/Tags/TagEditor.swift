@@ -1,0 +1,111 @@
+import MHUI
+import StallyLibrary
+import SwiftData
+import SwiftUI
+
+struct TagEditor: View {
+    @Environment(\.dismiss)
+    private var dismiss
+    @Environment(\.modelContext)
+    private var context
+    @Environment(RecordWriteSession.self)
+    private var writeSession
+    @Query(sort: \Tag.name)
+    private var tags: [Tag]
+    let tag: Tag?
+    @State private var name: String
+    @State private var original: String?
+    @State private var saving = false
+    @State private var confirmingDelete = false
+    @State private var errorMessage: String?
+
+    var body: some View {
+        NavigationStack {
+            tagForm
+                .disabled(saving)
+                .navigationTitle(tag == nil ? "Add Tag" : "Edit Tag")
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        StallyActionButton(.cancel) {
+                            dismiss()
+                        }.disabled(saving)
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        StallyActionButton(.save, action: save)
+                            .disabled(saving || name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    }
+                }
+                .interactiveDismissDisabled(saving)
+                .confirmationDialog("Delete this tag and its assignments?", isPresented: $confirmingDelete) {
+                    StallyActionButton(.deleteTag, role: .destructive) {
+                        if let tag {
+                            mutate {
+                                try TagOperations.delete(tag, context: context)
+                            }
+                        }
+                    }
+                }
+        }
+        .modifier(StallyUpdateRequiredModifier())
+    }
+
+    private var tagForm: some View {
+        Form {
+            MHContainerContent {
+                Section {
+                    TextField("Name", text: $name)
+                } footer: {
+                    if tags.contains(where: { candidate in
+                        candidate !== tag && candidate.name.localizedStandardCompare(name) == .orderedSame
+                    }) {
+                        MHSectionFooter("A similar tag already exists. Saving keeps these tags separate.")
+                    }
+                }
+                if tag != nil {
+                    Section {
+                        StallyActionButton(.deleteTag, role: .destructive) {
+                            confirmingDelete = true
+                        }
+                    } footer: {
+                        MHSectionFooter("Deleting a tag removes its assignments. Your Items and records stay.")
+                    }
+                }
+                if let errorMessage {
+                    Text(errorMessage).mhTextStyle(.supporting, colorRole: .destructive)
+                }
+            }
+        }
+        .mhFormChrome(.content)
+    }
+
+    init(tag: Tag?) {
+        self.tag = tag
+        _name = State(initialValue: tag?.name ?? "")
+        _original = State(initialValue: tag?.name)
+    }
+
+    private func save() {
+        mutate {
+            if let tag {
+                try TagOperations.rename(tag, name: name, context: context, original: original)
+            } else {
+                try TagOperations.create(name: name, context: context)
+            }
+        }
+    }
+
+    private func mutate(_ operation: @escaping () throws -> Void) {
+        saving = true
+        Task {
+            defer {
+                saving = false
+            }
+            do {
+                try await writeSession.performMutation(operation)
+                dismiss()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+    }
+}
