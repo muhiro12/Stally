@@ -6,6 +6,7 @@ struct ImportReviewRow: View {
     let review: TransferReview
     let row: TransferReview.Row
     @Binding var selected: Bool
+    @State private var expanded = false
     private let imageHeight = 160.0
 
     var body: some View {
@@ -13,9 +14,11 @@ struct ImportReviewRow: View {
             if row.isUnchanged {
                 Label("Already Matches", systemImage: "checkmark")
             } else {
-                Toggle(row.current == nil ? "Add Record" : "Use File Value", isOn: $selected)
+                Toggle(row.isAddition ? "Add Record" : "Use File Value", isOn: $selected)
             }
-            DisclosureGroup(row.title) { values }
+            DisclosureGroup(row.title, isExpanded: $expanded) {
+                if expanded { values }
+            }
             if row.kind == .tag, row.affectedItemCount > 0 {
                 Text("Renaming affects \(row.affectedItemCount) existing Items, including those outside this file.")
                     .mhRowSupporting()

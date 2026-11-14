@@ -18,7 +18,7 @@ public enum TransferFileOperations {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString + ".stally")
         do {
             try Task.checkCancellation()
-            try archive.fileWrapper().write(to: url, options: .atomic, originalContentsURL: nil)
+            try await write(archive, to: url)
             try Task.checkCancellation()
             return url
         } catch {
@@ -27,35 +27,60 @@ public enum TransferFileOperations {
         }
     }
 
-    /// Coordinates and bounds access to a package or records-only JSON file.
+    /// Coordinates provider access and retains only private immutable staged files.
     @concurrent
     public static func read(_ url: URL) async throws -> TransferArchive {
-        let accessible = url.startAccessingSecurityScopedResource()
-        defer { if accessible { url.stopAccessingSecurityScopedResource() } }
-        let values = try url.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey])
-        guard values.isSymbolicLink != true else { throw TransferError.invalidFile }
-        if values.isDirectory == true {
-            return try await TransferPackage.read(url)
+        try TransferStagedReader.read(url)
+    }
+    /// Writes to a replacement candidate before publishing, preserving an existing destination on failure.
+    @concurrent
+    public static func write(_ archive: TransferArchive, to url: URL) async throws {
+        try TransferValidation.validate(archive.manifest)
+        let manager = FileManager.default
+        let replacement = try manager.url(
+            for: .itemReplacementDirectory,
+            in: .userDomainMask,
+            appropriateFor: url,
+            create: true
+        )
+        defer { try? manager.removeItem(at: replacement) }
+        let candidate = replacement.appending(path: "Export.stally")
+        try manager.createDirectory(at: candidate.appending(path: "assets"), withIntermediateDirectories: true)
+        for photo in archive.manifest.itemPhotos {
+            try Task.checkCancellation()
+            if let path = photo.image.path {
+                try autoreleasepool {
+                    try archive.imageData(path: path).write(to: candidate.appending(path: path))
+                }
+            }
         }
-        var coordinationError: NSError?
-        var result: Result<Data, any Error>?
-        NSFileCoordinator().coordinate(readingItemAt: url, options: [], error: &coordinationError) { coordinated in
-            result = Result { try readFile(coordinated, limit: TransferCodec.maximumJSONBytes) }
-        }
-        if let coordinationError { throw coordinationError }
-        guard let result else { throw TransferError.invalidFile }
+        try TransferCodec.encode(archive.manifest).write(to: candidate.appending(path: "manifest.json"))
         try Task.checkCancellation()
-        return try await readRecords(result.get())
+        if manager.fileExists(atPath: url.path) {
+            _ = try manager.replaceItemAt(url, withItemAt: candidate)
+        } else {
+            try manager.moveItem(at: candidate, to: url)
+        }
+    }
+    /// Writes auxiliary JSON on the transfer executor rather than retaining its encoded bytes in UI state.
+    @concurrent
+    public static func writeRecords(_ archive: TransferArchive, to url: URL) async throws {
+        try Task.checkCancellation()
+        let data = try TransferCodec.encode(archive.manifest)
+        try Task.checkCancellation()
+        try data.write(to: url, options: .atomic)
     }
 
-    private static func readFile(_ url: URL, limit: Int) throws -> Data {
-        let values = try url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
-        guard values.isRegularFile == true, values.isSymbolicLink != true else { throw TransferError.invalidFile }
-        guard let count = values.fileSize, count <= limit else { throw TransferError.limitExceeded }
-        let handle = try FileHandle(forReadingFrom: url)
-        defer { try? handle.close() }
-        let data = try handle.read(upToCount: limit + 1) ?? Data()
-        guard data.count <= limit else { throw TransferError.limitExceeded }
-        return data
+    /// The caller transfers this file to IntentFile.removedOnCompletion.
+    @concurrent
+    public static func writeTemporaryRecords(_ archive: TransferArchive) async throws -> URL {
+        let url = FileManager.default.temporaryDirectory.appending(path: "\(UUID().uuidString).json")
+        do {
+            try await writeRecords(archive, to: url)
+            return url
+        } catch {
+            try? FileManager.default.removeItem(at: url)
+            throw error
+        }
     }
 }

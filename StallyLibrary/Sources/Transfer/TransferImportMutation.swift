@@ -33,7 +33,7 @@ enum TransferImportMutation {
         try applyPeriods(manifest.itemPeriods.filter { selection.contains($0.uuid) }, items: items, context: context)
         try applyPhotos(
             manifest.itemPhotos.filter { selection.contains($0.uuid) },
-            media: archive.media,
+            archive: archive,
             items: items,
             context: context
         )
@@ -47,6 +47,7 @@ enum TransferImportMutation {
     private static func applyMarks(_ rows: [TransferMark], items: [UUID: Item], context: ModelContext) throws {
         let existing = try RecordMutation.index(context.fetch(FetchDescriptor<ItemMark>()), identity: \.uuid)
         for row in rows {
+            try Task.checkCancellation()
             guard let item = items[row.itemUUID] else { throw TransferError.invalidSelection }
             let mark = existing[row.uuid] ?? ItemMark(item: item, localDateTime: row.localDateTime)
             mark.uuid = row.uuid
@@ -59,6 +60,7 @@ enum TransferImportMutation {
     private static func applyPeriods(_ rows: [TransferPeriod], items: [UUID: Item], context: ModelContext) throws {
         let existing = try RecordMutation.index(context.fetch(FetchDescriptor<ItemPeriod>()), identity: \.uuid)
         for row in rows {
+            try Task.checkCancellation()
             guard let item = items[row.itemUUID] else { throw TransferError.invalidSelection }
             let period =
                 existing[row.uuid]
@@ -79,12 +81,13 @@ enum TransferImportMutation {
 
     private static func applyPhotos(
         _ rows: [TransferPhoto],
-        media: [String: Data],
+        archive: TransferArchive,
         items: [UUID: Item],
         context: ModelContext
     ) throws {
         let existing = try RecordMutation.index(context.fetch(FetchDescriptor<ItemPhoto>()), identity: \.uuid)
         for row in rows {
+            try Task.checkCancellation()
             guard let item = items[row.itemUUID] else { throw TransferError.invalidSelection }
             let photo =
                 existing[row.uuid]
@@ -100,7 +103,8 @@ enum TransferImportMutation {
             photo.sortOrder = row.sortOrder
             photo.createdAt = row.createdAt
             if let path = row.image.path {
-                guard let data = media[path] else { throw TransferError.invalidFile }
+                let data = try archive.imageData(path: path)
+                try TransferMedia.validate(data, image: row.image)
                 photo.imageData = data
                 photo.thumbnailData = nil
             }

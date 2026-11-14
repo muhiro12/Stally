@@ -27,7 +27,6 @@ let package = Package(  // swiftlint:disable:this prefixed_toplevel_constant
         .target(
             name: "StallyLibrary",
             dependencies: [
-                .product(name: "MHFilePackage", package: "MHPlatform"),
                 .product(
                     name: "MHPlatformCore",
                     package: "MHPlatform"

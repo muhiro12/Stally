@@ -58,6 +58,8 @@ struct TransferView: View {
             case .failure(let error):
                 errorMessage = error.localizedDescription
             }
+        } onCancellation: {
+            document = nil
         }
         .sheet(item: $review) { review in
             ImportReviewView(review: review) { count in
@@ -169,24 +171,30 @@ struct TransferView: View {
 
     private var importTypes: [UTType] { [StallyExportDocument.contentType, .json] }
 
-    private func prepareExport() {
-        completionMessage = nil
-        do {
-            exportType = StallyExportDocument.contentType
-            document = try .init(archive: TransferOperations.export(context: context, includingImages: includingImages))
-            exporting = true
-            errorMessage = nil
-        } catch { errorMessage = error.localizedDescription }
-    }
+    private func prepareExport() { prepareExport(recordsOnly: false) }
 
-    private func prepareRecords() {
+    private func prepareRecords() { prepareExport(recordsOnly: true) }
+
+    private func prepareExport(recordsOnly: Bool) {
+        task?.cancel()
+        busy = true
         completionMessage = nil
-        do {
-            exportType = .json
-            document = try .init(records: TransferOperations.exportRecords(context: context))
-            exporting = true
-            errorMessage = nil
-        } catch { errorMessage = error.localizedDescription }
+        errorMessage = nil
+        task = Task {
+            defer { busy = false }
+            do {
+                let prepared = try await TransferOperations.prepareExport(
+                    context: context,
+                    includingImages: !recordsOnly && includingImages
+                )
+                try Task.checkCancellation()
+                exportType = recordsOnly ? .json : StallyExportDocument.contentType
+                document = recordsOnly ? .init(records: prepared) : .init(archive: prepared)
+                exporting = true
+            } catch is CancellationError {
+                return
+            } catch { errorMessage = error.localizedDescription }
+        }
     }
 
     private func load(_ url: URL) {
@@ -201,7 +209,7 @@ struct TransferView: View {
                 let loaded = try await TransferFileOperations.read(url)
                 try Task.checkCancellation()
                 archive = loaded
-                prepareReview(loaded)
+                review = try await TransferOperations.prepareReview(loaded, context: context)
             } catch is CancellationError {
                 return
             } catch { errorMessage = error.localizedDescription }
@@ -209,9 +217,16 @@ struct TransferView: View {
     }
 
     private func prepareReview(_ archive: TransferArchive) {
-        do {
-            review = try TransferOperations.review(archive, context: context)
-            errorMessage = nil
-        } catch { errorMessage = error.localizedDescription }
+        task?.cancel()
+        busy = true
+        errorMessage = nil
+        task = Task {
+            defer { busy = false }
+            do {
+                review = try await TransferOperations.prepareReview(archive, context: context)
+            } catch is CancellationError {
+                return
+            } catch { errorMessage = error.localizedDescription }
+        }
     }
 }

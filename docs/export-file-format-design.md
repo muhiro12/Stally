@@ -309,21 +309,39 @@ parent references, and path escapes. Never fetch URLs declared in a file.
 The writer emits no extra entries; the reader does not traverse or import
 unreferenced entries. This avoids recursively expanding arbitrary folder trees.
 
-Recommend an initial 32-MiB JSON input/output budget, separate from each image's
-8-MiB limit. This is a conservative implementation budget, not an Apple limit or
-a permanent semantic maximum. It bounds a single Foundation JSON document;
-decoded objects can consume several times its byte size. Apply the same budget
-when exporting so the app never emits a file its own reader refuses. Report
-oversize data rather than truncating it. Raising the budget needs workload
-evidence, not a format revision. No additional arbitrary whole-package limit is
-fixed in this design yet; preflight available disk space and process media with
-bounded memory. Cookle's aggregate limits expose an implementation obligation:
-per-image limits alone do not bound the complete import. Before release, measure
-the staging and single-save path and select enforced aggregate byte/count budgets
-where needed. Apply the same accepted envelope to export and import. This is an
-open qualification item, not permission for unbounded allocation or a claim
-that streaming the file alone bounds SwiftData's pending changes. Do not copy
-Cookle's numeric ceilings without a Stally workload justification.
+The original 32-MiB JSON, 128-MiB media, and 50,000-record budgets were
+implementation safeguards, not Apple limits or permanent semantic maxima.
+The staged implementation removes those fixed aggregate ceilings without
+changing format/schema versions. Keep the per-image 8-MiB saved representation
+limit and all graph, path, type, and integrity validation.
+
+One operation owns a private temporary directory. Provider bytes are copied
+through coordinated, descriptor-relative, no-symlink reads; only manifest
+references are visited. Read chunks and per-image native temporary objects are
+released in autorelease pools. Native URL writers prepare a replacement before
+publishing it, preserving an existing destination on preparation failure.
+The in-memory-only MHFilePackage snapshot API cannot provide this staging
+lifetime; Stally keeps its narrower format-specific reader with the same
+openat/O_NOFOLLOW resolution boundary.
+
+Images use private copy-on-write mappings whose Data deallocator retains the staging
+owner. A failed mmap throws instead of silently allocating all pending images.
+This keeps the saved SwiftData model and single-save contract unchanged. The
+normal app and Intent paths do not assemble an aggregate FileWrapper/Data graph.
+The legacy FileWrapper adapter remains available for bounded callers.
+
+Typed Codable fields preserve required nulls, UUID spelling, timestamp precision,
+and additive-key behavior without an additional JSONSerialization object graph.
+Metadata still consumes memory proportional to record values and counts.
+Admission uses the lesser of one quarter of physical memory and one half of
+current app dirty-memory headroom on devices; Simulator/macOS use the physical
+estimate because the iOS process-limit API does not apply to their test hosts.
+JSON reserves an eightfold decoding budget and records an 8-KiB pending-record
+estimate. These are conservative workload-based estimates, not hard memory
+bounds. Export and import share the checks; available resources can differ
+between devices or between preparation and apply. Preflight disk requirements
+and propagate actual allocation/write/save failures. Do not claim unlimited
+capacity, silently truncate records, or switch to partially committed batches.
 
 Do not claim that FileWrapper alone bounds aggregate memory. Capture a coherent
 saved-value snapshot and stage the relevant immutable bytes before presenting
@@ -378,7 +396,7 @@ Before implementation is considered qualified, verify the actual strict Codable
 readers/writers, invalid input and limit cases, historical field availability,
 five-model import conflicts, image restoration, provider changes during review,
 installed UTI/Files/export/share behavior, and representative device memory/disk
-workloads. The proposed 32-MiB budget is not yet a measured memory guarantee.
+workloads. Runtime admission estimates do not establish an absolute memory guarantee.
 
 ## Sources
 

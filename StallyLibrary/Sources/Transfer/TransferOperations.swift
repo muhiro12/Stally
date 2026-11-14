@@ -8,7 +8,19 @@ public enum TransferOperations {
     /// Includes archived Items and unused Tags; incomplete ownership blocks the entire snapshot.
     public static func export(context: ModelContext, includingImages: Bool) throws -> TransferArchive {
         try RecordMutation.validate(context, models: [])
-        return try snapshot(context: context, includingImages: includingImages)
+        return try snapshot(context: ModelContext(context.container), includingImages: includingImages)
+    }
+
+    /// Stages a saved snapshot off the main actor for UI and Intent callers.
+    public static func prepareExport(context: ModelContext, includingImages: Bool) async throws -> TransferArchive {
+        try RecordMutation.validate(context, models: [])
+        let archive = try await TransferPreparation.export(
+            container: context.container,
+            includingImages: includingImages
+        )
+        try Task.checkCancellation()
+        try RecordMutation.validate(context, models: [])
+        return archive
     }
 
     /// Encodes all records without image bytes or external file references.
@@ -16,7 +28,18 @@ public enum TransferOperations {
         try TransferCodec.encode(export(context: context, includingImages: false).manifest)
     }
 
-    static func snapshot(context: ModelContext, includingImages: Bool) throws -> TransferArchive {
+    nonisolated static func snapshot(context: ModelContext, includingImages: Bool) throws -> TransferArchive {
+        try snapshot(context: context, includingImages: includingImages, stagingImages: true)
+    }
+
+    nonisolated static func snapshot(context: ModelContext, includingImages: Bool, stagingImages: Bool) throws
+    -> TransferArchive {
+        let budget = TransferBudget.current
+        let count =
+            try context.fetchCount(FetchDescriptor<Item>()) + context.fetchCount(FetchDescriptor<Tag>())
+            + context.fetchCount(FetchDescriptor<ItemMark>()) + context.fetchCount(FetchDescriptor<ItemPeriod>())
+            + context.fetchCount(FetchDescriptor<ItemPhoto>())
+        try budget.check(recordCount: count)
         let items = try context.fetch(FetchDescriptor<Item>()).sorted { $0.uuid.uuidString < $1.uuid.uuidString }
         let tags = try context.fetch(FetchDescriptor<Tag>()).sorted { $0.uuid.uuidString < $1.uuid.uuidString }
         let marks = try context.fetch(FetchDescriptor<ItemMark>()).sorted { $0.uuid.uuidString < $1.uuid.uuidString }
@@ -24,7 +47,14 @@ public enum TransferOperations {
             first.uuid.uuidString < second.uuid.uuidString
         }
         let photos = try context.fetch(FetchDescriptor<ItemPhoto>()).sorted { $0.uuid.uuidString < $1.uuid.uuidString }
-        let (photoRows, media) = try photoRows(photos, includingImages: includingImages)
+        let staging = try TransferStaging()
+        let photoRows = try photoRows(
+            photos,
+            includingImages: includingImages,
+            staging: staging,
+            container: context.container,
+            stagingImages: stagingImages
+        )
         var manifest = try TransferManifest(
             format: StallyDataContract.fileTypeIdentifier,
             formatVersion: StallyDataContract.formatVersion,
@@ -50,16 +80,18 @@ public enum TransferOperations {
         )
         manifest.normalizeText()
         try TransferValidation.validate(manifest)
-        // Canonical timestamps make a replay equal without mutating local submillisecond Dates.
-        return try .init(manifest: TransferCodec.decode(TransferCodec.encode(manifest)), media: media)
+        // Quantize values directly; avoid an encode/decode copy of the complete library.
+        try manifest.canonicalizeDates()
+        _ = try manifest.estimatedJSONBytes(budget: budget)
+        return .init(manifest: manifest, staging: staging)
     }
 
-    private static func markRow(_ mark: ItemMark) throws -> TransferMark {
+    nonisolated private static func markRow(_ mark: ItemMark) throws -> TransferMark {
         guard let item = mark.item else { throw TransferError.incompleteGraph }
         return .init(uuid: mark.uuid, itemUUID: item.uuid, localDateTime: mark.localDateTime, createdAt: mark.createdAt)
     }
 
-    private static func periodRow(_ period: ItemPeriod) throws -> TransferPeriod {
+    nonisolated private static func periodRow(_ period: ItemPeriod) throws -> TransferPeriod {
         guard let item = period.item else { throw TransferError.incompleteGraph }
         return .init(
             uuid: period.uuid,
@@ -71,23 +103,35 @@ public enum TransferOperations {
         )
     }
 
-    private static func photoRows(_ photos: [ItemPhoto], includingImages: Bool) throws -> (
-        [TransferPhoto], [String: Data]
-    ) {
-        var media: [String: Data] = [:]
-        var byteCount = 0
-        let rows: [TransferPhoto] = try photos.map { photo in
+    nonisolated private static func photoRows(
+        _ photos: [ItemPhoto],
+        includingImages: Bool,
+        staging: TransferStaging,
+        container: ModelContainer,
+        stagingImages: Bool
+    ) throws -> [TransferPhoto] {
+        try photos.map { photo in
+            try Task.checkCancellation()
             guard let item = photo.item else { throw TransferError.incompleteGraph }
-            let image = try image(photo, includingImages: includingImages)
-            if let path = image.path, let data = photo.imageData {
-                guard data.count <= TransferCodec.maximumMediaBytes - byteCount else {
-                    throw TransferError.limitExceeded
+            let uuid = photo.uuid
+            let image: TransferImage = try autoreleasepool {
+                // A disposable context prevents every fetched blob remaining registered together.
+                let reader = ModelContext(container)
+                let descriptor = FetchDescriptor<ItemPhoto>(predicate: #Predicate { $0.uuid == uuid })
+                guard let current = try reader.fetch(descriptor).first else { throw TransferError.staleReview }
+                guard let data = current.imageData else {
+                    return .init(state: .unavailable, path: nil, byteCount: nil, sha256: nil)
                 }
-                byteCount += data.count
-                media[path] = data
+                guard includingImages else {
+                    return .init(state: .omitted, path: nil, byteCount: nil, sha256: nil)
+                }
+                let fileExtension = try TransferMedia.fileExtension(data)
+                let path = StallyDataContract.assetPathPrefix + "\(uuid.uuidString.lowercased()).\(fileExtension)"
+                if stagingImages { try staging.write(data, path: path) }
+                return .init(state: .included, path: path, byteCount: data.count, sha256: TransferMedia.digest(data))
             }
             return .init(
-                uuid: photo.uuid,
+                uuid: uuid,
                 itemUUID: item.uuid,
                 caption: photo.caption,
                 sortOrder: photo.sortOrder,
@@ -95,22 +139,5 @@ public enum TransferOperations {
                 image: image
             )
         }
-        return (rows, media)
-    }
-
-    private static func image(_ photo: ItemPhoto, includingImages: Bool) throws -> TransferImage {
-        guard let data = photo.imageData else {
-            return .init(state: .unavailable, path: nil, byteCount: nil, sha256: nil)
-        }
-        guard includingImages else {
-            return .init(state: .omitted, path: nil, byteCount: nil, sha256: nil)
-        }
-        let fileExtension = try TransferMedia.fileExtension(data)
-        return .init(
-            state: .included,
-            path: StallyDataContract.assetPathPrefix + "\(photo.uuid.uuidString.lowercased()).\(fileExtension)",
-            byteCount: data.count,
-            sha256: TransferMedia.digest(data)
-        )
     }
 }

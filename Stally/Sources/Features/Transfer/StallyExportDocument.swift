@@ -5,7 +5,24 @@ import UniformTypeIdentifiers
 final class StallyExportDocument: WritableDocument {
     enum Contents: Sendable {
         case package(TransferArchive)
-        case records(Data)
+        case records(TransferArchive)
+    }
+
+    struct Writer: DocumentWriter {
+        @concurrent
+        func write(
+            snapshot: sending Contents,
+            to destination: URL,
+            previous _: sending Contents?,
+            progress _: consuming Subprogress
+        ) async throws {
+            switch snapshot {
+            case .package(let archive):
+                try await TransferFileOperations.write(archive, to: destination)
+            case .records(let archive):
+                try await TransferFileOperations.writeRecords(archive, to: destination)
+            }
+        }
     }
 
     nonisolated static let contentType = UTType(
@@ -20,7 +37,7 @@ final class StallyExportDocument: WritableDocument {
         contents = .package(archive)
     }
 
-    init(records: Data) {
+    init(records: TransferArchive) {
         contents = .records(records)
     }
 
@@ -37,17 +54,7 @@ final class StallyExportDocument: WritableDocument {
         return "Stally-Export-" + formatter.string(from: date)
     }
 
-    nonisolated func writer(configuration: sending WriteConfiguration)
-    -> sending FileWrapperDocumentWriter<Contents> {
-        FileWrapperDocumentWriter(configuration) { snapshot, _ in
-            switch snapshot {
-            case .package(let archive):
-                try archive.fileWrapper()
-            case .records(let data):
-                FileWrapper(regularFileWithContents: data)
-            }
-        }
-    }
+    nonisolated func writer(configuration _: sending WriteConfiguration) -> sending Writer { Writer() }
 
     func snapshot(contentType _: UTType) -> sending Contents {
         contents

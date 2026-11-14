@@ -8,15 +8,16 @@ import Testing
 struct TransferLimitTests {
     @Test
     func byteAndCountBudgetsRejectWithoutPartialImport() throws {
-        let oversized = Data(repeating: 0, count: TransferCodec.maximumJSONBytes + 1)
-        #expect(throws: TransferError.self) { try TransferCodec.decode(oversized) }
+        let budget = TransferBudget(memoryBytes: 1_048_576)
+        let oversized = Data(repeating: 0, count: budget.jsonBytes + 1)
+        #expect(throws: TransferError.self) { try TransferCodec.decode(oversized, budget: budget) }
         let context = ModelContext(try StallyModelContainerFactory.inMemory())
         let archive = try TransferOperations.export(context: context, includingImages: false)
         var manifest = archive.manifest
-        manifest.tags = (0...TransferCodec.maximumRecordCount).map { index in
+        manifest.tags = (0...budget.recordCount).map { index in
             .init(uuid: UUID(), name: "Tag \(index)")
         }
-        #expect(throws: TransferError.self) { try TransferCodec.decode(TransferCodec.encode(manifest)) }
+        #expect(throws: TransferError.self) { try TransferCodec.encode(manifest, budget: budget) }
         #expect(try context.fetchCount(FetchDescriptor<StallyLibrary.Tag>()) == 0)
     }
 

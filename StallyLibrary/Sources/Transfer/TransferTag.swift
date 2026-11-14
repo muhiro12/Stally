@@ -1,6 +1,6 @@
 import Foundation
 
 struct TransferTag: Codable, Equatable, Sendable {
-    var uuid: UUID
+    @TransferUUID var uuid: UUID
     var name: String
 }

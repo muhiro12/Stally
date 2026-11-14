@@ -11,6 +11,24 @@ struct TransferManifest: Codable, Equatable, Sendable {
     var itemPhotos: [TransferPhoto]
     var tags: [TransferTag]
 
+    var recordCount: Int {
+        items.count + itemMarks.count + itemPeriods.count + itemPhotos.count + tags.count
+    }
+
+    mutating func canonicalizeDates() throws {
+        exportedAt = try TransferTimestamp.canonical(exportedAt)
+        for index in items.indices { items[index].createdAt = try TransferTimestamp.canonical(items[index].createdAt) }
+        for index in itemMarks.indices {
+            itemMarks[index].createdAt = try TransferTimestamp.canonical(itemMarks[index].createdAt)
+        }
+        for index in itemPeriods.indices {
+            itemPeriods[index].createdAt = try TransferTimestamp.canonical(itemPeriods[index].createdAt)
+        }
+        for index in itemPhotos.indices {
+            itemPhotos[index].createdAt = try TransferTimestamp.canonical(itemPhotos[index].createdAt)
+        }
+    }
+
     mutating func normalizeText() {
         for index in items.indices {
             items[index].note = TextInput.optional(items[index].note)

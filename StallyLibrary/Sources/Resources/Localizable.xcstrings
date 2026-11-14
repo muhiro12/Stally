@@ -483,6 +483,22 @@
         }
       }
     },
+    "The library changed while preparing the file. Try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The library changed while preparing the file. Try again."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイルの準備中にライブラリが変更されました。もう一度お試しください。"
+          }
+        }
+      }
+    },
     "The library changed. Review the import again before saving.": {
       "localizations": {
         "en": {

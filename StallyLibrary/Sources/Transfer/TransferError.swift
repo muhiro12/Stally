@@ -6,6 +6,7 @@ public enum TransferError: LocalizedError {
     case unsupportedVersion
     case limitExceeded
     case incompleteGraph
+    case changedDuringPreparation
     case staleReview
     case invalidSelection
 
@@ -22,6 +23,8 @@ public enum TransferError: LocalizedError {
                 localized: "Resolve missing relationships or conflicting identities before transferring.",
                 bundle: .module
             )
+        case .changedDuringPreparation:
+            String(localized: "The library changed while preparing the file. Try again.", bundle: .module)
         case .staleReview:
             String(localized: "The library changed. Review the import again before saving.", bundle: .module)
         case .invalidSelection:

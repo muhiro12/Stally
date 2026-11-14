@@ -18,11 +18,14 @@ struct ExportRecordsIntent: AppIntent {
     @Dependency private var container: ModelContainer
 
     @MainActor
-    func perform() throws -> some IntentResult & ReturnsValue<IntentFile> {
-        let records = try IntentAccess.read(container: container) { context in
-            try TransferOperations.exportRecords(context: context)
-        }
-        let name = StallyExportDocument.filename() + ".json"
-        return .result(value: IntentFile(data: records, filename: name, type: .json))
+    func perform() async throws -> some IntentResult & ReturnsValue<IntentFile> {
+        let archive = try await TransferOperations.prepareExport(
+            context: ModelContext(container),
+            includingImages: false
+        )
+        let url = try await TransferFileOperations.writeTemporaryRecords(archive)
+        var file = IntentFile(fileURL: url, filename: StallyExportDocument.filename() + ".json", type: .json)
+        file.removedOnCompletion = true
+        return .result(value: file)
     }
 }

@@ -5,6 +5,16 @@ enum TransferTimestamp {
     private static let millisecondsPerSecond = 1_000.0
     private static let length = 24
 
+    static func canonical(_ date: Date) throws -> Date {
+        let value = (date.timeIntervalSince1970 * millisecondsPerSecond).rounded() / millisecondsPerSecond
+        let minimumSeconds = -62_135_596_800.0
+        let maximumSeconds = 253_402_300_800.0
+        guard value.isFinite, value >= minimumSeconds, value < maximumSeconds else {
+            throw TransferError.invalidFile
+        }
+        return Date(timeIntervalSince1970: value)
+    }
+
     static func string(_ date: Date) throws -> String {
         let seconds = date.timeIntervalSince1970
         let minimumSeconds = -62_135_596_800.0

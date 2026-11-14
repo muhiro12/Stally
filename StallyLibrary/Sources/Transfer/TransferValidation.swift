@@ -3,12 +3,9 @@ import Foundation
 /// Validates portable facts without repairing an incoming graph or guessing dates.
 enum TransferValidation {
     static func validate(_ manifest: TransferManifest) throws {
-        let identities =
-            manifest.items.map(\.uuid) + manifest.itemMarks.map(\.uuid)
-            + manifest.itemPeriods.map(\.uuid) + manifest.itemPhotos.map(\.uuid) + manifest.tags.map(\.uuid)
-        guard Set(identities).count == identities.count else { throw TransferError.incompleteGraph }
-        let items = Set(manifest.items.map(\.uuid))
-        let tags = Set(manifest.tags.map(\.uuid))
+        try validateIdentities(manifest)
+        let items = Set(manifest.items.lazy.map(\.uuid))
+        let tags = Set(manifest.tags.lazy.map(\.uuid))
         for item in manifest.items {
             try RecordMutation.validateName(item.name)
             guard Set(item.tagUUIDs).count == item.tagUUIDs.count,
@@ -27,6 +24,18 @@ enum TransferValidation {
             _ = try CivilDate.range(period.endLocalDate)
         }
         try validatePhotos(manifest.itemPhotos, itemIDs: items)
+    }
+
+    private static func validateIdentities(_ manifest: TransferManifest) throws {
+        var identities: Set<UUID> = []
+        func insert(_ uuid: UUID) throws {
+            guard identities.insert(uuid).inserted else { throw TransferError.incompleteGraph }
+        }
+        for item in manifest.items { try insert(item.uuid) }
+        for mark in manifest.itemMarks { try insert(mark.uuid) }
+        for period in manifest.itemPeriods { try insert(period.uuid) }
+        for photo in manifest.itemPhotos { try insert(photo.uuid) }
+        for tag in manifest.tags { try insert(tag.uuid) }
     }
 
     private static func validatePhotos(_ photos: [TransferPhoto], itemIDs: Set<UUID>) throws {

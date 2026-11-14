@@ -31,7 +31,7 @@ struct TransferMediaTests {
         let recordsOnly = try await TransferFileOperations.readRecords(data)
         let object = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
         #expect(object["format"] as? String == "com.muhiro12.Stally.data")
-        #expect(recordsOnly.media.isEmpty)
+        #expect(recordsOnly.manifest.itemPhotos.allSatisfy { $0.image.path == nil })
         #expect(recordsOnly.manifest.itemPhotos.first?.image.state == .omitted)
         #expect(recordsOnly.manifest.itemPhotos.first?.image.path == nil)
         let changes = try TransferOperations.review(recordsOnly, context: target)

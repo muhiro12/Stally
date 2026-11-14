@@ -74,10 +74,26 @@ JSON referencing package media requires the actual package.
 File reads are security-scoped, coordinated, and bounded before review. Symbolic
 links and non-regular referenced files are rejected. Unreferenced entries are
 not recursively read. Immutable staged values release the provider before the
-person reviews them. Initial engineering limits are 32 MiB of JSON, 8 MiB per
-saved image, 128 MiB of included images, and 50,000 records per transfer. Oversized
-work fails before any save; there is no partial-batch import. These limits need
-real-device workload qualification and are not new persisted fields.
+person reviews them. Images are copied in bounded chunks to operation-owned
+files and mapped while applying; mappings retain those files until released.
+The 8-MiB saved-image contract remains. Aggregate image bytes are constrained by
+available disk space rather than the earlier 128-MiB engineering ceiling.
+
+JSON uses typed Codable fields rather than an intermediate untyped object tree.
+Required nullable keys and lowercase UUID output remain unchanged. Record and
+JSON admission estimates use current memory headroom; the earlier fixed
+50,000-record and 32-MiB ceilings are removed. These estimates reserve space for
+review and pending changes, but are not a guarantee against system memory
+pressure. Actual device workload qualification remains necessary. No persisted
+field or partial-batch import is introduced. See the
+[file resource boundary](export-file-format-design.md#reading-and-resource-boundaries).
+
+UI and Intent preparation runs on an owned model actor. A second saved-value
+snapshot rejects observed changes during preparation. Review summaries and
+image previews are generated only when requested; collapsed UI rows do not
+load photo previews. Final apply remains inside the existing account/update
+write guard and performs one synchronous save. Native sync can still race; this
+is not a distributed transaction.
 
 `TransferOperations.review` compares UUIDs and presents additions, matching
 records, and whole-record differences. New records are initially selected;

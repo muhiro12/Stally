@@ -30,9 +30,10 @@ struct ExportLibraryIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ReturnsValue<IntentFile> {
-        let archive = try IntentAccess.read(container: container) { context in
-            try TransferOperations.export(context: context, includingImages: includingImages)
-        }
+        let archive = try await TransferOperations.prepareExport(
+            context: ModelContext(container),
+            includingImages: includingImages
+        )
         let url = try await TransferFileOperations.writeTemporary(archive)
         var file = IntentFile(
             fileURL: url,

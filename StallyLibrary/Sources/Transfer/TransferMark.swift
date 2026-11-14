@@ -1,8 +1,8 @@
 import Foundation
 
 struct TransferMark: Codable, Equatable, Sendable {
-    var uuid: UUID
-    var itemUUID: UUID
+    @TransferUUID var uuid: UUID
+    @TransferUUID var itemUUID: UUID
     var localDateTime: String
     var createdAt: Date
 }
