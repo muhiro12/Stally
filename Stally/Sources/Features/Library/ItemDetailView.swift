@@ -53,7 +53,7 @@ struct ItemDetailView: View {
             ItemEditor(draft: ItemOperations.draft(for: item), title: "Edit Item", onSave: nil)
         }
         .sheet(isPresented: $choosingTags) {
-            ItemTagPicker(selectedIDs: Set((item.tags ?? []).map(\.persistentModelID)))
+            ItemTagPicker(selectedIDs: Set((item.tags ?? []).map(\.uuid)))
         }
         .sheet(item: $editingRecord) { selection in
             RecordEditor(selection: selection)

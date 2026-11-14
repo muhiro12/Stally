@@ -41,10 +41,46 @@ public enum TagOperations {
         try RecordMutation.save(context)
     }
 
+    /// Applies a delayed selection only while this Item's saved assignments still match its original set.
+    /// Resolves every selected identity; a removed or ambiguous Tag never becomes a silent omission.
+    public static func assign(
+        uuids: Set<UUID>, to item: Item, context: ModelContext, original: Set<UUID>
+    ) throws {
+        try RecordMutation.validate(context, models: [item])
+        // Saving a retained Item can also restore its stale scalar fields when relationships change.
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let savedItem = try ItemOperations.item(context: writer, uuid: item.uuid)
+        let savedTags = try RecordMutation.index(savedItem.tags ?? [], identity: \.uuid)
+        guard Set(savedTags.keys) == original else {
+            throw RecordError.staleReview
+        }
+        let tags = try uuids.map { uuid in
+            try tag(uuid: uuid, context: writer)
+        }
+        try assign(tags, to: savedItem, context: writer)
+    }
+
     /// Removes this Tag and its assignments, preserving all Items.
     public static func delete(_ tag: Tag, context: ModelContext) throws {
         try RecordMutation.validate(context, models: [tag])
         context.delete(tag)
         try RecordMutation.save(context)
+    }
+}
+
+private extension TagOperations {
+    static func tag(uuid: UUID, context: ModelContext) throws -> Tag {
+        var descriptor = FetchDescriptor<Tag>(predicate: #Predicate { $0.uuid == uuid })
+        let ambiguousIdentityLimit = 2
+        descriptor.fetchLimit = ambiguousIdentityLimit
+        let matches = try context.fetch(descriptor)
+        guard matches.count < ambiguousIdentityLimit else {
+            throw RecordError.ambiguousIdentity
+        }
+        guard let tag = matches.first else {
+            throw RecordError.missingRecord
+        }
+        return tag
     }
 }

@@ -14,7 +14,8 @@ struct ItemTagPicker: View {
     private var tags: [Tag]
     @Environment(Item.self)
     private var item
-    @State private var selectedIDs: Set<PersistentIdentifier>
+    @State private var selectedIDs: Set<UUID>
+    @State private var originalIDs: Set<UUID>
     @State private var addingTag = false
     @State private var saving = false
     @State private var errorMessage: String?
@@ -65,20 +66,21 @@ struct ItemTagPicker: View {
         .mhListChrome(.content)
     }
 
-    init(selectedIDs: Set<PersistentIdentifier>) {
+    init(selectedIDs: Set<UUID>) {
         _selectedIDs = State(initialValue: selectedIDs)
+        _originalIDs = State(initialValue: selectedIDs)
     }
 
     private func binding(for tag: Tag) -> Binding<Bool> {
         .init(
             get: {
-                selectedIDs.contains(tag.persistentModelID)
+                selectedIDs.contains(tag.uuid)
             },
             set: { selected in
                 if selected {
-                    selectedIDs.insert(tag.persistentModelID)
+                    selectedIDs.insert(tag.uuid)
                 } else {
-                    selectedIDs.remove(tag.persistentModelID)
+                    selectedIDs.remove(tag.uuid)
                 }
             })
     }
@@ -92,11 +94,10 @@ struct ItemTagPicker: View {
             do {
                 try await writeSession.performMutation {
                     try TagOperations.assign(
-                        tags.filter { tag in
-                            selectedIDs.contains(tag.persistentModelID)
-                        },
+                        uuids: selectedIDs,
                         to: item,
-                        context: context
+                        context: context,
+                        original: originalIDs
                     )
                 }
                 dismiss()

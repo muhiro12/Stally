@@ -41,9 +41,33 @@ public enum MarkOperations {
     }
 
     /// Correction remains available while recording is paused and retains registration metadata.
-    public static func correct(_ mark: ItemMark, localDateTime: String, context: ModelContext) throws {
+    /// Delayed editors supply the original date/minute to reject changes saved since review.
+    public static func correct(
+        _ mark: ItemMark,
+        localDateTime: String,
+        context: ModelContext,
+        original: String? = nil
+    ) throws {
         try RecordMutation.validate(context, models: [mark])
         try CivilDate.validateMark(localDateTime)
+        if let original {
+            let reader = ModelContext(context.container)
+            reader.autosaveEnabled = false
+            let uuid = mark.uuid
+            var descriptor = FetchDescriptor<ItemMark>(predicate: #Predicate { $0.uuid == uuid })
+            let ambiguousIdentityLimit = 2
+            descriptor.fetchLimit = ambiguousIdentityLimit
+            let matches = try reader.fetch(descriptor)
+            guard matches.count < ambiguousIdentityLimit else {
+                throw RecordError.ambiguousIdentity
+            }
+            guard let saved = matches.first else {
+                throw RecordError.missingRecord
+            }
+            guard saved.localDateTime == original else {
+                throw RecordError.staleReview
+            }
+        }
         mark.localDateTime = localDateTime
         try RecordMutation.save(context)
     }

@@ -40,6 +40,20 @@ Existing attachments retain identity when reordered or captioned. Explicit
 photo removal deletes only that attachment; newly arriving unrelated photos
 are not interpreted as removals.
 
+Mark editors retain their original date/minute, and the Tag picker retains its
+original assignment UUIDs for the editing session. Before either saves, Operations
+uses a fresh context to check those facts against the saved record. Changed
+facts reject the entire submission before mutation, including an unchanged form
+submitted after another writer's save. Unrelated writes do not invalidate the
+edit. The picker resolves every selected Tag UUID instead of silently dropping
+selections that disappeared from its live query. Missing or ambiguous selected
+identities also reject the save. The editor remains open with its draft and the
+existing review-again error; dismiss and reopen it to review current facts.
+Tag selections save through the fresh context so relationship updates cannot
+write back unrelated stale Item fields; live reads follow native save merging.
+These guards do not change the explicit replacement semantics of immediate
+Operations or App Intent commands, or provide a cross-device transaction.
+
 Period editors retain their original boundaries and continuation state for the
 editing session. If any of those facts changed before saving, the shared
 correction operation resolves the UUID in a fresh read context and compares

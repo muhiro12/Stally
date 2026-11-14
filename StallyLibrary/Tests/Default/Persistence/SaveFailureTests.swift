@@ -7,6 +7,64 @@ import Testing
 @MainActor
 struct SaveFailureTests {
     @Test
+    func failedReviewedMarkAndTagSavesPreserveReopenedFacts() throws {
+        let directory = PersistentTestDirectory.makeURL()
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let url = directory.appending(path: "reviewed-records.store")
+        let identities = try autoreleasepool {
+            let context = ModelContext(try StallyModelContainerFactory.disk(at: url))
+            let item = try ItemOperations.create(context: context, name: "Original")
+            let mark = try MarkOperations.add(to: item, localDateTime: "2026-11-10", context: context)
+            let first = try TagOperations.create(name: "First", context: context)
+            let second = try TagOperations.create(name: "Second", context: context)
+            try TagOperations.assign([first], to: item, context: context)
+            return (item.uuid, mark.uuid, first.uuid, second.uuid)
+        }
+        try autoreleasepool {
+            let schema = StallyModelContainerFactory.schema
+            let configuration = ModelConfiguration(
+                "Read Only", schema: schema, url: url, allowsSave: false, cloudKitDatabase: .none
+            )
+            let context = ModelContext(try ModelContainer(for: schema, configurations: [configuration]))
+            let item = try ItemOperations.item(context: context, uuid: identities.0)
+            let mark = try #require(item.marks?.first)
+            #expect(throws: (any Error).self) {
+                try MarkOperations.correct(mark, localDateTime: "2026-11-11", context: context, original: "2026-11-10")
+            }
+            #expect(mark.localDateTime == "2026-11-10" && !context.hasChanges)
+            #expect(throws: (any Error).self) {
+                try TagOperations.assign(uuids: [identities.3], to: item, context: context, original: [identities.2])
+            }
+            #expect(Set((item.tags ?? []).map(\.uuid)) == [identities.2])
+            #expect(!context.hasChanges)
+        }
+        let context = ModelContext(try StallyModelContainerFactory.disk(at: url))
+        let item = try ItemOperations.item(context: context, uuid: identities.0)
+        #expect(item.marks?.first?.uuid == identities.1)
+        #expect(item.marks?.first?.localDateTime == "2026-11-10")
+        #expect(Set((item.tags ?? []).map(\.uuid)) == [identities.2])
+    }
+
+    @Test
+    func reviewedMarkAndTagWritesPreserveUnrelatedPendingEdits() throws {
+        let context = ModelContext(try StallyModelContainerFactory.inMemory())
+        let item = try ItemOperations.create(context: context, name: "Original")
+        let mark = try MarkOperations.add(to: item, localDateTime: "2026-11-10", context: context)
+        let tag = try TagOperations.create(name: "Selected", context: context)
+        item.note = "Pending edit"
+        #expect(throws: RecordError.pendingChanges) {
+            try MarkOperations.correct(mark, localDateTime: "2026-11-11", context: context, original: "2026-11-10")
+        }
+        #expect(throws: RecordError.pendingChanges) {
+            try TagOperations.assign(uuids: [tag.uuid], to: item, context: context, original: [])
+        }
+        #expect(item.note == "Pending edit" && context.hasChanges)
+        #expect(mark.localDateTime == "2026-11-10" && (item.tags ?? []).isEmpty)
+        let reader = ModelContext(context.container)
+        #expect(try ItemOperations.item(context: reader, uuid: item.uuid).note == nil)
+    }
+
+    @Test
     func failedReviewedPeriodSavePreservesTheReopenedRecord() throws {
         let directory = PersistentTestDirectory.makeURL()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)

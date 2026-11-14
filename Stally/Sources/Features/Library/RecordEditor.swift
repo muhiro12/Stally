@@ -59,6 +59,7 @@ struct RecordEditor: View {
     @State private var start: RecordDateDraft
     @State private var end: RecordDateDraft
     @State private var ongoing = true
+    @State private var originalMark: String?
     @State private var originalPeriod: PeriodInput?
     @State private var errorMessage: String?
     @State private var saving = false
@@ -174,6 +175,9 @@ struct RecordEditor: View {
         _start = State(initialValue: .init(startValue))
         _end = State(initialValue: .init(endValue))
         _ongoing = State(initialValue: ongoingValue)
+        if case .mark = selection {
+            _originalMark = State(initialValue: startValue)
+        }
         if case .period = selection {
             _originalPeriod = State(initialValue: .init(
                 start: startValue, end: endValue, isOngoing: ongoingValue
@@ -187,7 +191,7 @@ struct RecordEditor: View {
             case .newMark:
                 try MarkOperations.add(to: item, localDateTime: start.value ?? "", context: context)
             case .mark(let mark):
-                try MarkOperations.correct(mark, localDateTime: start.value ?? "", context: context)
+                try correctMark(mark)
             case .end(let period):
                 try PeriodOperations.end(period, on: end.value, today: RecordDateDraft.today, context: context)
             case .resume(let period):
@@ -210,6 +214,15 @@ struct RecordEditor: View {
                 }
             }
         }
+    }
+
+    private func correctMark(_ mark: ItemMark) throws {
+        guard let originalMark else {
+            throw RecordError.staleReview
+        }
+        try MarkOperations.correct(
+            mark, localDateTime: start.value ?? "", context: context, original: originalMark
+        )
     }
 
     private func deleteRecord() {
