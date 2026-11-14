@@ -26,11 +26,19 @@ public enum TagOperations {
     }
 
     /// Renames the chosen identity without merging equal names.
-    public static func rename(_ tag: Tag, name: String, context: ModelContext) throws {
+    /// A delayed editor supplies its original name to reject an intervening rename.
+    public static func rename(_ tag: Tag, name: String, context: ModelContext, original: String? = nil) throws {
         try RecordMutation.validate(context, models: [tag])
         try RecordMutation.validateName(name)
-        tag.name = name
-        try RecordMutation.save(context)
+        let writer = ModelContext(context.container)
+        writer.autosaveEnabled = false
+        let saved = try self.tag(uuid: tag.uuid, context: writer)
+        if let original, saved.name != original {
+            throw RecordError.staleReview
+        }
+        saved.name = name
+        try RecordMutation.save(writer)
+        _ = try self.tag(uuid: tag.uuid, context: context)
     }
 
     /// Replaces this Item’s explicit assignments using live identities from the same context.

@@ -14,6 +14,7 @@ struct TagEditor: View {
     private var tags: [Tag]
     let tag: Tag?
     @State private var name: String
+    @State private var original: String?
     @State private var saving = false
     @State private var confirmingDelete = false
     @State private var errorMessage: String?
@@ -80,12 +81,13 @@ struct TagEditor: View {
     init(tag: Tag?) {
         self.tag = tag
         _name = State(initialValue: tag?.name ?? "")
+        _original = State(initialValue: tag?.name)
     }
 
     private func save() {
         mutate {
             if let tag {
-                try TagOperations.rename(tag, name: name, context: context)
+                try TagOperations.rename(tag, name: name, context: context, original: original)
             } else {
                 try TagOperations.create(name: name, context: context)
             }

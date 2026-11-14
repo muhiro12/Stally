@@ -82,6 +82,20 @@ enum ItemDraftMutation {
                 }
             }
         }
+        try validatePhotoOrder(draft, item: item)
+    }
+
+    private static func validatePhotoOrder(_ draft: ItemDraft, item: Item) throws {
+        guard let original = draft.original?.photos.map(\.id), original != draft.photos.map(\.id) else {
+            return
+        }
+        let current = ItemOperations.orderedPhotos(for: item).map(\.uuid)
+        let originalIDs = Set(original)
+        let currentIDs = Set(current)
+        // Adding or removing a photo also rewrites positions; it must not restore an older order.
+        guard current.filter(originalIDs.contains) == original.filter(currentIDs.contains) else {
+            throw RecordError.staleReview
+        }
     }
 
     private static func applyTags(

@@ -5,6 +5,33 @@ import Testing
 
 @MainActor
 struct OrganizationTests {
+    @Test(arguments: ["source", "survivor", "unassigned"])
+    func consolidationRejectsDuplicateMembershipArrivingAfterReview(assignment: String) throws {
+        let container = try StallyModelContainerFactory.inMemory()
+        let context = ModelContext(container)
+        let item = try ItemOperations.create(context: context, name: "Tagged")
+        let source = try TagOperations.create(name: "Source", context: context)
+        let survivor = try TagOperations.create(name: "Survivor", context: context)
+        try TagOperations.assign([source, survivor], to: item, context: context)
+        let review = try TagOperations.reviewConsolidation(source: source, survivor: survivor, context: context)
+        let other = ModelContext(container)
+        let tags = try other.fetch(FetchDescriptor<StallyLibrary.Tag>())
+        let targetID = assignment == "survivor" ? survivor.uuid : source.uuid
+        let target = try #require(tags.first { $0.uuid == targetID })
+        let duplicate = Item(name: "Unreviewed duplicate", note: nil)
+        duplicate.uuid = item.uuid
+        duplicate.tags = assignment == "unassigned" ? [] : [target]
+        other.insert(duplicate)
+        try other.save()
+        #expect(throws: RecordError.ambiguousIdentity) {
+            try TagOperations.consolidate(review, context: context)
+        }
+        let reader = ModelContext(container)
+        #expect(try reader.fetchCount(FetchDescriptor<StallyLibrary.Tag>()) == 2)
+        #expect(try reader.fetchCount(FetchDescriptor<Item>()) == 2)
+        #expect(!context.hasChanges)
+    }
+
     @Test
     func explicitConsolidationPreservesItemsAndStaleMembershipRejects() throws {
         let context = ModelContext(try StallyModelContainerFactory.inMemory())

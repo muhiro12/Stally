@@ -32,9 +32,14 @@ public extension TagOperations {
         else {
             throw RecordError.ambiguousIdentity
         }
+        let sourceItems = try RecordMutation.index(source.items ?? [], identity: \.uuid)
+        let survivorItems = try RecordMutation.index(survivor.items ?? [], identity: \.uuid)
+        for uuid in Set(sourceItems.keys).union(survivorItems.keys) {
+            _ = try ItemOperations.item(context: writer, uuid: uuid)
+        }
         guard source.name == review.sourceName, survivor.name == review.survivorName,
-              Set((source.items ?? []).map(\.uuid)) == review.affectedItemIDs,
-              Set((survivor.items ?? []).map(\.uuid)) == review.survivorItemIDs
+              Set(sourceItems.keys) == review.affectedItemIDs,
+              Set(survivorItems.keys) == review.survivorItemIDs
         else { throw RecordError.staleReview }
         do {
             for item in source.items ?? [] {

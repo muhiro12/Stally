@@ -39,6 +39,11 @@ of the same save, so canceling the Item draft does not leave them behind.
 Existing attachments retain identity when reordered or captioned. Explicit
 photo removal deletes only that attachment; newly arriving unrelated photos
 are not interpreted as removals.
+Before a photo-list change rewrites positions, Operations rechecks the saved
+relative order of the original attachments. An intervening reorder rejects the
+whole edit rather than silently restoring an older order during addition or
+removal. Caption-only changes still preserve a newer order, and unrelated new
+photos do not invalidate the edit.
 
 Mark editors retain their original date/minute, and the Tag picker retains its
 original assignment UUIDs for the editing session. Before either saves, Operations
@@ -53,6 +58,12 @@ Tag selections save through the fresh context so relationship updates cannot
 write back unrelated stale Item fields; live reads follow native save merging.
 These guards do not change the explicit replacement semantics of immediate
 Operations or App Intent commands, or provide a cross-device transaction.
+
+Tag name editors likewise retain their original name and reject an intervening
+rename, including an unchanged submission. A successful rename uses a fresh
+writer, preserving current assignments. Tag consolidation revalidates both
+membership sets and identity uniqueness after
+confirmation, so a newly arriving duplicate UUID cannot expand an old approval.
 
 Period editors retain their original boundaries and continuation state for the
 editing session. If any of those facts changed before saving, the shared
