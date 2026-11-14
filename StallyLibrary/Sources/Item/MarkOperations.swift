@@ -80,6 +80,9 @@ public enum MarkOperations {
         writer.autosaveEnabled = false
         let saved = try self.mark(uuid: mark.uuid, context: writer)
         let itemID = saved.item?.uuid
+        if let itemID {
+            _ = try ItemOperations.item(context: writer, uuid: itemID)
+        }
         writer.delete(saved)
         try RecordMutation.save(writer)
         if let itemID {

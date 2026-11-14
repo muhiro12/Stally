@@ -19,9 +19,21 @@ The verified implementation ends at `2a42419`. Corrections were committed on
 `6e49cf3` (Intent review preparation) and `2a42419` (delayed edit validation).
 The review record follows those commits. No push or merge into `main` was made.
 
+### Publication re-review
+
+The subsequent pre-push review found a regression in `5533754`: deleting a
+Mark, Period or Tag whose affected Item UUID was ambiguous saved the deletion
+before the caller refresh reported an error. A failing operation therefore
+appeared to leave records unchanged while it had already removed them.
+Deletion now resolves every affected Item identity in the writer before
+mutation. `RecordDeletionTests` reproduces all three paths and checks both the
+error and the untouched saved graph. This additional fix preserves the same
+schema and deletion contracts. The verification counts below describe the
+initial review; publication evidence includes the additional regression test.
+
 ## Findings and corrections
 
-All findings were present at the starting candidate. They are not regressions
+The initial-review findings below were present at the starting candidate. They are not regressions
 introduced by `214cf30`; there is no shipped version against which to claim a
 release regression.
 

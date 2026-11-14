@@ -87,6 +87,9 @@ public enum TagOperations {
         writer.autosaveEnabled = false
         let saved = try self.tag(uuid: tag.uuid, context: writer)
         let itemIDs = (saved.items ?? []).map(\.uuid)
+        for itemID in itemIDs {
+            _ = try ItemOperations.item(context: writer, uuid: itemID)
+        }
         writer.delete(saved)
         try RecordMutation.save(writer)
         for itemID in itemIDs {
