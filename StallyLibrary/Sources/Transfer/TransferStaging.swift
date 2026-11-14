@@ -3,6 +3,23 @@ import Foundation
 
 /// Owns private files through review, writing, and any mapped Data retained by SwiftData.
 final class TransferStaging: Sendable {
+    enum Scope: Sendable {
+        case all
+        case photos(Set<UUID>)
+        case noCopies
+
+        func contains(_ uuid: UUID) -> Bool {
+            switch self {
+            case .all:
+                true
+            case .photos(let identities):
+                identities.contains(uuid)
+            case .noCopies:
+                false
+            }
+        }
+    }
+
     let directory: URL
 
     init() throws {

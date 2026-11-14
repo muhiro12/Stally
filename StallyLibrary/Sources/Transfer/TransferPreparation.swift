@@ -7,7 +7,7 @@ actor TransferPreparation {
     @concurrent
     static func export(container: ModelContainer, includingImages: Bool) async throws -> TransferArchive {
         let worker = TransferPreparation(modelContainer: container)
-        return try await worker.snapshot(includingImages: includingImages)
+        return try await worker.snapshot(includingImages: includingImages, stagingScope: .all)
     }
 
     @concurrent
@@ -16,15 +16,16 @@ actor TransferPreparation {
         return try await worker.review(archive)
     }
 
-    func snapshot(includingImages: Bool) throws -> TransferArchive {
+    func snapshot(includingImages: Bool, stagingScope: TransferStaging.Scope) throws -> TransferArchive {
         let archive = try TransferOperations.snapshot(
             context: ModelContext(modelContainer),
-            includingImages: includingImages
+            includingImages: includingImages,
+            stagingScope: stagingScope
         )
         let current = try TransferOperations.snapshot(
             context: ModelContext(modelContainer),
             includingImages: includingImages,
-            stagingImages: false
+            stagingScope: .noCopies
         )
         var expected = archive.manifest
         expected.exportedAt = current.manifest.exportedAt
@@ -33,7 +34,10 @@ actor TransferPreparation {
     }
 
     func review(_ archive: TransferArchive) throws -> TransferReview {
-        let baseline = try snapshot(includingImages: true)
+        let baseline = try snapshot(
+            includingImages: true,
+            stagingScope: .photos(Set(archive.manifest.itemPhotos.map(\.uuid)))
+        )
         return try TransferOperations.makeReview(archive, baseline: baseline)
     }
 }

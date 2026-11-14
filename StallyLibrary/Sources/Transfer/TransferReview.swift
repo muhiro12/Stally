@@ -46,6 +46,7 @@ public struct TransferReview: Sendable, Identifiable {
     public let id = UUID()
     public let rows: [Row]
     let incoming: TransferArchive
+    // All library facts are retained, but media copies exist only for photos present in the incoming file.
     let baseline: TransferArchive
 
     /// Additions are selected initially; differences always keep the current record by default.

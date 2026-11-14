@@ -322,6 +322,15 @@ implementation is a finite reviewed operation, not custom continuous reconciliat
    Validate the resulting graph and perform one explicit save for the bounded
    operation; discard pending changes on failure or cancellation.
 
+The implemented review retains facts and image fingerprints for the whole local
+library, but stages local image bytes only for photo identities present in the
+incoming file. These copies keep the current-image comparison immutable even
+when an incoming photo omits its bytes. A file containing no photo records needs
+no local media copies. Unrelated photos are still read one at a time to validate
+their fingerprints; changes to them still invalidate the review. This reduces
+temporary disk use without narrowing stale-review detection. Export continues
+to stage every requested image.
+
 Apple documents [save][save] and [rollback][rollback] for pending context changes.
 Use a context without unrelated editor work. Do not interpret rollback as undoing
 an earlier save, an external file change, or a cloud transfer. The complete import

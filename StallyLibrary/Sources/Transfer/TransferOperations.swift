@@ -29,10 +29,15 @@ public enum TransferOperations {
     }
 
     nonisolated static func snapshot(context: ModelContext, includingImages: Bool) throws -> TransferArchive {
-        try snapshot(context: context, includingImages: includingImages, stagingImages: true)
+        try snapshot(context: context, includingImages: includingImages, stagingScope: .all)
     }
 
-    nonisolated static func snapshot(context: ModelContext, includingImages: Bool, stagingImages: Bool) throws
+    /// Staging scope limits copied bytes only; all saved media facts still participate in validation.
+    nonisolated static func snapshot(
+        context: ModelContext,
+        includingImages: Bool,
+        stagingScope: TransferStaging.Scope
+    ) throws
     -> TransferArchive {
         let budget = TransferBudget.current
         let count =
@@ -53,7 +58,7 @@ public enum TransferOperations {
             includingImages: includingImages,
             staging: staging,
             container: context.container,
-            stagingImages: stagingImages
+            stagingScope: stagingScope
         )
         var manifest = try TransferManifest(
             format: StallyDataContract.fileTypeIdentifier,
@@ -108,7 +113,7 @@ public enum TransferOperations {
         includingImages: Bool,
         staging: TransferStaging,
         container: ModelContainer,
-        stagingImages: Bool
+        stagingScope: TransferStaging.Scope
     ) throws -> [TransferPhoto] {
         try photos.map { photo in
             try Task.checkCancellation()
@@ -127,7 +132,9 @@ public enum TransferOperations {
                 }
                 let fileExtension = try TransferMedia.fileExtension(data)
                 let path = StallyDataContract.assetPathPrefix + "\(uuid.uuidString.lowercased()).\(fileExtension)"
-                if stagingImages { try staging.write(data, path: path) }
+                if stagingScope.contains(uuid) {
+                    try staging.write(data, path: path)
+                }
                 return .init(state: .included, path: path, byteCount: data.count, sha256: TransferMedia.digest(data))
             }
             return .init(

@@ -5,7 +5,11 @@ extension TransferOperations {
     /// Reviews identity matches; this step does not create or modify any database object.
     public static func review(_ archive: TransferArchive, context: ModelContext) throws -> TransferReview {
         try RecordMutation.validate(context, models: [])
-        let baseline = try snapshot(context: ModelContext(context.container), includingImages: true)
+        let baseline = try snapshot(
+            context: ModelContext(context.container),
+            includingImages: true,
+            stagingScope: .photos(Set(archive.manifest.itemPhotos.map(\.uuid)))
+        )
         return try makeReview(archive, baseline: baseline)
     }
 
@@ -38,7 +42,7 @@ extension TransferOperations {
         try TransferCapacity.check(review.incoming, context: context)
         let writer = ModelContext(context.container)
         writer.autosaveEnabled = false
-        let current = try snapshot(context: writer, includingImages: true, stagingImages: false)
+        let current = try snapshot(context: writer, includingImages: true, stagingScope: .noCopies)
         var expected = review.baseline.manifest
         expected.exportedAt = current.manifest.exportedAt
         guard expected == current.manifest else { throw TransferError.staleReview }
