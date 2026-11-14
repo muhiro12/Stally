@@ -4,6 +4,8 @@ Use the [implementation record](remaining-capabilities-implementation.md#impleme
 and the [App Intents inventory](app-intents-publication-review.md) for the release
 candidate. [Issue #8](https://github.com/muhiro12/Stally/issues/8) tracks distribution
 setup. Record the candidate, environment and result for each check.
+The [November 14 repository review](first-release-review.md) records source fixes
+and Simulator evidence separately from the distribution checks below.
 
 Store text and the monthly offer are maintained in
 [Store resources](../AppStore/README.md). The identifiers include the Store SKU.
