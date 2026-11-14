@@ -10,7 +10,6 @@ struct PeriodRepairTests {
     func ongoingConflictsCanBeEndedOneAtATimeWithoutRewritingHistory() throws {
         let directory = PersistentTestDirectory.makeURL()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appending(path: "repair.store")
         let identities = try autoreleasepool {
             let context = ModelContext(try StallyModelContainerFactory.disk(at: url))

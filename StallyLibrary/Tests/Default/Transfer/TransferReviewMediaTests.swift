@@ -81,7 +81,6 @@ struct TransferReviewMediaTests {
     func textOnlyImportStagesNoLocalPhotosAndPreservesThemAfterReopen(background: Bool) async throws {
         let directory = PersistentTestDirectory.makeURL()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appending(path: "review.store")
         let bytes = try PhotoTestImages.imageData()
         let prepared = try await PhotoOperations.prepare(data: bytes)

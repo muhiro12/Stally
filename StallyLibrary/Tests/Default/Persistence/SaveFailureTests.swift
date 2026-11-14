@@ -10,7 +10,6 @@ struct SaveFailureTests {
     func failedReviewedPeriodSavePreservesTheReopenedRecord() throws {
         let directory = PersistentTestDirectory.makeURL()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        defer { try? FileManager.default.removeItem(at: directory) }
         let url = directory.appending(path: "period.store")
         let original = PeriodInput(start: "2020", end: "2021", isOngoing: false)
         let identity = try autoreleasepool {
