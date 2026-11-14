@@ -52,6 +52,11 @@ keeps its input and displays the existing review-again error; dismiss and reopen
 it to review current facts. Unrelated Item or Mark writes do not invalidate the
 period edit. This is a local stale-edit guard, not a cross-device transaction.
 
+Ending a period uses the same saved-fact check before applying its end date.
+An intervening correction, ending, deletion, or ambiguous UUID rejects the
+operation without overwriting history. Reopening the record permits a new
+ending against its current start; unrelated writes do not invalidate it.
+
 An empty link clears it. A nonempty link must be an absolute website or app URL;
 relative input and file/data/script URLs are rejected before mutation. Opening
 uses SwiftUI's native URL action, with visible failure when the system declines.
