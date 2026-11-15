@@ -157,7 +157,7 @@ struct ItemInputTests {
         let suggestion = ItemInputSuggestion(
             name: "Suggested", note: "Generated", representativeURL: "https://example.com"
         )
-        let filled = ItemInputOperations.fillingEmptyFields(of: draft, with: suggestion)
+        let filled = ItemInputOperations.applying(suggestion, to: draft)
         #expect(filled.name == draft.name && filled.note == " ")
         #expect(filled.representativeURL == suggestion.representativeURL)
         #expect(filled.original?.id == item.uuid && filled.newTags[0].id == draft.newTags[0].id)
@@ -169,6 +169,42 @@ struct ItemInputTests {
 
     @MainActor
     @Test
+    func overwritingTextChangesOnlyProvidedFieldsInTheUnsavedDraft() throws {
+        let context = ModelContext(try StallyModelContainerFactory.inMemory())
+        let item = try ItemOperations.create(context: context, name: "Original", note: "Keep this note")
+        var draft = ItemOperations.draft(for: item)
+        draft.name = "Edited while generating"
+        draft.representativeURL = "https://example.com/original"
+        draft.newTags = [.init(name: "Travel")]
+        draft.newPeriods = [.init(input: .init(start: "2021", end: "2022", isOngoing: false))]
+        let suggestion = ItemInputSuggestion(name: "Suggested")
+        let applied = ItemInputOperations.applying(suggestion, to: draft, overwriteExistingText: true)
+        #expect(applied.name == "Suggested")
+        #expect(applied.note == draft.note && applied.representativeURL == draft.representativeURL)
+        #expect(applied.original?.id == item.uuid && applied.original?.name == "Original")
+        #expect(applied.tagIDs == draft.tagIDs && applied.newTags.map(\.id) == draft.newTags.map(\.id))
+        #expect(applied.newPeriods.map(\.id) == draft.newPeriods.map(\.id))
+        #expect(item.name == "Original" && item.note == "Keep this note" && !context.hasChanges)
+        let saved = try ItemOperations.save(applied, context: context, today: "2025-01-01")
+        #expect(saved.uuid == item.uuid && saved.name == "Suggested" && saved.note == "Keep this note")
+    }
+
+    @Test(arguments: [false, true])
+    func replacingAllProvidedTextRequiresExplicitOptIn(_ overwrite: Bool) {
+        var draft = ItemDraft(name: "Original", note: "Existing note")
+        draft.representativeURL = "https://example.com/original"
+        let suggestion = ItemInputSuggestion(
+            name: "Suggested", note: "Full replacement note", representativeURL: "https://example.com/suggested"
+        )
+        let applied = ItemInputOperations.applying(suggestion, to: draft, overwriteExistingText: overwrite)
+        #expect(applied.name == (overwrite ? suggestion.name : draft.name))
+        #expect(applied.note == (overwrite ? suggestion.note : draft.note))
+        #expect(applied.representativeURL == (overwrite ? suggestion.representativeURL : draft.representativeURL))
+        #expect(applied.newPeriods.isEmpty)
+    }
+
+    @MainActor
+    @Test
     func suggestedDraftPersistsOnlyAfterExplicitSaveAndSurvivesReopen() throws {
         let directory = PersistentTestDirectory.makeURL()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
@@ -176,7 +212,7 @@ struct ItemInputTests {
         let identity = try autoreleasepool {
             let context = ModelContext(try StallyModelContainerFactory.disk(at: url))
             let suggestion = ItemInputSuggestion(name: "Camera", note: "A gift")
-            let draft = ItemInputOperations.fillingEmptyFields(of: .init(), with: suggestion)
+            let draft = ItemInputOperations.applying(suggestion, to: .init())
             #expect(try context.fetchCount(FetchDescriptor<Item>()) == 0)
             #expect(!context.hasChanges)
             return try ItemOperations.save(draft, context: context).uuid

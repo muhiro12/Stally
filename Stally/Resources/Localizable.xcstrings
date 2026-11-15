@@ -5099,22 +5099,6 @@
         }
       }
     },
-    "Only empty text fields and periods you reviewed will be added to the draft. You can edit them before saving the Item. Marks are not added.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Only empty text fields and periods you reviewed will be added to the draft. You can edit them before saving the Item. Marks are not added."
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "空欄の項目と確認した期間だけを下書きに反映します。アイテムを保存する前に編集できます。記録は追加しません。"
-          }
-        }
-      }
-    },
     "Period Status": {
       "localizations": {
         "en": {
@@ -5303,6 +5287,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "端末内のモデルでアイテムの詳細と原文に基づく期間を、確認用の文章として提案します。アイテム・記録・期間は保存しません。"
+          }
+        }
+      }
+    },
+    "Replace Existing Text": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Replace Existing Text"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "入力済みの項目も上書き"
+          }
+        }
+      }
+    },
+    "Text fills empty fields unless you choose to replace existing text. Missing details keep their current values. Only periods you reviewed are added. You can edit the draft before saving the Item.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text fills empty fields unless you choose to replace existing text. Missing details keep their current values. Only periods you reviewed are added. You can edit the draft before saving the Item."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通常は空欄にだけ入力します。上書きを選ぶと、候補に含まれる入力済みの項目も更新します。候補にない項目は変更しません。期間は確認したものだけを追加します。アイテムの保存前に編集できます。"
           }
         }
       }

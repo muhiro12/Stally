@@ -425,9 +425,10 @@ The November 12 scope update adds optional Foundation Models text input assistan
 to first-release Item editing. Ordinary prose and pasted text use one reviewable
 draft flow without an app-specific template or external-AI mode. A fresh on-device
 session extracts a source-backed name, note, and representative URL. The person
-reviews the suggestion and fills only empty fields in the current editor, then
-edits and saves normally. Existing fields, photos, Tags, and Item identity remain
-intact. Source input survives generation errors and stopping an active request;
+reviews the suggestion and fills empty fields in the current editor by default.
+Replace Existing Text explicitly replaces supplied text fields; missing suggestion
+fields preserve existing values. The person edits and saves normally. Photos,
+Tags, and Item identity remain intact. Source input survives generation errors and stopping an active request;
 dismissing the assistance sheet discards its temporary source and suggestion.
 Late or cancelled results cannot apply. Manual entry remains usable when the
 model is unavailable. Explicit source dates can also supply reviewable period

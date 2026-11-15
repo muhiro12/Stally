@@ -22,7 +22,8 @@ struct ItemInputAssistView: View {
     @State private var unavailableReason: ItemInputError?
     @State private var reviewedPeriods: [Int: PeriodInput] = [:]
     @State private var reviewingPeriod: PeriodSelection?
-    let onApply: (ItemInputSuggestion, [PeriodInput]) -> Void
+    @State private var overwriteExistingText = false
+    let onApply: (ItemInputSuggestion, [PeriodInput], Bool) -> Void
 
     var body: some View {
         NavigationStack {
@@ -112,14 +113,14 @@ struct ItemInputAssistView: View {
         }
     }
 
-    init(onApply: @escaping (ItemInputSuggestion, [PeriodInput]) -> Void) {
+    init(onApply: @escaping (ItemInputSuggestion, [PeriodInput], Bool) -> Void) {
         self.onApply = onApply
     }
 
     init(
         source: String,
         suggestion: ItemInputSuggestion,
-        onApply: @escaping (ItemInputSuggestion, [PeriodInput]) -> Void
+        onApply: @escaping (ItemInputSuggestion, [PeriodInput], Bool) -> Void
     ) {
         self.onApply = onApply
         _source = .init(initialValue: source)
@@ -175,14 +176,18 @@ struct ItemInputAssistView: View {
 
     private func applySection(_ suggestion: ItemInputSuggestion) -> some View {
         Section {
+            Toggle("Replace Existing Text", isOn: $overwriteExistingText)
             Button("Use Suggestion", systemImage: "text.badge.plus") {
-                onApply(suggestion, reviewedPeriods.keys.sorted().compactMap { reviewedPeriods[$0] })
+                onApply(
+                    suggestion, reviewedPeriods.keys.sorted().compactMap { reviewedPeriods[$0] }, overwriteExistingText
+                )
                 dismiss()
             }
         } footer: {
             Text("""
-                Only empty text fields and periods you reviewed will be added to the draft. \
-                You can edit them before saving the Item. Marks are not added.
+                Text fills empty fields unless you choose to replace existing text. \
+                Missing details keep their current values. Only periods you reviewed are added. \
+                You can edit the draft before saving the Item.
                 """)
         }
     }
@@ -213,7 +218,7 @@ struct ItemInputAssistView: View {
 }
 
 #Preview {
-    ItemInputAssistView { _, _ in
+    ItemInputAssistView { _, _, _ in
         // Preview does not apply suggestions to a saved record.
     }
 }
@@ -230,7 +235,7 @@ struct ItemInputAssistView: View {
                 evidence: "2023年6月に購入。"
             )
         ])
-    ) { _, _ in
+    ) { _, _, _ in
         // Preview only displays a suggestion; no editor or store is changed.
     }
 }

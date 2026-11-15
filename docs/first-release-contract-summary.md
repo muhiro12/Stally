@@ -133,8 +133,9 @@ assistance, and reviewed file import are the first-release input paths. The
 dedicated Markdown template workflow is retired, including prompt copying,
 blank templates, and template parsing/review.
 Foundation Models assistance prepares a reviewable name, note, link, and
-source-backed period candidates from one description. It fills only empty text
-fields and stages only individually reviewed periods, preserving the source's
+source-backed period candidates from one description. It fills empty text fields
+by default, with an explicit option to replace supplied text, and stages only
+individually reviewed periods, preserving the source's
 date precision. The person can edit or remove additions before the ordinary
 explicit save commits the complete draft. It creates no Marks and never saves
 history automatically. Photo recognition and OCR remain separate future work.

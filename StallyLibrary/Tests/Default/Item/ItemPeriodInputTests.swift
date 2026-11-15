@@ -98,15 +98,15 @@ struct ItemPeriodInputTests {
         let suggestion = ItemInputSuggestion(name: "Mug", periods: [
             .init(start: "2023-06", end: nil, continuation: .unspecified, basis: .purchase, evidence: "2023年6月に購入")
         ])
-        let unreviewed = ItemInputOperations.fillingEmptyFields(of: .init(), with: suggestion)
+        let unreviewed = ItemInputOperations.applying(suggestion, to: .init())
         #expect(unreviewed.newPeriods.isEmpty)
         let reviewed = PeriodInput(start: "2023-07", isOngoing: true)
-        let applied = ItemInputOperations.fillingEmptyFields(
-            of: unreviewed, with: suggestion, reviewedPeriods: [reviewed]
+        let applied = ItemInputOperations.applying(
+            suggestion, to: unreviewed, reviewedPeriods: [reviewed]
         )
         #expect(applied.newPeriods.map(\.input) == [reviewed])
-        let reapplied = ItemInputOperations.fillingEmptyFields(
-            of: applied, with: suggestion, reviewedPeriods: [reviewed]
+        let reapplied = ItemInputOperations.applying(
+            suggestion, to: applied, reviewedPeriods: [reviewed]
         )
         #expect(reapplied.newPeriods.map(\.id) == applied.newPeriods.map(\.id))
     }

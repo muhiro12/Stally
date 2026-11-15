@@ -63,19 +63,23 @@ public enum ItemInputOperations {
         }
     }
 
-    /// Applies only to exactly empty fields, including when the draft changed during generation.
+    /// Fills exactly empty fields by default, or replaces provided text when explicitly requested.
+    /// Missing suggestion fields never erase existing text. Application uses the current draft.
     /// Only explicitly reviewed periods are staged; generated candidates alone never change history.
-    public static func fillingEmptyFields(
-        of draft: ItemDraft, with suggestion: ItemInputSuggestion, reviewedPeriods: [PeriodInput] = []
+    public static func applying(
+        _ suggestion: ItemInputSuggestion,
+        to draft: ItemDraft,
+        overwriteExistingText: Bool = false,
+        reviewedPeriods: [PeriodInput] = []
     ) -> ItemDraft {
         var result = draft
-        if result.name.isEmpty {
+        if !suggestion.name.isEmpty, overwriteExistingText || result.name.isEmpty {
             result.name = suggestion.name
         }
-        if result.note.isEmpty {
+        if !suggestion.note.isEmpty, overwriteExistingText || result.note.isEmpty {
             result.note = suggestion.note
         }
-        if result.representativeURL.isEmpty {
+        if !suggestion.representativeURL.isEmpty, overwriteExistingText || result.representativeURL.isEmpty {
             result.representativeURL = suggestion.representativeURL
         }
         for period in reviewedPeriods where !result.newPeriods.contains(where: { $0.input == period }) {

@@ -47,8 +47,10 @@ struct ItemEditor: View {
         }
         .modifier(StallyUpdateRequiredModifier())
         .sheet(isPresented: $showingInputAssistance) {
-            ItemInputAssistView { suggestion, periods in
-                draft = ItemInputOperations.fillingEmptyFields(of: draft, with: suggestion, reviewedPeriods: periods)
+            ItemInputAssistView { suggestion, periods, overwriteExistingText in
+                draft = ItemInputOperations.applying(
+                    suggestion, to: draft, overwriteExistingText: overwriteExistingText, reviewedPeriods: periods
+                )
             }
         }
     }

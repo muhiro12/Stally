@@ -17,9 +17,12 @@ tracks release qualification; broader AI summaries and search remain deferred.
 
 - Add/Edit Item opens Input Assistance. Type or paste one description, generate,
   review the name/note/link and optional period candidates, then choose Use Suggestion.
-- Existing editor text is preserved exactly, including whitespace. Photos, Tags,
-  draft identity, and the original edit snapshot are retained. Fields are checked
-  when applying, not when generation begins. Applying does not save.
+- By default, existing editor text is preserved exactly, including whitespace.
+  Replace Existing Text explicitly opts into replacing the name, note and link
+  that the suggestion supplies. Missing suggestion fields never erase current
+  values. Photos, Tags, staged periods, draft identity, and the original edit
+  snapshot are retained. Fields are checked when applying, not when generation
+  begins. Applying does not save.
 - Period candidates show their source passage and distinguish purchase, order,
   delivery and relationship dates. Review each desired candidate, edit its partial
   dates, choose an ongoing or ended state when unresolved, and choose Use Period.
