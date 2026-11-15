@@ -3,6 +3,11 @@ import StallyLibrary
 import SwiftUI
 
 struct ItemInputAssistView: View {
+    private struct PeriodSelection: Identifiable {
+        let id: Int
+        let candidate: ItemPeriodSuggestion
+    }
+
     private static let sourceLines = 5...12
     @Environment(\.dismiss)
     private var dismiss
@@ -15,7 +20,9 @@ struct ItemInputAssistView: View {
     @State private var requestID: UUID?
     @State private var errorMessage: String?
     @State private var unavailableReason: ItemInputError?
-    let onApply: (ItemInputSuggestion) -> Void
+    @State private var reviewedPeriods: [Int: PeriodInput] = [:]
+    @State private var reviewingPeriod: PeriodSelection?
+    let onApply: (ItemInputSuggestion, [PeriodInput]) -> Void
 
     var body: some View {
         NavigationStack {
@@ -24,6 +31,8 @@ struct ItemInputAssistView: View {
                     sourceSection
                     if let suggestion {
                         reviewSection(suggestion)
+                        periodSection(suggestion)
+                        applySection(suggestion)
                     }
                     if let errorMessage {
                         Section {
@@ -59,6 +68,13 @@ struct ItemInputAssistView: View {
         .onChange(of: source) {
             suggestion = nil
             errorMessage = nil
+            reviewedPeriods = [:]
+            reviewingPeriod = nil
+        }
+        .sheet(item: $reviewingPeriod) { selection in
+            ItemPeriodReview(candidate: selection.candidate, reviewed: reviewedPeriods[selection.id]) { period in
+                reviewedPeriods[selection.id] = period
+            }
         }
     }
 
@@ -77,6 +93,7 @@ struct ItemInputAssistView: View {
                     refreshAvailability()
                     errorMessage = nil
                     suggestion = nil
+                    reviewedPeriods = [:]
                     requestID = UUID()
                 }
                 .disabled(source.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || unavailableReason != nil)
@@ -89,10 +106,24 @@ struct ItemInputAssistView: View {
             MHSectionHeader("Description")
         } footer: {
             Text("""
-                Apple Intelligence uses this text on your device to suggest a name, note, and link. \
+                Apple Intelligence uses this text on your device to suggest Item details and periods. \
                 Review the result before using it. You can also enter fields manually.
                 """)
         }
+    }
+
+    init(onApply: @escaping (ItemInputSuggestion, [PeriodInput]) -> Void) {
+        self.onApply = onApply
+    }
+
+    init(
+        source: String,
+        suggestion: ItemInputSuggestion,
+        onApply: @escaping (ItemInputSuggestion, [PeriodInput]) -> Void
+    ) {
+        self.onApply = onApply
+        _source = .init(initialValue: source)
+        _suggestion = .init(initialValue: suggestion)
     }
 
     private func reviewSection(_ suggestion: ItemInputSuggestion) -> some View {
@@ -104,16 +135,54 @@ struct ItemInputAssistView: View {
             if !suggestion.representativeURL.isEmpty {
                 LabeledContent("Link", value: suggestion.representativeURL)
             }
-            Button("Fill Empty Fields", systemImage: "text.badge.plus") {
-                onApply(suggestion)
-                dismiss()
-            }
         } header: {
             MHSectionHeader("Suggestion")
+        }
+    }
+
+    @ViewBuilder
+    private func periodSection(_ suggestion: ItemInputSuggestion) -> some View {
+        if !suggestion.periods.isEmpty {
+            Section {
+                ForEach(Array(suggestion.periods.enumerated()), id: \.offset) { index, candidate in
+                    Button {
+                        reviewingPeriod = .init(id: index, candidate: candidate)
+                    } label: {
+                        VStack(alignment: .leading) {
+                            Text(candidate.basis.title)
+                            Text(RecordDateDraft.display(reviewedPeriods[index].map(\.start) ?? candidate.start))
+                                .mhRowSupporting()
+                            if reviewedPeriods[index] != nil {
+                                Label("Ready to Add", systemImage: "checkmark.circle")
+                            } else {
+                                Text("Review Period").mhRowSupporting()
+                            }
+                        }
+                    }
+                    if reviewedPeriods[index] != nil {
+                        Button("Skip This Period", role: .destructive) {
+                            reviewedPeriods[index] = nil
+                        }
+                    }
+                }
+            } header: {
+                MHSectionHeader("Suggested Periods")
+            } footer: {
+                Text("Review each period you want to add. Purchase, order, and delivery dates may be alternatives.")
+            }
+        }
+    }
+
+    private func applySection(_ suggestion: ItemInputSuggestion) -> some View {
+        Section {
+            Button("Use Suggestion", systemImage: "text.badge.plus") {
+                onApply(suggestion, reviewedPeriods.keys.sorted().compactMap { reviewedPeriods[$0] })
+                dismiss()
+            }
         } footer: {
             Text("""
-                Only empty fields will be filled. You can edit them before saving the Item. \
-                Marks and periods are not added.
+                Only empty text fields and periods you reviewed will be added to the draft. \
+                You can edit them before saving the Item. Marks are not added.
                 """)
         }
     }
@@ -144,7 +213,24 @@ struct ItemInputAssistView: View {
 }
 
 #Preview {
-    ItemInputAssistView { _ in
+    ItemInputAssistView { _, _ in
         // Preview does not apply suggestions to a saved record.
+    }
+}
+
+#Preview("Review Suggestions") {
+    ItemInputAssistView(
+        source: "青いマグ。2023年6月に購入。",
+        suggestion: .init(name: "青いマグ", note: "2023年6月に購入。", periods: [
+            .init(
+                start: "2023-06",
+                end: nil,
+                continuation: .unspecified,
+                basis: .purchase,
+                evidence: "2023年6月に購入。"
+            )
+        ])
+    ) { _, _ in
+        // Preview only displays a suggestion; no editor or store is changed.
     }
 }

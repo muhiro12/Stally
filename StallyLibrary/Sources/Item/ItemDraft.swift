@@ -3,6 +3,16 @@ import Foundation
 /// Unsaved editing values. Empty form text becomes nil only at the save boundary.
 /// Discarding a draft never changes the stored graph.
 public struct ItemDraft: Sendable {
+    /// Explicitly reviewed additions, kept outside the saved graph until the Item is saved.
+    public struct Period: Identifiable, Sendable {
+        public let id = UUID()
+        public var input: PeriodInput
+
+        public init(input: PeriodInput) {
+            self.input = input
+        }
+    }
+
     /// A distinct new Tag, even when another Tag has the same name.
     public struct NewTag: Identifiable, Sendable {
         public let id = UUID()
@@ -53,6 +63,7 @@ public struct ItemDraft: Sendable {
     public var tagIDs: Set<UUID>
     public var newTags: [NewTag] = []
     public var photos: [Photo] = []
+    public var newPeriods: [Period] = []
 
     let original: Original?
 

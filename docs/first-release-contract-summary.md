@@ -132,10 +132,13 @@ metadata or an import grammar. Manual creation, optional on-device text input
 assistance, and reviewed file import are the first-release input paths. The
 dedicated Markdown template workflow is retired, including prompt copying,
 blank templates, and template parsing/review.
-Foundation Models assistance prepares a reviewable name, note, and link from one
-description, fills only empty draft fields, and uses the ordinary explicit save.
-It creates no Marks or periods. Photo recognition and OCR remain separate future
-work. See the [input-assistance boundary](item-input-assistance.md) and the
+Foundation Models assistance prepares a reviewable name, note, link, and
+source-backed period candidates from one description. It fills only empty text
+fields and stages only individually reviewed periods, preserving the source's
+date precision. The person can edit or remove additions before the ordinary
+explicit save commits the complete draft. It creates no Marks and never saves
+history automatically. Photo recognition and OCR remain separate future work.
+See the [input-assistance boundary](item-input-assistance.md) and the
 [selected input and sharing behavior](product-behavior-design.md#copy-and-share-one-item).
 
 The [native transfer journeys](product-behavior-design.md#native-transfer-journeys)

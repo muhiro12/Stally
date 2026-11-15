@@ -430,8 +430,12 @@ edits and saves normally. Existing fields, photos, Tags, and Item identity remai
 intact. Source input survives generation errors and stopping an active request;
 dismissing the assistance sheet discards its temporary source and suggestion.
 Late or cancelled results cannot apply. Manual entry remains usable when the
-model is unavailable. Extraction does not infer relationship-start precision,
-create Marks/history, or silently save records. Photo recognition and OCR capture
+model is unavailable. Explicit source dates can also supply reviewable period
+candidates. Purchase, order and delivery dates remain distinguishable alternatives;
+unknown date components and unresolved continuation are not filled by inference.
+Only individually reviewed periods enter the draft, where they can be edited or
+removed before an atomic Item save. Extraction never creates Marks or silently
+saves history. Photo recognition and OCR capture
 are not included in this first text-assistance implementation. See the
 [implementation and evaluation boundary](item-input-assistance.md).
 

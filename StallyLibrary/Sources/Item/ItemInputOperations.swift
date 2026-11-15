@@ -57,14 +57,16 @@ public enum ItemInputOperations {
             return .init(
                 name: response.content.name,
                 note: response.content.note,
-                representativeURL: response.content.representativeURL
+                representativeURL: response.content.representativeURL,
+                periods: try await ItemInputPeriodGeneration.infer(source: source, name: response.content.name)
             )
         }
     }
 
     /// Applies only to exactly empty fields, including when the draft changed during generation.
+    /// Only explicitly reviewed periods are staged; generated candidates alone never change history.
     public static func fillingEmptyFields(
-        of draft: ItemDraft, with suggestion: ItemInputSuggestion
+        of draft: ItemDraft, with suggestion: ItemInputSuggestion, reviewedPeriods: [PeriodInput] = []
     ) -> ItemDraft {
         var result = draft
         if result.name.isEmpty {
@@ -76,14 +78,20 @@ public enum ItemInputOperations {
         if result.representativeURL.isEmpty {
             result.representativeURL = suggestion.representativeURL
         }
+        for period in reviewedPeriods where !result.newPeriods.contains(where: { $0.input == period }) {
+            result.newPeriods.append(.init(input: period))
+        }
         return result
     }
 
     /// A readable, unsaved result for system surfaces; it is not an import format.
     public static func text(for suggestion: ItemInputSuggestion) -> String {
-        [suggestion.name, suggestion.note, suggestion.representativeURL]
-            .filter { !$0.isEmpty }
-            .joined(separator: "\n\n")
+        ([suggestion.name, suggestion.note, suggestion.representativeURL] + suggestion.periods.map { period in
+            let dates = "\(period.start ?? "?") — \(period.end ?? "?")"
+            return "\(period.basis.title): \(dates) (\(period.continuation.title))\n\(period.evidence)"
+        })
+        .filter { !$0.isEmpty }
+        .joined(separator: "\n\n")
     }
 
     static func infer(
@@ -112,7 +120,8 @@ public enum ItemInputOperations {
         var result = ItemInputSuggestion(
             name: suggestion.name.trimmingCharacters(in: .whitespacesAndNewlines),
             note: suggestion.note.trimmingCharacters(in: .whitespacesAndNewlines),
-            representativeURL: suggestion.representativeURL.trimmingCharacters(in: .whitespacesAndNewlines)
+            representativeURL: suggestion.representativeURL.trimmingCharacters(in: .whitespacesAndNewlines),
+            periods: suggestion.periods
         )
         guard let note = ItemInputSource.note(result.note, in: source) else {
             throw ItemInputError.invalidResult

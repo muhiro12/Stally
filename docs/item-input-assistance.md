@@ -16,12 +16,20 @@ tracks release qualification; broader AI summaries and search remain deferred.
 ## Behavior and ownership
 
 - Add/Edit Item opens Input Assistance. Type or paste one description, generate,
-  review the name/note/link, then choose Fill Empty Fields.
+  review the name/note/link and optional period candidates, then choose Use Suggestion.
 - Existing editor text is preserved exactly, including whitespace. Photos, Tags,
   draft identity, and the original edit snapshot are retained. Fields are checked
   when applying, not when generation begins. Applying does not save.
-- The person can correct filled fields before the ordinary Save operation.
-  No Mark, Period, Tag, photo, or saved Item is generated automatically.
+- Period candidates show their source passage and distinguish purchase, order,
+  delivery and relationship dates. Review each desired candidate, edit its partial
+  dates, choose an ongoing or ended state when unresolved, and choose Use Period.
+  Unreviewed candidates are not applied. Different acquisition dates can be
+  alternatives for one period; they are not automatically separate saved periods.
+- The person can edit or remove staged periods and correct filled fields before
+  ordinary Save. Metadata, photos, Tags and reviewed period additions save in one
+  transaction. Existing periods are rechecked for conflicts in the writer context
+  and never overwritten. Validation or save failure retains the draft and saves
+  none of that submission. No Mark, Tag, photo or Item is generated automatically.
 - Stopping a request preserves source text. Editing the source invalidates the
   suggestion. Closing the sheet discards its temporary input. Task cancellation
   and request identity prevent late completions from changing a newer request.
@@ -35,12 +43,43 @@ operation does not receive a ModelContext or read the saved collection.
 
 ## Model boundary
 
-Use `SystemLanguageModel.default` with a fresh session and guided generation for
-each request. Instructions require source-language preservation and verbatim
-excerpts. All nonempty generated fields must occur in the source; links must
-also pass the existing representative-URL validator. This reduces invented
-content but does not prove that an excerpt describes the intended subject, so
-human review remains necessary. Missing or unreliable names fail visibly.
+Use `SystemLanguageModel.default` with fresh sessions and guided generation for
+each request. Instructions require the complete identifying name and descriptive
+passage, including supplied dates, prices, specifications, experiences and
+uncertainties. Comparisons with other products remain descriptive context.
+The complete note is retained even when its dates also supply period candidates.
+
+Date extraction is separate from text generation. The app locates explicit
+Gregorian date expressions in Japanese, ISO/slash notation and English month-name
+notation, retaining their stated year/month/day precision. Relative, invalid and
+unsupported dates remain in the note rather than being completed from today's
+date. The on-device model classifies each located date's meaning in a fresh
+session; it cannot supply or change a date. Model/release years, prices, repairs,
+exchanges, future plans, and dates by which an Item was already owned are not
+relationship starts. Semantic classification still requires human review.
+Classification uses the sentence around a date, narrowing separate clauses when
+several dates share a sentence. The generated action must occur in the source,
+and events about another Item are excluded. Explicit Japanese from/until markers
+preserve the boundaries of a recognized relationship range. Current use requires
+an explicit statement; past use alone does not establish it.
+
+Orders, purchases and original deliveries remain distinct alternatives. Explicit
+start/end dates form candidates in source order; a later resumption remains a new
+candidate. An end can have an unknown start. Purchase/order/delivery alone does
+not assert ongoing ownership, and a missing end never establishes continuation.
+At most 24 date expressions are classified per request; larger inputs fail
+visibly rather than silently dropping dates. Cancelling stops further requests
+and prevents any late result from applying.
+
+Names and links must occur verbatim in the source. Notes first use exact excerpt
+matching. When only whitespace or line breaks differ, validation accepts a
+single unambiguous contiguous source passage and restores its original text.
+It does not join separated excerpts, change punctuation, repair factual changes,
+or normalize names and URLs. Links also pass the existing representative-URL
+validator. Unsupported fields still reject the suggestion; there is no silent
+partial-result fallback. This reduces invented content but cannot establish that
+an excerpt is complete or describes the intended subject. Human review remains
+necessary, and missing or unreliable names fail visibly.
 
 Input is trimmed and limited to 4,000 characters without silent truncation.
 Context exhaustion still reports a shorter-input recovery because character
@@ -55,10 +94,27 @@ and [language support](https://developer.apple.com/documentation/foundationmodel
 
 ## Verification boundary
 
-Library tests cover input budgets, unsupported fields and links, cancellation
+Library tests cover input budgets, unsupported fields and links, restoration of
+multiline notes, ambiguous matches, changed facts and excerpt order, cancellation
 after generation, visible failures, preservation of intervening edits and draft
-identity, no writes before Save, and persistence after reopen without history.
+identity, no writes before Save, and persistence after reopen. Period tests cover
+partial-date preservation, date-role mapping, explicit adoption, alternatives,
+ended and resumed relationships, conflict rechecks, and atomic save failure.
 Model probes and UI evidence are separate from those deterministic tests.
 Physical-device quality, VoiceOver, and final-candidate distribution qualification
 remain release checks. A successful synthetic probe is not a general accuracy or
 performance guarantee.
+
+For extraction evaluation, compare short prose, labelled multiline descriptions,
+and unlabelled equivalents. Record generation errors, source validation, complete
+names, complete notes, and supplied links separately before applying or saving.
+An export alone cannot distinguish model omissions from later manual edits or
+establish how many requests failed. Keep private inputs and raw model outputs
+outside the repository and CI; use unrelated synthetic data for retained tests.
+
+Treat well-formed source examples as an acceptance gate: require complete names,
+notes and supplied links, all supported acquisition/relationship candidates,
+correct date precision and event meaning, and no unsupported additions. Repeat
+model evaluation after prompt or schema changes; do not count a merely nonthrowing
+request as correct. Evaluate informal prose and ambiguous dates separately, and
+keep model/OS/runtime evidence distinct from physical-device qualification.

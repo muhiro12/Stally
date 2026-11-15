@@ -188,14 +188,24 @@ extension PeriodOperations {
         siblings: [ItemPeriod],
         today: String
     ) throws {
+        try validateInput(
+            .init(start: start, end: end, isOngoing: isOngoing),
+            siblings: siblings.map { period in
+                .init(start: period.startLocalDate, end: period.endLocalDate, isOngoing: period.isOngoing)
+            },
+            today: today
+        )
+    }
+
+    static func validateInput(_ input: PeriodInput, siblings: [PeriodInput], today: String) throws {
         let todayDate = try CivilDate.parse(today, formats: [CivilDate.dayLength: "yyyy-MM-dd"])
-        let startRange = try CivilDate.range(start)
-        let endRange = try CivilDate.range(end)
-        try validateBoundaries(start: startRange, end: endRange, isOngoing: isOngoing)
-        var ongoingCount = isOngoing ? 1 : 0
+        let startRange = try CivilDate.range(input.start)
+        let endRange = try CivilDate.range(input.end)
+        try validateBoundaries(start: startRange, end: endRange, isOngoing: input.isOngoing)
+        var ongoingCount = input.isOngoing ? 1 : 0
         for sibling in siblings {
-            let siblingStart = try CivilDate.range(sibling.startLocalDate)
-            let siblingEnd = try CivilDate.range(sibling.endLocalDate)
+            let siblingStart = try CivilDate.range(sibling.start)
+            let siblingEnd = try CivilDate.range(sibling.end)
             try validateBoundaries(start: siblingStart, end: siblingEnd, isOngoing: sibling.isOngoing)
             if sibling.isOngoing {
                 ongoingCount += 1
@@ -204,7 +214,7 @@ extension PeriodOperations {
                 throw RecordError.ongoingPeriodExists
             }
             if let startRange, let siblingStart,
-               let earliestEnd = isOngoing ? todayDate : endRange?.start,
+               let earliestEnd = input.isOngoing ? todayDate : endRange?.start,
                let siblingEarliestEnd = sibling.isOngoing ? todayDate : siblingEnd?.start {
                 let latestStart = max(
                     CivilDate.latestDay(in: startRange),

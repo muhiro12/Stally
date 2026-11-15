@@ -28,14 +28,15 @@ public enum ItemOperations {
         .init(item: item)
     }
 
-    /// Commits metadata, Tag changes, and prepared photos together; failure preserves the draft.
+    /// Commits metadata, Tags, photos and reviewed period additions together; failure preserves the draft.
+    /// Supply the current local day when adding periods, for overlap validation against saved history.
     @discardableResult
-    public static func save(_ draft: ItemDraft, context: ModelContext) throws -> Item {
+    public static func save(_ draft: ItemDraft, context: ModelContext, today: String? = nil) throws -> Item {
         try RecordMutation.validate(context, models: [])
         // A failed graph save must not expose rolled-back relationship snapshots to the editor.
         let writer = ModelContext(context.container)
         writer.autosaveEnabled = false
-        let identity = try ItemDraftMutation.save(draft, context: writer).uuid
+        let identity = try ItemDraftMutation.save(draft, today: today, context: writer).uuid
         return try item(context: context, uuid: identity)
     }
 

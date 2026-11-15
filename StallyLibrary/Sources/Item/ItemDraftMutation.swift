@@ -3,7 +3,7 @@ import SwiftData
 
 /// Validates the complete submitted edit before changing any model.
 enum ItemDraftMutation {
-    static func save(_ draft: ItemDraft, context: ModelContext) throws -> Item {
+    static func save(_ draft: ItemDraft, today: String?, context: ModelContext) throws -> Item {
         try RecordMutation.validate(context, models: [])
         try RecordMutation.validateName(draft.name)
         let link = try representativeURL(draft.representativeURL)
@@ -29,6 +29,7 @@ enum ItemDraftMutation {
             return tag
         }
         try validatePhotos(draft, item: item)
+        let periods = try preparedPeriods(draft, item: item, today: today)
         if draft.original == nil {
             context.insert(item)
         }
@@ -43,8 +44,36 @@ enum ItemDraftMutation {
         }
         applyTags(draft, addedTags: addedTags, item: item, context: context)
         applyPhotos(draft, item: item, context: context)
+        for period in periods {
+            context.insert(ItemPeriod(
+                item: item, startLocalDate: period.start, endLocalDate: period.end, isOngoing: period.isOngoing
+            ))
+        }
         try RecordMutation.save(context)
         return item
+    }
+
+    private static func preparedPeriods(_ draft: ItemDraft, item: Item, today: String?) throws -> [PeriodInput] {
+        guard !draft.newPeriods.isEmpty else {
+            return []
+        }
+        guard let today, Set(draft.newPeriods.map(\.id)).count == draft.newPeriods.count else {
+            throw RecordError.invalidPeriod
+        }
+        var siblings = (item.periods ?? []).map { period in
+            PeriodInput(start: period.startLocalDate, end: period.endLocalDate, isOngoing: period.isOngoing)
+        }
+        var result: [PeriodInput] = []
+        for period in draft.newPeriods {
+            let input = period.input
+            guard !siblings.contains(input) else {
+                throw RecordError.invalidPeriod
+            }
+            try PeriodOperations.validateInput(input, siblings: siblings, today: today)
+            siblings.append(input)
+            result.append(input)
+        }
+        return result
     }
 
     static func representativeURL(_ text: String) throws -> String? {

@@ -887,26 +887,6 @@
             "value": "; about %#@years@ + %#@months@ (partial dates)"
           },
           "substitutions": {
-            "years": {
-              "argNum": 1,
-              "formatSpecifier": "lld",
-              "variations": {
-                "plural": {
-                  "one": {
-                    "stringUnit": {
-                      "state": "translated",
-                      "value": "%lld year"
-                    }
-                  },
-                  "other": {
-                    "stringUnit": {
-                      "state": "translated",
-                      "value": "%lld years"
-                    }
-                  }
-                }
-              }
-            },
             "months": {
               "argNum": 2,
               "formatSpecifier": "lld",
@@ -922,6 +902,26 @@
                     "stringUnit": {
                       "state": "translated",
                       "value": "%lld months"
+                    }
+                  }
+                }
+              }
+            },
+            "years": {
+              "argNum": 1,
+              "formatSpecifier": "lld",
+              "variations": {
+                "plural": {
+                  "one": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%lld year"
+                    }
+                  },
+                  "other": {
+                    "stringUnit": {
+                      "state": "translated",
+                      "value": "%lld years"
                     }
                   }
                 }
@@ -1057,6 +1057,102 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@時点"
+          }
+        }
+      }
+    },
+    "Delivery": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delivery"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "到着"
+          }
+        }
+      }
+    },
+    "Ended": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ended"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終了"
+          }
+        }
+      }
+    },
+    "Needs Review": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Needs Review"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "要確認"
+          }
+        }
+      }
+    },
+    "Order": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Order"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "注文"
+          }
+        }
+      }
+    },
+    "Purchase": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purchase"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "購入"
+          }
+        }
+      }
+    },
+    "Relationship Period": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Relationship Period"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "関わりの期間"
           }
         }
       }

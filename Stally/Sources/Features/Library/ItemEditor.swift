@@ -47,8 +47,8 @@ struct ItemEditor: View {
         }
         .modifier(StallyUpdateRequiredModifier())
         .sheet(isPresented: $showingInputAssistance) {
-            ItemInputAssistView { suggestion in
-                draft = ItemInputOperations.fillingEmptyFields(of: draft, with: suggestion)
+            ItemInputAssistView { suggestion, periods in
+                draft = ItemInputOperations.fillingEmptyFields(of: draft, with: suggestion, reviewedPeriods: periods)
             }
         }
     }
@@ -71,11 +71,7 @@ struct ItemEditor: View {
     private var itemForm: some View {
         Form {
             MHContainerContent {
-                Section {
-                    Button("Input Assistance", systemImage: "sparkles") {
-                        showingInputAssistance = true
-                    }
-                }
+                assistanceSection
                 Section {
                     TextField("Name", text: $draft.name)
                 } header: {
@@ -97,11 +93,20 @@ struct ItemEditor: View {
                 } header: {
                     MHSectionHeader("Link")
                 }
+                ItemDraftPeriodsSection(draft: $draft)
                 ItemDraftTagsSection(draft: $draft)
                 ItemDraftPhotosSection(draft: $draft, loading: $loadingPhotos, errorMessage: $errorMessage)
             }
         }
         .mhFormChrome(.content)
+    }
+
+    private var assistanceSection: some View {
+        Section {
+            Button("Input Assistance", systemImage: "sparkles") {
+                showingInputAssistance = true
+            }
+        }
     }
 
     init(
@@ -122,7 +127,7 @@ struct ItemEditor: View {
             }
             do {
                 try await writeSession.performMutation {
-                    let saved = try ItemOperations.save(draft, context: context)
+                    let saved = try ItemOperations.save(draft, context: context, today: RecordDateDraft.today)
                     onSave?(saved)
                 }
                 dismiss()
