@@ -2,10 +2,14 @@ import FoundationModels
 
 @Generable
 struct GeneratedItemInput {
-    @Guide(description: "A concise name copied exactly from the source; empty if no single Item is identifiable.")
+    @Guide(description: """
+        The complete identifying name, including brand and model, copied from the source without labels.
+        """)
     var name: String
-    @Guide(description: "Descriptive context copied as one exact excerpt, without labels; empty if absent.")
+    @Guide(description: """
+        The full descriptive passage, including every detail and line break; no summary. Empty if absent.
+        """)
     var note: String
-    @Guide(description: "One complete website or app URL copied exactly from the source; empty if absent.")
+    @Guide(description: "A literal URL copied from the source. Empty if absent; never infer a website from a name.")
     var representativeURL: String
 }

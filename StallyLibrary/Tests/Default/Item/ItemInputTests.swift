@@ -47,6 +47,75 @@ struct ItemInputTests {
         #expect(ItemInputOperations.text(for: result) == "\(name)\n\n\(note)\n\n\(link)")
     }
 
+    @Test(arguments: ["", " ", "\t", "\r\n"])
+    func reformattedNotesRestoreTheCompleteSourcePassage(_ separator: String) async throws {
+        let lines = [
+            "2025年2月14日にお店で購入。",
+            "価格は2,400円。容量は350ml。",
+            "色は青。持ち手が広くて使いやすい。",
+            "以前のカップと比べて少し重い。",
+            "普段は仕事机で使っている。"
+        ]
+        let note = lines.joined(separator: "\n")
+        let source = "名前：Example 陶器マグ M-20\n\nメモ：\n\(note)\n\n代表URL：\nhttps://example.com/mug"
+        let result = try await ItemInputOperations.infer(text: source) { _ in
+            .init(
+                name: "Example 陶器マグ M-20",
+                note: lines.joined(separator: separator),
+                representativeURL: "https://example.com/mug"
+            )
+        }
+        #expect(result.note == note)
+        #expect(result.name == "Example 陶器マグ M-20")
+        #expect(result.representativeURL == "https://example.com/mug")
+    }
+
+    @Test(arguments: [
+        "価格は3,400円。容量は350ml。",
+        "価格は2,400円。使いやすい。",
+        "容量は350ml。価格は2,400円。",
+        "価格は2,400円、容量は350ml。"
+    ])
+    func noteRecoveryRejectsChangedOmittedOrReorderedContent(_ note: String) async {
+        await #expect(throws: ItemInputError.invalidResult) {
+            try await ItemInputOperations.infer(text: "Mug\n価格は2,400円。\n容量は350ml。\n使いやすい。") { _ in
+                .init(name: "Mug", note: note)
+            }
+        }
+    }
+
+    @Test
+    func ambiguousWhitespaceMatchesAreRejected() async {
+        await #expect(throws: ItemInputError.invalidResult) {
+            try await ItemInputOperations.infer(text: "Mug\nBlue\nceramic\nBlue  ceramic") { _ in
+                .init(name: "Mug", note: "Blue ceramic")
+            }
+        }
+    }
+
+    @Test
+    func whitespaceRecoveryDoesNotChangeNamesOrLinks() async {
+        await #expect(throws: ItemInputError.invalidResult) {
+            try await ItemInputOperations.infer(text: "Example Mug\nhttps://example.com/mug") { _ in
+                .init(name: "ExampleMug", representativeURL: "https://example.com/mug")
+            }
+        }
+        await #expect(throws: ItemInputError.invalidResult) {
+            try await ItemInputOperations.infer(text: "Mug\nhttps://example.com/ mug") { _ in
+                .init(name: "Mug", representativeURL: "https://example.com/mug")
+            }
+        }
+    }
+
+    @Test
+    func unlabelledProseAndUnicodeNotesPreserveTheSource() async throws {
+        let note = "青いマグ☕️。\r\n Cafe\u{301}で購入。\n大切に使いたい。"
+        let result = try await ItemInputOperations.infer(text: "旅のカップ。\(note)") { _ in
+            .init(name: "旅のカップ", note: "青いマグ☕️。Caféで購入。大切に使いたい。")
+        }
+        #expect(Array(result.note.utf8) == Array(note.utf8))
+    }
+
     @Test
     func cancellationRejectsEvenAnOtherwiseSuccessfulLateResult() async {
         let task = Task {
