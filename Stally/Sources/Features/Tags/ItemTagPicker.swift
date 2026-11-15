@@ -1,0 +1,109 @@
+import MHUI
+import StallyLibrary
+import SwiftData
+import SwiftUI
+
+struct ItemTagPicker: View {
+    @Environment(\.dismiss)
+    private var dismiss
+    @Environment(\.modelContext)
+    private var context
+    @Environment(RecordWriteSession.self)
+    private var writeSession
+    @Query(sort: \Tag.name)
+    private var tags: [Tag]
+    @Environment(Item.self)
+    private var item
+    @State private var selectedIDs: Set<UUID>
+    @State private var originalIDs: Set<UUID>
+    @State private var addingTag = false
+    @State private var saving = false
+    @State private var errorMessage: String?
+
+    var body: some View {
+        NavigationStack {
+            tagList
+                .disabled(saving)
+                .navigationTitle("Choose Tags")
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        StallyActionButton(.cancel) {
+                            dismiss()
+                        }.disabled(saving)
+                    }
+                    ToolbarItem(placement: .confirmationAction) {
+                        StallyActionButton(.save, action: save).disabled(saving)
+                    }
+                }
+                .interactiveDismissDisabled(saving)
+                .sheet(isPresented: $addingTag) {
+                    TagEditor(tag: nil)
+                }
+        }
+        .modifier(StallyUpdateRequiredModifier())
+    }
+
+    private var tagList: some View {
+        List {
+            MHContainerContent {
+                Section {
+                    ForEach(tags) { tag in
+                        Toggle(isOn: binding(for: tag)) {
+                            TagNameView(tag: tag, tags: tags)
+                        }
+                    }
+                    StallyActionButton(.addTag) {
+                        addingTag = true
+                    }
+                } footer: {
+                    MHSectionFooter("Choose the tags for this Item. Names alone never combine tags.")
+                }
+                if let errorMessage {
+                    Text(errorMessage).mhTextStyle(.supporting, colorRole: .destructive)
+                }
+            }
+        }
+        .mhListChrome(.content)
+    }
+
+    init(selectedIDs: Set<UUID>) {
+        _selectedIDs = State(initialValue: selectedIDs)
+        _originalIDs = State(initialValue: selectedIDs)
+    }
+
+    private func binding(for tag: Tag) -> Binding<Bool> {
+        .init(
+            get: {
+                selectedIDs.contains(tag.uuid)
+            },
+            set: { selected in
+                if selected {
+                    selectedIDs.insert(tag.uuid)
+                } else {
+                    selectedIDs.remove(tag.uuid)
+                }
+            })
+    }
+
+    private func save() {
+        saving = true
+        Task {
+            defer {
+                saving = false
+            }
+            do {
+                try await writeSession.performMutation {
+                    try TagOperations.assign(
+                        uuids: selectedIDs,
+                        to: item,
+                        context: context,
+                        original: originalIDs
+                    )
+                }
+                dismiss()
+            } catch {
+                errorMessage = error.localizedDescription
+            }
+        }
+    }
+}

@@ -1,0 +1,51 @@
+import StallyLibrary
+import SwiftData
+import SwiftUI
+
+struct QuickMarkButtons: View {
+    @Environment(\.modelContext)
+    private var context
+    @Environment(RecordWriteSession.self)
+    private var writeSession
+    @Environment(Item.self)
+    private var item
+    @State private var lastAddedID: UUID?
+    @State private var saving = false
+    @State private var errorMessage: String?
+
+    var body: some View {
+        StallyActionButton(.recordToday) { add(includesTime: false) }
+            .disabled(saving || !item.isMarkRecordingEnabled)
+        StallyActionButton(.recordNow) { add(includesTime: true) }
+            .disabled(saving || !item.isMarkRecordingEnabled)
+        if let lastAddedID {
+            StallyActionButton(.undoAddition) {
+                mutate {
+                    try MarkOperations.undoAddition(uuid: lastAddedID, context: context)
+                    self.lastAddedID = nil
+                }
+            }
+            .disabled(saving)
+        }
+        if let errorMessage { Text(errorMessage).foregroundStyle(.red) }
+    }
+
+    private func add(includesTime: Bool) {
+        let localDateTime = MarkOperations.localDateTime(at: .now, includesTime: includesTime)
+        mutate {
+            let mark = try MarkOperations.add(to: item, localDateTime: localDateTime, context: context)
+            lastAddedID = mark.uuid
+        }
+    }
+
+    private func mutate(_ operation: @escaping () throws -> Void) {
+        saving = true
+        Task {
+            defer { saving = false }
+            do {
+                try await writeSession.performMutation(operation)
+                errorMessage = nil
+            } catch { errorMessage = error.localizedDescription }
+        }
+    }
+}

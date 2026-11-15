@@ -1,0 +1,204 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "A light bag for walks and small journeys.": {
+      "comment": "Fictional development record content, resolved when samples are created.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A light bag for walks and small journeys."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "散歩やちょっとした旅に持っていく、軽いリュック。"
+          }
+        }
+      }
+    },
+    "A place worth remembering after moving on.": {
+      "comment": "Fictional development record content, resolved when samples are created.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A place worth remembering after moving on."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "離れてからも、覚えておきたい場所。"
+          }
+        }
+      }
+    },
+    "A window seat and time to read.": {
+      "comment": "Fictional development record content, resolved when samples are created.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A window seat and time to read."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "窓際の席で、本を読むひととき。"
+          }
+        }
+      }
+    },
+    "Everyday": {
+      "comment": "Fictional development record content, resolved when samples are created.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everyday"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日常"
+          }
+        }
+      }
+    },
+    "Everyday backpack": {
+      "comment": "Fictional development record content, resolved when samples are created.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everyday backpack"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "いつものリュック"
+          }
+        }
+      }
+    },
+    "No exact start date remembered.": {
+      "comment": "Fictional development record content, resolved when samples are created.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No exact start date remembered."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "いつから使っているか、はっきりとは覚えていない。"
+          }
+        }
+      }
+    },
+    "Old studio": {
+      "comment": "Fictional development record content, resolved when samples are created.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Old studio"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "以前のアトリエ"
+          }
+        }
+      }
+    },
+    "Places": {
+      "comment": "Fictional development record content, resolved when samples are created.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Places"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "場所"
+          }
+        }
+      }
+    },
+    "Reading glasses": {
+      "comment": "Fictional development record content, resolved when samples are created.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reading glasses"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "読書用メガネ"
+          }
+        }
+      }
+    },
+    "Riverside café": {
+      "comment": "Fictional development record content, resolved when samples are created.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riverside café"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "川沿いのカフェ"
+          }
+        }
+      }
+    },
+    "Travel journal": {
+      "comment": "Fictional development record content, resolved when samples are created.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Travel journal"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "旅のノート"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
