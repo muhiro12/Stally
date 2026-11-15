@@ -5322,6 +5322,54 @@
           }
         }
       }
+    },
+    "No Periods Suggested": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Periods Suggested"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "期間の候補はありません"
+          }
+        }
+      }
+    },
+    "You can add periods from the Item after saving.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can add periods from the Item after saving."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保存後、アイテムの詳細から期間を追加できます。"
+          }
+        }
+      }
+    },
+    "Apply Without Unreviewed Periods": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply Without Unreviewed Periods"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未確認の期間を除いて反映"
+          }
+        }
+      }
     }
   },
   "version": "1.3"

@@ -143,7 +143,16 @@ struct ItemInputAssistView: View {
 
     @ViewBuilder
     private func periodSection(_ suggestion: ItemInputSuggestion) -> some View {
-        if !suggestion.periods.isEmpty {
+        if suggestion.periods.isEmpty {
+            Section {
+                Text("No Periods Suggested")
+                    .foregroundStyle(.secondary)
+            } header: {
+                MHSectionHeader("Suggested Periods")
+            } footer: {
+                Text("You can add periods from the Item after saving.")
+            }
+        } else {
             Section {
                 ForEach(Array(suggestion.periods.enumerated()), id: \.offset) { index, candidate in
                     Button {
@@ -177,11 +186,20 @@ struct ItemInputAssistView: View {
     private func applySection(_ suggestion: ItemInputSuggestion) -> some View {
         Section {
             Toggle("Replace Existing Text", isOn: $overwriteExistingText)
-            Button("Use Suggestion", systemImage: "text.badge.plus") {
-                onApply(
-                    suggestion, reviewedPeriods.keys.sorted().compactMap { reviewedPeriods[$0] }, overwriteExistingText
-                )
-                dismiss()
+            if !suggestion.periods.isEmpty {
+                LabeledContent("Periods to Add", value: reviewedPeriods.count.formatted())
+            }
+            if let index = suggestion.periods.indices.first(where: { reviewedPeriods[$0] == nil }) {
+                Button("Review Period", systemImage: "calendar") {
+                    reviewingPeriod = .init(id: index, candidate: suggestion.periods[index])
+                }
+                Button("Apply Without Unreviewed Periods") {
+                    apply(suggestion)
+                }
+            } else {
+                Button("Use Suggestion", systemImage: "text.badge.plus") {
+                    apply(suggestion)
+                }
             }
         } footer: {
             Text("""
@@ -190,6 +208,11 @@ struct ItemInputAssistView: View {
                 You can edit the draft before saving the Item.
                 """)
         }
+    }
+
+    private func apply(_ suggestion: ItemInputSuggestion) {
+        onApply(suggestion, reviewedPeriods.keys.sorted().compactMap { reviewedPeriods[$0] }, overwriteExistingText)
+        dismiss()
     }
 
     private func refreshAvailability() {

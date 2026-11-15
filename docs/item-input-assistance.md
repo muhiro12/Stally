@@ -26,7 +26,10 @@ tracks release qualification; broader AI summaries and search remain deferred.
 - Period candidates show their source passage and distinguish purchase, order,
   delivery and relationship dates. Review each desired candidate, edit its partial
   dates, choose an ongoing or ended state when unresolved, and choose Use Period.
-  Unreviewed candidates are not applied. Different acquisition dates can be
+  The application section shows how many periods will be added. While any remain
+  unreviewed, its primary action opens the next period review. Applying without
+  unreviewed periods is a separate, explicit action rather than silent omission.
+  An empty period result is displayed explicitly. Different acquisition dates can be
   alternatives for one period; they are not automatically separate saved periods.
 - The person can edit or remove staged periods and correct filled fields before
   ordinary Save. Metadata, photos, Tags and reviewed period additions save in one
