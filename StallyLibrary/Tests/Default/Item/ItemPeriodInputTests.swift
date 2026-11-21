@@ -52,6 +52,15 @@ struct ItemPeriodInputTests {
     }
 
     @Test
+    func aPurchaseInAnotherClauseDoesNotTurnARepairDateIntoAPurchase() async throws {
+        let source = "2021年に修理、2023年に購入。"
+        let candidates = try await ItemInputPeriodGeneration.infer(source: source) { _, _ in
+            .init(action: "購入", event: "購入", subject: "対象アイテム", isOngoing: false)
+        }
+        #expect(candidates.map(\.start) == ["2023"])
+    }
+
+    @Test
     func alternativesAndRepeatedPeriodsRemainSeparateAndKeepTheirEvidence() throws {
         let source = "2020年3月に注文。2020年4月に到着。2021年に手放した。2023年6月から再び使っている。"
         let dates = try ItemInputDate.occurrences(in: source)

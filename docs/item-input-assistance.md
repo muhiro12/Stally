@@ -64,10 +64,10 @@ session; it cannot supply or change a date. Model/release years, prices, repairs
 exchanges, future plans, and dates by which an Item was already owned are not
 relationship starts. Semantic classification still requires human review.
 Classification uses the sentence around a date, narrowing separate clauses when
-several dates share a sentence. The generated action must occur in the source,
-and events about another Item are excluded. Explicit Japanese from/until markers
-preserve the boundaries of a recognized relationship range. Current use requires
-an explicit statement; past use alone does not establish it.
+several dates share a sentence. The generated action must occur in the passage
+used to classify that date. Events about another Item are excluded. Explicit
+Japanese from/until markers preserve the boundaries of a recognized relationship
+range. Current use requires an explicit statement; past use alone does not establish it.
 
 Orders, purchases and original deliveries remain distinct alternatives. Explicit
 start/end dates form candidates in source order; a later resumption remains a new

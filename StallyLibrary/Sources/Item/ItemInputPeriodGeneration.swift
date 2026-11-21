@@ -16,31 +16,36 @@ enum ItemInputPeriodGeneration {
     """
 
     static func infer(source: String, name: String) async throws -> [ItemPeriodSuggestion] {
-        let dates = try ItemInputDate.occurrences(in: source)
-        guard !dates.isEmpty else {
-            return []
+        try await infer(source: source) { date, passage in
+            let session = LanguageModelSession(model: SystemLanguageModel.default, instructions: instructions)
+            let response = try await session.respond(
+                to: """
+                対象アイテム：\(name)
+                対象日付：\(date)
+                原文：\(passage)
+                """,
+                generating: GeneratedItemDateClassification.self,
+                options: .init(samplingMode: .greedy)
+            )
+            return response.content
         }
+    }
+
+    static func infer(
+        source: String, classify: (String, String) async throws -> GeneratedItemDateClassification
+    ) async throws -> [ItemPeriodSuggestion] {
+        let dates = try ItemInputDate.occurrences(in: source)
         guard dates.count <= maximumDateCount else {
             throw ItemInputError.inputTooLong
         }
         var roles: [ItemInputDateRole] = []
         for date in dates {
             try Task.checkCancellation()
-            let passage = String(source[date.evidenceRange])
-            let context = classificationPassage(for: date, dates: dates, source: source)
-            let session = LanguageModelSession(model: SystemLanguageModel.default, instructions: instructions)
-            let response = try await session.respond(
-                to: """
-                対象アイテム：\(name)
-                対象日付：\(date.text)
-                原文：\(context)
-                """,
-                generating: GeneratedItemDateClassification.self,
-                options: .init(samplingMode: .greedy)
-            )
-            let action = response.content.action.trimmingCharacters(in: .whitespacesAndNewlines)
-            let supported = response.content.subject == "対象アイテム" && !action.isEmpty && passage.contains(action)
-            roles.append(supported ? response.content.role : .irrelevant)
+            let passage = classificationPassage(for: date, dates: dates, source: source)
+            let response = try await classify(date.text, passage)
+            let action = response.action.trimmingCharacters(in: .whitespacesAndNewlines)
+            let supported = response.subject == "対象アイテム" && !action.isEmpty && passage.contains(action)
+            roles.append(supported ? response.role : .irrelevant)
         }
         try Task.checkCancellation()
         return try suggestions(dates: dates, roles: roles, source: source)
