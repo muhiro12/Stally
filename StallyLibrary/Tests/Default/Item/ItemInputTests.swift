@@ -71,6 +71,19 @@ struct ItemInputTests {
     }
 
     @Test(arguments: [
+        ("Flags: 🇯 🇵", "青い\nマグ", "青い マグ"),
+        ("Flags", "青い 🇯 🇵\nマグ", "青い 🇯🇵 マグ")
+    ])
+    func whitespaceRecoveryPreservesSourceWhenGraphemesJoin(
+        prefix: String, original: String, reformatted: String
+    ) async throws {
+        let result = try await ItemInputOperations.infer(text: "Mug\n\(prefix)\n\(original)") { _ in
+            .init(name: "Mug", note: reformatted)
+        }
+        #expect(result.note == original)
+    }
+
+    @Test(arguments: [
         "価格は3,400円。容量は350ml。",
         "価格は2,400円。使いやすい。",
         "容量は350ml。価格は2,400円。",

@@ -5,13 +5,14 @@ enum ItemInputSource {
         if candidate.isEmpty || source.contains(candidate) {
             return candidate
         }
-        let characters = Array(source)
-        let positions = characters.indices.filter { index in
-            !characters[index].isWhitespace
+        var compactSource = ""
+        var sourceIndices: [String.Index] = []
+        for index in source.indices where !source[index].isWhitespace {
+            let character = source[index]
+            compactSource.append(character)
+            // Removing whitespace can join graphemes; UTF-16 offsets still map to the original span.
+            sourceIndices.append(contentsOf: repeatElement(index, count: character.utf16.count))
         }
-        let compactSource = String(positions.map { index in
-            characters[index]
-        })
         let compactCandidate = String(candidate.filter { character in
             !character.isWhitespace
         })
@@ -23,9 +24,8 @@ enum ItemInputSource {
         guard compactSource.range(of: compactCandidate, range: remaining) == nil else {
             return nil
         }
-        let start = compactSource.distance(from: compactSource.startIndex, to: range.lowerBound)
-        let end = compactSource.distance(from: compactSource.startIndex, to: range.upperBound) - 1
-        // Return source text, not the model's reformatted version or a synthesized replacement.
-        return String(characters[positions[start]...positions[end]])
+        let start = range.lowerBound.utf16Offset(in: compactSource)
+        let end = range.upperBound.utf16Offset(in: compactSource) - 1
+        return String(source[sourceIndices[start]...sourceIndices[end]])
     }
 }
