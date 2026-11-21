@@ -16,14 +16,12 @@ enum ItemDraftMutation {
         } else {
             item = Item(name: draft.name, note: draft.note)
         }
-        let addedIDs = draft.tagIDs.subtracting(draft.original?.tagIDs ?? [])
+        let originalTagIDs = draft.original?.tagIDs ?? []
+        let changedIDs = draft.tagIDs.symmetricDifference(originalTagIDs)
         let allTags = try context.fetch(FetchDescriptor<Tag>())
-        let addedTags = try addedIDs.map { id in
-            let matches = allTags.filter { $0.uuid == id }
-            guard matches.count <= 1 else {
-                throw RecordError.ambiguousIdentity
-            }
-            guard let tag = matches.first else {
+        let changedTags = try RecordMutation.index(allTags.filter { changedIDs.contains($0.uuid) }, identity: \.uuid)
+        let addedTags = try draft.tagIDs.subtracting(originalTagIDs).map { id in
+            guard let tag = changedTags[id] else {
                 throw RecordError.missingRecord
             }
             return tag

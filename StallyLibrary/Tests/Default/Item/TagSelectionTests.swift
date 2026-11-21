@@ -86,6 +86,33 @@ struct TagSelectionTests {
         #expect(try context.fetchCount(FetchDescriptor<StallyLibrary.Tag>()) == 2)
     }
 
+    @Test
+    func removingOneTagInAnItemDraftCannotRemoveAnAmbiguousAssignment() throws {
+        let container = try StallyModelContainerFactory.inMemory()
+        let context = ModelContext(container)
+        let item = try ItemOperations.create(context: context, name: "Original")
+        let tag = try TagOperations.create(name: "First", context: context)
+        try TagOperations.assign([tag], to: item, context: context)
+        var draft = ItemOperations.draft(for: item)
+        draft.tagIDs.remove(tag.uuid)
+        draft.name = "Edited"
+
+        let other = ModelContext(container)
+        let saved = try ItemOperations.item(context: other, uuid: item.uuid)
+        let duplicate = StallyLibrary.Tag(name: "Later")
+        duplicate.uuid = tag.uuid
+        other.insert(duplicate)
+        saved.tags = (saved.tags ?? []) + [duplicate]
+        try other.save()
+
+        #expect(throws: RecordError.ambiguousIdentity) {
+            try ItemOperations.save(draft, context: context)
+        }
+        let result = try ItemOperations.item(context: ModelContext(container), uuid: item.uuid)
+        #expect(result.name == "Original")
+        #expect(Set((result.tags ?? []).map(\.name)) == ["First", "Later"])
+    }
+
     @Test(arguments: [false, true])
     func deletedOrAmbiguousNewSelectionIsNotSilentlyOmitted(duplicate: Bool) throws {
         let container = try StallyModelContainerFactory.inMemory()
