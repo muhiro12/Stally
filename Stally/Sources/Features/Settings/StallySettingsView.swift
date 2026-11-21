@@ -32,19 +32,19 @@ struct StallySettingsView: View {
     }
 
     private var subscriptionSection: some View {
-        Section("Subscription") {
-            Text("Sync your Stally library across your devices with iCloud.")
+        Section {
             NavigationLink("Subscription") {
                 List {
-                    Section {
-                        Text("Sync your Stally library across your devices with iCloud.")
-                    }
                     runtime.subscriptionSectionView()
                     policyLinks
                 }
                 .mhListChrome(.native)
                 .navigationTitle("Subscription")
             }
+        } header: {
+            Text("Subscription")
+        } footer: {
+            Text("Sync your Stally library across your devices with iCloud.")
         }
     }
 
