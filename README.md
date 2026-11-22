@@ -37,7 +37,7 @@ export/import scope, user explanations, or historical compatibility costs.
 | Local development | [DEBUG store and samples](docs/fixture-architecture.md), [diagnostics](docs/diagnostics-access.md), [update policy](docs/remote-update.md) |
 
 `Stally/` contains the SwiftUI app and App Intent adapters. `StallyLibrary/`
-owns the SwiftData schema and shared Operations. MHPlatform 1.21.0 supplies
+owns the SwiftData schema and shared Operations. MHPlatform 1.22.0 supplies
 strict HTTPS routing and guarded writes. StallyLibrary owns staged transfer I/O. MHUI supplies
 shared native List and Form presentation. The app composes MHAppRuntime,
 MHAppRuntimeDefaults and MHAppRuntimeLicenses without the advertising bundle.
