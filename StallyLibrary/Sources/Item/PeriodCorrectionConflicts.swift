@@ -1,23 +1,23 @@
 import Foundation
 
-/// Only conflicts involving the edited period can change; sibling indexes share one saved snapshot.
-struct PeriodCorrectionConflicts {
-    private var ongoingSiblings: Set<Int> = []
-    private var overlaps: [Int: DateInterval] = [:]
+/// Only conflicts involving the edited period can change; sibling identities allow comparison across staged edits.
+struct PeriodCorrectionConflicts<Identity: Hashable> {
+    private var ongoingSiblings: Set<Identity> = []
+    private var overlaps: [Identity: DateInterval] = [:]
 
-    init(input: PeriodInput, siblings: [ItemPeriod], today: String) throws {
+    init(input: PeriodInput, siblings: [Identity: PeriodInput], today: String) throws {
         let todayDate = try CivilDate.parse(today, formats: [CivilDate.dayLength: "yyyy-MM-dd"])
         let start = try CivilDate.range(input.start)
         let end = try CivilDate.range(input.end)
         try PeriodOperations.validateBoundaries(start: start, end: end, isOngoing: input.isOngoing)
-        for (index, sibling) in siblings.enumerated() {
-            let siblingStart = try CivilDate.range(sibling.startLocalDate)
-            let siblingEnd = try CivilDate.range(sibling.endLocalDate)
+        for (id, sibling) in siblings {
+            let siblingStart = try CivilDate.range(sibling.start)
+            let siblingEnd = try CivilDate.range(sibling.end)
             try PeriodOperations.validateBoundaries(
                 start: siblingStart, end: siblingEnd, isOngoing: sibling.isOngoing
             )
             if input.isOngoing, sibling.isOngoing {
-                ongoingSiblings.insert(index)
+                ongoingSiblings.insert(id)
             }
             if let start, let siblingStart,
                let earliestEnd = input.isOngoing ? todayDate : end?.start,
@@ -25,7 +25,7 @@ struct PeriodCorrectionConflicts {
                 let overlapStart = max(CivilDate.latestDay(in: start), CivilDate.latestDay(in: siblingStart))
                 let overlapEnd = min(earliestEnd, siblingEarliestEnd)
                 if overlapStart < overlapEnd {
-                    overlaps[index] = .init(start: overlapStart, end: overlapEnd)
+                    overlaps[id] = .init(start: overlapStart, end: overlapEnd)
                 }
             }
         }
@@ -36,8 +36,8 @@ struct PeriodCorrectionConflicts {
             return false
         }
         var improved = ongoingSiblings != previous.ongoingSiblings || overlaps.count < previous.overlaps.count
-        for (index, overlap) in overlaps {
-            guard let original = previous.overlaps[index],
+        for (id, overlap) in overlaps {
+            guard let original = previous.overlaps[id],
                   overlap.start >= original.start, overlap.end <= original.end else {
                 return false
             }

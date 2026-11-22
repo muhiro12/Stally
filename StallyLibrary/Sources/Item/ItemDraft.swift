@@ -3,13 +3,25 @@ import Foundation
 /// Unsaved editing values. Empty form text becomes nil only at the save boundary.
 /// Discarding a draft never changes the stored graph.
 public struct ItemDraft: Sendable {
-    /// Explicitly reviewed additions, kept outside the saved graph until the Item is saved.
-    public struct Period: Identifiable, Sendable {
-        public let id = UUID()
+    /// Editable period values with stable identity throughout the editing session.
+    public struct Period: Identifiable, Equatable, Sendable {
+        public let id: UUID
+        let isNew: Bool
+        let isReviewedSuggestion: Bool
         public var input: PeriodInput
 
-        public init(input: PeriodInput) {
+        public init(input: PeriodInput, isReviewedSuggestion: Bool = false) {
+            id = UUID()
+            isNew = true
+            self.isReviewedSuggestion = isReviewedSuggestion
             self.input = input
+        }
+
+        init(period: ItemPeriod) {
+            id = period.uuid
+            isNew = false
+            isReviewedSuggestion = false
+            input = .init(period)
         }
     }
 
@@ -55,6 +67,7 @@ public struct ItemDraft: Sendable {
         let representativeURL: String
         let tagIDs: Set<UUID>
         let photos: [Photo]
+        let periods: [Period]
     }
 
     public var name: String
@@ -63,7 +76,18 @@ public struct ItemDraft: Sendable {
     public var tagIDs: Set<UUID>
     public var newTags: [NewTag] = []
     public var photos: [Photo] = []
-    public var newPeriods: [Period] = []
+    public var periods: [Period] = []
+
+    /// Only the additions staged for the next save.
+    public var newPeriods: [Period] {
+        get {
+            periods.filter(\.isNew)
+        }
+        set {
+            periods.removeAll(where: \.isNew)
+            periods.append(contentsOf: newValue)
+        }
+    }
 
     let original: Original?
 
@@ -81,13 +105,15 @@ public struct ItemDraft: Sendable {
         representativeURL = item.representativeURL ?? ""
         tagIDs = Set((item.tags ?? []).map(\.uuid))
         photos = ItemOperations.orderedPhotos(for: item).map(Photo.init)
+        periods = PeriodOperations.orderedPeriods(for: item).map(Period.init)
         original = .init(
             id: item.uuid,
             name: name,
             note: note,
             representativeURL: representativeURL,
             tagIDs: tagIDs,
-            photos: photos
+            photos: photos,
+            periods: periods
         )
     }
 }

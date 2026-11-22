@@ -23,7 +23,7 @@ enum RecordMutation {
         }
     }
 
-    static func index<Model: PersistentModel>(_ records: [Model], identity: (Model) -> UUID) throws -> [UUID: Model] {
+    static func index<Model>(_ records: [Model], identity: (Model) -> UUID) throws -> [UUID: Model] {
         var indexed: [UUID: Model] = [:]
         for record in records {
             guard indexed.updateValue(record, forKey: identity(record)) == nil else {

@@ -28,8 +28,8 @@ public enum ItemOperations {
         .init(item: item)
     }
 
-    /// Commits metadata, Tags, photos and reviewed period additions together; failure preserves the draft.
-    /// Supply the current local day when adding periods, for overlap validation against saved history.
+    /// Commits metadata, Tags, photos and explicit period changes together; failure preserves the draft.
+    /// Supply the current local day when editing period history, for overlap validation against saved history.
     @discardableResult
     public static func save(_ draft: ItemDraft, context: ModelContext, today: String? = nil) throws -> Item {
         try RecordMutation.validate(context, models: [])
@@ -37,7 +37,12 @@ public enum ItemOperations {
         let writer = ModelContext(context.container)
         writer.autosaveEnabled = false
         let identity = try ItemDraftMutation.save(draft, today: today, context: writer).uuid
-        return try item(context: context, uuid: identity)
+        let saved = try item(context: context, uuid: identity)
+        if draft.original?.periods.isEmpty == false {
+            // Refresh retained children too, so immediately reopening the editor sees the saved boundaries.
+            _ = try context.fetch(FetchDescriptor<ItemPeriod>(predicate: #Predicate { $0.item?.uuid == identity }))
+        }
+        return saved
     }
 
     /// Creates an Item without implicitly recording a Mark or period.

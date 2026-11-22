@@ -82,8 +82,8 @@ public enum ItemInputOperations {
         if !suggestion.representativeURL.isEmpty, overwriteExistingText || result.representativeURL.isEmpty {
             result.representativeURL = suggestion.representativeURL
         }
-        for period in reviewedPeriods where !result.newPeriods.contains(where: { $0.input == period }) {
-            result.newPeriods.append(.init(input: period))
+        for period in reviewedPeriods where !result.periods.contains(where: { $0.input == period }) {
+            result.periods.append(.init(input: period, isReviewedSuggestion: true))
         }
         return result
     }

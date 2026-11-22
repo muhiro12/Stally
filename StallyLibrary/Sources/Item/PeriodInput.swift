@@ -13,4 +13,8 @@ public struct PeriodInput: Equatable, Sendable {
         self.end = TextInput.optional(end)
         self.isOngoing = isOngoing
     }
+
+    init(_ period: ItemPeriod) {
+        self.init(start: period.startLocalDate, end: period.endLocalDate, isOngoing: period.isOngoing)
+    }
 }
