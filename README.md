@@ -122,6 +122,10 @@ product-intent documents.
 
 ## Optional Local Push Verification
 
+Before pushing, review the outgoing commits and the results of the applicable
+[build and test checks](#build-and-test). A standard clone supports this
+workflow without installing a Git hook or generating a push receipt.
+
 `ci_scripts/push_verification.json` declares the `Stally` app build, the complete
 `StallyLibraryTests` unit-test plan, and retained rules. Automated UI tests and
 out-of-process AppIntentsTesting UI runners are not part of this contract.
@@ -132,7 +136,8 @@ It requires the installed `ci-verify-and-summarize` skill; set
 unsupported versions leave verification incomplete. Ordinary builds, rules,
 and Xcode Cloud do not require the skill.
 
-Set `CI_VERIFICATION_EVIDENCE=1` when capturing retained rules for a receipt.
+If you enable the hook, set `CI_VERIFICATION_EVIDENCE=1` when capturing
+retained rules for its receipt.
 This binds strict SwiftLint execution to the registered project artifact, tracked
 package pin, and complete tracked Swift input list. Source searches distinguish
 no match from execution failure. The hook matches private `.git/push-verification`

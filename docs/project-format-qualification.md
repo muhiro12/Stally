@@ -79,8 +79,8 @@ The October 18 hook inspection found active `pre-push` checks, with no active
 do not prevent source changes or local commits. Restoring the old format was a
 temporary implementation decision, not a hook requirement.
 
-The existing hook remains enabled and unchanged. Local staging does not assert
-that the final verification contract passed or that the Issue is complete.
+At the October 18 checkpoint, the existing hook remained enabled. The staged
+changes still needed final verification before the issue could be closed.
 Shared-tooling work is handled separately; Stally retains the candidate and
 uses the updated helpers without changing its adapter or hook. No new app
 build, library or system test run, archive, or publication receipt was produced
@@ -312,10 +312,9 @@ source and selected toolchain. Automated UI tests are not part of that contract.
 Recheck settings and project relationships if their inputs change. The October
 18 Xcode 27.1 scheme-discovery record above remains discovery evidence only.
 
-Follow the [receipt compatibility procedure][receipt-guide] and produce
-appropriate current-source evidence and a new receipt before any separately
-authorized push. Do not replace an old receipt's helper hash or disable the
-existing hook to bypass its source or checker binding.
+For checkouts that enable the optional hook, follow the
+[README receipt procedure](../README.md#optional-local-push-verification)
+to match the verification evidence to the outgoing commits and destination.
 
 Archive and Xcode Cloud execution remain explicitly deferred, outside this
 follow-up. Their results cannot be inferred from local checks, and neither is
@@ -333,5 +332,4 @@ when it does not discard later edits. Keep one authoritative configuration.
 
 [conversion]: https://developer.apple.com/documentation/xcode/updating-your-xcode-project-configuration-file-format
 [shared-guide]: https://github.com/muhiro12/agent-skills/blob/main/ci-verify-and-summarize/references/xcode-project-format.md
-[receipt-guide]: https://github.com/muhiro12/agent-skills/blob/main/ci-verify-and-summarize/references/push-verification.md
 [rc-notes]: https://developer.apple.com/documentation/xcode-release-notes/xcode-27_2-release-notes
