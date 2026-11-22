@@ -1,6 +1,88 @@
 # Initial release repository review
 
-## Scope and result
+## November 22 publication follow-up
+
+The implementation verified for this follow-up is
+`e058928de902f3c203edc36d1445483b1c280dfd`. The observed public `develop` base
+was `d4e11463fc9a932a348a9cdff70d747df95183c9`; the outgoing implementation
+contains three commits. The documentation commit carrying this record does not
+change executable inputs. PR #35 records its final publication SHA and Cloud
+result. `main` remains the provisional baseline
+`709e2935ac021d9534998ce6cde43c7e990e3290`.
+
+### Current behavior and review scope
+
+Since the November 14 review, text assistance also stages reviewable Period
+candidates, preserves complete source passages, offers explicit text replacement,
+and makes exclusion of unreviewed Periods an explicit action. These remain
+unsaved drafts until ordinary Save. Subscription guidance is in the Settings
+section footer. The [input-assistance contract](item-input-assistance.md)
+describes the current behavior.
+
+The November 22 source and publication review covered every outgoing commit,
+its metadata and changed files, relevant callers, and regression tests:
+
+- `89a1205` maps whitespace-normalized matches through UTF-16 offsets back to
+  original source spans. Whitespace removal that joins Unicode graphemes no
+  longer shifts the returned note. The parameterized regression covers joined
+  flag characters before and within the matched passage.
+- `cdef1ba` requires a generated action to occur in the passage used to classify
+  its particular date. A purchase in a separate clause cannot turn a repair date
+  into a purchase. The test uses the production inference path with a controlled
+  classifier; it is not evidence of actual model accuracy.
+- `e058928` resolves identities for both added and removed Tags before mutating
+  an Item draft. An ambiguous removal rejects the whole save, preserving saved
+  metadata and assignments. The regression introduces duplicate identity from
+  another context and verifies the saved graph remains unchanged.
+
+These changes preserve the five-model schema, portable-file format, public
+identifiers, date meaning and ownership rules. This focused follow-up does not
+repeat the full November 14 contract review or qualify release distribution.
+
+### Current verification
+
+Verification used the selected Xcode 27.2 (27B52), iOS 27.2 (24B8117), and an
+iPhone 18 Pro Simulator for automated library tests and the consumer build.
+Both full test runs used the clean `e058928` source snapshot.
+
+- Full StallyLibrary suite: **183 tests in 41 suites**, **323 executions**
+  including parameterized cases, passed in both runs; zero failures or skips.
+- Full Stally app build: zero captured or native build errors/warnings.
+  App Intents extraction contains 40 actions, five entities and two enums.
+- Project-pinned strict SwiftLint, repository rules and whitespace checks passed.
+- The confirming library run has zero captured warnings and no native build or
+  runtime warnings. Its 28 diagnostic entries were individually matched to
+  nine passing negative tests and exact source hashes: malformed image rejection,
+  unreadable-store preservation, and deliberately forbidden saves/rollback.
+- The first library run emitted an irrelevant no-AppIntents-dependency metadata
+  extraction warning. The confirming run set `LM_SKIP_METADATA_EXTRACTION=YES`
+  only for the library test build, whose sources contain no App Intents. The
+  normal app build retained metadata extraction.
+- Passive Betterleaks 1.9.0 scanning of the three outgoing implementation commits
+  found no secrets. Contextual review found no unintended personal data, private
+  artifacts or machine-specific content in that outgoing range. The final
+  publication review also covers this documentation commit.
+
+### Retained diagnostic uncertainty
+
+The first full run emitted two Core Data external-photo reference clone errors
+(four mirrored log entries) involving missing interim files in a disposable
+`test.store` fixture. All tests passed, including scoped deletion and retained
+photo-byte assertions. The second full run did not reproduce these entries.
+
+The diagnostic resembles the intermittent observation already tracked in #8;
+this follow-up does not establish its cause, classify it as expected negative
+output, or claim it is fixed. The related core persistence test and photo-storage
+paths were not changed by the three outgoing commits. No regression from these
+commits or lost saved photo was demonstrated. Keep the original result bundle
+and log separate from the confirming run and resolve this uncertainty during
+release qualification.
+
+No manual app interaction, physical-device qualification, actual model-output
+evaluation, signed archive, Store submission, merge or release is established by
+this follow-up. PR #35 remains the owner-review gate for the exact candidate.
+
+## November 14 scope and result
 
 The November 14, 2026 review covered the full local `develop` candidate for
 PR #35, starting at `214cf30a1badca4e1104f1324161df3b9c9cd9fb`.
@@ -14,10 +96,11 @@ schema, file-format pair, public identifiers, date meaning, or ownership policy
 was needed. This is repository and Simulator evidence, not distribution approval
 or proof of real-device synchronization. External services were not changed.
 
-The verified implementation ends at `2a42419`. Corrections were committed on
+That review's verified implementation ends at `2a42419`. Corrections were committed on
 `develop` as `5533754` (mutation isolation), `89c4598` (privacy declarations),
 `6e49cf3` (Intent review preparation) and `2a42419` (delayed edit validation).
-The review record follows those commits. No push or merge into `main` was made.
+The review record follows those commits. That review itself made no push or
+merge into `main`; later publication evidence is recorded in PR #35.
 
 ### Publication re-review
 
@@ -63,7 +146,7 @@ submission; they do not promise distributed conflict resolution.
 | Platform wiring | Checked fixed bundle/App Group/CloudKit/UTI/preferences/product identifiers, package and JSON adapters, route parsing and app navigation, saved sync choice versus entitlement, update guard, no-ads runtime composition and source entitlements. Registry/signature truth is a separate qualification. |
 | Localization and documentation | Audited all five catalogs for English/Japanese coverage and stale keys. Proper names and placeholder-only entries explain the source-copy notices. Static unused candidates were not deleted. Checked local documentation file links. |
 
-## Verification
+## November 14 verification
 
 - Xcode selected by `xcode-select`: Xcode 27.2, build 27B52.
 - Full library contract: **160 tests in 39 suites passed** on the dedicated
@@ -95,7 +178,8 @@ or crash; Simulator/framework warnings were not associated with failed actions.
 
 ## Remaining work outside this repository review
 
-No known repository blocker from this review remains. Before distribution,
+No known repository blocker from the November 14 review remains. Retain the
+November 22 diagnostic uncertainty above. Before distribution,
 complete the separate [release qualification](release-readiness.md): signed
 archive and toolchain acceptance, production CloudKit/account transitions,
 purchase/restore/lapse behavior, installed Universal Links, saved Shortcuts and
