@@ -7,7 +7,9 @@ look back on time together, or keep both kinds of knowledge for the same Item.
 ## Branches and release review
 
 Use `develop` for daily development. Keep agent review and the documented
-verification checks in the daily workflow. `main` tracks the released baseline.
+verification checks in the daily workflow. Before pushing, review the outgoing
+commits and the results of the applicable [build and test checks](#build-and-test).
+`main` tracks the released baseline.
 Before shipping, review `main...develop` and record the exact candidate commit.
 After publication, merge that released commit into `main`; do not include later
 work added to `develop`. Preserve commit ancestry so the next release comparison
@@ -119,32 +121,6 @@ Release UI smoke auditing remains a separate, non-destructive pass. Do not
 erase Simulator data, reset containers, or add test targets solely for an audit
 unless explicitly requested. Keep UI review reports separate from preserved
 product-intent documents.
-
-## Optional Local Push Verification
-
-Before pushing, review the outgoing commits and the results of the applicable
-[build and test checks](#build-and-test). A standard clone supports this
-workflow without installing a Git hook or generating a push receipt.
-
-`ci_scripts/push_verification.json` declares the `Stally` app build, the complete
-`StallyLibraryTests` unit-test plan, and retained rules. Automated UI tests and
-out-of-process AppIntentsTesting UI runners are not part of this contract.
-The optional local hook invokes
-`python3 ci_scripts/lib/agent_verification.py push <remote-name> <remote-location>`.
-It requires the installed `ci-verify-and-summarize` skill; set
-`CI_VERIFICATION_SKILL` for a non-default installation. Missing helpers or
-unsupported versions leave verification incomplete. Ordinary builds, rules,
-and Xcode Cloud do not require the skill.
-
-If you enable the hook, set `CI_VERIFICATION_EVIDENCE=1` when capturing
-retained rules for its receipt.
-This binds strict SwiftLint execution to the registered project artifact, tracked
-package pin, and complete tracked Swift input list. Source searches distinguish
-no match from execution failure. The hook matches private `.git/push-verification`
-evidence without rerunning QA or scanners. Follow the skill's
-[receipt procedure](https://github.com/muhiro12/agent-skills/blob/main/ci-verify-and-summarize/references/push-verification.md)
-for complete native results, zero diagnostics, full outgoing-history scan/review,
-compatibility checks, and receipt refresh. Activation and publication are separate.
 
 ## Support and Privacy
 

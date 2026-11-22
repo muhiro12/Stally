@@ -2,7 +2,8 @@
 
 This record preserves the October 18, 2026 conversion checkpoint and the
 October 20 RC requalification. Each result belongs to its named source and
-toolchain; publication requires the current-source checks in the README.
+toolchain. The local hook and receipt commands below were part of the original
+trial. Current verification follows the [README](../README.md#build-and-test).
 
 ## October 20 RC Requalification
 
@@ -311,10 +312,6 @@ library unit-test plan, repository rules, and diagnostic review for the intended
 source and selected toolchain. Automated UI tests are not part of that contract.
 Recheck settings and project relationships if their inputs change. The October
 18 Xcode 27.1 scheme-discovery record above remains discovery evidence only.
-
-For checkouts that enable the optional hook, follow the
-[README receipt procedure](../README.md#optional-local-push-verification)
-to match the verification evidence to the outgoing commits and destination.
 
 Archive and Xcode Cloud execution remain explicitly deferred, outside this
 follow-up. Their results cannot be inferred from local checks, and neither is
