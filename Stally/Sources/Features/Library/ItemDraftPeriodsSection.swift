@@ -4,48 +4,63 @@ import SwiftUI
 
 struct ItemDraftPeriodsSection: View {
     @Binding var draft: ItemDraft
-    @State private var editing: ItemDraft.Period?
+    @State private var expanded: UUID?
 
     var body: some View {
-        if !draft.newPeriods.isEmpty {
-            Section {
+        Section {
+            if hasAmbiguousHistory {
+                Text(RecordError.ambiguousIdentity.localizedDescription)
+                    .mhTextStyle(.supporting, colorRole: .warning)
                 ForEach(draft.newPeriods) { period in
-                    Button {
-                        editing = period
-                    } label: {
-                        VStack(alignment: .leading) {
-                            Text(RecordDateDraft.display(period.input.start))
-                            if period.input.isOngoing {
-                                Text("Ongoing").mhRowSupporting()
-                            } else {
-                                Text(RecordDateDraft.display(period.input.end)).mhRowSupporting()
-                            }
-                        }
+                    ItemPeriodRow(input: period.input)
+                    StallyActionButton(.removePeriod, role: .destructive) {
+                        draft.periods.removeAll { $0.id == period.id }
                     }
                 }
-                .onDelete { offsets in
-                    draft.newPeriods.remove(atOffsets: offsets)
-                }
-            } header: {
-                MHSectionHeader("Periods to Add")
-            } footer: {
-                Text("These periods will be added when you save the Item. Existing periods stay unchanged.")
+            } else {
+                periodRows
             }
-            .sheet(item: $editing) { period in
-                ItemPeriodReview(candidate: .init(
-                    start: period.input.start,
-                    end: period.input.end,
-                    continuation: period.input.isOngoing ? .ongoing : .ended,
-                    basis: .relationship,
-                    evidence: ""
-                ),
-                reviewed: nil
-                ) { input in
-                    if let index = draft.newPeriods.firstIndex(where: { $0.id == period.id }) {
-                        draft.newPeriods[index].input = input
-                    }
-                }
+        } header: {
+            MHSectionHeader("Periods")
+        } footer: {
+            if !hasAmbiguousHistory, draft.periods.contains(where: { !$0.input.isOngoing }) {
+                MHSectionFooter("To record a resumption, add a new period.")
             }
         }
+        .environment(\.calendar, RecordDateDraft.calendar)
+        .environment(\.timeZone, RecordDateDraft.calendar.timeZone)
+    }
+
+    private var hasAmbiguousHistory: Bool {
+        Set(draft.periods.map(\.id)).count != draft.periods.count
+    }
+
+    @ViewBuilder private var periodRows: some View {
+        ForEach($draft.periods) { $period in
+            DisclosureGroup(isExpanded: expansion(for: period.id)) {
+                ItemDraftPeriodFields(input: $period.input)
+                StallyActionButton(.removePeriod, role: .destructive) { [id = period.id] in
+                    draft.periods.removeAll { $0.id == id }
+                }
+                .buttonStyle(.borderless)
+            } label: {
+                ItemPeriodRow(input: period.input)
+            }
+        }
+        StallyActionButton(.addPeriod) {
+            let hasOngoing = draft.periods.contains(where: \.input.isOngoing)
+            let period = ItemDraft.Period(input: .init(isOngoing: !hasOngoing))
+            draft.periods.append(period)
+            expanded = period.id
+        }
+    }
+
+    private func expansion(for id: UUID) -> Binding<Bool> {
+        .init(
+            get: { expanded == id },
+            set: { open in
+                expanded = open ? id : nil
+            }
+        )
     }
 }

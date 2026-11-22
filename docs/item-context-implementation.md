@@ -25,8 +25,9 @@ selected Item propagation, and the boundary between models and editor drafts.
 
 `ItemOperations.draft(for:)` captures independent editing values.
 `ItemOperations.save(_:context:)` validates and saves the submitted metadata,
-Tag changes, and prepared photos as one operation. New Item creation requires
-only a nonblank name. Neither creation nor editing adds Marks or periods.
+Tag changes, prepared photos, and explicit period edits as one operation. New
+Item creation requires only a nonblank name. Periods are optional and Marks are
+recorded separately after creation.
 The operation owns a separate write context so a failed compound save cannot
 expose rolled-back relationship snapshots to the editor. The caller's context
 must have no unrelated pending changes. Successful saves resolve the returned
@@ -65,8 +66,15 @@ writer, preserving current assignments. Tag consolidation revalidates both
 membership sets and identity uniqueness after
 confirmation, so a newly arriving duplicate UUID cannot expand an old approval.
 
-Period editors retain their original boundaries and continuation state for the
-editing session. If any of those facts changed before saving, the shared
+The Item editor snapshots period identities, boundaries, and continuation state.
+People can add, correct, or remove multiple periods before saving. A genuine
+resumption adds a period and retains the previous ending. The writer validates
+the final history, including intervening changes, before committing. Corrections
+and removals recheck their original values. Untouched periods retain later
+changes, including additions and deletions.
+
+Standalone period corrections can also supply the original boundaries and
+continuation state. If any of those facts changed before saving, the shared
 correction operation resolves the UUID in a fresh write context and compares
 the saved facts, rather than trusting the editor's retained model. Missing or
 ambiguous identities are rejected, and sibling-period validation uses that same

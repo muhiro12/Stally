@@ -150,7 +150,7 @@ struct ItemInputAssistView: View {
             } header: {
                 MHSectionHeader("Suggested Periods")
             } footer: {
-                Text("You can add periods from the Item after saving.")
+                Text("You can add periods in the Item form.")
             }
         } else {
             Section {

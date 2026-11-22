@@ -3360,6 +3360,22 @@
         }
       }
     },
+    "Remove Period": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove Period"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "期間を削除"
+          }
+        }
+      }
+    },
     "Remove Photo": {
       "localizations": {
         "en": {
@@ -4257,6 +4273,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "一緒に過ごした時間"
+          }
+        }
+      }
+    },
+    "To record a resumption, add a new period.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To record a resumption, add a new period."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再開を記録するには、新しい期間を追加してください。"
           }
         }
       }
@@ -5339,18 +5371,18 @@
         }
       }
     },
-    "You can add periods from the Item after saving.": {
+    "You can add periods in the Item form.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You can add periods from the Item after saving."
+            "value": "You can add periods in the Item form."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "保存後、アイテムの詳細から期間を追加できます。"
+            "value": "アイテムの入力画面で期間を追加できます。"
           }
         }
       }

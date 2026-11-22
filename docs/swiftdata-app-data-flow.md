@@ -57,7 +57,7 @@ requirement: it edits a new value draft.
 
 Explicit parameters remain appropriate for bindings, actions, configuration,
 drafts, snapshots, record-edit selection, and operations involving peer models.
-`RecordEditor.Selection` describes the requested action and its Mark or Period
+`RecordEditor.Selection` describes the requested action and its Mark
 target; it does not relay the parent Item. Existing Tag editor/label inputs and
 the Period row input remain separate from this selected-Item propagation change.
 When changing those model-context boundaries, apply the same typed-environment

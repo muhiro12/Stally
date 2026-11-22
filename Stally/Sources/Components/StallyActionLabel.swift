@@ -8,8 +8,7 @@ enum StallyActionLabel: View {
     case recordNow
     case undoAddition
     case addPeriod
-    case endPeriod
-    case resumePeriod
+    case removePeriod
     case addTag
     case chooseTags
     case consolidateTags
@@ -54,10 +53,8 @@ enum StallyActionLabel: View {
             Label("Undo Last Addition", systemImage: "arrow.uturn.backward")
         case .addPeriod:
             Label("Add Period", systemImage: "calendar.badge.plus")
-        case .endPeriod:
-            Label("End Period", systemImage: "calendar.badge.checkmark")
-        case .resumePeriod:
-            Label("Resume with a new period", systemImage: "arrow.clockwise")
+        case .removePeriod:
+            Label("Remove Period", systemImage: "trash")
         case .addTag:
             Label("Add Tag", systemImage: "plus")
         case .chooseTags:

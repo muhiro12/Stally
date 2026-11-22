@@ -153,15 +153,10 @@ editing input for correction and retry; this does not establish a separate
 promise of draft recovery after process termination. An edit preserves values
 the person did not change rather than resetting omitted fields.
 
-Item registration and the first Mark or period express separate intentions.
-Registration does not imply purchase, use, or relationship start. A continuous
-screen flow may offer explicit history entry, but must not create today's Mark
-or begin a period merely because an Item was added. If a future flow submits
-Item and explicit history together as one action, apply the same save-unit rule.
-
-Screen composition, the initial visibility of optional inputs, and Operations
-signatures remain implementation/design work. These accepted behaviors do not
-freeze the current editor or its existing method calls.
+The Item form supports explicit additions, corrections, and removals of
+relationship periods alongside the Item's other fields. One Save commits the
+whole draft. A name alone is sufficient to register an Item. The first Mark
+is a separate action on the saved Item.
 
 ### Record and Correct Occurrences
 

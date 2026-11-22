@@ -35,9 +35,7 @@ struct ItemDetailView: View {
                 ItemMarksSection { selection in
                     editingRecord = selection
                 }
-                ItemPeriodsSection { selection in
-                    editingRecord = selection
-                }
+                ItemPeriodsSection()
                 Section {
                     Toggle("Mark Recording", isOn: recordingBinding)
                 } footer: {

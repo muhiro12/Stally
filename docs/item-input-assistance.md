@@ -34,7 +34,8 @@ tracks release qualification; broader AI summaries and search remain deferred.
 - The person can edit or remove staged periods and correct filled fields before
   ordinary Save. Metadata, photos, Tags and reviewed period additions save in one
   transaction. Existing periods are rechecked for conflicts in the writer context
-  and never overwritten. Validation or save failure retains the draft and saves
+  and applying a suggestion only stages additions. A matching period already in
+  the draft is skipped. Validation or save failure retains the draft and saves
   none of that submission. No Mark, Tag, photo or Item is generated automatically.
 - Stopping a request preserves source text. Editing the source invalidates the
   suggestion. Closing the sheet discards its temporary input. Task cancellation

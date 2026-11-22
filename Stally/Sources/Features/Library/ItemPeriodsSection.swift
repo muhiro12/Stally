@@ -7,14 +7,9 @@ struct ItemPeriodsSection: View {
     private var theme
     @Environment(Item.self)
     private var item
-    let edit: (RecordEditor.Selection) -> Void
 
     private var periods: [ItemPeriod] {
         PeriodOperations.orderedPeriods(for: item)
-    }
-
-    private var hasOngoingPeriod: Bool {
-        periods.contains(where: \.isOngoing)
     }
 
     var body: some View {
@@ -31,10 +26,9 @@ struct ItemPeriodsSection: View {
                 }
             }
             ForEach(periods) { period in
-                ItemPeriodRow(period: period, canResume: !hasOngoingPeriod, edit: edit)
-            }
-            StallyActionButton(.addPeriod) {
-                edit(.newPeriod)
+                ItemPeriodRow(input: .init(
+                    start: period.startLocalDate, end: period.endLocalDate, isOngoing: period.isOngoing
+                ))
             }
         } header: {
             MHSectionHeader("Periods")
