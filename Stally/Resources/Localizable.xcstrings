@@ -2791,6 +2791,22 @@
         }
       }
     },
+    "No Marks on This Day": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Marks on This Day"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この日のマークはありません"
+          }
+        }
+      }
+    },
     "No Matching Items": {
       "localizations": {
         "en": {
@@ -3177,6 +3193,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "プライバシーポリシー"
+          }
+        }
+      }
+    },
+    "Recent Marks": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recent Marks"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最近のマーク"
           }
         }
       }

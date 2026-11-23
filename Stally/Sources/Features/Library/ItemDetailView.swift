@@ -26,6 +26,7 @@ struct ItemDetailView: View {
                 ItemSummarySection {
                     choosingTags = true
                 }
+                MarkActivitySection(items: [item])
                 ItemPhotosSection { photo in
                     selectedPhoto = photo
                 }

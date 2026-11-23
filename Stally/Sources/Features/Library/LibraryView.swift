@@ -59,6 +59,7 @@ struct LibraryView: View {
                 items: items.filter { item in
                     (destination ?? .library).includes(item)
                 },
+                showsLibraryActivity: (destination ?? .library) == .library,
                 title: title,
                 initialScope: destination == .archive ? .archived : .library,
                 selection: $selectedItemID,

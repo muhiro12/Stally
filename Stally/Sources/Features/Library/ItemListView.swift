@@ -25,6 +25,7 @@ struct ItemListView: View {
     }
 
     let items: [Item]
+    let showsLibraryActivity: Bool
     let title: String
     let initialScope: ItemQuery.ArchiveScope
     @Binding var selection: PersistentIdentifier?
@@ -43,8 +44,15 @@ struct ItemListView: View {
 
     var body: some View {
         let displayedItems = visibleItems
+        let showsActivity = showsLibraryActivity && !items.isEmpty && searchText.isEmpty && archiveScope == .library
         List(selection: $selection) {
             MHContainerContent {
+                if showsActivity {
+                    MarkActivitySection(items: items)
+                    if displayedItems.isEmpty {
+                        emptyState
+                    }
+                }
                 ForEach(displayedItems) { item in
                     HStack {
                         NavigationLink(value: item.persistentModelID) {
@@ -62,27 +70,8 @@ struct ItemListView: View {
         }
         .mhListChrome(.content)
         .overlay {
-            if displayedItems.isEmpty {
-                if !searchText.isEmpty {
-                    ContentUnavailableView {
-                        Label("No Matching Items", systemImage: "magnifyingglass")
-                    } description: {
-                        Text("Try another search or reset the filters for this collection.")
-                    } actions: {
-                        Button("Reset Filters", action: resetFilters)
-                    }
-                } else {
-                    ContentUnavailableView {
-                        Label("No Items Here", systemImage: "square.stack")
-                    } description: {
-                        Text("Keep a record of something that matters to you.")
-                    } actions: {
-                        if archiveScope != initialScope {
-                            Button("Reset Filters", action: resetFilters)
-                        }
-                        StallyActionButton(.addItem, action: addItem)
-                    }
-                }
+            if displayedItems.isEmpty, !showsActivity {
+                emptyState
             }
         }
         .navigationTitle(title)
@@ -113,6 +102,29 @@ struct ItemListView: View {
                 Text("\(displayedItems.count) Items")
                     .mhForegroundStyle(.secondaryText)
                     .padding()
+            }
+        }
+    }
+
+    @ViewBuilder private var emptyState: some View {
+        if !searchText.isEmpty {
+            ContentUnavailableView {
+                Label("No Matching Items", systemImage: "magnifyingglass")
+            } description: {
+                Text("Try another search or reset the filters for this collection.")
+            } actions: {
+                Button("Reset Filters", action: resetFilters)
+            }
+        } else {
+            ContentUnavailableView {
+                Label("No Items Here", systemImage: "square.stack")
+            } description: {
+                Text("Keep a record of something that matters to you.")
+            } actions: {
+                if archiveScope != initialScope {
+                    Button("Reset Filters", action: resetFilters)
+                }
+                StallyActionButton(.addItem, action: addItem)
             }
         }
     }
