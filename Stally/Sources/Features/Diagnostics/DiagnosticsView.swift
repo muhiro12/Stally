@@ -1,0 +1,225 @@
+import MHUI
+import StallyLibrary
+import SwiftData
+import SwiftUI
+
+struct DiagnosticsView: View {
+    #if DEBUG
+    @AppStorage(StallyDevelopmentPreferences.automaticallySeedRecordsKey)
+    private var automaticallySeedRecords = true
+    @AppStorage(StallyDevelopmentPreferences.useSharedStoreKey)
+    private var useSharedStore = false
+    @State private var confirmingSharedStore = false
+    @State private var canInsertSamples = false
+    @State private var sampleInsertionIssue: String?
+    @State private var sampleActionError: String?
+    #endif
+
+    @State private var snapshot: DiagnosticsOperations.Snapshot?
+    @State private var diagnosticsError: String?
+    let container: ModelContainer?
+    let startupError: String?
+
+    var body: some View {
+        diagnosticsForm
+            .navigationTitle("Debug")
+            .task { refresh() }
+            #if DEBUG
+            .confirmationDialog("Use the shared store on next launch?", isPresented: $confirmingSharedStore) {
+                Button("Use Shared Store") {
+                    useSharedStore = true
+                }
+            } message: {
+                Text("Writes in the shared store may sync with iCloud. Development records will not be copied.")
+            }
+            #endif
+            .mhTheme(.standard)
+    }
+
+    private var diagnosticsForm: some View {
+        Form {
+            MHContainerContent {
+                storageSection
+                if let snapshot {
+                    countsSection(snapshot)
+                }
+                #if DEBUG
+                sampleSection
+                launchSection
+                #endif
+                Section {
+                    LabeledContent("Version", value: version)
+                    LabeledContent("Schema", value: StallyDataContract.schemaVersion)
+                } header: {
+                    MHSectionHeader("App")
+                } footer: {
+                    MHSectionFooter("Refreshing this information does not change your saved records.")
+                }
+            }
+        }
+        .mhFormChrome(.content)
+    }
+
+    private var storageSection: some View {
+        Section {
+            if let snapshot {
+                LabeledContent("Storage") {
+                    Text(snapshot.isInMemory ? "In Memory" : "On Disk")
+                }
+                LabeledContent("CloudKit Configuration") {
+                    Text(snapshot.cloudKitContainers.isEmpty ? "Disabled" : "Configured")
+                }
+                #if DEBUG
+                if !snapshot.isInMemory {
+                    ForEach(snapshot.storeLocations, id: \.self) { location in
+                        Text(location.path).mhTextStyle(.caption, colorRole: .secondaryText).textSelection(.enabled)
+                    }
+                }
+                #endif
+            }
+            if let error = startupError ?? diagnosticsError {
+                Text(error).mhTextStyle(.supporting, colorRole: .destructive).textSelection(.enabled)
+            }
+            Button("Refresh Information", systemImage: "arrow.clockwise", action: refresh)
+                .disabled(container == nil)
+        } header: {
+            MHSectionHeader("Current Storage")
+        } footer: {
+            MHSectionFooter("This shows the open store's configuration, not iCloud sync progress.")
+        }
+    }
+
+    #if DEBUG
+    private var sampleSection: some View {
+        Section {
+            Button("Add Development Samples", systemImage: "plus.rectangle.on.rectangle", action: insertSamples)
+                .disabled(!canInsertSamples)
+            if let sampleActionError {
+                Text(sampleActionError).mhTextStyle(.supporting, colorRole: .destructive)
+            }
+        } header: {
+            MHSectionHeader("Development Samples")
+        } footer: {
+            MHSectionFooter(Text(verbatim: sampleExplanation))
+        }
+    }
+
+    private var sampleExplanation: String {
+        sampleInsertionIssue ?? String(
+            localized: "Add samples now, even when automatic seeding is off. Existing records are never replaced."
+        )
+    }
+
+    private var launchSection: some View {
+        Section {
+            Toggle("Use Shared Store", isOn: sharedStoreSelection)
+                .disabled(isOverridden(StallyDevelopmentPreferences.useSharedStoreKey))
+            Toggle("Add Samples on Initial Setup", isOn: $automaticallySeedRecords)
+                .disabled(isOverridden(StallyDevelopmentPreferences.automaticallySeedRecordsKey))
+        } header: {
+            MHSectionHeader("Next Launch")
+        } footer: {
+            MHSectionFooter(Text(verbatim: launchExplanation))
+        }
+    }
+
+    private var launchExplanation: String {
+        var messages = [
+            String(localized: "Store changes apply after relaunch. Existing records stay."),
+            String(localized: "Automatic samples are added only when the local development store is first created.")
+        ]
+        if isOverridden(StallyDevelopmentPreferences.useSharedStoreKey)
+            || isOverridden(StallyDevelopmentPreferences.automaticallySeedRecordsKey) {
+            messages.append(String(localized: "A launch argument overrides the disabled setting for this run."))
+        }
+        return messages.joined(separator: "\n")
+    }
+
+    private var sharedStoreSelection: Binding<Bool> {
+        .init(
+            get: { useSharedStore },
+            set: { selected in
+                if selected {
+                    confirmingSharedStore = true
+                } else {
+                    useSharedStore = false
+                }
+            }
+        )
+    }
+    #endif
+
+    private var version: String {
+        let info = Bundle.main.infoDictionary ?? [:]
+        return "\(info["CFBundleShortVersionString"] as? String ?? "—") (\(info["CFBundleVersion"] as? String ?? "—"))"
+    }
+
+    private func countsSection(_ snapshot: DiagnosticsOperations.Snapshot) -> some View {
+        Section {
+            count("Items", value: snapshot.items)
+            count("Marks", value: snapshot.marks)
+            count("Periods", value: snapshot.periods)
+            count("Photos", value: snapshot.photos)
+            count("Tags", value: snapshot.tags)
+        } header: {
+            MHSectionHeader("Record Counts")
+        }
+    }
+
+    private func count(_ title: LocalizedStringKey, value: Int) -> some View {
+        LabeledContent(title) {
+            Text(value, format: .number)
+        }
+    }
+
+    #if DEBUG
+    private func refreshSampleAvailability() {
+        canInsertSamples = false
+        guard let container else {
+            sampleInsertionIssue = String(localized: "No store is open.")
+            return
+        }
+        do {
+            try DevelopmentSampleOperations.validateInsertion(context: container.mainContext)
+            canInsertSamples = true
+            sampleInsertionIssue = nil
+        } catch {
+            sampleInsertionIssue = error.localizedDescription
+        }
+    }
+
+    private func insertSamples() {
+        guard let container else {
+            return
+        }
+        sampleActionError = nil
+        do {
+            try DevelopmentSampleOperations.insert(context: container.mainContext)
+        } catch {
+            sampleActionError = error.localizedDescription
+        }
+        refresh()
+    }
+
+    private func isOverridden(_ key: String) -> Bool {
+        UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)[key] != nil
+    }
+
+    #endif
+
+    private func refresh() {
+        #if DEBUG
+        refreshSampleAvailability()
+        #endif
+        guard let container else {
+            return
+        }
+        do {
+            snapshot = try DiagnosticsOperations.snapshot(context: container.mainContext)
+            diagnosticsError = nil
+        } catch {
+            snapshot = nil
+            diagnosticsError = error.localizedDescription
+        }
+    }
+}

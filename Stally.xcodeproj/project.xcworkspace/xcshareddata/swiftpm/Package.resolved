@@ -1,0 +1,78 @@
+{
+  "originHash" : "59d45ad3605196ec002ac915accd8128b7668f2772ee7feabcd5040db64b5277",
+  "pins" : [
+    {
+      "identity" : "googlemobileadswrapper",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/muhiro12/GoogleMobileAdsWrapper",
+      "state" : {
+        "revision" : "c4d74000d25f6f60ecc864c28a6f680d392febde",
+        "version" : "2.1.0"
+      }
+    },
+    {
+      "identity" : "licenselist",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cybozu/LicenseList",
+      "state" : {
+        "revision" : "ee1e897acb2c8f3061fca4434cb702e8ddb7a72c",
+        "version" : "2.5.0"
+      }
+    },
+    {
+      "identity" : "mhplatform",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/muhiro12/MHPlatform",
+      "state" : {
+        "revision" : "404e02622a6a68bff30ec5aa7aafbd52cc196b2b",
+        "version" : "1.24.0"
+      }
+    },
+    {
+      "identity" : "mhui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/muhiro12/MHUI",
+      "state" : {
+        "revision" : "027e5a8f9d5374f467d05b6e85d70d976a8d01b6",
+        "version" : "2.6.0"
+      }
+    },
+    {
+      "identity" : "storekitwrapper",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/muhiro12/StoreKitWrapper",
+      "state" : {
+        "revision" : "c07644719476f0b0a1c6f8116d0d9752e8ed948d",
+        "version" : "1.5.0"
+      }
+    },
+    {
+      "identity" : "swift-package-manager-google-mobile-ads",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/googleads/swift-package-manager-google-mobile-ads.git",
+      "state" : {
+        "revision" : "1e305d74a0edcc8d74f7f2cae7a267e36d722ca2",
+        "version" : "13.13.0"
+      }
+    },
+    {
+      "identity" : "swift-package-manager-google-user-messaging-platform",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/googleads/swift-package-manager-google-user-messaging-platform.git",
+      "state" : {
+        "revision" : "13b248eaa73b7826f0efb1bcf455e251d65ecb1b",
+        "version" : "3.1.0"
+      }
+    },
+    {
+      "identity" : "swiftlintplugins",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SimplyDanny/SwiftLintPlugins",
+      "state" : {
+        "revision" : "ef7d692fc6706e8f5628e26bcafaefa445c58a97",
+        "version" : "0.65.1"
+      }
+    }
+  ],
+  "version" : 3
+}

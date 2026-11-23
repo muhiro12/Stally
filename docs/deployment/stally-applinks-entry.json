@@ -1,0 +1,10 @@
+{
+  "appIDs": ["66PKF55HK5.com.muhiro12.Stally"],
+  "components": [
+    {"/": "/Stally/library"},
+    {"/": "/Stally/archive"},
+    {"/": "/Stally/import-export"},
+    {"/": "/Stally/create-item"},
+    {"/": "/Stally/item/*"}
+  ]
+}
