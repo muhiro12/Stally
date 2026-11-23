@@ -87,6 +87,7 @@ struct LibraryView: View {
                 }
             }
         }
+        .modifier(MarkDayClock())
         .sheet(item: $session.importReview) { review in
             ImportReviewView(review: review) { _ in librarySession.importReview = nil }
         }

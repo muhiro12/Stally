@@ -46,11 +46,17 @@ struct ItemListView: View {
         List(selection: $selection) {
             MHContainerContent {
                 ForEach(displayedItems) { item in
-                    NavigationLink(value: item.persistentModelID) {
-                        ItemListRow()
-                            .environment(item)
+                    HStack {
+                        NavigationLink(value: item.persistentModelID) {
+                            ItemListRow()
+                        }
+                        .draggable(StallyLinkOperations.url(for: .item(item.uuid)))
+                        if item.isMarkRecordingEnabled {
+                            QuickMarkButtons(inList: true)
+                        }
                     }
-                    .draggable(StallyLinkOperations.url(for: .item(item.uuid)))
+                    .environment(item)
+                    .tag(item.persistentModelID)
                 }
             }
         }

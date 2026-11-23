@@ -7,6 +7,8 @@ struct ItemListRow: View {
     private var theme
     @Environment(Item.self)
     private var item
+    @Environment(\.markToday)
+    private var today
     @Environment(\.dynamicTypeSize)
     private var dynamicTypeSize
 
@@ -43,6 +45,9 @@ struct ItemListRow: View {
             HStack(spacing: theme.spacing.control) {
                 Label("\((item.marks ?? []).count)", systemImage: "checkmark.circle")
                     .accessibilityLabel("\((item.marks ?? []).count) Marks")
+                if let count = MarkOperations.countsByDay(for: item, in: today...today)[today] {
+                    Text("Today: \(count)")
+                }
                 if item.isArchived {
                     Label("Archived", systemImage: "archivebox")
                 } else if !item.isMarkRecordingEnabled {

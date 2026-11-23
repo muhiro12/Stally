@@ -16,6 +16,18 @@ public enum MarkOperations {
         }
     }
 
+    /// Counts occurrences by their recorded Gregorian day within the inclusive display range.
+    public static func countsByDay(for item: Item, in days: ClosedRange<String>) -> [String: Int] {
+        var counts = [String: Int]()
+        for mark in item.marks ?? [] {
+            let day = String(mark.localDateTime.prefix(CivilDate.dayLength))
+            if days.contains(day) {
+                counts[day, default: 0] += 1
+            }
+        }
+        return counts
+    }
+
     /// Captures the caller's local Gregorian day or minute; no absolute timestamp is inferred.
     public static func localDateTime(at date: Date, includesTime: Bool) -> String {
         let formatter = DateFormatter()

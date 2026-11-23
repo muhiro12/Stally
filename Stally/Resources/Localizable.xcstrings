@@ -3246,6 +3246,22 @@
         }
       }
     },
+    "Record Today for %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Record Today for %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@に今日のマークを追加"
+          }
+        }
+      }
+    },
     "Record a moment whenever it matters.": {
       "localizations": {
         "en": {
@@ -4309,6 +4325,22 @@
         }
       }
     },
+    "Today: %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today: %lld"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日 %lld回"
+          }
+        }
+      }
+    },
     "Try another search or reset the filters for this collection.": {
       "localizations": {
         "en": {
@@ -4337,6 +4369,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "直前の追加を取り消す"
+          }
+        }
+      }
+    },
+    "Undo Last Addition for %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Undo Last Addition for %@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@の直前の追加を取り消す"
           }
         }
       }
