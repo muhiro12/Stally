@@ -8,6 +8,8 @@ The app identity is `com.muhiro12.Stally`, with App Store ID `6760996986`.
 
 ## Release Policy
 
+Stally requires `features.remoteUpdate.schemaVersion` to be explicitly set to
+`1`, independently of the configuration envelope's version and the policy revision.
 The initial policy has revision 1, `requirement: null`, and no scheduled
 requirements. Integration is active, but no minimum version is enforced before
 the first public release. Future requirements use the package's validated
@@ -28,7 +30,7 @@ notice. To publish one later, add `features.announcements` alongside
 `features.remoteUpdate` in Stally's existing configuration. Supply English
 and Japanese titles and bodies, set any publication window or version bounds,
 and keep items in display order. See the
-[MHPlatform publication format and validator](https://github.com/muhiro12/MHPlatform/blob/1.23.0/Designs/Architecture/announcements.md).
+[MHPlatform publication format and validator](https://github.com/muhiro12/MHPlatform/blob/1.24.0/Designs/Architecture/announcements.md).
 
 The app receives both sections in the same startup or foreground refresh.
 Announcement edits do not require a new app build or update-policy revision.

@@ -5,7 +5,7 @@ import Testing
 
 @MainActor
 struct AnnouncementRefreshTests {
-    private static let policy = #""remoteUpdate":{"revision":1,"requirement":null}"#
+    private static let policy = #""remoteUpdate":{"schemaVersion":1,"revision":1,"requirement":null}"#
     private static let item = #"""
         {"id":"scheduled","minimumVersion":"1.0","maximumVersion":"1.0","startsAt":"2026-12-01T00:00:00Z",
         "endsAt":"2026-12-02T00:00:00Z","localizations":{"en":{"title":"News","body":"Details"},
@@ -33,13 +33,8 @@ struct AnnouncementRefreshTests {
             session: session
         )
         let now = try Date("2026-12-01T12:00:00Z", strategy: .iso8601)
-        let bundleID = try #require(Bundle.main.bundleIdentifier)
         func refresh(_ features: String?) async throws {
-            AnnouncementURLProtocol.payload.withLock { payload in
-                payload = features.map { sections in
-                    Data(#"{"schemaVersion":1,"bundleIdentifier":"\#(bundleID)","features":{\#(sections)}}"#.utf8)
-                }
-            }
+            try AnnouncementURLProtocol.setFeatures(features)
             try await operations.prepare()
         }
         func titles(version: String = "1.0", date: Date? = nil, language: String = "ja-JP") -> [String] {
@@ -50,6 +45,11 @@ struct AnnouncementRefreshTests {
             )
             return announcements?.map(\.title) ?? []
         }
+
+        let unversionedPolicy = #""remoteUpdate":{"revision":1,"requirement":null}"#
+        try await refresh([unversionedPolicy, Self.notices(Self.item)].joined(separator: ","))
+        #expect(operations.decision == .unavailable)
+        #expect(titles() == ["お知らせ"])
 
         try await refresh(Self.policy)
         #expect(operations.decision == .notRequired)
@@ -66,6 +66,7 @@ struct AnnouncementRefreshTests {
             try await refresh([Self.policy, withdrawal].filter { !$0.isEmpty }.joined(separator: ","))
             #expect(titles().isEmpty)
             #expect(operations.decision == .notRequired)
+            #expect(operations.evaluation?.refreshError == nil)
             try await refresh([Self.policy, Self.notices(Self.item)].joined(separator: ","))
             #expect(titles() == ["お知らせ"])
         }
@@ -75,7 +76,16 @@ struct AnnouncementRefreshTests {
 private extension AnnouncementRefreshTests {
     final class AnnouncementURLProtocol: URLProtocol {
         private static let successStatusCode = 200
-        static let payload = Mutex<Data?>(nil)
+        private static let payload = Mutex<Data?>(nil)
+
+        static func setFeatures(_ features: String?) throws {
+            let bundleID = try #require(Bundle.main.bundleIdentifier)
+            payload.withLock { payload in
+                payload = features.map { sections in
+                    Data(#"{"schemaVersion":1,"bundleIdentifier":"\#(bundleID)","features":{\#(sections)}}"#.utf8)
+                }
+            }
+        }
 
         override static func canInit(with _: URLRequest) -> Bool {
             true
