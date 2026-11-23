@@ -31,8 +31,6 @@ struct ItemListView: View {
     @Binding var searchText: String
     @Binding var archiveScope: ItemQuery.ArchiveScope
     let addItem: () -> Void
-    @Environment(\.mhTheme)
-    private var theme
     @State private var sortOrder = SortOrder.newest
 
     private var visibleItems: [Item] {
@@ -108,8 +106,7 @@ struct ItemListView: View {
             ToolbarItem(placement: .status) {
                 Text("\(displayedItems.count) Items")
                     .mhForegroundStyle(.secondaryText)
-                    .padding(.horizontal, theme.spacing.control)
-                    .padding(.vertical, theme.spacing.inline)
+                    .padding()
             }
         }
     }
