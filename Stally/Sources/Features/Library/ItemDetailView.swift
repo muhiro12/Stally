@@ -11,6 +11,7 @@ struct ItemDetailView: View {
     @Environment(Item.self)
     private var item
     let onDelete: () -> Void
+    @State private var selectedMarkDay: MarkDayDetail.Selection?
     @State private var editingItem = false
     @State private var choosingTags = false
     @State private var editingRecord: RecordEditor.Selection?
@@ -26,7 +27,9 @@ struct ItemDetailView: View {
                 ItemSummarySection {
                     choosingTags = true
                 }
-                MarkActivitySection(items: [item])
+                MarkActivitySection(items: [item]) { day in
+                    selectedMarkDay = .init(day: day)
+                }
                 ItemPhotosSection { photo in
                     selectedPhoto = photo
                 }
@@ -47,6 +50,9 @@ struct ItemDetailView: View {
         .mhListChrome(.content)
         .disabled(saving)
         .navigationTitle(item.name)
+        .sheet(item: $selectedMarkDay) { selection in
+            MarkDayDetail(day: selection.day, items: [item])
+        }
         .toolbar { itemToolbar }
         .sheet(isPresented: $editingItem) {
             ItemEditor(draft: ItemOperations.draft(for: item), title: "Edit Item", onSave: nil)

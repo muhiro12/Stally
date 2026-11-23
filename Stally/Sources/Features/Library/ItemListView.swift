@@ -32,6 +32,7 @@ struct ItemListView: View {
     @Binding var searchText: String
     @Binding var archiveScope: ItemQuery.ArchiveScope
     let addItem: () -> Void
+    @State private var selectedMarkDay: MarkDayDetail.Selection?
     @State private var sortOrder = SortOrder.newest
 
     private var visibleItems: [Item] {
@@ -48,7 +49,9 @@ struct ItemListView: View {
         List(selection: $selection) {
             MHContainerContent {
                 if showsActivity {
-                    MarkActivitySection(items: items)
+                    MarkActivitySection(items: items) { day in
+                        selectedMarkDay = .init(day: day)
+                    }
                     if displayedItems.isEmpty {
                         emptyState
                     }
@@ -75,6 +78,9 @@ struct ItemListView: View {
             }
         }
         .navigationTitle(title)
+        .sheet(item: $selectedMarkDay) { selection in
+            MarkDayDetail(day: selection.day, items: items)
+        }
         .searchable(
             text: $searchText,
             prompt: "Search names, notes, and tags"

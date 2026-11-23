@@ -22,7 +22,7 @@ struct MarkActivitySection: View {
     @Environment(\.markToday)
     private var today
     let items: [Item]
-    @State private var selectedDay: Day?
+    let selectDay: (String) -> Void
 
     private var recentDays: [Day] {
         let formatter = RecordDateDraft.formatter("yyyy-MM-dd")
@@ -56,9 +56,6 @@ struct MarkActivitySection: View {
             } header: {
                 MHSectionHeader("Recent Marks")
             }
-            .sheet(item: $selectedDay) { day in
-                MarkDayDetail(day: day.key, items: items)
-            }
         }
     }
 
@@ -89,7 +86,7 @@ struct MarkActivitySection: View {
 
     private func dayButton(_ day: Day, count: Int) -> some View {
         Button {
-            selectedDay = day
+            selectDay(day.key)
         } label: {
             Text(day.date, format: .dateTime.day())
                 .font(.caption.monospacedDigit())

@@ -4,6 +4,11 @@ import SwiftData
 import SwiftUI
 
 struct MarkDayDetail: View {
+    struct Selection: Identifiable {
+        let day: String
+        var id: String { day }
+    }
+
     @Environment(\.dismiss)
     private var dismiss
     let day: String
