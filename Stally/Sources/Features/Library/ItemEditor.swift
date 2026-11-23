@@ -95,7 +95,7 @@ struct ItemEditor: View {
                 } header: {
                     MHSectionHeader("Link")
                 }
-                ItemDraftPeriodsSection(draft: $draft)
+                ItemDraftPeriodSections(draft: $draft)
                 ItemDraftTagsSection(draft: $draft)
                 ItemDraftPhotosSection(draft: $draft, loading: $loadingPhotos, errorMessage: $errorMessage)
             }
