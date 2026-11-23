@@ -4,26 +4,6 @@ import SwiftData
 import SwiftUI
 
 struct ItemListView: View {
-    private enum SortOrder: String, CaseIterable, Identifiable {
-        case newest
-        case oldest
-        case name
-
-        var id: Self {
-            self
-        }
-        var title: LocalizedStringResource {
-            switch self {
-            case .newest:
-                "Newest First"
-            case .oldest:
-                "Oldest First"
-            case .name:
-                "Name"
-            }
-        }
-    }
-
     let items: [Item]
     let showsLibraryActivity: Bool
     let title: String
@@ -33,14 +13,13 @@ struct ItemListView: View {
     @Binding var archiveScope: ItemQuery.ArchiveScope
     let addItem: () -> Void
     @State private var selectedMarkDay: MarkDayDetail.Selection?
-    @State private var sortOrder = SortOrder.newest
+    @State private var sortOrder = ItemListSortOrder.newest
 
     private var visibleItems: [Item] {
         var query = ItemQuery()
         query.text = searchText
         query.archiveScope = archiveScope
-        query.order = ItemQuery.Order(rawValue: sortOrder.rawValue) ?? .newest
-        return query.matching(items)
+        return sortOrder.matching(items, query: query)
     }
 
     var body: some View {
@@ -98,7 +77,7 @@ struct ItemListView: View {
                         Text("All Items").tag(ItemQuery.ArchiveScope.all)
                     }
                     Picker("Sort Items", selection: $sortOrder) {
-                        ForEach(SortOrder.allCases) { order in
+                        ForEach(ItemListSortOrder.allCases, id: \.self) { order in
                             Text(order.title).tag(order)
                         }
                     }
