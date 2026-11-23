@@ -477,6 +477,22 @@
         }
       }
     },
+    "Announcements": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Announcements"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "お知らせ"
+          }
+        }
+      }
+    },
     "App": {
       "extractionState": "manual",
       "localizations": {

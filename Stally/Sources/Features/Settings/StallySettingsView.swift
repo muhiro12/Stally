@@ -1,12 +1,29 @@
 import MHAppRuntime
+import MHPlatformCore
 import MHPreferencesUI
 import MHUI
 import StallyLibrary
 import SwiftUI
 
 struct StallySettingsView: View {
+    private struct AnnouncementSchedule: TimelineSchedule {
+        let hasFeed: Bool
+
+        func entries(from startDate: Date, mode: TimelineScheduleMode) -> AnySequence<Date> {
+            guard hasFeed else {
+                return AnySequence(CollectionOfOne(startDate))
+            }
+            let seconds = PeriodicTimelineSchedule(from: .init(timeIntervalSince1970: 0), by: 1)
+            return AnySequence(seconds.entries(from: startDate, mode: mode))
+        }
+    }
+
+    let announcementFeed: MHAnnouncementFeed?
+
     @Environment(\.dismiss)
     private var dismiss
+    @Environment(\.locale)
+    private var locale
     @Environment(MHAppRuntime.self)
     private var runtime
     @Environment(StallyLibrarySession.self)
@@ -60,21 +77,9 @@ struct StallySettingsView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                StallyICloudSettingsSection(
-                    hasSubscriptionAccess: canEnableSync,
-                    isICloudOn: $iCloudEnabled,
-                    isICloudConfigured: librarySession.isCloudSyncEnabled
-                )
-                subscriptionSection
-                aboutSection
-                Section {
-                    NavigationLink("Advanced") {
-                        StallyAdvancedSettingsView()
-                    }
-                }
+            TimelineView(AnnouncementSchedule(hasFeed: announcementFeed != nil)) { _ in
+                settingsList(at: .now)
             }
-            .mhListChrome(.native)
             .navigationTitle("Settings")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -85,10 +90,67 @@ struct StallySettingsView: View {
             }
         }
     }
+
+    private func settingsList(at date: Date) -> some View {
+        List {
+            announcementSection(at: date)
+            StallyICloudSettingsSection(
+                hasSubscriptionAccess: canEnableSync,
+                isICloudOn: $iCloudEnabled,
+                isICloudConfigured: librarySession.isCloudSyncEnabled
+            )
+            subscriptionSection
+            aboutSection
+            Section {
+                NavigationLink("Advanced") {
+                    StallyAdvancedSettingsView()
+                }
+            }
+        }
+        .mhListChrome(.native)
+    }
+
+    @ViewBuilder
+    private func announcementSection(at date: Date) -> some View {
+        if let announcementFeed {
+            let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+            let announcements = announcementFeed.visibleAnnouncements(
+                installedVersion: version.flatMap(MHAppVersion.init),
+                at: date,
+                preferredLanguages: [locale.identifier(.bcp47)] + Locale.preferredLanguages
+            )
+            if !announcements.isEmpty {
+                Section("Announcements") {
+                    ForEach(announcements) { announcement in
+                        VStack(alignment: .leading) {
+                            Text(verbatim: announcement.title)
+                                .font(.headline)
+                            Text(verbatim: announcement.body)
+                        }
+                        .accessibilityElement(children: .combine)
+                    }
+                }
+            }
+        }
+    }
 }
 
 #Preview("Settings") {
-    StallySettingsView()
+    StallySettingsView(announcementFeed: nil)
+        .environment(MHAppRuntime(runtimeOnly: .init()))
+        .environment(StallyLibrarySession(updates: .init(), observesAccount: false))
+        .mhTheme(.standard)
+}
+
+#Preview("Published announcement") {
+    let json = """
+        {"schemaVersion":1,"defaultLanguage":"en","items":[{"id":"sample","localizations":{
+          "en":{"title":"Service maintenance","body":"Sync may take longer during maintenance."},
+          "ja":{"title":"メンテナンスのお知らせ","body":"メンテナンス中は同期に時間がかかることがあります。"}
+        }}]}
+        """
+    let feed = try? JSONDecoder().decode(MHAnnouncementFeed.self, from: Data(json.utf8))
+    StallySettingsView(announcementFeed: feed)
         .environment(MHAppRuntime(runtimeOnly: .init()))
         .environment(StallyLibrarySession(updates: .init(), observesAccount: false))
         .mhTheme(.standard)

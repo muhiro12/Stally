@@ -1,6 +1,7 @@
 import Foundation
 import MHPlatformCore
 import Observation
+import os
 
 /// Shares update evidence across app presentation and data-writing entry points.
 @preconcurrency
@@ -9,6 +10,8 @@ import Observation
 public final class RemoteUpdateOperations {
     /// Whether this environment participates in remote update checks.
     public let isEnabled: Bool
+    /// The current session's announcements, filtered by the view at presentation time.
+    public private(set) var announcementFeed: MHAnnouncementFeed?
     /// The latest package-owned evaluation; unavailable evidence is not a confirmed requirement.
     public var evaluation: MHRemoteUpdateEvaluation? { adapter.evaluation }
 
@@ -19,6 +22,9 @@ public final class RemoteUpdateOperations {
 
     private let adapter: MHRemoteUpdateAdapter
     private let configurationError: (any Error)?
+    private let pendingAnnouncements = OSAllocatedUnfairLock<MHRemoteConfigSection<MHAnnouncementFeed>?>(
+        initialState: nil
+    )
 
     /// Disables remote checks for previews and isolated environments.
     public init() {
@@ -29,6 +35,27 @@ public final class RemoteUpdateOperations {
 
     /// Uses one controller for the environment's UI and headless operations.
     public init(controller: MHRemoteUpdateController) {
+        isEnabled = true
+        adapter = .init(controller: controller)
+        configurationError = nil
+    }
+
+    /// Receives notices from the same configuration request that refreshes the update policy.
+    public init(
+        appStoreID: Int,
+        configurationURL: URL,
+        storageDirectory: URL? = nil,
+        session: URLSession = .shared
+    ) throws {
+        let pending = pendingAnnouncements
+        let controller = try MHRemoteUpdateController(
+            appStoreID: appStoreID,
+            configurationURL: configurationURL,
+            storageDirectory: storageDirectory,
+            session: session
+        ) { response in
+            pending.withLock { $0 = response.value }
+        }
         isEnabled = true
         adapter = .init(controller: controller)
         configurationError = nil
@@ -47,6 +74,16 @@ public final class RemoteUpdateOperations {
         try Task.checkCancellation()
         if let configurationError {
             throw configurationError
+        }
+        defer {
+            // A valid announcement can arrive even when the sibling update policy fails.
+            let section = pendingAnnouncements.withLock { pending in
+                defer { pending = nil }
+                return pending
+            }
+            if let section {
+                announcementFeed = try? section.get()
+            }
         }
         return try await adapter.prepare()
     }

@@ -4,6 +4,8 @@ import SwiftData
 import SwiftUI
 
 struct LibrarySidebar: View {
+    @Environment(RemoteUpdateOperations.self)
+    private var updates
     @State private var showingSettings = false
 
     let items: [Item]
@@ -27,7 +29,7 @@ struct LibrarySidebar: View {
         .listStyle(.sidebar)
         .navigationTitle("Stally")
         .sheet(isPresented: $showingSettings) {
-            StallySettingsView()
+            StallySettingsView(announcementFeed: updates.announcementFeed)
         }
     }
 

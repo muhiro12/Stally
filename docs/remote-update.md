@@ -20,6 +20,24 @@ available for Stally. Missing evidence or an unpublished minimum yields
 evidence is fresh; expired evidence becomes `unavailable`. There is no
 app-owned enforcement timer or arbitrary version floor.
 
+## In-app announcements
+
+Settings shows an Announcements section only when a published notice matches
+the installed app version and current date. The initial release needs no
+notice. To publish one later, add `features.announcements` alongside
+`features.remoteUpdate` in Stally's existing configuration. Supply English
+and Japanese titles and bodies, set any publication window or version bounds,
+and keep items in display order. See the
+[MHPlatform publication format and validator](https://github.com/muhiro12/MHPlatform/blob/1.23.0/Designs/Architecture/announcements.md).
+
+The app receives both sections in the same startup or foreground refresh.
+Announcement edits do not require a new app build or update-policy revision.
+An empty items array, missing section, or invalid section clears displayed
+notices after fetching. A transport failure leaves the last feed in memory for
+the current session. Settings reevaluates visibility when opened and at second
+boundaries while a feed is present. Notices use the app locale with the feed's language
+fallback and never interrupt editing.
+
 ## Lifecycle and Writes
 
 One `RemoteUpdateOperations` instance belongs to each platform environment.

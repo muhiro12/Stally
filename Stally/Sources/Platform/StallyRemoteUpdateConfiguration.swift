@@ -25,7 +25,7 @@ enum StallyRemoteUpdateConfiguration {
             return .init(configurationError: MHRemoteUpdateController.Failure.invalidConfiguration)
         }
         do {
-            return .init(controller: try .init(appStoreID: appStoreID, configurationURL: url))
+            return try .init(appStoreID: appStoreID, configurationURL: url)
         } catch {
             return .init(configurationError: error)
         }
