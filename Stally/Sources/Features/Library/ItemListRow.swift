@@ -7,8 +7,26 @@ struct ItemListRow: View {
     private var theme
     @Environment(Item.self)
     private var item
+    @Environment(\.dynamicTypeSize)
+    private var dynamicTypeSize
 
     var body: some View {
+        let layout = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: theme.spacing.inline))
+            : AnyLayout(HStackLayout(spacing: theme.spacing.control))
+        layout {
+            if let photo = ItemOperations.orderedPhotos(for: item).first {
+                PhotoPreview(data: photo.thumbnailData ?? photo.imageData, contentMode: .fill)
+                    .frame(width: LibraryLayout.listPhotoSize, height: LibraryLayout.listPhotoSize)
+                    .clipShape(.rect(cornerRadius: theme.cornerRadius.control))
+                    .accessibilityHidden(true)
+            }
+            summary
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private var summary: some View {
         VStack(alignment: .leading, spacing: theme.spacing.inline) {
             HStack(alignment: .firstTextBaseline) {
                 Text(item.name).mhRowTitle().lineLimit(LibraryLayout.previewLines)
@@ -33,6 +51,5 @@ struct ItemListRow: View {
             }
             .mhTextStyle(.caption, colorRole: .secondaryText)
         }
-        .accessibilityElement(children: .combine)
     }
 }

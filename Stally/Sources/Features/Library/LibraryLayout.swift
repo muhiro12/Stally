@@ -10,6 +10,7 @@ enum LibraryLayout {
     }
 
     static let minimumControlSize: CGFloat = 44
+    static let listPhotoSize: CGFloat = 64
     static let editorPhotoHeight: CGFloat = 160
     static let detailPhotoHeight: CGFloat = 240
     static let previewLines = 2
